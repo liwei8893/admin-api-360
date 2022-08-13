@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\System\Controller;
 
 use App\System\Request\User\SystemUserLoginRequest;
@@ -45,7 +46,6 @@ class LoginController extends MineController
         $vo = new UserServiceVo();
         $vo->setUsername($requestData['username']);
         $vo->setPassword($requestData['password']);
-        $vo->setVerifyCode($requestData['code']);
         return $this->success(['token' => $this->userService->login($vo)]);
     }
 

@@ -18,7 +18,6 @@ use Mine\Generator\RequestGenerator;
 use Mine\Generator\ServiceGenerator;
 use Mine\Generator\SqlGenerator;
 use Mine\Generator\VueIndexGenerator;
-use Mine\Generator\VueSaveGenerator;
 use Psr\Container\ContainerInterface;
 
 /**
