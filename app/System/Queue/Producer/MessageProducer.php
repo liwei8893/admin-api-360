@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\System\Queue\Producer;
 
-use App\System\Service\SystemQueueLogService;
 use Hyperf\Amqp\Annotation\Producer;
 use Hyperf\Amqp\Message\ProducerMessage;
 

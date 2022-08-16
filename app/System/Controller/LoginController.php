@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace App\System\Controller;
 
-use App\System\Request\User\SystemUserLoginRequest;
+use App\System\Request\SystemUserRequest;
 use App\System\Service\SystemUserService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
-use Hyperf\Snowflake\IdGeneratorInterface;
 use Mine\Annotation\Auth;
 use Mine\Helper\LoginUser;
 use Mine\Interfaces\UserServiceInterface;
 use Mine\MineController;
 use Mine\Vo\UserServiceVo;
 use Psr\Http\Message\ResponseInterface;
-use Swoole\Coroutine\Channel;
 
 /**
  * Class LoginController
@@ -33,14 +31,14 @@ class LoginController extends MineController
     protected UserServiceInterface $userService;
 
     /**
-     * @param SystemUserLoginRequest $request
+     * @param SystemUserRequest $request
      * @return ResponseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     #[PostMapping("login")]
-    public function login(SystemUserLoginRequest $request): ResponseInterface
+    public function login(SystemUserRequest $request): ResponseInterface
     {
         $requestData = $request->validated();
         $vo = new UserServiceVo();
