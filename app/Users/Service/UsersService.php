@@ -38,6 +38,12 @@ class UsersService extends AbstractService
     #[Inject]
     protected SystemDeptService $systemDeptService;
 
+    #[Inject]
+    protected LoginUser $loginUser;
+
+    #[Inject]
+    protected UserSalePlatformService $userSalePlatformService;
+
     /**
      * @var UsersMapper
      */
@@ -51,31 +57,41 @@ class UsersService extends AbstractService
      * @return int
      * author:ZQ
      * time:2022-08-16 16:09
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function save($data): int
     {
         if ($this->mapper->existsByMobile($data['mobile'])) {
             throw new NormalStatusException('手机号已存在');
         }
-        // 初始密码默认手机后六位
-        $data['user_pass'] = $this->mapper->getInitPassword($data['mobile']);
-        // 如果不传用户名,初始名称为手机号
-        if (empty($data['user_name'])) {
-            $data['user_name'] = $this->mapper->getInitUserName($data['mobile']);
-        }
-        $data['user_nickname'] = $data['user_name'];
-        $data['real_name'] = $data['user_name'];
-        // 默认头像
-        $data['avatar'] = config('hxt-app.defaultAvatar');
-        // 默认性别保密
-        $data['sex'] = 3;
-        // 操作人
-        $loginUser = $this->container->get(LoginUser::class);
-        $data['created_id'] = $loginUser->getId();
-        $data['created_name'] = $loginUser->getUsername();
+        $data = $this->handleSaveData($data);
         return $this->mapper->save($data);
+    }
+
+
+    /**
+     * @param array $data
+     * @return array
+     * author:ZQ
+     * time:2022-08-17 10:06
+     */
+    public function handleSaveData(array $data): array
+    {
+        // 获取平台编号,挂载到数组
+        $data = $this->userSalePlatformService->withPlatformNum($data);
+        // 合并初始化参数
+        return array_merge([
+            'mobile' => $data['mobile'],
+            'user_name' => $this->mapper->getInitUserName($data['mobile']),
+            'user_nickname' => $this->mapper->getInitUserName($data['mobile']),
+            'real_name' => $this->mapper->getInitUserName($data['mobile']),
+            'user_pass' => $this->mapper->getInitPassword($data['mobile']),
+            'avatar' => config('hxt-app.defaultAvatar'),
+            'user_type' => 1,
+            'status' => 1,
+            'sex' => 3,
+            'created_id' => $this->loginUser->getId(),
+            'created_name' => $this->loginUser->getUsername(),
+        ], $data);
     }
 
     /**
@@ -157,26 +173,10 @@ class UsersService extends AbstractService
             $userModel = $model->whereIn('mobile', $mobiles)->get();
             $diffMobiles = $mobiles->diff($userModel->pluck('mobile'));
             $newCollection = $data->whereIn('mobile', $diffMobiles);
-            $loginUser = $this->container->get(LoginUser::class);
             foreach ($newCollection as $item) {
                 $gradeId = $grade->where('title', $item['grade'])->first()['key'];
-                $insertData = [
-                    'user_name' => $item['user_name'],
-                    'user_pass' => $this->mapper->getInitPassword($item['mobile']),
-                    'mobile' => $item['mobile'],
-                    'avatar' => config('hxt-app.defaultAvatar'),
-                    'real_name' => $item['user_name'],
-                    'platform' => $item['platform'],
-                    'grade_id' => $gradeId,
-                    'user_nickname' => $item['user_name'],
-                    'remark' => $item['remark'] ?? '',
-                    'experience' => 0,
-                    'status' => 1,
-                    'user_type' => 1,
-                    'created_id' => $loginUser->getId(),
-                    'created_name' => $loginUser->getUsername(),
-                    'score' => 0,
-                ];
+                $item['grade_id'] = $gradeId;
+                $insertData = $this->handleSaveData($item);
                 $model->create($insertData);
             }
             return true;

@@ -14,7 +14,7 @@ class UserSalePlatformMapper extends AbstractMapper
         $this->model = UserSalePlatform::class;
     }
 
-    public static function getPlatformNum(string $platform): array
+    public function getPlatformNum(string $platform): array
     {
         if (!$platform) {
             throw new NormalStatusException('缺少平台编号');
