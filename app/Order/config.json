@@ -1,0 +1,9 @@
+{
+    "name": "Order",
+    "label": "订单管理",
+    "description": "订单管理",
+    "installed": true,
+    "enabled": true,
+    "version": "1.0.0",
+    "order": 0
+}

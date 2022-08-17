@@ -84,4 +84,20 @@ class SystemDeptMapper extends AbstractMapper
         }
         return $query;
     }
+
+    /**
+     * 获取部门平台下拉
+     * @return mixed
+     * author:ZQ
+     * time:2022-05-29 15:42
+     */
+    public function getPlatformSelect(): mixed
+    {
+        return $this->model::where('status', $this->model::ENABLE)
+            ->whereNotNull('platform')
+            ->select(['id', 'name as title', 'platform as key'])
+            ->orderBy('sort', 'desc')
+            ->userDataScope()
+            ->get();
+    }
 }

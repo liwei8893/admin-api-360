@@ -267,7 +267,7 @@ trait ServiceTrait
      */
     public function changeStatus(int $id, string $value, string $filed = 'status'): bool
     {
-        return $value == MineModel::ENABLE ? $this->mapper->enable([ $id ], $filed) : $this->mapper->disable([ $id ], $filed);
+        return (int)$value === MineModel::ENABLE ? $this->mapper->enable([ $id ], $filed) : $this->mapper->disable([ $id ], $filed);
     }
 
     /**

@@ -65,12 +65,12 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
                 @unlink($tempFilePath);
             } catch (\Exception $e) {
                 @unlink($tempFilePath);
-                throw new \Exception($e->getMessage());
+                throw new \RuntimeException($e->getMessage());
             }
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -112,8 +112,8 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
                 sprintf('%s:%s', $columnNumber, $columnNumber),
                 $this->property[$index]['width'] ?? mb_strlen($columnName[$index]) * 5,
                 $columnFormat->align($this->property[$index]['align'] ? $aligns[$this->property[$index]['align']] : $aligns['left'])
-                    ->background($this->property[$index]['bgColor'] ?? Format::COLOR_WHITE)
-                    ->border(Format::BORDER_THIN)
+//                    ->background($this->property[$index]['bgColor'] ?? Format::COLOR_WHITE)
+//                    ->border(Format::BORDER_THIN)
                     ->fontColor($this->property[$index]['color'] ?? Format::COLOR_BLACK)
                     ->toResource()
             );
@@ -124,8 +124,8 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         $fileObject->setRow(
             sprintf('A1:%s1', chr(65 + count($columnField))), 20,
             $rowFormat->bold()->align(Format::FORMAT_ALIGN_CENTER, Format::FORMAT_ALIGN_VERTICAL_CENTER)
-                ->background(0x4ac1ff)->fontColor(Format::COLOR_BLACK)
-                ->border(Format::BORDER_THIN)
+//                ->background(0x4ac1ff)->fontColor(Format::COLOR_BLACK)
+//                ->border(Format::BORDER_THIN)
                 ->toResource()
         );
 
@@ -152,8 +152,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         if ( copy($filePath, 'php://output') === false) {
             throw new MineException('导出数据失败',  500);
         }
-        $res = $this->downloadExcel($filename, ob_get_contents());
-        ob_end_clean();
+        $res = $this->downloadExcel($filename, ob_get_clean());
 
         @unlink($filePath);
 

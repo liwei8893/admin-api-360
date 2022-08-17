@@ -158,4 +158,18 @@ class DeptController extends MineController
             (int) $this->request->input('numberValue', 1),
         ) ? $this->success() : $this->error();
     }
+
+    /**
+     * 获取部门平台下拉
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * author:ZQ
+     * time:2022-05-29 15:43
+     */
+    #[GetMapping("platformSelect")]
+    public function platformSelect(): ResponseInterface
+    {
+        return $this->success($this->service->getPlatformSelect());
+    }
 }

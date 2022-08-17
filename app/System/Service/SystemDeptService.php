@@ -117,4 +117,15 @@ class SystemDeptService extends AbstractService
     {
         return $this->mapper->checkChildrenExists($id);
     }
+
+    /**
+     * 获取部门平台下拉
+     * @return mixed
+     * author:ZQ
+     * time:2022-05-29 15:43
+     */
+    public function getPlatformSelect(): mixed
+    {
+        return $this->mapper->getPlatformSelect();
+    }
 }

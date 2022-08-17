@@ -1,0 +1,9 @@
+{
+    "name": "Users",
+    "label": "用户管理",
+    "description": "用户管理",
+    "installed": true,
+    "enabled": true,
+    "version": "1.0.0",
+    "order": 0
+}

@@ -51,7 +51,8 @@
     "xmo/jwt-auth": "0.2.*",
     "xxtime/flysystem-aliyun-oss": "^1.5",
     "yurunsoft/phpmailer-swoole": "^1.0",
-    "zoujingli/ip2region": "^1.0"
+    "zoujingli/ip2region": "^1.0",
+    "ext-xlswriter": "*"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.9",
