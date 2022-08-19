@@ -31,7 +31,7 @@ use Psr\Http\Message\ResponseInterface;
  * Class OrderController
  */
 #[Controller(prefix: "order/list"), Auth]
-class OrderController extends MineController
+class OrderListController extends MineController
 {
     /**
      * 业务处理服务

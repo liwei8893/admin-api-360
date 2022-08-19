@@ -120,10 +120,10 @@ class UsersMapper extends AbstractMapper
             );
         }
 
-        if (isset($params['created_at']) && is_array($params['created_at'])) {
+        if (isset($params['created_at'][0], $params['created_at'][1])) {
             $query->whereBetween(
                 'created_at',
-                [strtotime($params['startTime'] . ' 00:00:00'), strtotime($params['endTime'] . ' 23:59:59')]
+                [strtotime($params['created_at'][0] . ' 00:00:00'), strtotime($params['created_at'][1] . ' 23:59:59')]
             );
         }
 

@@ -14,6 +14,7 @@ namespace App\Order\Mapper;
 
 use App\Order\Model\Order;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractMapper;
 
 /**
@@ -26,9 +27,50 @@ class OrderMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel():void
+    public function assignModel(): void
     {
         $this->model = Order::class;
+    }
+
+    /**
+     * 有效期增加
+     * @param int $id
+     * @param int $day
+     * @param array $update 可选,更新order表其他字段
+     * @return int
+     * author:ZQ
+     * time:2022-08-18 15:26
+     */
+    public function incrementInDate(int $id, int $day, array $update = []): int
+    {
+      return  Order::query()->where('id', $id)->increment('indate', $day, $update);
+    }
+
+    /**
+     * 有效期减少
+     * @param int $id
+     * @param int $day
+     * @param array $update 可选,更新order表其他字段
+     * @return int
+     * author:ZQ
+     * time:2022-08-18 15:27
+     */
+    public function decrementInDate(int $id, int $day, array $update = []): int
+    {
+        return  Order::query()->where('id', $id)->decrement('indate', $day, $update);
+    }
+
+    /**
+     * 返回数据集合
+     * @param array $ids
+     * @param array $column
+     * @return Collection
+     * author:ZQ
+     * time:2022-08-18 17:52
+     */
+    public function getCollectByIds(array $ids, array $column = ['*']): Collection
+    {
+        return Order::query()->whereIn('id',$ids)->noDeleteOrder()->get($column);
     }
 
     /**
@@ -44,6 +86,14 @@ class OrderMapper extends AbstractMapper
             $query->where('user_id', $params['user_id']);
         }
 
+        if (isset($params['status'])) {
+            $query->where('status', $params['status']);
+        }
+
+        if (isset($params['shop_name'])) {
+            $query->where('shop_name', 'like', "%{$params['shop_name']}%");
+        }
+
         if (isset($params['normalOrder']) && $params['normalOrder']) {
             $query->normalOrder();
         }
@@ -51,11 +101,23 @@ class OrderMapper extends AbstractMapper
         if (isset($params['noDeleteOrder']) && $params['noDeleteOrder']) {
             $query->noDeleteOrder();
         }
-        if (isset($params['created_at'], $params['created_at'])) {
+
+        //关联续费表
+        if (!empty($params['withRenew'])){
+            $query->with('usersRenew');
+        }
+
+        if (isset($params['created_at'][0], $params['created_at'][1])) {
             $query->whereBetween(
                 'created_at',
-                [strtotime($params['created_at'] . ' 00:00:00'), strtotime($params['created_at'] . ' 23:59:59')]
+                [strtotime($params['created_at'][0] . ' 00:00:00'), strtotime($params['created_at'][1] . ' 23:59:59')]
             );
+        }
+        if (isset($params['course_end_time'][0], $params['course_end_time'][1])) {
+            $startTime = $params['course_end_time'][0] . ' 00:00:00';
+            $endTime = $params['course_end_time'][1] . ' 23:59:59';
+            $query->whereRaw("created_at + (indate * 86400) > UNIX_TIMESTAMP('$startTime')");
+            $query->whereRaw("created_at + (indate * 86400) < UNIX_TIMESTAMP('$endTime')");
         }
         return $query;
     }

@@ -16,7 +16,6 @@ use App\System\Service\SystemDeptService;
 use App\System\Service\SystemDictDataService;
 use App\Users\Mapper\UsersMapper;
 use App\Users\Model\Users;
-use Hyperf\Contract\ContainerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
@@ -28,10 +27,6 @@ use Mine\Helper\LoginUser;
  */
 class UsersService extends AbstractService
 {
-
-    #[Inject]
-    protected ContainerInterface $container;
-
     #[Inject]
     protected SystemDictDataService $systemDictDataService;
 

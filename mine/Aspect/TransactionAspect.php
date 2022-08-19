@@ -44,7 +44,7 @@ class TransactionAspect extends AbstractAspect
         try {
             Db::beginTransaction();
             $number = 0;
-            $retry  = intval($transaction->retry);
+            $retry  = (int)$transaction->retry;
             do {
                 $result = $proceedingJoinPoint->process();
                 if (! is_null($result)) {

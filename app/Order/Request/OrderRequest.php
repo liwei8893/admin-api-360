@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @Author X.Mo<root@imoi.cn>
  * @Link   https://gitee.com/xmo/MineAdmin
  */
+
 namespace App\Order\Request;
 
 use Mine\MineFormRequest;
@@ -26,6 +27,14 @@ class OrderRequest extends MineFormRequest
         return [];
     }
 
+    public function changeEndDateRules(): array
+    {
+        return [
+            'ids' => 'required|array',
+            'renew' => 'required',
+            'type' => 'required',
+        ];
+    }
 
     /**
      * 新增数据验证规则
@@ -37,6 +46,7 @@ class OrderRequest extends MineFormRequest
 
         ];
     }
+
     /**
      * 更新数据验证规则
      * return array
