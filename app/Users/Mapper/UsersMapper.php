@@ -14,6 +14,7 @@ namespace App\Users\Mapper;
 
 use App\Users\Model\Users;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Model;
 use Mine\Abstracts\AbstractMapper;
 
 /**
@@ -41,6 +42,18 @@ class UsersMapper extends AbstractMapper
     public function existsByMobile($mobile): bool
     {
         return $this->model::where('mobile', $mobile)->exists();
+    }
+
+    /**
+     * 用手机号查询一条数据
+     * @param $mobile
+     * @return \Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|null
+     * author:ZQ
+     * time:2022-08-20 10:26
+     */
+    public function readByMobile($mobile): Model|Builder|null
+    {
+        return $this->model::query()->where('mobile', $mobile)->first();
     }
 
     /**

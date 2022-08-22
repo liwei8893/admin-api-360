@@ -16,6 +16,8 @@ use App\System\Service\SystemDeptService;
 use App\System\Service\SystemDictDataService;
 use App\Users\Mapper\UsersMapper;
 use App\Users\Model\Users;
+use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Model;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
@@ -121,6 +123,21 @@ class UsersService extends AbstractService
     {
         $params = $this->handleData($params);
         return parent::getPageList($params, $isScope);
+    }
+
+    /**
+     * 用手机号查询一条数据
+     * @param $mobile
+     * author:ZQ
+     * time:2022-08-20 10:35
+     */
+    public function readByMobile($mobile)
+    {
+        $model =  $this->mapper->readByMobile($mobile);
+        if (!$model){
+            throw new NormalStatusException('此手机号用户不存在!');
+        }
+        return $model;
     }
 
     /**

@@ -53,4 +53,46 @@ class OrderController extends MineController
     {
         return $this->service->changeEndDate($request->all()) ? $this->success() : $this->error();
     }
+
+    /**
+     * @param \App\Order\Request\OrderRequest $request
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * author:ZQ
+     * time:2022-08-21 14:33
+     */
+    #[PostMapping("changeOrderToUser"), Permission("order:changeOrderToUser"), OperationLog('异动转人')]
+    public function changeOrderToUser(OrderRequest $request): ResponseInterface
+    {
+        return $this->service->changeOrderToUser($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * @param \App\Order\Request\OrderRequest $request
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * author:ZQ
+     * time:2022-08-21 14:33
+     */
+    #[PostMapping("changeOrderToCourse"), Permission("order:changeOrderToCourse"), OperationLog('异动转班')]
+    public function changeOrderToCourse(OrderRequest $request): ResponseInterface
+    {
+        return $this->service->changeOrderToCourse($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * @param \App\Order\Request\OrderRequest $request
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * author:ZQ
+     * time:2022-08-21 14:34
+     */
+    #[PostMapping("changeOrderToRefund"), Permission("order:changeOrderToRefund"), OperationLog('异动退费')]
+    public function changeOrderToRefund(OrderRequest $request): ResponseInterface
+    {
+        return $this->service->changeOrderToRefund($request->all()) ? $this->success() : $this->error();
+    }
 }

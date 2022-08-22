@@ -10,12 +10,11 @@ declare(strict_types=1);
  * @Link   https://gitee.com/xmo/MineAdmin
  */
 
-namespace App\Users\Controller;
+namespace App\Course\Controller\Basis;
 
-use App\Users\Dto\UserExportDto;
-use App\Users\Dto\UserImportDto;
-use App\Users\Request\UsersRequest;
-use App\Users\Service\UsersService;
+use App\Course\Dto\CourseBasisDto;
+use App\Course\Service\CourseBasisService;
+use App\Course\Request\CourseBasisRequest;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\DeleteMapping;
@@ -29,18 +28,18 @@ use Mine\MineController;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * 用户表控制器
- * Class UsersController
+ * 课时详情表控制器
+ * Class CourseBasisController
  */
-#[Controller(prefix: "users/list"), Auth]
-class UsersController extends MineController
+#[Controller(prefix: "course/basis"), Auth]
+class CourseBasisController extends MineController
 {
     /**
      * 业务处理服务
-     * UsersService
+     * CourseBasisService
      */
     #[Inject]
-    protected UsersService $service;
+    protected CourseBasisService $service;
 
 
     /**
@@ -49,7 +48,7 @@ class UsersController extends MineController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("index"), Permission("users:list:index")]
+    #[GetMapping("index"), Permission("course:basis:index")]
     public function index(): ResponseInterface
     {
         return $this->success($this->service->getPageList($this->request->all()));
@@ -61,7 +60,7 @@ class UsersController extends MineController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("recycle"), Permission("users:list:recycle")]
+    #[GetMapping("recycle"), Permission("course:basis:recycle")]
     public function recycle(): ResponseInterface
     {
         return $this->success($this->service->getPageListByRecycle($this->request->all()));
@@ -73,7 +72,7 @@ class UsersController extends MineController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[DeleteMapping("realDelete"), Permission("users:list:realDelete"), OperationLog]
+    #[DeleteMapping("realDelete"), Permission("course:basis:realDelete"), OperationLog]
     public function realDelete(): ResponseInterface
     {
         return $this->service->realDelete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
@@ -85,7 +84,7 @@ class UsersController extends MineController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PutMapping("recovery"), Permission("users:list:recovery"), OperationLog]
+    #[PutMapping("recovery"), Permission("course:basis:recovery"), OperationLog]
     public function recovery(): ResponseInterface
     {
         return $this->service->recovery((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
@@ -93,44 +92,44 @@ class UsersController extends MineController
 
     /**
      * 新增
-     * @param \App\Users\Request\UsersRequest $request
+     * @param {CREATE_REQUEST} $request
      * @return ResponseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PostMapping("save"), Permission("users:list:save"), OperationLog]
-    public function save(UsersRequest $request): ResponseInterface
+    #[PostMapping("save"), Permission("course:basis:save"), OperationLog]
+    public function save(CourseBasisRequest $request): ResponseInterface
     {
         return $this->success(['id' => $this->service->save($request->all())]);
     }
 
-
     /**
      * 更新
      * @param int $id
-     * @param \App\Users\Request\UsersRequest $request
+     * @param {UPDATE_REQUEST} $request
      * @return ResponseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PutMapping("update/{id}"), Permission("users:list:update"), OperationLog]
-    public function update(int $id, UsersRequest $request): ResponseInterface
+    #[PutMapping("update/{id}"), Permission("course:basis:update"), OperationLog]
+    public function update(int $id, CourseBasisRequest $request): ResponseInterface
     {
         return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
     }
 
     /**
-     * 重置用户密码
-     * @param $id
-     * author:ZQ
-     * time:2022-06-01 15:23
+     * 批量更新
+     * @param \App\Course\Request\CourseBasisRequest $request
+     * @return \Psr\Http\Message\ResponseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
+     * author:ZQ
+     * time:2022-08-21 17:56
      */
-    #[PutMapping('initUserPassword/{id}'), Permission("users:list:initUserPassword"), OperationLog]
-    public function initUserPassword(int $id): ResponseInterface
+    #[PostMapping("batchUpdate"), Permission("course:basis:batchUpdate"), OperationLog]
+    public function batchUpdate(CourseBasisRequest $request): ResponseInterface
     {
-        return $this->service->initUserPassword($id) ? $this->success() : $this->error();
+        return $this->service->batchUpdate($request->all()) ? $this->success() : $this->error();
     }
 
     /**
@@ -140,25 +139,10 @@ class UsersController extends MineController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("read/{id}"), Permission("users:list:read")]
+    #[GetMapping("read/{id}"), Permission("course:basis:read")]
     public function read(int $id): ResponseInterface
     {
         return $this->success($this->service->read($id));
-    }
-
-    /**
-     * 用手机号查询一条数据
-     * @param int $mobile
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * author:ZQ
-     * time:2022-08-20 10:35
-     */
-    #[GetMapping("readByMobile/{mobile}"), Permission("users:list:read")]
-    public function readByMobile(int $mobile): ResponseInterface
-    {
-        return $this->success($this->service->readByMobile($mobile));
     }
 
     /**
@@ -167,7 +151,7 @@ class UsersController extends MineController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[DeleteMapping("delete"), Permission("users:list:delete"), OperationLog]
+    #[DeleteMapping("delete"), Permission("course:basis:delete"), OperationLog]
     public function delete(): ResponseInterface
     {
         return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
@@ -179,56 +163,31 @@ class UsersController extends MineController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PutMapping("changeStatus"), Permission("users:list:update"), OperationLog]
+    #[PutMapping("changeStatus"), Permission("course:basis:update"), OperationLog]
     public function changeStatus(): ResponseInterface
     {
         return $this->service->changeStatus(
-            (int)$this->request->input('user_name'),
+            (int)$this->request->input('id'),
             (string)$this->request->input('statusValue'),
             (string)$this->request->input('statusName')
         ) ? $this->success() : $this->error();
     }
 
     /**
-     * 数字运算操作
+     * 更改数据状态
      * @return ResponseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PutMapping("numberOperation"), Permission("users:list:update"), OperationLog]
-    public function numberOperation(): ResponseInterface
+    #[PutMapping("changeCourseStatus"), Permission("course:basis:update"), OperationLog]
+    public function changeCourseStatus(): ResponseInterface
     {
-        return $this->service->numberOperation(
-            (int)$this->request->input('user_name'),
-            (string)$this->request->input('numberName'),
-            (int)$this->request->input('numberValue', 1),
+        return $this->service->changeCourseStatus(
+            (int)$this->request->input('id'),
+            (string)$this->request->input('value'),
         ) ? $this->success() : $this->error();
     }
 
-    /**
-     * 数据导入
-     * @return ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface|\PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
-    #[PostMapping("import"), Permission("users:list:import")]
-    public function import(): ResponseInterface
-    {
-        return $this->service->import(UserImportDto::class) ? $this->success() : $this->error();
-    }
-
-    /**
-     * 下载导入模板
-     * @return ResponseInterface
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    #[PostMapping("downloadTemplate")]
-    public function downloadTemplate(): ResponseInterface
-    {
-        return (new \Mine\MineCollection)->export(UserImportDto::class, '用户导入模板下载', []);
-    }
 
     /**
      * 数据导出
@@ -237,10 +196,10 @@ class UsersController extends MineController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PostMapping("export"), Permission("users:list:export"), OperationLog]
+    #[PostMapping("export"), Permission("course:basis:export"), OperationLog]
     public function export(): ResponseInterface
     {
-        return $this->service->export($this->request->all(), UserExportDto::class, '用户列表');
+        return $this->service->export($this->request->all(), CourseBasisDto::class, '导出数据列表');
     }
 
 }

@@ -61,6 +61,19 @@ class OrderMapper extends AbstractMapper
     }
 
     /**
+     * 软删除
+     * @param $id
+     * @return int
+     * author:ZQ
+     * time:2022-08-21 11:50
+     */
+    public function softDelete($id): int
+    {
+        return $this->model::query()->where('id',$id)
+            ->update(['deleted_at' =>time()]);
+    }
+
+    /**
      * 返回数据集合
      * @param array $ids
      * @param array $column

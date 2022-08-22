@@ -13,9 +13,9 @@ declare(strict_types=1);
 namespace App\Order\Service;
 
 use App\Order\Mapper\OrderMapper;
+use App\Users\Service\UsersService;
 use Carbon\Carbon;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Utils\Collection;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
@@ -34,7 +34,14 @@ class OrderService extends AbstractService
     #[inject]
     public UsersRenewService $usersRenewService;
 
+    #[inject]
+    public UsersService $usersService;
+
+    #[inject]
+    public OrderTransactionService $orderTransactionService;
+
     /**
+     * 批量修改有效期
      * @param $params
      * author:ZQ
      * time:2022-08-18 15:35
@@ -113,6 +120,94 @@ class OrderService extends AbstractService
             'startDate' => $item['course_end_time'],
             'endDate' => $params['date'],
         ];
-        return $this->usersRenewService->recordUserRenew(array_merge($item,$params,$data));
+        return $this->usersRenewService->recordUserRenew(array_merge($item, $params, $data));
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     * author:ZQ
+     * time:2022-08-21 11:26
+     */
+    #[Transaction]
+    public function changeOrderToUser($data): bool
+    {
+        //oldUserId newUserId orderId
+        // 复制模型修改备注
+        $orderModel = $this->mapper->read($data['orderId']);
+        if (!$orderModel) {
+            throw new NormalStatusException('订单错误!');
+        }
+        $data['remark'] = "从{$data['oldUserId']}转入";
+        $copyOrderModel = $orderModel->replicate()->fill([
+            'remark' => $data['remark'],
+            'created_at' => $orderModel->created_at,
+            'updated_at' => time(),
+            'user_id' => $data['newUserId'],
+        ]);
+        $copyOrderModel->timestamps = false;
+        $copyOrderModel->save();
+        $newOrderId = $copyOrderModel->id;
+        // 软删除老订单数据
+        if (!$this->mapper->softDelete($orderModel->id)) {
+            throw new NormalStatusException('订单更新失败,请稍后重试!');
+        }
+        // 写日志
+        $logRecord = [
+            'oldUserId' => $data['oldUserId'],
+            'newUserId' => $data['newUserId'],
+            'oldOrderId' => $data['orderId'],
+            'remark' => $data['remark'],
+            'newOrderId' => $newOrderId
+        ];
+        if (!$this->orderTransactionService->OrderToUserRecord($logRecord)) {
+            throw new NormalStatusException('日志写入错误,操作已回滚,请稍后重试!');
+        }
+        return true;
+    }
+
+    /**
+     * 转班
+     * author:ZQ
+     * time:2022-08-20 11:46
+     */
+    #[Transaction]
+    public function changeOrderToCourse($data)
+    {
+        $orderModel = $this->mapper->read($data['orderId']);
+        if (!$orderModel) {
+            throw new NormalStatusException('订单错误!');
+        }
+        return true;
+    }
+
+    /**
+     * 退费
+     * author:ZQ
+     * time:2022-08-20 11:46
+     */
+    #[Transaction]
+    public function changeOrderToRefund($data)
+    {
+        $orderModel = $this->mapper->read($data['orderId']);
+        if (!$orderModel) {
+            throw new NormalStatusException('订单错误!');
+        }
+        $orderModel->status = 2;
+        $orderModel->refund_time = time();
+        if (!$orderModel->save()){
+            throw new NormalStatusException('退费失败!');
+        }
+        // 写日志
+        $logRecord = [
+            'order_id' => $data['orderId'],
+            'user_id' => $data['userId'],
+            'money' => $data['money'],
+            'remark' => $data['remark'],
+        ];
+        if (!$this->orderTransactionService->OrderToRefundRecord($logRecord)) {
+            throw new NormalStatusException('日志写入错误,操作已回滚,请稍后重试!');
+        }
+        return true;
     }
 }

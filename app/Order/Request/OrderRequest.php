@@ -36,6 +36,25 @@ class OrderRequest extends MineFormRequest
         ];
     }
 
+    public function changeOrderToUserRules(): array
+    {
+        return [
+            'oldUserId' => 'required',
+            'newUserId' => 'required',
+            'orderId' => 'required',
+        ];
+    }
+
+    public function changeOrderToRefundRules(): array
+    {
+        return [
+            'orderId' => 'required',
+            'userId' => 'required',
+            'money' => 'required',
+            'remark' => 'required',
+        ];
+    }
+
     /**
      * 新增数据验证规则
      * return array

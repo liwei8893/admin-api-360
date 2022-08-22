@@ -26,7 +26,7 @@ class UsersRenew extends MineModel
     public $timestamps = false;
     /**
      * The table associated with the model.
-     *
+     * 续费表
      * @var string
      */
     protected $table = 'users_renew';
