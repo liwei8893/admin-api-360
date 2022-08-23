@@ -9,8 +9,12 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
+use Mine\Middlewares\CorsMiddleware;
+
 return [
     'http' => [
+        CorsMiddleware::class,
         \Hyperf\Validation\Middleware\ValidationMiddleware::class,
         \Mine\Middlewares\CheckModuleMiddleware::class
     ],
