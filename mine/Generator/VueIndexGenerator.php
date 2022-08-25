@@ -63,8 +63,8 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
         $this->columns = SettingGenerateColumns::query()
             ->where('table_id', $model->id)->orderByDesc('sort')
             ->get([
-                'column_name', 'column_comment', 'allow_roles', 'options',
-                'is_query', 'is_pk', 'is_list', 'view_type', 'dict_type',
+                'column_name', 'column_comment', 'allow_roles', 'options', 'is_required', 'is_insert',
+                'is_edit', 'is_query', 'is_pk', 'is_list', 'view_type', 'dict_type',
             ]);
 
         return $this->placeholderReplace();
@@ -179,6 +179,8 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
         $options['rowSelection'] = [ 'showCheckedAll' => true ];
         $options['searchLabelWidth'] = "'75px'";
         $options['pk'] = "'".$this->getPk()."'";
+        $options['operationColumn'] = true;
+        $options['operationWidth'] = 160;
         $options['api'] = $this->getBusinessEnName() . '.getList';
         if (Str::contains($this->model->generate_menus, 'recycle')) {
             $options['recycleApi'] = $this->getBusinessEnName() . '.getRecycleList';
@@ -210,6 +212,24 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
                     'auth' => "['".$this->getCode().":recovery']"
                 ];
             }
+        }
+        $requestRoute = Str::lower($this->model->module_name) . '/' . $this->getShortBusinessName();
+        // 导入
+        if (Str::contains($this->model->generate_menus, 'import')) {
+            $options['import'] = [
+                'show' => true,
+                'url' => "'".$requestRoute . '/import'."'",
+                'templateUrl' => "'".$requestRoute . '/downloadTemplate'."'",
+                'auth' => "['".$this->getCode().":import']"
+            ];
+        }
+        // 导出
+        if (Str::contains($this->model->generate_menus, 'export')) {
+            $options['export'] = [
+                'show' => true,
+                'url' => "'".$requestRoute . '/export'."'",
+                'auth' => "['".$this->getCode().":export']"
+            ];
         }
         return 'const crud = reactive(' . $this->jsonFormat($options, true) . ')';
     }
@@ -408,7 +428,7 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
     protected function jsonFormat(array $data, bool $removeValueQuotes = false): string
     {
         $data = str_replace('    ', '  ', json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
-        $data = str_replace(['"true"', '"false"'], [ true, false ], $data);
+        $data = str_replace(['"true"', '"false"', "\\"], [ true, false, ''], $data);
         $data = preg_replace('/(\s+)\"(.+)\":/', "\\1\\2:", $data);
         if ($removeValueQuotes) {
             $data = preg_replace('/(:\s)\"(.+)\"/', "\\1\\2", $data);
