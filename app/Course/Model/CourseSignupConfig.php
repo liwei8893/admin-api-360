@@ -40,7 +40,7 @@ class CourseSignupConfig extends MineModel
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'price' => 'integer', 'day' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected $casts = ['id' => 'integer', 'price' => 'integer', 'day' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function CourseSignup(): \Hyperf\Database\Model\Relations\BelongsToMany
     {

@@ -35,10 +35,6 @@ class CourseSignupConfigRequest extends MineFormRequest
     public function saveRules(): array
     {
         return [
-            'title' => 'required',
-            'price' => 'required',
-            'day' => 'required',
-            'course_ids' => 'required',
         ];
     }
 
@@ -71,7 +67,6 @@ class CourseSignupConfigRequest extends MineFormRequest
             'created_at' => '',
             'updated_at' => '',
             'deleted_at' => '',
-
         ];
     }
 

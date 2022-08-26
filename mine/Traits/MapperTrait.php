@@ -13,6 +13,7 @@ namespace Mine\Traits;
 
 use Hyperf\Contract\LengthAwarePaginatorInterface;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
 use Mine\Annotation\Transaction;
 use Mine\MineCollection;
@@ -34,6 +35,18 @@ trait MapperTrait
     public function getList(?array $params, bool $isScope = true): array
     {
         return $this->listQuerySetting($params, $isScope)->get()->toArray();
+    }
+
+    /**
+     * @param array|null $params
+     * @param bool $isScope
+     * @return \Hyperf\Database\Model\Collection|array
+     * author:ZQ
+     * time:2022-08-26 15:31
+     */
+    public function getListCollect(?array $params, bool $isScope = true): Collection|array
+    {
+        return $this->listQuerySetting($params, $isScope)->get();
     }
 
     /**
@@ -203,6 +216,17 @@ trait MapperTrait
         $this->filterExecuteAttributes($data, $this->getModel()->incrementing);
         $model = $this->model::create($data);
         return $model->{$model->getKeyName()};
+    }
+
+    /**
+     * 新增数据
+     * @param array $data
+     * @return \Hyperf\Database\Model\Model|\Mine\MineModel
+     */
+    public function saveModel(array $data): MineModel|Model
+    {
+        $this->filterExecuteAttributes($data, $this->getModel()->incrementing);
+        return $this->model::create($data);
     }
 
     /**

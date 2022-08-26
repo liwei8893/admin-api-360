@@ -144,19 +144,20 @@ class Users extends MineModel
     public function grades(): \Hyperf\Database\Model\Relations\HasOne
     {
         return $this->hasOne(SystemDictData::class, 'value', 'grade_id')
-            ->where('type_id', 14)->where('status', MineModel::ENABLE);
+            ->where('code', 'grade')->where('status', MineModel::ENABLE);
     }
 
     public function vipType()
     {
         return $this->hasOne(Order::class, 'user_id', 'id')
-            ->select(['user_id'])
-            ->selectRaw('max(CASE
-           WHEN shop_id = ? THEN "1"
-           WHEN shop_id = ? THEN "2"
-           WHEN shop_id = ? THEN "3"
-           ELSE "0" END) AS vipType', [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME])
-            ->normalOrder()->isNotExpire()->groupBy('user_id');
+            ->select(['user_id', 'id'])
+            ->selectRaw('CASE
+           WHEN shop_id = ? THEN 1
+           WHEN shop_id = ? THEN 2
+           WHEN shop_id = ? THEN 3
+           ELSE 0 END AS vipType', [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME])
+            ->selectRaw("DATE_ADD(FROM_UNIXTIME(created_at, '%Y-%m-%d'), INTERVAL indate DAY) AS endDate")
+            ->NormalOrder()->IsNotExpire()->orderBy('vipType', 'desc')->limit(1);
     }
 
     /**

@@ -120,6 +120,15 @@ class OrderMapper extends AbstractMapper
             $query->with('usersRenew');
         }
 
+        // 关联订单年级
+        if (!empty($params['withOrderGrade'])){
+            $query->with('orderGrade');
+        }
+        // 关联订单科目
+        if (!empty($params['withOrderSubject'])){
+            $query->with('orderSubject');
+        }
+
         if (isset($params['created_at'][0], $params['created_at'][1])) {
             $query->whereBetween(
                 'created_at',

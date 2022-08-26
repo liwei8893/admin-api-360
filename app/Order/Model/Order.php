@@ -3,7 +3,9 @@ declare (strict_types=1);
 
 namespace App\Order\Model;
 
+use App\System\Model\SystemDictData;
 use App\Users\Model\Users;
+use Hyperf\Database\Model\Relations\BelongsToMany;
 use Mine\MineModel;
 
 class Order extends MineModel
@@ -56,6 +58,31 @@ class Order extends MineModel
     {
         return $this->hasMany(UsersRenew::class,'order_id', 'id');
     }
+
+    /**
+     * 远程关联订单科目
+     * author:ZQ
+     * time:2022-08-24 11:09
+     */
+    public function orderSubject(): BelongsToMany
+    {
+        return $this->belongsToMany(SystemDictData::class, 'order_subject', 'order_id', 'subject_id','id','value')
+            ->select(['id','label as title', 'value as key'])
+            ->where('code', 'subject')->where('status', MineModel::ENABLE);
+    }
+
+    /**
+     * 远程关联订单年级
+     * author:ZQ
+     * time:2022-08-24 13:37
+     */
+    public function orderGrade(): BelongsToMany
+    {
+        return $this->belongsToMany(SystemDictData::class, 'order_grade', 'order_id', 'grade_id','id','value')
+            ->select(['id','label as title', 'value as key'])
+            ->where('code', 'grade')->where('status', MineModel::ENABLE);
+    }
+
 
     /**
      * 局部作用域,查询订单状态正常的订单
