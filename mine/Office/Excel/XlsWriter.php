@@ -13,8 +13,7 @@ declare(strict_types=1);
 
 namespace Mine\Office\Excel;
 
-use Hyperf\HttpMessage\Stream\SwooleStream;
-use MathPHP\Probability\Distribution\Continuous\F;
+use Hyperf\Utils\Arr;
 use Mine\Exception\MineException;
 use Mine\MineResponse;
 use Mine\Office\ExcelPropertyInterface;
@@ -38,8 +37,8 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         $request = container()->get(\Mine\MineRequest::class);
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $tempFileName = 'import_'.time().'.'.$file->getExtension();
-            $tempFilePath = BASE_PATH.'/runtime/'.$tempFileName;
+            $tempFileName = 'import_' . time() . '.' . $file->getExtension();
+            $tempFilePath = BASE_PATH . '/runtime/' . $tempFileName;
             file_put_contents($tempFilePath, $file->getStream()->getContents());
             $xlsxObject = new \Vtiful\Kernel\Excel(['path' => BASE_PATH . '/runtime/']);
             $data = $xlsxObject->openFile($tempFileName)->openSheet()->getSheetData();
@@ -49,7 +48,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             foreach ($data as $item) {
                 $tmp = [];
                 foreach ($item as $key => $value) {
-                    $tmp[$this->property[$key]['name']] = (string) $value;
+                    $tmp[$this->property[$key]['name']] = (string)$value;
                 }
                 $importData[] = $tmp;
             }
@@ -92,16 +91,16 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             'right' => Format::FORMAT_ALIGN_RIGHT,
         ];
 
-        $columnName  = [];
+        $columnName = [];
         $columnField = [];
         foreach ($this->property as $item) {
-            $columnName[]  = $item['value'];
+            $columnName[] = $item['value'];
             $columnField[] = $item['name'];
         }
 
         $tempFileName = 'export_' . time() . '.xlsx';
         $xlsxObject = new \Vtiful\Kernel\Excel(['path' => BASE_PATH . '/runtime/']);
-        $fileObject = $xlsxObject->fileName($tempFileName)->header($columnName);
+        $fileObject = $xlsxObject->constMemory($tempFileName)->header($columnName);
         $columnFormat = new Format($fileObject->getHandle());
         $rowFormat = new Format($fileObject->getHandle());
 
@@ -111,7 +110,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             $fileObject->setColumn(
                 sprintf('%s:%s', $columnNumber, $columnNumber),
                 $this->property[$index]['width'] ?? mb_strlen($columnName[$index]) * 5,
-                $columnFormat->align($this->property[$index]['align'] ? $aligns[$this->property[$index]['align']] : $aligns['left'])
+                $columnFormat->align($this->property[$index]['align'] ? $aligns[$this->property[$index]['align']] : $aligns['center'])
 //                    ->background($this->property[$index]['bgColor'] ?? Format::COLOR_WHITE)
 //                    ->border(Format::BORDER_THIN)
                     ->fontColor($this->property[$index]['color'] ?? Format::COLOR_BLACK)
@@ -133,12 +132,12 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         foreach ($data as $item) {
             $yield = [];
             foreach ($this->property as $property) {
-                foreach ($item as $name => $value) {
-                    if ($property['name'] == $name) {
-                        $yield[] = $value;
-                        break;
-                    }
+                if (!empty($property['customField'])) {
+                    $value = Arr::get($item, $property['customField']);
+                } else {
+                    $value = Arr::get($item, $property['name']);
                 }
+                $yield[] = $value;
             }
             $exportData[] = $yield;
         }
@@ -149,8 +148,8 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         $response->download($filePath, $filename);
 
         ob_start();
-        if ( copy($filePath, 'php://output') === false) {
-            throw new MineException('导出数据失败',  500);
+        if (copy($filePath, 'php://output') === false) {
+            throw new MineException('导出数据失败', 500);
         }
         $res = $this->downloadExcel($filename, ob_get_clean());
 

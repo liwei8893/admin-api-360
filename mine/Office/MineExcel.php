@@ -74,6 +74,7 @@ abstract class MineExcel
             $this->property[ $mate[self::ANNOTATION_NAME]->index ] = [
                 'name'  => $name,
                 'value' => $mate[self::ANNOTATION_NAME]->value,
+                'customField' => $mate[self::ANNOTATION_NAME]->customField ?? null,
                 'width' => $mate[self::ANNOTATION_NAME]->width ?? null,
                 'align' => $mate[self::ANNOTATION_NAME]->align ?? null,
                 'headColor' => $mate[self::ANNOTATION_NAME]->headColor ?? null,
@@ -101,6 +102,7 @@ abstract class MineExcel
             ->withHeader('content-description', 'File Transfer')
             ->withHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader('content-disposition', "attachment; filename=".rawurlencode($filename))
+            ->withHeader("Access-Control-Expose-Headers","Content-Disposition")
             ->withHeader('content-transfer-encoding', 'binary')
             ->withHeader('pragma', 'public')
             ->withBody(new SwooleStream($content));

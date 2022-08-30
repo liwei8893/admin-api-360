@@ -36,6 +36,12 @@ class ExcelProperty extends AbstractAnnotation
     public int $index;
 
     /**
+     * 自定义字段,支持点语法
+     * @var string
+     */
+    public string $customField;
+
+    /**
      * 宽度
      * @var int
      */
