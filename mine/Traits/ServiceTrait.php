@@ -267,7 +267,7 @@ trait ServiceTrait
      */
     public function changeStatus(int $id, string $value, string $filed = 'status'): bool
     {
-        return (int)$value === MineModel::ENABLE ? $this->mapper->enable([ $id ], $filed) : $this->mapper->disable([ $id ], $filed);
+        return (int)$value === MineModel::ENABLE ? $this->mapper->enable([$id], $filed) : $this->mapper->disable([$id], $filed);
     }
 
     /**
@@ -280,6 +280,17 @@ trait ServiceTrait
     public function numberOperation(int $id, string $field, int $value): bool
     {
         return $this->mapper->numberOperation($id, $field, $value);
+    }
+
+    /**
+     * 需要处理导出数据时,重写函数
+     * @param array $data
+     * @return void
+     * author:ZQ
+     * time:2022-08-30 15:14
+     */
+    protected function handleExportData(array &$data): void
+    {
     }
 
     /**
@@ -301,8 +312,9 @@ trait ServiceTrait
         if (empty($filename)) {
             $filename = $this->mapper->getModel()->getTable();
         }
-
-        return (new MineCollection())->export($dto, $filename, $this->mapper->getList($params));
+        $data = $this->mapper->getList($params);
+        $this->handleExportData($data);
+        return (new MineCollection())->export($dto, $filename, $data);
     }
 
     /**
@@ -334,11 +346,11 @@ trait ServiceTrait
         $page = 1;
 
         if ($params[$pageName] ?? false) {
-            $page = (int) $params[$pageName];
+            $page = (int)$params[$pageName];
         }
 
         if ($params['pageSize'] ?? false) {
-            $pageSize = (int) $params['pageSize'];
+            $pageSize = (int)$params['pageSize'];
         }
 
         $data = $collect->forPage($page, $pageSize)->toArray();
