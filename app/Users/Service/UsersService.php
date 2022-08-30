@@ -19,10 +19,13 @@ use App\Users\Model\Users;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Utils\Str;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\LoginUser;
+use Mine\MineCollection;
+use Mine\MineResponse;
 
 /**
  * 用户表服务类
@@ -49,6 +52,67 @@ class UsersService extends AbstractService
 
 
     /**
+     * 更换手机号
+     * @param $params
+     * @return bool
+     * author:ZQ
+     * time:2022-08-28 15:03
+     */
+    public function changeMobile($params): bool
+    {
+        $newUserModel = $this->mapper->readByMobile($params['mobile']);
+        if ($newUserModel) {
+            throw new NormalStatusException('新手机号已存在,请手动操作!');
+        }
+        // 更换手机号
+        $userModel = $this->mapper->read($params['userId']);
+        if (!$userModel) {
+            throw new NormalStatusException('用户不存在!');
+        }
+        $userModel->mobile = $params['mobile'];
+        $userModel->user_pass = $this->mapper->getInitPassword($params['mobile']);
+        return $userModel->save();
+    }
+
+    /**
+     * 批量更换平台
+     * @param $params
+     * @return array
+     * author:ZQ
+     * time:2022-08-28 13:55
+     */
+    public function batchChangePlatform($params): array
+    {
+        $logInfo = [];
+        $mobilesArr = array_unique($params['mobiles']);
+        foreach ($mobilesArr as $mobile) {
+            // 查询用户
+            $userModel = $this->mapper->readByMobile($mobile);
+            if (!$userModel) {
+                $logInfo[] = ['mobile' => $mobile, 'info' => '未查询到用户'];
+                continue;
+            }
+            // 查询平台是否一致
+            if (Str::upper($params['platform']) === Str::upper($userModel['platform'])) {
+                $logInfo[] = ['mobile' => $mobile, 'info' => '平台一致不需要变更'];
+                continue;
+            }
+            // 更换平台编号
+            $platformData = $this->userSalePlatformService->getPlatformNum($params['platform']);
+            $userModel->platform = $platformData['platform'];
+            $userModel->sale_platform = $platformData['sale_platform'];
+            $userModel->old_platform = $platformData['old_platform'];
+            $status = $userModel->save();
+            if (!$status) {
+                $logInfo[] = ['mobile' => $mobile, 'info' => '失败'];
+            }
+            $logInfo[] = ['mobile' => $mobile, 'info' => '成功'];
+        }
+        return $logInfo;
+    }
+
+
+    /**
      * 创建用户
      * @param $data
      * @return int
@@ -62,6 +126,30 @@ class UsersService extends AbstractService
         }
         $data = $this->handleSaveData($data);
         return $this->mapper->save($data);
+    }
+
+    /**
+     * 更新用户信息
+     * @param int $id
+     * @param array $data
+     * @return bool
+     * author:ZQ
+     * time:2022-08-28 15:48
+     */
+    public function update(int $id, array $data): bool
+    {
+        if (!empty($data['mobile'])) {
+            unset($data['mobile']);
+        }
+        $userModel = $this->mapper->read($id);
+        if (!$userModel) {
+            throw new NormalStatusException('用户不存在!');
+        }
+        // 更换平台
+        if ($data['platform'] !== $userModel->platform) {
+            $data = $this->userSalePlatformService->withPlatformNum($data);
+        }
+        return $this->mapper->update($id, $data);
     }
 
 
@@ -133,8 +221,8 @@ class UsersService extends AbstractService
      */
     public function readByMobile($mobile)
     {
-        $model =  $this->mapper->readByMobile($mobile);
-        if (!$model){
+        $model = $this->mapper->readByMobile($mobile);
+        if (!$model) {
             throw new NormalStatusException('此手机号用户不存在!');
         }
         return $model;
@@ -195,6 +283,4 @@ class UsersService extends AbstractService
         };
         return parent::import($dto, $closure);
     }
-
-
 }

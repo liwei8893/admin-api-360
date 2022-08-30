@@ -4,6 +4,7 @@ namespace App\Users\Service;
 
 use App\Users\Mapper\UserSalePlatformMapper;
 use Hyperf\Di\Annotation\Inject;
+use JetBrains\PhpStorm\ArrayShape;
 use Mine\Abstracts\AbstractService;
 
 class UserSalePlatformService extends AbstractService
@@ -32,5 +33,18 @@ class UserSalePlatformService extends AbstractService
             }
         }
         return $data;
+    }
+
+    /**
+     * 获取平台编号
+     * @param string $platform
+     * @return array
+     * author:ZQ
+     * time:2022-08-28 13:41
+     */
+    #[ArrayShape(['platform'=>'string','sale_platform'=>'string','old_platform'=>'string'])]
+    public function getPlatformNum(string $platform): array
+    {
+        return $this->mapper->getPlatformNum($platform);
     }
 }

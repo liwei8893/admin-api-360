@@ -176,11 +176,19 @@ class UsersMapper extends AbstractMapper
         }
 
         if (!empty($params['withGrades'])) {
-            $query->with(['grades:value,label']);
+            $query->with(['grades:label,value']);
         }
 
         if (!empty($params['withVipType'])) {
             $query->with(['vipType']);
+        }
+
+        if (!empty($params['withStatus'])) {
+            $query->with(['status']);
+        }
+
+        if (!empty($params['withUserType'])) {
+            $query->with(['userType']);
         }
         return $query;
     }

@@ -21,16 +21,16 @@ class UserExportDto implements MineModelExcel
     #[ExcelProperty(value: "平台", index: 3)]
     public string $platform;
 
-    #[ExcelProperty(value: "年级", index: 4)]
-    public string $grade;
+    #[ExcelProperty(value: "年级", index: 4, customField: 'grades.label')]
+    public string $grades;
 
-    #[ExcelProperty(value: "会员类型", index: 5)]
+    #[ExcelProperty(value: "会员类型", index: 5, customField: 'vip_type.vipName')]
     public string $vipType;
 
-    #[ExcelProperty(value: "账号类型", index: 6)]
+    #[ExcelProperty(value: "账号类型", index: 6,customField: 'user_type.label')]
     public string $user_type;
 
-    #[ExcelProperty(value: "账号状态", index: 7)]
+    #[ExcelProperty(value: "账号状态", index: 7,customField: 'status.label')]
     public string $status;
 
     #[ExcelProperty(value: "创建时间", index: 8)]

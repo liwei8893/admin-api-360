@@ -3,6 +3,7 @@
 namespace App\Users\Mapper;
 
 use App\Users\Model\UserSalePlatform;
+use JetBrains\PhpStorm\ArrayShape;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Exception\NormalStatusException;
 
@@ -14,6 +15,14 @@ class UserSalePlatformMapper extends AbstractMapper
         $this->model = UserSalePlatform::class;
     }
 
+    /**
+     * 获取平台编号
+     * @param string $platform
+     * @return array
+     * author:ZQ
+     * time:2022-08-28 13:47
+     */
+    #[ArrayShape(['platform'=>'string','sale_platform'=>'string','old_platform'=>'string'])]
     public function getPlatformNum(string $platform): array
     {
         if (!$platform) {
