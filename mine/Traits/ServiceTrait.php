@@ -12,6 +12,7 @@
 namespace Mine\Traits;
 
 use Hyperf\Database\Model\Collection;
+use Hyperf\Utils\Arr;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 use Mine\MineCollection;
@@ -315,6 +316,48 @@ trait ServiceTrait
         $data = $this->mapper->getList($params);
         $this->handleExportData($data);
         return (new MineCollection())->export($dto, $filename, $data);
+    }
+
+
+    /**
+     * @param array $params
+     * @param string|null $dto
+     * @param string|null $filename
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * author:ZQ
+     * time:2022-08-30 17:45
+     */
+    public function bigExport(array $params, ?string $dto, string $filename = null): ResponseInterface
+    {
+        if (empty($dto)) {
+            return container()->get(MineResponse::class)->error('导出未指定DTO');
+        }
+        if (empty($filename)) {
+            $filename = $this->mapper->getModel()->getTable();
+        }
+        $closure = function ($fileObject, $pro) use ($params) {
+            $rowIndex = 1;
+            $this->mapper->getListChunk($params, function ($items) use (&$rowIndex,$fileObject, $pro) {
+                foreach ($items as $item) {
+                    $item = $item->toArray();
+                    $this->handleExportData($item);
+                    $columnIndex = 0;
+                    foreach ($pro as $property) {
+                        if (!empty($property['customField'])) {
+                            $value = Arr::get($item, $property['customField']);
+                        } else {
+                            $value = Arr::get($item, $property['name']);
+                        }
+                        $fileObject->insertText($rowIndex, $columnIndex, $value);
+                        $columnIndex++;
+                    }
+                    $rowIndex++;
+                }
+            });
+        };
+        return (new MineCollection())->bigExport($dto, $filename, $closure);
     }
 
     /**

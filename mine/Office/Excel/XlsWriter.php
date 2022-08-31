@@ -157,4 +157,41 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
 
         return $res;
     }
+
+    /**
+     * @param string $filename
+     * @param \Closure $closure
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * author:ZQ
+     * time:2022-08-31 10:12
+     */
+    public function bigExport(string $filename, \Closure $closure): \Psr\Http\Message\ResponseInterface
+    {
+        $filename .= '.xlsx';
+        $columnName = [];
+        foreach ($this->property as $item) {
+            $columnName[] = $item['value'];
+        }
+        $tempFileName = 'export_' . time() . '.xlsx';
+        $xlsxObject = new \Vtiful\Kernel\Excel(['path' => BASE_PATH . '/runtime/']);
+        $fileObject = $xlsxObject->constMemory($tempFileName)->header($columnName);
+        $closure($fileObject,$this->property);
+
+        $response = container()->get(MineResponse::class);
+        $filePath = $fileObject->output();
+
+        $response->download($filePath, $filename);
+
+        ob_start();
+        if (copy($filePath, 'php://output') === false) {
+            throw new MineException('导出数据失败', 500);
+        }
+        $res = $this->downloadExcel($filename, ob_get_clean());
+
+        @unlink($filePath);
+
+        return $res;
+    }
 }

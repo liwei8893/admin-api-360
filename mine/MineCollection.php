@@ -110,6 +110,21 @@ class MineCollection extends Collection
     }
 
     /**
+     * @param string $dto
+     * @param string $filename
+     * @param \Closure $closure
+     * @return \Psr\Http\Message\ResponseInterface
+     * author:ZQ
+     * time:2022-08-30 18:00
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function bigExport(string $dto, string $filename,\Closure $closure): \Psr\Http\Message\ResponseInterface
+    {
+        return (new XlsWriter($dto))->bigExport($filename, $closure);
+    }
+
+    /**
      * 数据导入
      * @param string $dto
      * @param MineModel $model

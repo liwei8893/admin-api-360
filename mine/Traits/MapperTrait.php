@@ -38,6 +38,24 @@ trait MapperTrait
     }
 
     /**
+     * chunk
+     * @param array|null $params
+     * @param \Closure $callback
+     * @param bool $isScope
+     * @param null $column
+     * @param null $alias
+     * author:ZQ
+     * time:2022-08-30 16:51
+     * @return bool
+     */
+    public function getListChunk(?array $params, \Closure $callback, bool $isScope = true, $column = null, $alias = null): bool
+    {
+        // chunkById 不能跟排序一起用
+        unset($params['orderBy'],$params['orderType']);
+        return $this->listQuerySetting($params, $isScope)->chunkById(1000, $callback, $column, $alias);
+    }
+
+    /**
      * @param array|null $params
      * @param bool $isScope
      * @return \Hyperf\Database\Model\Collection|array
@@ -92,10 +110,10 @@ trait MapperTrait
      */
     public function getTreeList(
         ?array $params = null,
-        bool $isScope = true,
+        bool   $isScope = true,
         string $id = 'id',
         string $parentField = 'parent_id',
-        string $children='children'
+        string $children = 'children'
     ): array
     {
         $params['_mineadmin_tree'] = true;
@@ -183,7 +201,7 @@ trait MapperTrait
             unset($fields[array_search($model->getKeyName(), $fields)]);
         }
         $model = null;
-        return ( count($fields) < 1 ) ? ['*'] : $fields;
+        return (count($fields) < 1) ? ['*'] : $fields;
     }
 
     /**
@@ -397,7 +415,7 @@ trait MapperTrait
      */
     public function settingClosure(?\Closure $closure = null): Builder
     {
-        return $this->model::where(function($query) use($closure) {
+        return $this->model::where(function ($query) use ($closure) {
             if ($closure instanceof \Closure) {
                 $closure($query);
             }
@@ -468,6 +486,6 @@ trait MapperTrait
      */
     public function numberOperation(int $id, string $field, int $value): bool
     {
-        return $this->update($id, [ $field => $value]);
+        return $this->update($id, [$field => $value]);
     }
 }
