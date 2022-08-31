@@ -233,7 +233,6 @@ class UsersListController extends MineController
     /**
      * 数据导出
      * @return ResponseInterface
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -245,7 +244,7 @@ class UsersListController extends MineController
         $params['withVipType'] = true;
         $params['withStatus'] = true;
         $params['withUserType'] = true;
-        return $this->service->export($params, UserExportDto::class, '用户列表');
+        return $this->service->bigExport($params, UserExportDto::class, '用户列表');
     }
 
 }

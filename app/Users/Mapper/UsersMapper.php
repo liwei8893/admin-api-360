@@ -118,15 +118,15 @@ class UsersMapper extends AbstractMapper
             $query->whereIn('user_type', $params['user_type']);
         }
 
-        if (isset($params['mobile'])) {
+        if (!empty($params['mobile'])) {
             $query->where('mobile', 'like', $params['mobile'] . '%');
         }
 
-        if (isset($params['user_name'])) {
+        if (!empty($params['user_name'])) {
             $query->where('user_name', 'like', '%' . $params['user_name'] . '%');
         }
 
-        if (isset($params['keywords'])) {
+        if (!empty($params['keywords'])) {
             $query->where(fn($query) => $query->where('mobile', 'like', '%' . $params['keywords'] . '%')
                 ->orWhere('user_name', 'like', '%' . $params['keywords'] . '%')
                 ->orWhere('remark', 'like', '%' . $params['keywords'] . '%')
