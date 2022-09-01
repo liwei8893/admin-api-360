@@ -237,7 +237,7 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
                 'auth' => "['".$this->getCode().":export']"
             ];
         }
-        return 'const crud = reactive(' . $this->jsonFormat($options, true) . ')';
+        return 'const crud = reactive<BasicCrud>(' . $this->jsonFormat($options, true) . ')';
     }
 
     /**
@@ -300,7 +300,7 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
             // todo...
             $options[] = $tmp;
         }
-        return 'const columns = reactive(' . $this->jsonFormat($options) . ')';
+        return 'const columns = reactive<BasicColumn[]>(' . $this->jsonFormat($options) . ')';
     }
 
     /**
