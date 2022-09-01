@@ -1,0 +1,48 @@
+<?php
+
+declare (strict_types=1);
+
+namespace App\Question\Model;
+
+use Hyperf\Database\Model\Relations\HasOne;
+use Mine\MineModel;
+
+/**
+ * @property int $id 主键ID;此表用于记录所有人做题的记录，统计分析用
+ * @property int $user_id 用户ID
+ * @property int $ques_id 试题ID
+ * @property string $user_answer 用户输入的答案
+ * @property int $is_right 0错误；1正确；
+ * @property int $is_mark
+ * @property int $is_collect 收藏错题本1收藏,0不收藏
+ * @property \Carbon\Carbon $created_at 创建时间
+ * @property \Carbon\Carbon $updated_at
+ */
+class QuestionHistory extends MineModel
+{
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'question_history';
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['id', 'user_id', 'ques_id', 'user_answer', 'is_right', 'is_mark', 'is_collect', 'created_at', 'updated_at'];
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'ques_id' => 'integer', 'is_right' => 'integer', 'is_mark' => 'integer', 'is_collect' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s'];
+    protected $dateFormat = 'U';
+
+    public function question(): HasOne
+    {
+        return $this->hasOne(Question::class, 'id', 'ques_id')
+            ->where('deleted_at', 0);
+    }
+}
