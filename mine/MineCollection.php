@@ -80,7 +80,7 @@ class MineCollection extends Collection
                 if (!empty($child)) {
                     $value[$children] = $child;
                 }
-                array_push($tree, $value);
+                $tree[] = $value;
             }
         }
 

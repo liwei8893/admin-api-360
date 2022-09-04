@@ -26,7 +26,7 @@ class CourseBasisMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel():void
+    public function assignModel(): void
     {
         $this->model = CourseBasis::class;
     }
@@ -39,9 +39,9 @@ class CourseBasisMapper extends AbstractMapper
      * author:ZQ
      * time:2022-08-21 17:54
      */
-    public function batchUpdate($ids,$data): int
+    public function batchUpdate($ids, $data): int
     {
-        return $this->model::query()->whereIn('id',$ids)->update($data);
+        return $this->model::query()->whereIn('id', $ids)->update($data);
     }
 
     /**
@@ -66,17 +66,17 @@ class CourseBasisMapper extends AbstractMapper
         if (!isset($params['is_del'])) {
             $query->where('is_del', '=', 0);
         }
-        if (!empty($params['is_del'])){
+        if (!empty($params['is_del'])) {
             $query->where('is_del', '=', $params['is_del']);
         }
 
         // title
-        if (isset($params['title'])){
-            $query->where('title','like',"%{$params['title']}%");
+        if (isset($params['title'])) {
+            $query->where('title', 'like', "%{$params['title']}%");
         }
 
         // 是否开始报名
-        if (isset($params['is_signup'])){
+        if (isset($params['is_signup'])) {
             $query->where('is_signup', '=', $params['is_signup']);
         }
         // 年级
@@ -87,6 +87,24 @@ class CourseBasisMapper extends AbstractMapper
         // 科目
         if (isset($params['subject_id']) && $params['subject_id'] !== '') {
             $query->where('subject_id', '=', $params['subject_id']);
+        }
+
+        if (!empty($params['course_title'])) {
+            $query->where('course_title', $params['course_title']);
+        }
+
+        if (!empty($params['withBasisType'])) {
+            $query->with(['basisType:id,name']);
+        }
+
+        if (!empty($params['withBasisGrade'])) {
+            $query->with(['basisGrade']);
+        }
+
+        if (!empty($params['withCountChapter'])) {
+            $query->withCount(['chapter' => function (Builder $query) {
+                $query->where('parent_id', '!=', 0);
+            }]);
         }
 
         return $query;

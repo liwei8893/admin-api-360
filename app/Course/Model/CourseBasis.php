@@ -4,6 +4,8 @@ declare (strict_types=1);
 
 namespace App\Course\Model;
 
+use App\System\Model\SystemDictData;
+use Hyperf\Database\Model\Relations\BelongsToMany;
 use Mine\MineModel;
 
 /**
@@ -87,9 +89,25 @@ class CourseBasis extends MineModel
         return $this->attributes['price'] / 100;
     }
 
-
     public function setPriceAttribute($value): void
     {
         $this->attributes['price'] = (int)$value * 100;
+    }
+
+    public function basisType(): \Hyperf\Database\Model\Relations\HasOne
+    {
+        return $this->hasOne(CourseBasisType::class,'id','course_title');
+    }
+
+    public function basisGrade(): BelongsToMany
+    {
+        return $this->belongsToMany(SystemDictData::class, 'course_basis_grade', 'course_basis_id', 'grade_id','id','value')
+            ->select(['system_dict_data.id','label as title', 'value as key'])
+            ->where('code', 'grade')->where('status', MineModel::ENABLE);
+    }
+
+    public function chapter(): \Hyperf\Database\Model\Relations\HasMany
+    {
+        return $this->hasMany(CourseChapter::class,'course_basis_id','id');
     }
 }

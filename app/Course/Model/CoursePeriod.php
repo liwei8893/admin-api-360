@@ -1,9 +1,11 @@
 <?php
 
 declare (strict_types=1);
+
 namespace App\Course\Model;
 
 use Mine\MineModel;
+
 /**
  * @property int $id 课程基本信息 ID
  * @property string $title 课时名称
@@ -23,24 +25,24 @@ use Mine\MineModel;
  * @property string $admin_code 管理员进入房间的参加码
  * @property string $teacher_code 老师进入房间的参加码
  * @property string $student_code 学生公共参加码
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
  * @property int $is_push 是否推送,0否1是
  * @property int $is_getroominfo 0未拉取直播教室学员观看记录;1已成功拉取到数据；2已拉取未成功或未拉取到数据;
  * @property int $cloud_type 云平台，0 = 百家云，1 = 腾讯云
- * @property string $tencent_play_url 
+ * @property string $tencent_play_url
  * @property string $teacher_id 讲师id，多个用逗号分隔
  * @property string $assistant_id 助教id，多个用逗号分隔
- * @property string $template_name 
- * @property string $play_back_url 
- * @property string $assistant_name 
- * @property int $is_login 
- * @property string $subject_id 
- * @property string $subject_name 
+ * @property string $template_name
+ * @property string $play_back_url
+ * @property string $assistant_name
+ * @property int $is_login
+ * @property string $subject_id
+ * @property string $subject_name
  * @property string $qiniu_url 七牛返回url
- * @property string $filePath 
- * @property int $is_group_live 
- * @property string $qurstion_str 
+ * @property string $filePath
+ * @property int $is_group_live
+ * @property string $qurstion_str
  */
 class CoursePeriod extends MineModel
 {
@@ -62,4 +64,5 @@ class CoursePeriod extends MineModel
      * @var array
      */
     protected $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'course_chapter_id' => 'integer', 'is_playback' => 'integer', 'is_free' => 'integer', 'is_vip_class' => 'integer', 'is_try_see' => 'integer', 'is_download' => 'integer', 'try_see_time' => 'integer', 'start_play' => 'integer', 'end_play' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_push' => 'integer', 'is_getroominfo' => 'integer', 'cloud_type' => 'integer', 'is_login' => 'integer', 'is_group_live' => 'integer'];
+    protected $dateFormat = 'U';
 }
