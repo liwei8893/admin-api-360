@@ -101,7 +101,7 @@ abstract class MineExcel
             ->withHeader('Server', 'MineAdmin')
             ->withHeader('content-description', 'File Transfer')
             ->withHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            ->withHeader('content-disposition', "attachment; filename=".rawurlencode($filename))
+            ->withHeader('content-disposition', "attachment; filename={$filename}; filename*=UTF-8''" . rawurlencode($filename))
             ->withHeader("Access-Control-Expose-Headers","Content-Disposition")
             ->withHeader('content-transfer-encoding', 'binary')
             ->withHeader('pragma', 'public')
