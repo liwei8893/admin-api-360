@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\System\Controller;
 
 use App\System\Request\UploadRequest;
@@ -21,6 +22,27 @@ class UploadController extends MineController
 {
     #[Inject]
     protected SystemUploadFileService $service;
+
+    /**
+     * 获取七牛云认证
+     * @param \App\System\Request\UploadRequest $request
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * author:ZQ
+     * time:2022-09-08 10:52
+     */
+    #[GetMapping("getUploadToken"), Auth]
+    public function getUploadToken(UploadRequest $request): \Psr\Http\Message\ResponseInterface
+    {
+        return $this->success($this->service->getUploadToken($request->all()));
+    }
+
+    #[PostMapping("saveUploadInfo"), Auth]
+    public function saveUploadInfo(UploadRequest $request)
+    {
+        return $this->success($this->service->saveUploadInfo($request->all()));
+    }
 
     /**
      * 上传文件
@@ -59,9 +81,9 @@ class UploadController extends MineController
                 $request->file('image'), $request->all()
             );
             return empty($data) ? $this->error() : $this->success($data);
-        } else {
-            return $this->error(t('system.upload_image_verification_fail'));
         }
+
+        return $this->error(t('system.upload_image_verification_fail'));
     }
 
     /**
@@ -130,8 +152,8 @@ class UploadController extends MineController
         if (empty($id)) {
             return $this->error("附件ID必填");
         }
-        $model = $this->service->read((int) $id);
-        if (! $model) {
+        $model = $this->service->read((int)$id);
+        if (!$model) {
             throw new \Mine\Exception\MineException('附件不存在', 500);
         }
         return $this->_download(BASE_PATH . '/public' . $model->url, $model->origin_name);
@@ -151,7 +173,7 @@ class UploadController extends MineController
             return $this->error("附件hash必填");
         }
         $model = $this->service->readByHash($hash);
-        if (! $model) {
+        if (!$model) {
             throw new \Mine\Exception\MineException('附件不存在', 500);
         }
         return $this->_download(BASE_PATH . '/public' . $model->url, $model->origin_name);

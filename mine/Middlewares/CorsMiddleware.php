@@ -18,11 +18,11 @@ class CorsMiddleware implements MiddlewareInterface
             ->withHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE')
 
             // Headers 可以根据实际情况进行改写。
-            ->withHeader('Access-Control-Allow-Headers', 'DNT,Keep-Alive,User-Agent,Cache-Control,Content-Type,Authorization,sec-ch-ua-mobile,sec-ch-ua-platform,sec-ch-ua,Referer,Accept-Language,Accept');
+            ->withHeader('Access-Control-Allow-Headers', 'DNT,Keep-Alive,User-Agent,Cache-Control,Content-Type,Authorization,sec-ch-ua-mobile,sec-ch-ua-platform,sec-ch-ua,Referer,Accept-Language,Accept,Access-Control-Request-Headers,Access-Control-Request-Method,Sec-Fetch-Mode');
 
         Context::set(ResponseInterface::class, $response);
 
-        if ($request->getMethod() == 'OPTIONS') {
+        if ($request->getMethod() === 'OPTIONS') {
             return $response;
         }
 
