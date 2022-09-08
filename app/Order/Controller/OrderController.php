@@ -62,7 +62,7 @@ class OrderController extends MineController
      * author:ZQ
      * time:2022-08-21 14:33
      */
-    #[PostMapping("changeOrderToUser"), Permission("order:changeOrderToUser"), OperationLog('异动转人')]
+    #[PostMapping("changeOrderToUser"), Permission("order:changeOrder"), OperationLog('异动转人')]
     public function changeOrderToUser(OrderRequest $request): ResponseInterface
     {
         return $this->service->changeOrderToUser($request->all()) ? $this->success() : $this->error();
@@ -76,7 +76,7 @@ class OrderController extends MineController
      * author:ZQ
      * time:2022-08-21 14:33
      */
-    #[PostMapping("changeOrderToCourse"), Permission("order:changeOrderToCourse"), OperationLog('异动转班')]
+    #[PostMapping("changeOrderToCourse"), Permission("order:changeOrder"), OperationLog('异动转班')]
     public function changeOrderToCourse(OrderRequest $request): ResponseInterface
     {
         return $this->service->changeOrderToCourse($request->all()) ? $this->success() : $this->error();
@@ -90,7 +90,7 @@ class OrderController extends MineController
      * author:ZQ
      * time:2022-08-21 14:34
      */
-    #[PostMapping("changeOrderToRefund"), Permission("order:changeOrderToRefund"), OperationLog('异动退费')]
+    #[PostMapping("changeOrderToRefund"), Permission("order:changeOrder"), OperationLog('异动退费')]
     public function changeOrderToRefund(OrderRequest $request): ResponseInterface
     {
         return $this->service->changeOrderToRefund($request->all()) ? $this->success() : $this->error();

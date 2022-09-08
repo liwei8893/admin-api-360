@@ -30,7 +30,7 @@ class OrderSignupController extends MineController
      * author:ZQ
      * time:2022-08-26 16:56
      */
-    #[PostMapping("adminSave"), Permission("order:signup:adminSave"), OperationLog('管理员报名')]
+    #[PostMapping("adminSave"), Permission("order:signup:adminSave,users:list:signup"), OperationLog('管理员报名')]
     public function adminSave(OrderSignupRequest $request): ResponseInterface
     {
         return $this->success(['status' => $this->service->adminSave($request->all())]);
