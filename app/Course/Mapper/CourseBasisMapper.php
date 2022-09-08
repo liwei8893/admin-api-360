@@ -83,6 +83,11 @@ class CourseBasisMapper extends AbstractMapper
         if (isset($params['grade_id']) && $params['grade_id'] !== '') {
             $query->where('grade_id', '=', $params['grade_id']);
         }
+        if (isset($params['grade'])&&is_array($params['grade'])){
+            $query->whereHas('basisGrade',function (Builder $query) use ($params){
+                $query->whereIn('grade_id',$params['grade']);
+            });
+        }
 
         // 科目
         if (isset($params['subject_id']) && $params['subject_id'] !== '') {
