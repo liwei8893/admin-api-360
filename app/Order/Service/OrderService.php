@@ -41,6 +41,18 @@ class OrderService extends AbstractService
     public OrderTransactionService $orderTransactionService;
 
     /**
+     * 课程购买记录
+     * @param $data
+     * @return array
+     * author:ZQ
+     * time:2022-09-20 13:52
+     */
+    public function getBuyRecordList($data): array
+    {
+        return $this->mapper->getBuyRecordList($data);
+    }
+
+    /**
      * 批量修改有效期
      * @param $params
      * author:ZQ
@@ -195,7 +207,7 @@ class OrderService extends AbstractService
         }
         $orderModel->status = 2;
         $orderModel->refund_time = time();
-        if (!$orderModel->save()){
+        if (!$orderModel->save()) {
             throw new NormalStatusException('退费失败!');
         }
         // 写日志

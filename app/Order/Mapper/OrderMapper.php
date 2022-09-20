@@ -43,7 +43,7 @@ class OrderMapper extends AbstractMapper
      */
     public function incrementInDate(int $id, int $day, array $update = []): int
     {
-      return  Order::query()->where('id', $id)->increment('indate', $day, $update);
+        return Order::query()->where('id', $id)->increment('indate', $day, $update);
     }
 
     /**
@@ -57,7 +57,7 @@ class OrderMapper extends AbstractMapper
      */
     public function decrementInDate(int $id, int $day, array $update = []): int
     {
-        return  Order::query()->where('id', $id)->decrement('indate', $day, $update);
+        return Order::query()->where('id', $id)->decrement('indate', $day, $update);
     }
 
     /**
@@ -69,8 +69,8 @@ class OrderMapper extends AbstractMapper
      */
     public function softDelete($id): int
     {
-        return $this->model::query()->where('id',$id)
-            ->update(['deleted_at' =>time()]);
+        return $this->model::query()->where('id', $id)
+            ->update(['deleted_at' => time()]);
     }
 
     /**
@@ -83,7 +83,7 @@ class OrderMapper extends AbstractMapper
      */
     public function getCollectByIds(array $ids, array $column = ['*']): Collection
     {
-        return Order::query()->whereIn('id',$ids)->noDeleteOrder()->get($column);
+        return Order::query()->whereIn('id', $ids)->noDeleteOrder()->get($column);
     }
 
     /**
@@ -99,12 +99,22 @@ class OrderMapper extends AbstractMapper
             $query->where('user_id', $params['user_id']);
         }
 
-        if (isset($params['status'])) {
+        if (isset($params['status']) && !is_array($params['status'])) {
             $query->where('status', $params['status']);
+        }
+        if (isset($params['status']) && is_array($params['status'])) {
+            $query->whereIn('status', $params['status']);
+        }
+
+        if (isset($params['pay_states']) && is_array($params['pay_states'])) {
+            $query->whereIn('pay_states', $params['pay_states']);
         }
 
         if (isset($params['shop_name'])) {
             $query->where('shop_name', 'like', "%{$params['shop_name']}%");
+        }
+        if (isset($params['shop_id'])) {
+            $query->where('shop_id', $params['shop_id']);
         }
 
         if (isset($params['normalOrder']) && $params['normalOrder']) {
@@ -116,16 +126,17 @@ class OrderMapper extends AbstractMapper
         }
 
         //关联续费表
-        if (!empty($params['withRenew'])){
+        if (!empty($params['withRenew'])) {
             $query->with('usersRenew');
         }
 
         // 关联订单年级
-        if (!empty($params['withOrderGrade'])){
+        if (!empty($params['withOrderGrade'])) {
             $query->with('orderGrade');
         }
+
         // 关联订单科目
-        if (!empty($params['withOrderSubject'])){
+        if (!empty($params['withOrderSubject'])) {
             $query->with('orderSubject');
         }
 
@@ -142,5 +153,26 @@ class OrderMapper extends AbstractMapper
             $query->whereRaw("created_at + (indate * 86400) < UNIX_TIMESTAMP('$endTime')");
         }
         return $query;
+    }
+
+    /**
+     * 课程购买记录
+     * @param $data
+     * @return array
+     * author:ZQ
+     * time:2022-09-20 13:52
+     */
+    public function getBuyRecordList($data): array
+    {
+        $query = $this->listQuerySetting($data, true);
+        $query->where('status', '!=', 2)->noDeleteOrder();
+        $query->with(['users:id,user_name,old_platform,platform,mobile,remark', 'orderGrade', 'orderSubject']);
+        $query->whereHas('users', function (Builder $query) {
+            $query->where('user_type', 1);
+        });
+        $query = $query->paginate(
+            $params['pageSize'] ?? $this->model::PAGE_SIZE, ['*'], 'page', $params['page'] ?? 1
+        );
+        return $this->setPaginate($query);
     }
 }

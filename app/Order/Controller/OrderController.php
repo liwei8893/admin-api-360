@@ -40,6 +40,20 @@ class OrderController extends MineController
     #[Inject]
     protected OrderService $service;
 
+    /**
+     * 课程购买记录
+     * @param \App\Order\Request\OrderRequest $request
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * author:ZQ
+     * time:2022-09-13 10:56
+     */
+    #[GetMapping("getBuyRecordList"), Permission('course:basis:history')]
+    public function getBuyRecordList(OrderRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getBuyRecordList($request->all()));
+    }
 
     /**
      * 修改有效期

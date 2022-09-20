@@ -15,6 +15,7 @@ namespace App\Course\Mapper;
 use App\Course\Model\CourseBasis;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
+use Mine\Annotation\Transaction;
 
 /**
  * 课时详情表Mapper类
@@ -44,6 +45,31 @@ class CourseBasisMapper extends AbstractMapper
         return $this->model::query()->whereIn('id', $ids)->update($data);
     }
 
+    #[Transaction]
+    public function update(int $id, array $data): bool
+    {
+        $grade = $data['grade'] ?? [];
+        $this->filterExecuteAttributes($data, true);
+        $model = $this->model::find($id);
+        if (!$model) {
+            return false;
+        }
+        $state = $model->update($data);
+        $model->basisGrade()->sync($grade);
+        return $state;
+    }
+
+    #[Transaction]
+    public function save(array $data): int
+    {
+        $grade = $data['grade'] ?? [];
+        $this->filterExecuteAttributes($data, $this->getModel()->incrementing);
+        $model = $this->model::create($data);
+        $model->basisGrade()->sync($grade);
+        return $model->id;
+    }
+
+
     /**
      * 搜索处理器
      * @param Builder $query
@@ -55,6 +81,14 @@ class CourseBasisMapper extends AbstractMapper
         // 课程类型：1直播, 4公开课, 5录播课, 7讲座, 8音频课, 9系统课
         if (isset($params['course_type']) && $params['course_type'] !== '') {
             $query->where('course_type', '=', $params['course_type']);
+        }
+
+        if (isset($params['is_give'])) {
+            $query->where('is_give', $params['is_give']);
+        }
+
+        if (isset($params['vip_type'])) {
+            $query->where('vip_type', $params['vip_type']);
         }
 
         // 状态
@@ -83,9 +117,9 @@ class CourseBasisMapper extends AbstractMapper
         if (isset($params['grade_id']) && $params['grade_id'] !== '') {
             $query->where('grade_id', '=', $params['grade_id']);
         }
-        if (isset($params['grade'])&&is_array($params['grade'])){
-            $query->whereHas('basisGrade',function (Builder $query) use ($params){
-                $query->whereIn('grade_id',$params['grade']);
+        if (isset($params['grade']) && is_array($params['grade'])) {
+            $query->whereHas('basisGrade', function (Builder $query) use ($params) {
+                $query->whereIn('grade_id', $params['grade']);
             });
         }
 

@@ -82,7 +82,8 @@ class CourseBasis extends MineModel
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'course_type' => 'string', 'course_sub_type' => 'integer', 'course_classify_id' => 'integer', 'sort' => 'integer', 'price' => 'integer', 'origin_price' => 'integer', 'vip_price' => 'integer', 'advance_time' => 'integer', 'is_free' => 'integer', 'is_playback' => 'integer', 'is_generated_class' => 'integer', 'is_vip_class' => 'integer', 'watch_num' => 'integer', 'validity_date' => 'integer', 'start_play_date' => 'integer', 'end_play_date' => 'integer', 'start_play_year' => 'integer', 'sales_num' => 'integer', 'sales_base' => 'integer', 'browse_base' => 'integer', 'states' => 'string', 'browse_num' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'need_address' => 'integer', 'is_del' => 'integer', 'is_top' => 'integer', 'is_hot' => 'integer', 'class_id' => 'integer', 'is_group' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'string', 'is_deal' => 'integer', 'is_signup' => 'string', 'course_title' => 'string', 'course_second_title' => 'integer', 'is_playback_type' => 'integer', 'is_show_pic' => 'integer', 'season' => 'integer', 'is_show_sub_title' => 'integer', 'vip_type' => 'integer', 'is_give' => 'integer', 'class_type' => 'integer'];
+    protected $casts = ['id' => 'integer', 'course_type' => 'string', 'course_sub_type' => 'integer', 'course_classify_id' => 'integer', 'sort' => 'integer', 'price' => 'integer', 'origin_price' => 'integer', 'vip_price' => 'integer', 'advance_time' => 'integer', 'is_free' => 'integer', 'is_playback' => 'integer', 'is_generated_class' => 'integer', 'is_vip_class' => 'integer', 'watch_num' => 'integer', 'validity_date' => 'integer', 'start_play_date' => 'integer', 'end_play_date' => 'integer', 'start_play_year' => 'integer', 'sales_num' => 'integer', 'sales_base' => 'integer', 'browse_base' => 'integer', 'states' => 'string', 'browse_num' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'need_address' => 'integer', 'is_del' => 'integer', 'is_top' => 'integer', 'is_hot' => 'integer', 'class_id' => 'integer', 'is_group' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'string', 'is_deal' => 'integer', 'is_signup' => 'string', 'course_title' => 'string', 'course_second_title' => 'integer', 'is_playback_type' => 'integer', 'is_show_pic' => 'integer', 'season' => 'integer', 'is_show_sub_title' => 'integer', 'vip_type' => 'string', 'is_give' => 'integer', 'class_type' => 'integer'];
+
 
     public function getPriceAttribute(): float|int
     {
@@ -96,18 +97,18 @@ class CourseBasis extends MineModel
 
     public function basisType(): \Hyperf\Database\Model\Relations\HasOne
     {
-        return $this->hasOne(CourseBasisType::class,'id','course_title');
+        return $this->hasOne(CourseBasisType::class, 'id', 'course_title');
     }
 
     public function basisGrade(): BelongsToMany
     {
-        return $this->belongsToMany(SystemDictData::class, 'course_basis_grade', 'course_basis_id', 'grade_id','id','value')
-            ->select(['system_dict_data.id','label as title', 'value as key'])
+        return $this->belongsToMany(SystemDictData::class, 'course_basis_grade', 'course_basis_id', 'grade_id', 'id', 'value')
+            ->select(['system_dict_data.id', 'label as title', 'value as key'])
             ->where('code', 'grade')->where('status', MineModel::ENABLE);
     }
 
     public function chapter(): \Hyperf\Database\Model\Relations\HasMany
     {
-        return $this->hasMany(CourseChapter::class,'course_basis_id','id');
+        return $this->hasMany(CourseChapter::class, 'course_basis_id', 'id');
     }
 }
