@@ -13,9 +13,7 @@ declare(strict_types=1);
 
 namespace Mine;
 
-use Hyperf\Di\Annotation\Inject;
 use Hyperf\Utils\Filesystem\Filesystem;
-use Psr\Container\ContainerInterface;
 
 class Mine
 {
@@ -35,50 +33,13 @@ class Mine
     private array $moduleInfo = [];
 
     /**
-     * ContainerInterface
-     */
-    #[Inject]
-    protected ContainerInterface $container;
-
-    /**
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function __construct()
     {
-        $this->setAppPath(self::getRootPath() . 'app');
+        $this->setAppPath(BASE_PATH . '/app');
         $this->scanModule();
-    }
-
-    /**
-     * @return string
-     */
-    public static function getRootPath(): string
-    {
-        $directory = __DIR__;
-        while(strpos($directory, 'runtime') > 0) {
-            $directory = dirname($directory);
-        }
-        return $directory . DIRECTORY_SEPARATOR;
-    }
-
-    /**
-     * @param string $id
-     * @return mixed
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    public function app(string $id): object
-    {
-        return $this->container->get($id);
-    }
-
-    /**
-     * @return ContainerInterface
-     */
-    public function getContainer(): ContainerInterface
-    {
-        return $this->container;
     }
 
     /**
@@ -88,7 +49,7 @@ class Mine
     public function scanModule(): void
     {
         $modules = glob(self::getAppPath() . '*');
-        $fs = $this->app(Filesystem::class);
+        $fs = container()->get(Filesystem::class);
         $infos = [];
         foreach ($modules as &$mod) if (is_dir($mod)) {
             $modInfo = $mod . DIRECTORY_SEPARATOR . 'config.json';
@@ -172,7 +133,7 @@ class Mine
     protected function saveModuleConfig(string $mod): void
     {
         if (!empty($mod)) {
-            $fs = $this->app(Filesystem::class);
+            $fs = container()->get(Filesystem::class);
             $modJson = $this->getAppPath() . $mod . DIRECTORY_SEPARATOR . 'config.json';
             if (! $fs->isWritable($modJson)) {
                 $fs->chmod($modJson, 666);
