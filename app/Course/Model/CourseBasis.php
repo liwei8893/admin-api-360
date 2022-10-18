@@ -4,8 +4,10 @@ declare (strict_types=1);
 
 namespace App\Course\Model;
 
+use App\Score\Model\ScoreShop;
 use App\System\Model\SystemDictData;
 use Hyperf\Database\Model\Relations\BelongsToMany;
+use Hyperf\Database\Model\Relations\MorphOne;
 use Mine\MineModel;
 
 /**
@@ -110,5 +112,14 @@ class CourseBasis extends MineModel
     public function chapter(): \Hyperf\Database\Model\Relations\HasMany
     {
         return $this->hasMany(CourseChapter::class, 'course_basis_id', 'id');
+    }
+
+    /**
+     * 多态一对一关联积分商品表
+     * @return MorphOne
+     */
+    public function scoreShop(): MorphOne
+    {
+        return $this->morphOne(ScoreShop::class, 'shop');
     }
 }

@@ -146,6 +146,10 @@ class CourseBasisMapper extends AbstractMapper
             }]);
         }
 
+        if (!empty($params['excludeShop'])) {
+            $query->has('scoreShop', '<');
+        }
+
         return $query;
     }
 }

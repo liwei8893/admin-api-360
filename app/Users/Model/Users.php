@@ -5,7 +5,9 @@ declare (strict_types=1);
 namespace App\Users\Model;
 
 use App\Order\Model\Order;
+use App\Score\Model\Avatar;
 use App\System\Model\SystemDictData;
+use Hyperf\Database\Model\Relations\BelongsToMany;
 use Mine\MineModel;
 
 /**
@@ -125,7 +127,7 @@ class Users extends MineModel
      */
     protected $casts = ['id' => 'integer', 'status' => 'string', 'sex' => 'string', 'last_login_time' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s', 'is_buy' => 'string', 'integral' => 'integer', 'grade_id' => 'string', 'province_id' => 'integer', 'city_id' => 'integer', 'area_id' => 'integer', 'user_type' => 'string', 'dis_id' => 'integer', 'user_from' => 'integer', 'extension_from_user_id' => 'integer', 'qq' => 'integer', 'is_teacher' => 'integer', 'is_assistant' => 'integer', 'is_student' => 'integer', 'attribute_grade_id' => 'integer', 'edit_username' => 'integer', 't_type' => 'integer', 'headmaster' => 'integer', 'is_headmaster' => 'integer', 'yw' => 'integer', 'sx' => 'integer', 'yy' => 'integer', 'wl' => 'integer', 'hx' => 'integer', 'ls' => 'integer', 'dl' => 'integer', 'sw' => 'integer', 'zz' => 'integer', 'is_show' => 'integer', 'is_adviser' => 'integer', 'experience' => 'integer', 'created_id' => 'integer', 'is_playback_type' => 'integer', 'contact_time' => 'integer', 'days' => 'integer', 'score' => 'integer', 'is_remind' => 'integer', 'first_month' => 'integer', 'market_id' => 'integer', 'is_student_type' => 'integer'];
     protected $dateFormat = 'U';
-    protected $hidden = ['user_pass','remember_token','wx_openid','wxgzh_openid','mp_openid'];
+    protected $hidden = ['user_pass', 'remember_token', 'wx_openid', 'wxgzh_openid', 'mp_openid'];
 
     /**
      * 关联订单表
@@ -199,5 +201,14 @@ class Users extends MineModel
     public static function passwordVerify($password, $hash): bool
     {
         return password_verify($password, $hash);
+    }
+
+    /**
+     * 关联用户头像表
+     * @return BelongsToMany
+     */
+    public function avatarTable(): BelongsToMany
+    {
+        return $this->belongsToMany(Avatar::class, 'user_avatar', 'user_id', 'avatar_id');
     }
 }

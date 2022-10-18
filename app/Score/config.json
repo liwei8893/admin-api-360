@@ -1,0 +1,9 @@
+{
+    "name": "Score",
+    "label": "积分管理",
+    "description": "积分管理",
+    "installed": true,
+    "enabled": true,
+    "version": "1.0.0",
+    "order": 0
+}
