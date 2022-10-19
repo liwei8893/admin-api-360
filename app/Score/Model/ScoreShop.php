@@ -33,13 +33,13 @@ class ScoreShop extends MineModel
      *
      * @var array
      */
-    protected $fillable = ['id', 'shop_type', 'shop_id', 'score', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['id', 'shop_type', 'shop_id', 'score', 'sort', 'created_at', 'updated_at', 'deleted_at'];
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'shop_type' => 'string', 'shop_id' => 'integer', 'score' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
+    protected $casts = ['id' => 'integer', 'shop_type' => 'string', 'shop_id' => 'integer', 'score' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
 
     /**
