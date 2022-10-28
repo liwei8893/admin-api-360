@@ -6,7 +6,6 @@ namespace App\System\Service;
 
 use App\System\Mapper\SystemUploadFileMapper;
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\Utils\Collection;
@@ -14,7 +13,8 @@ use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\Str;
 use Mine\MineUpload;
-use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 文件上传业务
@@ -49,8 +49,8 @@ class SystemUploadFileService extends AbstractService
     /**
      * @param $params
      * @return array
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface|\JsonException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface|\JsonException
      * author:ZQ
      * time:2022-09-07 18:00
      */
@@ -63,7 +63,7 @@ class SystemUploadFileService extends AbstractService
         $fileExt = Str::lower($params['fileExt']);
         $filename = $this->mineUpload->getNewName() . '.' . $fileExt;
         $storagePath = 'uploadfile/' . date('Ymd');
-        if ($this->mineUpload->getStorageMode() !== 'qiniu') {
+        if ($this->mineUpload->getStorageMode() !== '3') {
             throw new NormalStatusException('请更改上传模式为七牛云');
         }
         $key = $storagePath . '/' . $filename;
@@ -85,14 +85,14 @@ class SystemUploadFileService extends AbstractService
      * 存入七牛云前端上传文件
      * @param $params
      * @return array
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      * author:ZQ
      * time:2022-09-08 10:01
      */
     public function saveUploadInfo($params): array
     {
-        if ($this->mineUpload->getStorageMode() !== 'qiniu') {
+        if ($this->mineUpload->getStorageMode() !== '3') {
             throw new NormalStatusException('请更改上传模式为七牛云');
         }
 
@@ -127,7 +127,7 @@ class SystemUploadFileService extends AbstractService
             'suffix' => Str::lower($params['suffix']),
             'size_byte' => $params['fileSize'],
             'size_info' => format_size($params['fileSize'] * 1024),
-            'url' => $this->mineUpload->assembleUrl($params['storage_path'], $params['object_name']),
+            'url' => $this->mineUpload->assembleUrl($params['storage_path'], $params['object_name'], false),
         ];
     }
 
@@ -137,8 +137,8 @@ class SystemUploadFileService extends AbstractService
      * @param array $config
      * @return array
      * @throws \League\Flysystem\FileExistsException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function upload(UploadedFile $uploadedFile, array $config = []): array
     {
@@ -231,8 +231,8 @@ class SystemUploadFileService extends AbstractService
      * 保存网络图片
      * @param array $data ['url', 'path']
      * @return array
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function saveNetworkImage(array $data): array
     {

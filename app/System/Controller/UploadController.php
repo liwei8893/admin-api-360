@@ -42,8 +42,14 @@ class UploadController extends MineController
         return $this->success($this->service->getUploadToken($request->all()));
     }
 
+    /**
+     * @param UploadRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     #[PostMapping("saveUploadInfo"), Auth]
-    public function saveUploadInfo(UploadRequest $request)
+    public function saveUploadInfo(UploadRequest $request): ResponseInterface
     {
         return $this->success($this->service->saveUploadInfo($request->all()));
     }
@@ -140,7 +146,7 @@ class UploadController extends MineController
     #[GetMapping("getFileInfoById")]
     public function getFileInfoByid(): \Psr\Http\Message\ResponseInterface
     {
-        return $this->success($this->service->read((int) $this->request->input('id', null)));
+        return $this->success($this->service->read((int)$this->request->input('id', null)));
     }
 
     /**

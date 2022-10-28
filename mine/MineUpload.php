@@ -16,12 +16,12 @@ namespace Mine;
 use App\Setting\Service\SettingConfigService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Filesystem\FilesystemFactory;
+use Hyperf\HttpMessage\Upload\UploadedFile;
 use League\Flysystem\Filesystem;
 use Mine\Exception\NormalStatusException;
-use Hyperf\HttpMessage\Upload\UploadedFile;
 use Mine\Helper\Str;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class MineUpload
 {
@@ -99,7 +99,7 @@ class MineUpload
         $filename = $this->getNewName() . '.' . Str::lower($uploadedFile->getExtension());
 
         if (!$this->filesystem->writeStream($path . '/' . $filename, $uploadedFile->getStream()->detach())) {
-            throw new NormalStatusException((string) $uploadedFile->getError(), 500);
+            throw new NormalStatusException((string)$uploadedFile->getError(), 500);
         }
 
         $fileInfo = [
@@ -136,17 +136,17 @@ class MineUpload
         $uploadFile->moveTo($chunkName);
         if ($data['index'] === $data['total']) {
             $content = '';
-            for($i = 1; $i <= $data['total']; $i++) {
+            for ($i = 1; $i <= $data['total']; $i++) {
                 $chunkFile = "{$path}{$data['hash']}_{$data['total']}_{$i}.chunk";
-                if (! $fs->isFile($chunkFile)) {
+                if (!$fs->isFile($chunkFile)) {
                     return ['chunk' => $data['index'], 'code' => 500, 'status' => 'fail'];
                 }
                 $content .= $fs->get($chunkFile);
                 $fs->delete($chunkFile);
             }
-            $fileName = $this->getNewName().'.'.Str::lower($data['ext']);
+            $fileName = $this->getNewName() . '.' . Str::lower($data['ext']);
             $storagePath = $this->getPath(null, $this->getStorageMode() != 1);
-            if (! $this->filesystem->write($storagePath.'/'.$fileName, $content)) {
+            if (!$this->filesystem->write($storagePath . '/' . $fileName, $content)) {
                 throw new NormalStatusException('分块上传失败', 500);
             }
             $fileInfo = [
@@ -158,7 +158,7 @@ class MineUpload
                 'hash' => $data['hash'],
                 'suffix' => $data['ext'],
                 'size_byte' => $data['size'],
-                'size_info' => format_size(((int) $data['size'] * 1024)),
+                'size_info' => format_size(((int)$data['size'] * 1024)),
                 'url' => $this->assembleUrl(null, $fileName),
             ];
 
@@ -193,7 +193,7 @@ class MineUpload
             $size = 0;
 
             foreach ($dataInfo as $va) {
-                if ( preg_match('/length/iU', $va) ) {
+                if (preg_match('/length/iU', $va)) {
                     $ts = explode(':', $va);
                     $size = intval(trim(array_pop($ts)));
                     break;
@@ -207,7 +207,7 @@ class MineUpload
             $hash = md5_file($realPath);
             $fs->delete($realPath);
 
-            if (! $hash) {
+            if (!$hash) {
                 throw new \Exception(t('network_image_save_fail'));
             }
 
@@ -225,7 +225,7 @@ class MineUpload
 
         $fileInfo = [
             'storage_mode' => $this->getStorageMode(),
-            'origin_name' => md5((string) time()).'.jpg',
+            'origin_name' => md5((string)time()) . '.jpg',
             'object_name' => $filename,
             'mime_type' => 'image/jpg',
             'storage_path' => $path,
@@ -248,7 +248,7 @@ class MineUpload
      */
     protected function getPath(?string $path = null, bool $isContainRoot = false): string
     {
-        $uploadfile = $isContainRoot ? '/'.env('UPLOAD_PATH', 'uploadfile').'/' : '';
+        $uploadfile = $isContainRoot ? '/' . env('UPLOAD_PATH', 'uploadfile') . '/' : '';
         return empty($path) ? $uploadfile . date('Ymd') : $uploadfile . $path;
     }
 
@@ -294,11 +294,12 @@ class MineUpload
      * 组装url
      * @param string|null $path
      * @param string $filename
+     * @param bool $isContainRoot
      * @return string
      */
-    public function assembleUrl(?string $path, string $filename): string
+    public function assembleUrl(?string $path, string $filename, bool $isContainRoot = true): string
     {
-        return $this->getPath($path, true) . '/' . $filename;
+        return $this->getPath($path, $isContainRoot) . '/' . $filename;
     }
 
     /**
@@ -320,7 +321,7 @@ class MineUpload
      */
     public function getNewName(): string
     {
-        return (string) container()->get(\Hyperf\Snowflake\IdGeneratorInterface::class)->generate();
+        return (string)container()->get(\Hyperf\Snowflake\IdGeneratorInterface::class)->generate();
     }
 
     /**
@@ -330,7 +331,7 @@ class MineUpload
      */
     protected function getMappingMode(): string
     {
-        return match ( $this->getStorageMode() ) {
+        return match ($this->getStorageMode()) {
             '1' => 'local',
             '2' => 'oss',
             '3' => 'qiniu',
