@@ -27,7 +27,7 @@ class CourseSignupConfigMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel():void
+    public function assignModel(): void
     {
         $this->model = CourseSignupConfig::class;
     }
@@ -40,6 +40,17 @@ class CourseSignupConfigMapper extends AbstractMapper
         $model = $this->model::create($data);
         $model->CourseSignup()->sync($courseIds);
         return $model->id;
+    }
+
+    #[Transaction]
+    public function update(int $id, array $data): bool
+    {
+        $courseIds = $data['course_ids'] ?? [];
+        $this->filterExecuteAttributes($data, true);
+        $model = $this->model::find($id);
+        $updateState = $model->update($data) > 0;
+        $model->CourseSignup()->sync($courseIds);
+        return $updateState;
     }
 
 
@@ -86,7 +97,7 @@ class CourseSignupConfigMapper extends AbstractMapper
         if (isset($params['deleted_at']) && $params['deleted_at'] !== '') {
             $query->where('deleted_at', '=', $params['deleted_at']);
         }
-        if (!empty($params['withCourse'])){
+        if (!empty($params['withCourse'])) {
             $query->with(['courseSignup:id,title']);
         }
 
