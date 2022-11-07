@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace  Mine\Traits;
+namespace Mine\Traits;
 
 use App\System\Model\SystemDept;
 use App\System\Model\SystemRole;
@@ -28,13 +28,12 @@ trait ModelMacroTrait
     {
         // 数据权限方法
         $model = $this;
-        Builder::macro('userDataScope', function(?int $userid = null) use($model)
-        {
-            if (! config('mineadmin.data_scope_enabled')) {
+        Builder::macro('userDataScope', function (?int $userid = null) use ($model) {
+            if (!config('mineadmin.data_scope_enabled')) {
                 return $this;
             }
 
-            $userid = is_null($userid) ? (int) user()->getId() : $userid;
+            $userid = is_null($userid) ? (int)user()->getId() : $userid;
 
             if (empty($userid)) {
                 throw new MineException('Data Scope missing user_id');
@@ -49,8 +48,7 @@ trait ModelMacroTrait
                 return $this;
             }
 
-            $dataScope = new class($userid, $this)
-            {
+            $dataScope = new class($userid, $this) {
                 // 用户ID
                 protected int $userid;
 
@@ -62,7 +60,7 @@ trait ModelMacroTrait
 
                 public function __construct(int $userid, Builder $builder)
                 {
-                    $this->userid  = $userid;
+                    $this->userid = $userid;
                     $this->builder = $builder;
                 }
 
@@ -106,7 +104,7 @@ trait ModelMacroTrait
                                 break;
                             case SystemRole::DEPT_BELOW_SCOPE:
                                 // 本部门及子部门数据权限
-                                $deptIds = SystemDept::query()->where('level', 'like', '%'.$userModel->dept_id.'%')->pluck('id')->toArray();
+                                $deptIds = SystemDept::query()->where('level', 'like', '%' . $userModel->dept_id . '%')->pluck('id')->toArray();
                                 $deptIds[] = $userModel->dept_id;
                                 $this->userIds = array_merge(
                                     $this->userIds,
@@ -128,6 +126,57 @@ trait ModelMacroTrait
         });
     }
 
+    private function registerPlatformDataScope(): void
+    {
+        Builder::macro('platformDataScope', function ($platformField = 'platform') {
+            $userid = user()->getId();
+            /* @var Builder $this */
+            if ($userid === (int)env('SUPER_ADMIN')) {
+                return $this;
+            }
+            $platformCodes = [];
+
+            $userModel = SystemUser::find($userid, ['id', 'dept_id']);
+            $roles = $userModel->roles()->get(['id', 'data_scope']);
+            $deptModel = $userModel->dept;
+            $curPlatform = $deptModel->platform;
+
+            foreach ($roles as $role) {
+                switch ($role->data_scope) {
+                    case SystemRole::ALL_SCOPE:
+                        // 如果是所有权限，跳出所有循环
+                        break 2;
+                    case SystemRole::CUSTOM_SCOPE:
+                        // 自定义数据权限
+                        $platformCodes = array_merge(
+                            $platformCodes,
+                            $role->depts()->pluck('platform')->toArray()
+                        );
+                        $platformCodes[] = $curPlatform;
+                        break;
+                    case SystemRole::SELF_DEPT_SCOPE:
+                        // 本部门数据权限
+                        $platformCodes[] = $curPlatform;
+                        break;
+                    case SystemRole::DEPT_BELOW_SCOPE:
+                        // 本部门及子部门数据权限
+                        $platformCodes = array_merge($platformCodes, SystemDept::query()->where('level', 'like', '%' . $userModel->dept_id . '%')->pluck('platform')->toArray());
+                        $platformCodes[] = $curPlatform;
+                        break;
+                    case SystemRole::SELF_SCOPE:
+                        $platformCodes[] = $curPlatform;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return empty($platformCodes)
+                ? $this
+                : $this->whereIn($platformField, array_unique($platformCodes));
+        });
+    }
+
     /**
      * Description:注册常用自定义方法
      * User:mike
@@ -142,9 +191,9 @@ trait ModelMacroTrait
             if ($operator === '' || $operator === '%%' || $operator === '%') {
                 return $this;
             }
-            if($value === NULL){
+            if ($value === NULL) {
                 return $this->where($key, $operator);
-            }else{
+            } else {
                 return $this->where($key, $operator, $value);
             }
         });
@@ -157,9 +206,9 @@ trait ModelMacroTrait
             if ($operator === '' || $operator === '%%' || $operator === '%') {
                 return $this;
             }
-            if($value === NULL){
+            if ($value === NULL) {
                 return $this->orWhere($key, $operator);
-            }else{
+            } else {
                 return $this->orWhere($key, $operator, $value);
             }
         });

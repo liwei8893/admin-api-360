@@ -14,13 +14,10 @@ namespace App\Users\Controller;
 
 use App\Users\Dto\UserCourseRecordDto;
 use App\Users\Service\UserCourseRecordService;
-use App\Users\Request\UserCourseRecordRequest;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\DeleteMapping;
 use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
-use Hyperf\HttpServer\Annotation\PutMapping;
 use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
@@ -51,7 +48,7 @@ class UserCourseRecordController extends MineController
     #[GetMapping("index"), Permission("users:userCourseRecord:index")]
     public function index(): ResponseInterface
     {
-        return $this->success($this->service->getPageList($this->request->all()));
+        return $this->success($this->service->getPageList($this->request->all(), false));
     }
 
     /**

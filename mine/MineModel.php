@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine;
 
 use Hyperf\DbConnection\Model\Model;
@@ -53,6 +54,8 @@ class MineModel extends Model
         $this->registerBase();
         //注册用户数据权限方法
         $this->registerUserDataScope();
+        //注册平台数据权限方法
+        $this->registerPlatformDataScope();
     }
 
     /**

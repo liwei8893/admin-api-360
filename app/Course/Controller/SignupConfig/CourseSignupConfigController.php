@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace App\Course\Controller\SignupConfig;
 
-use App\Course\Service\CourseSignupConfigService;
 use App\Course\Request\CourseSignupConfigRequest;
+use App\Course\Service\CourseSignupConfigService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\DeleteMapping;
@@ -47,10 +47,10 @@ class CourseSignupConfigController extends MineController
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("index"), Permission("course:signupConfig:index")]
+    #[GetMapping("index"), Permission("course:signupConfig:index,users:list:signup")]
     public function index(): ResponseInterface
     {
-        return $this->success($this->service->getPageList($this->request->all()));
+        return $this->success($this->service->getPageList($this->request->all(), false));
     }
 
     /**
@@ -74,7 +74,7 @@ class CourseSignupConfigController extends MineController
     #[DeleteMapping("realDelete"), Permission("course:signupConfig:realDelete"), OperationLog]
     public function realDelete(): ResponseInterface
     {
-        return $this->service->realDelete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->realDelete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -86,7 +86,7 @@ class CourseSignupConfigController extends MineController
     #[PutMapping("recovery"), Permission("course:signupConfig:recovery"), OperationLog]
     public function recovery(): ResponseInterface
     {
-        return $this->service->recovery((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->recovery((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -138,7 +138,7 @@ class CourseSignupConfigController extends MineController
     #[DeleteMapping("delete"), Permission("course:signupConfig:delete"), OperationLog]
     public function delete(): ResponseInterface
     {
-        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -151,9 +151,9 @@ class CourseSignupConfigController extends MineController
     public function changeStatus(): ResponseInterface
     {
         return $this->service->changeStatus(
-            (int) $this->request->input('title'),
-            (string) $this->request->input('statusValue'),
-            (string) $this->request->input('statusName')
+            (int)$this->request->input('title'),
+            (string)$this->request->input('statusValue'),
+            (string)$this->request->input('statusName')
         ) ? $this->success() : $this->error();
     }
 
@@ -167,9 +167,9 @@ class CourseSignupConfigController extends MineController
     public function numberOperation(): ResponseInterface
     {
         return $this->service->numberOperation(
-            (int) $this->request->input('title'),
-            (string) $this->request->input('numberName'),
-            (int) $this->request->input('numberValue', 1),
+            (int)$this->request->input('title'),
+            (string)$this->request->input('numberName'),
+            (int)$this->request->input('numberValue', 1),
         ) ? $this->success() : $this->error();
     }
 

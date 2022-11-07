@@ -12,11 +12,10 @@ declare(strict_types=1);
 
 namespace App\Question\Controller;
 
-use App\Question\Service\QuestionHistoryService;
 use App\Question\Request\QuestionHistoryRequest;
+use App\Question\Service\QuestionHistoryService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\DeleteMapping;
 use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
 use Hyperf\HttpServer\Annotation\PutMapping;
@@ -50,7 +49,7 @@ class QuestionHistoryController extends MineController
     #[GetMapping("index"), Permission("question:history:index")]
     public function index(): ResponseInterface
     {
-        return $this->success($this->service->getPageList($this->request->all()));
+        return $this->success($this->service->getPageList($this->request->all(), false));
     }
 
     /**

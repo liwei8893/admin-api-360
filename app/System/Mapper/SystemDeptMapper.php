@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace App\System\Mapper;
 
 
@@ -30,6 +31,7 @@ class SystemDeptMapper extends AbstractMapper
             ->where('status', $this->model::ENABLE)
             ->orderBy('sort', 'desc')
             ->userDataScope()
+            ->platformDataScope()
             ->get()->toTree();
     }
 
@@ -65,7 +67,7 @@ class SystemDeptMapper extends AbstractMapper
         }
 
         if (isset($params['name'])) {
-            $query->where('name', 'like', '%'.$params['name'].'%');
+            $query->where('name', 'like', '%' . $params['name'] . '%');
         }
 
         if (isset($params['leader'])) {
@@ -79,7 +81,7 @@ class SystemDeptMapper extends AbstractMapper
         if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
             $query->whereBetween(
                 'created_at',
-                [ $params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59' ]
+                [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
             );
         }
         return $query;
@@ -97,7 +99,7 @@ class SystemDeptMapper extends AbstractMapper
             ->whereNotNull('platform')
             ->select(['id', 'name as title', 'platform as key'])
             ->orderBy('sort', 'desc')
-            ->userDataScope()
+            ->platformDataScope()
             ->get();
     }
 }

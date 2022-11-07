@@ -51,7 +51,7 @@ trait MapperTrait
     public function getListChunk(?array $params, \Closure $callback, bool $isScope = true, $column = null, $alias = null): bool
     {
         // chunkById 不能跟排序一起用
-        unset($params['orderBy'],$params['orderType']);
+        unset($params['orderBy'], $params['orderType']);
         return $this->listQuerySetting($params, $isScope)->chunkById(1000, $callback, $column, $alias);
     }
 
@@ -139,6 +139,7 @@ trait MapperTrait
         $query = $this->handleOrder($query, $params);
 
         $isScope && $query->userDataScope();
+        $isScope && $query->platformDataScope();
 
         return $this->handleSearch($query, $params);
     }

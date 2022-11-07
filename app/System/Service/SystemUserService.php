@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\System\Service;
 
 use App\System\Mapper\SystemUserMapper;
@@ -62,9 +63,9 @@ class SystemUserService extends AbstractService
      */
     public function __construct(
         ContainerInterface $container,
-        SystemUserMapper $mapper,
-        SystemMenuService $systemMenuService,
-        SystemRoleService $systemRoleService
+        SystemUserMapper   $mapper,
+        SystemMenuService  $systemMenuService,
+        SystemRoleService  $systemRoleService
     )
     {
         $this->mapper = $mapper;
@@ -85,7 +86,7 @@ class SystemUserService extends AbstractService
         $cache = container()->get(CacheInterface::class);
         $captcha = new MineCaptcha();
         $info = $captcha->getCaptchaInfo();
-        $key = $this->request->ip() .'-'. \Mine\Helper\Str::lower($info['code']);
+        $key = $this->request->ip() . '-' . \Mine\Helper\Str::lower($info['code']);
         $cache->set(sprintf('captcha:%s', $key), $info['code'], 60);
         return $info['image'];
     }
@@ -98,8 +99,8 @@ class SystemUserService extends AbstractService
      */
     public function getInfo(): array
     {
-        if ( ($uid = user()->getId()) ) {
-            return $this->getCacheInfo((int) $uid);
+        if (($uid = user()->getId())) {
+            return $this->getCacheInfo((int)$uid);
         }
         throw new MineException(t('system.unable_get_userinfo'), 500);
     }
@@ -212,14 +213,14 @@ class SystemUserService extends AbstractService
     public function getOnlineUserPageList(array $params = []): array
     {
         $redis = redis();
-        $key   = sprintf('%sToken:*', config('cache.default.prefix'));
+        $key = sprintf('%sToken:*', config('cache.default.prefix'));
 
         $userIds = [];
         $iterator = null;
 
         while (false !== ($users = $redis->scan($iterator, $key, 100))) {
             foreach ($users as $user) {
-                if ( preg_match("/{$key}(\d+)$/", $user, $match) && isset($match[1])) {
+                if (preg_match("/{$key}(\d+)$/", $user, $match) && isset($match[1])) {
                     $userIds[] = $match[1];
                 }
             }
@@ -230,7 +231,7 @@ class SystemUserService extends AbstractService
             return [];
         }
 
-        return $this->getPageList(array_merge([ 'showDept' => 1, 'userIds'  => $userIds ], $params));
+        return $this->getPageList(array_merge(['showDept' => 1, 'userIds' => $userIds], $params));
     }
 
     /**
@@ -337,10 +338,10 @@ class SystemUserService extends AbstractService
     public function setHomePage(array $params): bool
     {
         $res = ($this->mapper->getModel())::query()
-            ->where('id', $params['id'])
-            ->update(['dashboard' => $params['dashboard']]) > 0;
+                ->where('id', $params['id'])
+                ->update(['dashboard' => $params['dashboard']]) > 0;
 
-        $this->clearCache((string) $params['id']);
+        $this->clearCache((string)$params['id']);
         return $res;
     }
 
@@ -363,7 +364,7 @@ class SystemUserService extends AbstractService
             $model[$key] = $param;
         }
 
-        $this->clearCache((string) $model['id']);
+        $this->clearCache((string)$model['id']);
         return $model->save();
     }
 
@@ -374,7 +375,7 @@ class SystemUserService extends AbstractService
      */
     public function modifyPassword(array $params): bool
     {
-        return $this->mapper->initUserPassword((int) user()->getId(), $params['newPassword']);
+        return $this->mapper->initUserPassword((int)user()->getId(), $params['newPassword']);
     }
 
     /**
