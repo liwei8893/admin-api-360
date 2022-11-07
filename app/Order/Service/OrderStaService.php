@@ -66,6 +66,10 @@ class OrderStaService extends AbstractService
                 if (empty($value[$platform])) {
                     $value[$platform] = ['sum' => 0];
                 }
+                $value[$platform]['d1'] = $value[$platform]['d1'] ?? 0;
+                $value[$platform]['d2'] = $value[$platform]['d2'] ?? 0;
+                $value[$platform]['d3'] = $value[$platform]['d3'] ?? 0;
+                $value[$platform]['d4'] = $value[$platform]['d4'] ?? 0;
             }
             $value['sum'] = 0;
             foreach ($value as $itemKey => $item) {
