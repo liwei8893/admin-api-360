@@ -55,7 +55,10 @@ class OrderStaMapper extends AbstractMapper
             )
             ->select(['users.id', 'users.platform', 'users.mobile', 'order.created_at', 'order.shop_id', 'order.shop_name', 'order.indate'])
             ->orderBy('order.created_at')
-            ->platformDataScope('users.platform');
+            ->platformDataScope('users.platform')
+            ->when(isset($params['platform']) && is_array($params['platform']), function ($query) use ($params) {
+                $query->whereIn('users.platform', $params['platform']);
+            });
 
         return $this->handleSearch($query, $params)->get();
     }

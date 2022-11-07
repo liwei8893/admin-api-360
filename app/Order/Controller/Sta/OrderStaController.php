@@ -50,15 +50,4 @@ class OrderStaController extends MineController
         return $this->success($this->service->getStaByPlatform($request->all()));
     }
 
-    /**
-     *
-     * @return ResponseInterface
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public function platformExport(): ResponseInterface
-    {
-        $params = $this->request->all();
-        return $this->service->bigExport($params, OrderStaByPlatformDto::class, '优课会员新增统计表');
-    }
 }
