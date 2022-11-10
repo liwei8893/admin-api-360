@@ -36,9 +36,11 @@ class CourseSignupConfigMapper extends AbstractMapper
     public function save(array $data): int
     {
         $courseIds = $data['course_ids'] ?? [];
+        $gradeIds = $data['grade_ids'] ?? [];
         $this->filterExecuteAttributes($data, true);
         $model = $this->model::create($data);
-        $model->CourseSignup()->sync($courseIds);
+        $model->courseSignup()->sync($courseIds);
+        $model->gradeSignup()->sync($gradeIds);
         return $model->id;
     }
 
@@ -46,10 +48,12 @@ class CourseSignupConfigMapper extends AbstractMapper
     public function update(int $id, array $data): bool
     {
         $courseIds = $data['course_ids'] ?? [];
+        $gradeIds = $data['grade_ids'] ?? [];
         $this->filterExecuteAttributes($data, true);
         $model = $this->model::find($id);
         $updateState = $model->update($data) > 0;
-        $model->CourseSignup()->sync($courseIds);
+        $model->courseSignup()->sync($courseIds);
+        $model->gradeSignup()->sync($gradeIds);
         return $updateState;
     }
 
@@ -99,6 +103,9 @@ class CourseSignupConfigMapper extends AbstractMapper
         }
         if (!empty($params['withCourse'])) {
             $query->with(['courseSignup:id,title']);
+        }
+        if (!empty($params['withGrade'])) {
+            $query->with(['gradeSignup']);
         }
 
         return $query;

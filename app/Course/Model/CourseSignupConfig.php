@@ -4,6 +4,8 @@ declare (strict_types=1);
 
 namespace App\Course\Model;
 
+use App\System\Model\SystemDictData;
+use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
 
@@ -42,8 +44,15 @@ class CourseSignupConfig extends MineModel
      */
     protected $casts = ['id' => 'integer', 'price' => 'integer', 'day' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
-    public function CourseSignup(): \Hyperf\Database\Model\Relations\BelongsToMany
+    public function courseSignup(): BelongsToMany
     {
         return $this->belongsToMany(CourseBasis::class, 'course_signup', 'course_signup_config_id', 'course_id');
+    }
+
+    public function gradeSignup(): BelongsToMany
+    {
+      return  $this->belongsToMany(SystemDictData::class, 'course_signup_grade', 'course_signup_config_id', 'grade_id','id','value')
+            ->select(['id','label as title', 'value as key'])
+            ->where('code', 'grade')->where('status', MineModel::ENABLE);
     }
 }
