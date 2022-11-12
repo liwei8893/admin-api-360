@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace App\System\Controller\Permission;
 
 use App\System\Request\SystemRoleRequest;
@@ -86,7 +87,7 @@ class RoleController extends MineController
     #[GetMapping("list")]
     public function list(): ResponseInterface
     {
-        return $this->success($this->service->getList());
+        return $this->success($this->service->getList(null, false));
     }
 
     /**
@@ -103,6 +104,19 @@ class RoleController extends MineController
     }
 
     /**
+     * 更新用户菜单权限
+     * @param int $id
+     * @return ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    #[PutMapping("menuPermission/{id}"), Permission("system:role:menuPermission"), OperationLog]
+    public function menuPermission(int $id): ResponseInterface
+    {
+        return $this->service->update($id, $this->request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
      * 更新角色
      * @param int $id
      * @param SystemRoleRequest $request
@@ -114,19 +128,6 @@ class RoleController extends MineController
     public function update(int $id, SystemRoleRequest $request): ResponseInterface
     {
         return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
-    }
-
-    /**
-     * 更新用户菜单权限
-     * @param int $id
-     * @return ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    #[PutMapping("menuPermission/{id}"), Permission("system:role:menuPermission"), OperationLog]
-    public function menuPermission(int $id): ResponseInterface
-    {
-        return $this->service->update($id, $this->request->all()) ? $this->success() : $this->error();
     }
 
     /**
@@ -151,7 +152,7 @@ class RoleController extends MineController
     #[DeleteMapping("delete"), Permission("system:role:delete")]
     public function delete(): ResponseInterface
     {
-        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -163,7 +164,7 @@ class RoleController extends MineController
     #[DeleteMapping("realDelete"), Permission("system:role:realDelete"), OperationLog]
     public function realDelete(): ResponseInterface
     {
-        return $this->service->realDelete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->realDelete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -175,7 +176,7 @@ class RoleController extends MineController
     #[PutMapping("recovery"), Permission("system:role:recovery")]
     public function recovery(): ResponseInterface
     {
-        return $this->service->recovery((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->recovery((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -188,7 +189,7 @@ class RoleController extends MineController
     #[PutMapping("changeStatus"), Permission("system:role:changeStatus"), OperationLog]
     public function changeStatus(SystemRoleRequest $request): ResponseInterface
     {
-        return $this->service->changeStatus((int) $request->input('id'), (string) $request->input('status'))
+        return $this->service->changeStatus((int)$request->input('id'), (string)$request->input('status'))
             ? $this->success() : $this->error();
     }
 
@@ -202,9 +203,9 @@ class RoleController extends MineController
     public function numberOperation(): ResponseInterface
     {
         return $this->service->numberOperation(
-            (int) $this->request->input('id'),
-            (string) $this->request->input('numberName'),
-            (int) $this->request->input('numberValue', 1),
+            (int)$this->request->input('id'),
+            (string)$this->request->input('numberName'),
+            (int)$this->request->input('numberValue', 1),
         ) ? $this->success() : $this->error();
     }
 }

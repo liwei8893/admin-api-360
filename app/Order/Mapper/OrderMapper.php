@@ -94,7 +94,6 @@ class OrderMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-
         if (isset($params['user_id'])) {
             $query->where('user_id', $params['user_id']);
         }
@@ -148,20 +147,23 @@ class OrderMapper extends AbstractMapper
         if (!empty($params['withPayment'])) {
             $query->with('payment');
         }
-        $query->whereHas('payment', function (Builder $query) use ($params) {
-            $query->when(isset($params['payment_number']), function (Builder $query) use ($params) {
-                $query->where('payment_number', 'like', "%{$params['payment_number']}%");
+        if (isset($params['payment_number'])) {
+            $query->whereHas('payment', function (Builder $query) use ($params) {
+                $query->when(isset($params['payment_number']), function (Builder $query) use ($params) {
+                    $query->where('payment_number', 'like', "%{$params['payment_number']}%");
+                });
             });
-        });
+        }
 
         // 关联用户表
         if (!empty($params['withUsers'])) {
             $query->with('users:id,user_name,mobile,platform,old_platform,user_type,status');
         }
         $query->whereHas('users', function ($query) use ($params) {
-            $query->when(isset($params['users_user_type']), function ($query) use ($params) {
-                $query->where('user_type', $params['users_user_type']);
-            })
+            $query->platformDataScope()
+                ->when(isset($params['users_user_type']), function ($query) use ($params) {
+                    $query->where('user_type', $params['users_user_type']);
+                })
                 ->when(isset($params['users_mobile']), function ($query) use ($params) {
                     $query->where('mobile', $params['users_mobile']);
                 })->when(isset($params['users_platform']), function ($query) use ($params) {

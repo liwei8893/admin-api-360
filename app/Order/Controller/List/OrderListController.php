@@ -51,7 +51,7 @@ class OrderListController extends MineController
     #[GetMapping("index"), Permission("order:list:index")]
     public function index(): ResponseInterface
     {
-        return $this->success($this->service->getPageList($this->request->all()));
+        return $this->success($this->service->getPageList($this->request->all(), false));
     }
 
     /**

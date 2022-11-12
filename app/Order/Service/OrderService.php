@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace App\Order\Service;
 
 use App\Order\Mapper\OrderMapper;
-use App\Users\Service\UsersService;
 use Carbon\Carbon;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -33,9 +32,6 @@ class OrderService extends AbstractService
 
     #[inject]
     public UsersRenewService $usersRenewService;
-
-    #[inject]
-    public UsersService $usersService;
 
     #[inject]
     public OrderTransactionService $orderTransactionService;
