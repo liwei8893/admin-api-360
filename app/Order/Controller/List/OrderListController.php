@@ -12,8 +12,9 @@ declare(strict_types=1);
 
 namespace App\Order\Controller\List;
 
-use App\Order\Service\OrderService;
+use App\Order\Dto\OrderDto;
 use App\Order\Request\OrderRequest;
+use App\Order\Service\OrderService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\DeleteMapping;
@@ -40,7 +41,7 @@ class OrderListController extends MineController
     #[Inject]
     protected OrderService $service;
 
-    
+
     /**
      * 列表
      * @return ResponseInterface
@@ -74,7 +75,7 @@ class OrderListController extends MineController
     #[DeleteMapping("realDelete"), Permission("order:list:realDelete"), OperationLog]
     public function realDelete(): ResponseInterface
     {
-        return $this->service->realDelete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->realDelete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -86,7 +87,7 @@ class OrderListController extends MineController
     #[PutMapping("recovery"), Permission("order:list:recovery"), OperationLog]
     public function recovery(): ResponseInterface
     {
-        return $this->service->recovery((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->recovery((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -138,7 +139,7 @@ class OrderListController extends MineController
     #[DeleteMapping("delete"), Permission("order:list:delete"), OperationLog]
     public function delete(): ResponseInterface
     {
-        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -151,9 +152,9 @@ class OrderListController extends MineController
     public function changeStatus(): ResponseInterface
     {
         return $this->service->changeStatus(
-            (int) $this->request->input('course_basis_id'),
-            (string) $this->request->input('statusValue'),
-            (string) $this->request->input('statusName')
+            (int)$this->request->input('course_basis_id'),
+            (string)$this->request->input('statusValue'),
+            (string)$this->request->input('statusName')
         ) ? $this->success() : $this->error();
     }
 
@@ -167,23 +168,22 @@ class OrderListController extends MineController
     public function numberOperation(): ResponseInterface
     {
         return $this->service->numberOperation(
-            (int) $this->request->input('course_basis_id'),
-            (string) $this->request->input('numberName'),
-            (int) $this->request->input('numberValue', 1),
+            (int)$this->request->input('course_basis_id'),
+            (string)$this->request->input('numberName'),
+            (int)$this->request->input('numberValue', 1),
         ) ? $this->success() : $this->error();
     }
 
     /**
      * 数据导出
      * @return ResponseInterface
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     #[PostMapping("export"), Permission("order:list:export"), OperationLog]
     public function export(): ResponseInterface
     {
-        return $this->service->export($this->request->all(), \App\Order\Dto\OrderDto::class, '导出数据列表');
+        return $this->service->bigExport($this->request->all(), OrderDto::class, '订单数据导出');
     }
 
 }

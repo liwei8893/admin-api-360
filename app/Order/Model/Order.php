@@ -3,9 +3,12 @@ declare (strict_types=1);
 
 namespace App\Order\Model;
 
+use App\Course\Model\CourseBasis;
 use App\System\Model\SystemDictData;
 use App\Users\Model\Users;
+use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\BelongsToMany;
+use Hyperf\Database\Model\Relations\HasMany;
 use Mine\MineModel;
 
 class Order extends MineModel
@@ -20,7 +23,7 @@ class Order extends MineModel
     protected $fillable = [
         'id', 'user_id', 'shop_id', 'course_basis_id', 'shop_name', 'course_name', 'order_number', 'pay_number', 'shop_type', 'pay_type', 'order_price', 'vip_discount', 'coupon_discount', 'other_discount', 'pay_states', 'ship_status', 'tag_type', 'is_present', 'is_logistics', 'grade', 'deleted_at', 'created_at', 'updated_at', 'indate', 'address_id', 'is_exchange', 'coupon_id', 'remark', 'spell_id', 'group_id', 'class_grade_id', 'is_offline', 'status', 'bug_subject', 'bug_subject_name', 'indate_close', 'audit_status', 'update_indate', 'is_renew', 'activities', 'actual_price', 'created_name', 'created_id', 'cause_text', 'is_over', 'renew_time', 'status_time', 'refund_time', 'renew_order_id', 'apply_type', 'is_vip', 'platform'
     ];
-    protected $casts = ['created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s', 'status_time' => 'datetime:Y-m-d H:i:s','status'=>'string','pay_type'=>'string'];
+    protected $casts = ['created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s', 'status_time' => 'datetime:Y-m-d H:i:s', 'status' => 'string', 'pay_type' => 'string'];
     protected $appends = ['created_at|indate' => 'course_end_time'];
 
     /**
@@ -43,9 +46,32 @@ class Order extends MineModel
      * author:ZQ
      * time:2022-05-29 16:57
      */
-    public function users(): \Hyperf\Database\Model\Relations\BelongsTo
+    public function users(): BelongsTo
     {
         return $this->belongsTo(Users::class, 'user_id', 'id');
+    }
+
+    /**
+     * 关联课程表
+     * @return \Hyperf\Database\Model\Relations\BelongsTo
+     * author:ZQ
+     * time:2022-11-12 15:02
+     */
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(CourseBasis::class, 'shop_id', 'id');
+    }
+
+    /**
+     * 关联付款表
+     * @return \Hyperf\Database\Model\Relations\HasMany
+     * author:ZQ
+     * time:2022-11-12 15:16
+     */
+    public function payment(): HasMany
+    {
+        return $this->hasMany(OrderPayment::class, 'order_number', 'order_number')
+            ->where('status', 1);
     }
 
     /**
@@ -54,9 +80,9 @@ class Order extends MineModel
      * author:ZQ
      * time:2022-08-19 17:05
      */
-    public function usersRenew(): \Hyperf\Database\Model\Relations\HasMany
+    public function usersRenew(): HasMany
     {
-        return $this->hasMany(UsersRenew::class,'order_id', 'id');
+        return $this->hasMany(UsersRenew::class, 'order_id', 'id');
     }
 
     /**
@@ -66,8 +92,8 @@ class Order extends MineModel
      */
     public function orderSubject(): BelongsToMany
     {
-        return $this->belongsToMany(SystemDictData::class, 'order_subject', 'order_id', 'subject_id','id','value')
-            ->select(['id','label as title', 'value as key'])
+        return $this->belongsToMany(SystemDictData::class, 'order_subject', 'order_id', 'subject_id', 'id', 'value')
+            ->select(['id', 'label as title', 'value as key'])
             ->where('code', 'subject')->where('status', MineModel::ENABLE);
     }
 
@@ -78,8 +104,8 @@ class Order extends MineModel
      */
     public function orderGrade(): BelongsToMany
     {
-        return $this->belongsToMany(SystemDictData::class, 'order_grade', 'order_id', 'grade_id','id','value')
-            ->select(['id','label as title', 'value as key'])
+        return $this->belongsToMany(SystemDictData::class, 'order_grade', 'order_id', 'grade_id', 'id', 'value')
+            ->select(['id', 'label as title', 'value as key'])
             ->where('code', 'grade')->where('status', MineModel::ENABLE);
     }
 

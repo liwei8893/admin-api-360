@@ -106,6 +106,10 @@ class OrderMapper extends AbstractMapper
             $query->whereIn('status', $params['status']);
         }
 
+        if (isset($params['pay_states']) && !is_array($params['pay_states'])) {
+            $query->where('pay_states', $params['pay_states']);
+        }
+
         if (isset($params['pay_states']) && is_array($params['pay_states'])) {
             $query->whereIn('pay_states', $params['pay_states']);
         }
@@ -140,10 +144,40 @@ class OrderMapper extends AbstractMapper
             $query->with('orderSubject');
         }
 
+        // 关联付款表
+        if (!empty($params['withPayment'])) {
+            $query->with('payment');
+        }
+        $query->whereHas('payment', function (Builder $query) use ($params) {
+            $query->when(isset($params['payment_number']), function (Builder $query) use ($params) {
+                $query->where('payment_number', 'like', "%{$params['payment_number']}%");
+            });
+        });
+
+        // 关联用户表
+        if (!empty($params['withUsers'])) {
+            $query->with('users:id,user_name,mobile,platform,old_platform,user_type,status');
+        }
+        $query->whereHas('users', function ($query) use ($params) {
+            $query->when(isset($params['users_user_type']), function ($query) use ($params) {
+                $query->where('user_type', $params['users_user_type']);
+            })
+                ->when(isset($params['users_mobile']), function ($query) use ($params) {
+                    $query->where('mobile', $params['users_mobile']);
+                })->when(isset($params['users_platform']), function ($query) use ($params) {
+                    $query->where('platform', $params['users_platform']);
+                });
+        });
         if (isset($params['created_at'][0], $params['created_at'][1])) {
             $query->whereBetween(
                 'created_at',
                 [strtotime($params['created_at'][0] . ' 00:00:00'), strtotime($params['created_at'][1] . ' 23:59:59')]
+            );
+        }
+        if (isset($params['created_at_time'][0], $params['created_at_time'][1])) {
+            $query->whereBetween(
+                'created_at',
+                [strtotime($params['created_at_time'][0]), strtotime($params['created_at_time'][1])]
             );
         }
         if (isset($params['course_end_time'][0], $params['course_end_time'][1])) {

@@ -222,4 +222,24 @@ class OrderService extends AbstractService
         }
         return true;
     }
+
+    /**
+     * 处理导出数据
+     * @param array $data
+     * author:ZQ
+     * time:2022-11-12 18:29
+     */
+    protected function handleExportData(array &$data): void
+    {
+        $statusMap = [0 => '暂停', 1 => '正常', 2 => '退费'];
+        $data['status'] = $statusMap[$data['status']] ?? '未知';
+        $tagTypeMap = [1 => 'PC', 4 => 'H5', 6 => '微信内置H5'];
+        $data['tag_type'] = $tagTypeMap[$data['tag_type']] ?? '未知';
+        $payTypeMap = [1 => '微信', 6 => '管理员赠送'];
+        $data['pay_type'] = $payTypeMap[$data['pay_type']] ?? '未知';
+        $data['payment_number'] = !empty($data['payment']) ? implode(',', array_column($data['payment'], 'payment_number')) : '';
+        $data['order_grade'] = !empty($data['order_grade']) ? implode(',', array_column($data['order_grade'], 'title')) : '';
+        $data['order_subject'] = !empty($data['order_subject']) ? implode(',', array_column($data['order_subject'], 'title')) : '';
+    }
+
 }
