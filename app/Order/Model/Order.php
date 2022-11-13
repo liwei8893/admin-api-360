@@ -14,6 +14,25 @@ use Mine\MineModel;
 class Order extends MineModel
 {
     /**
+     * pay_states 需要审核
+     */
+    public const PAY_AUDIT = 8;
+
+    /**
+     * pay_states 不需要审核
+     */
+    public const PAY_NO_AUDIT = 7;
+
+    /**
+     * audit_status 需要审核
+     */
+    public const AUDIT_PENDING = 1;
+
+    /**
+     * audit_status 不需要审核
+     */
+    public const AUDIT_SUCCESS = 0;
+    /**
      * The table associated with the model.
      *
      * @var string
@@ -23,7 +42,10 @@ class Order extends MineModel
     protected $fillable = [
         'id', 'user_id', 'shop_id', 'course_basis_id', 'shop_name', 'course_name', 'order_number', 'pay_number', 'shop_type', 'pay_type', 'order_price', 'vip_discount', 'coupon_discount', 'other_discount', 'pay_states', 'ship_status', 'tag_type', 'is_present', 'is_logistics', 'grade', 'deleted_at', 'created_at', 'updated_at', 'indate', 'address_id', 'is_exchange', 'coupon_id', 'remark', 'spell_id', 'group_id', 'class_grade_id', 'is_offline', 'status', 'bug_subject', 'bug_subject_name', 'indate_close', 'audit_status', 'update_indate', 'is_renew', 'activities', 'actual_price', 'created_name', 'created_id', 'cause_text', 'is_over', 'renew_time', 'status_time', 'refund_time', 'renew_order_id', 'apply_type', 'is_vip', 'platform'
     ];
+
+    // 订单需要审核
     protected $casts = ['created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s', 'status_time' => 'datetime:Y-m-d H:i:s', 'status' => 'string', 'pay_type' => 'string'];
+    // 订单不需要审核
     protected $appends = ['created_at|indate' => 'course_end_time'];
 
     /**
@@ -127,7 +149,7 @@ class Order extends MineModel
      */
     public function scopeNoDeleteOrder($query)
     {
-        return $query->where('deleted_at', 0)->whereIn('pay_states', [2, 7]);
+        return $query->where('deleted_at', 0)->where('pay_states', 7);
     }
 
     /**

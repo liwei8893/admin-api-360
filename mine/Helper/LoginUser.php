@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Helper;
 
 use App\System\Model\SystemRole;
@@ -17,8 +18,10 @@ use App\System\Model\SystemUser;
 use App\System\Service\SystemUserService;
 use Mine\Exception\TokenException;
 use Mine\MineRequest;
-use Xmo\JWTAuth\JWT;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\SimpleCache\InvalidArgumentException;
+use Xmo\JWTAuth\JWT;
 
 class LoginUser
 {
@@ -39,7 +42,7 @@ class LoginUser
      */
     public function __construct(string $scene = 'default')
     {
-        /* @var JWT $this->jwt */
+        /* @var JWT $this- >jwt */
         $this->jwt = make(JWT::class)->setScene($scene);
     }
 
@@ -86,15 +89,6 @@ class LoginUser
     }
 
     /**
-     * 获取当前登录用户ID
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->jwt->getParserData()['id'];
-    }
-
-    /**
      * 获取当前登录用户名
      * @return string
      */
@@ -111,6 +105,15 @@ class LoginUser
     public function getUserRole(array $columns = ['id', 'name', 'code']): array
     {
         return SystemUser::find($this->getId(), ['id'])->roles()->get($columns)->toArray();
+    }
+
+    /**
+     * 获取当前登录用户ID
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->jwt->getParserData()['id'];
     }
 
     /**
@@ -138,7 +141,7 @@ class LoginUser
      */
     public function getDeptId(): int
     {
-        return (int) $this->jwt->getParserData()['dept_id'];
+        return (int)$this->jwt->getParserData()['dept_id'];
     }
 
     /**
@@ -183,5 +186,20 @@ class LoginUser
     public function refresh(): string
     {
         return $this->jwt->refreshToken();
+    }
+
+    /**
+     * 报名|修改有效期是否不需要审核
+     * @return bool
+     * author:ZQ
+     * time:2022-11-13 16:19
+     */
+    public function isNoAuditRole(): bool
+    {
+        try {
+            return in_array(SystemRole::find(6, ['code'])->code, container()->get(SystemUserService::class)->getInfo()['roles'], true);
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            return false;
+        }
     }
 }

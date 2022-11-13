@@ -130,6 +130,17 @@ class Users extends MineModel
     protected $hidden = ['user_pass', 'remember_token', 'wx_openid', 'wxgzh_openid', 'mp_openid'];
 
     /**
+     * 验证密码
+     * @param $password
+     * @param $hash
+     * @return bool
+     */
+    public static function passwordVerify($password, $hash): bool
+    {
+        return password_verify($password, $hash);
+    }
+
+    /**
      * 关联订单表
      * @return \Hyperf\Database\Model\Relations\HasMany
      * author:ZQ
@@ -193,22 +204,23 @@ class Users extends MineModel
     }
 
     /**
-     * 验证密码
-     * @param $password
-     * @param $hash
-     * @return bool
-     */
-    public static function passwordVerify($password, $hash): bool
-    {
-        return password_verify($password, $hash);
-    }
-
-    /**
      * 关联用户头像表
      * @return BelongsToMany
      */
     public function avatarTable(): BelongsToMany
     {
         return $this->belongsToMany(Avatar::class, 'user_avatar', 'user_id', 'avatar_id');
+    }
+
+    /**
+     * 用户头像获取器
+     * @param $value
+     * @return string
+     * author:ZQ
+     * time:2022-07-04 12:22
+     */
+    public function getAvatarAttribute($value): string
+    {
+        return (!str_contains($value, 'https')) ? config('file.storage.qiniu.domain') . '/' . $value : $value;
     }
 }

@@ -14,8 +14,9 @@ namespace App\Order\Service;
 
 use App\Course\Service\CourseService;
 use App\Order\Mapper\OrderSignupMapper;
-use Hyperf\Di\Annotation\Inject;
+use App\Order\Model\Order;
 use Hyperf\Database\Model\Collection;
+use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Helper\LoginUser;
@@ -53,16 +54,12 @@ class OrderSignupService extends AbstractService
             $courseModels = $this->courseService->getCourseInfoByIds($collect['course_signup'], ['id', 'title', 'price']);
             // 筛选出没报过的
             $diffCourse = $this->filterCourseIsHave($collect['userId'], $courseModels);
-            if ($diffCourse->isEmpty()){
+            if ($diffCourse->isEmpty()) {
                 continue;
             }
             // 组装数据
             $comParam = [
                 'user_id' => $collect['userId'],
-                'pay_states' => 7,
-                'created_id' => $this->loginUser->getId(),
-                'created_name' => $this->loginUser->getUsername(),
-                'audit_status' => 0,
                 'indate' => $collect['day'],
                 'money' => $collect['price'],
                 'remark' => '后台报名',
@@ -116,12 +113,12 @@ class OrderSignupService extends AbstractService
             'pay_number' => $orderNumber,
             'shop_type' => $data['shop_type'] ?? 1,
             'pay_type' => $data['pay_type'] ?? 6,//支付类型，管理员赠送
-            'pay_states' => $data['pay_states'] ?? 1,//看是否需要审核
-            'audit_status' => $data['audit_status'] ?? 0,
+            'pay_states' => $this->loginUser->isNoAuditRole() ? Order::PAY_NO_AUDIT : Order::PAY_AUDIT,
+            'created_id' => $this->loginUser->getId(),
+            'created_name' => $this->loginUser->getUsername(),
+            'audit_status' => $this->loginUser->isNoAuditRole() ? Order::AUDIT_SUCCESS : Order::AUDIT_PENDING,
             'order_price' => isset($data['money']) ? $data['money'] * 100 : $course['price'],
             'is_logistics' => 0,
-            'created_id' => $data['created_id'] ?? 0,
-            'created_name' => $data['created_name'] ?? 0,
             'indate' => $data['indate'] ?? 30,
             'actual_price' => $data['money'] ?? '',
             'activities' => $data['activities'] ?? '',

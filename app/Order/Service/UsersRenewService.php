@@ -2,6 +2,7 @@
 
 namespace App\Order\Service;
 
+use App\Order\Model\Order;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Helper\LoginUser;
@@ -35,7 +36,7 @@ class UsersRenewService extends AbstractService
             'created_id' => $this->loginUser->getId(),
             'created_name' => $this->loginUser->getUsername(),
             'money' => $data['money'] ?? 0,
-            'audit_status' => $data['audit_status'] ?? 0,
+            'audit_status' => $this->loginUser->isNoAuditRole() ? Order::AUDIT_SUCCESS : Order::AUDIT_PENDING,
             'remark' => $data['remark'] ?? '',
         ];
         return $this->mapper->insert($params);

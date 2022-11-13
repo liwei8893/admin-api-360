@@ -1,24 +1,26 @@
 <?php
 
 declare (strict_types=1);
+
 namespace App\Order\Model;
 
 use Mine\MineModel;
+
 /**
- * @property int $id 
- * @property int $order_id 
- * @property string $indate_start 
- * @property string $indate_end 
- * @property \Carbon\Carbon $created_at 
- * @property int $created_id 
- * @property int $status 
- * @property string $money 
- * @property string $created_name 
- * @property int $shop_id 
- * @property int $user_id 
- * @property int $audit_status 
- * @property string $remark 
- * @property string $cause_text 
+ * @property int $id
+ * @property int $order_id
+ * @property string $indate_start
+ * @property string $indate_end
+ * @property \Carbon\Carbon $created_at
+ * @property int $created_id
+ * @property int $status
+ * @property string $money
+ * @property string $created_name
+ * @property int $shop_id
+ * @property int $user_id
+ * @property int $audit_status
+ * @property string $remark
+ * @property string $cause_text
  * @property int $renew_experience 续费时属性
  */
 class UsersRenew extends MineModel
