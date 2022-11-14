@@ -1,12 +1,19 @@
 <?php
-declare (strict_types=1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Users\Model;
 
 use App\Course\Model\CourseBasis;
 use App\Course\Model\CoursePeriod;
-use Hyperf\Database\Model\Relations\HasManyThrough;
-use Hyperf\Database\Model\Relations\hasOne;
+use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\Relations\HasOneThrough;
 use Mine\MineModel;
 
@@ -18,14 +25,16 @@ class UserCourseRecord extends MineModel
      * @var string
      */
     protected $table = 'user_course_record';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'id', 'period_id', 'user_id', 'video_duration', 'watch_time', 'created_at', 'updated_at', 'deleted_at'
+        'id', 'period_id', 'user_id', 'video_duration', 'watch_time', 'created_at', 'updated_at', 'deleted_at',
     ];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -38,7 +47,7 @@ class UserCourseRecord extends MineModel
     /**
      * 完课率
      * author:ZQ
-     * time:2022-08-28 16:32
+     * time:2022-08-28 16:32.
      */
     public function getTimeRateAttribute(): float
     {
@@ -49,19 +58,17 @@ class UserCourseRecord extends MineModel
     }
 
     /**
-     * 定义 users 关联
-     * @return \Hyperf\Database\Model\Relations\hasOne
+     * 定义 users 关联.
      */
-    public function users() : hasOne
+    public function users(): HasOne
     {
-        return $this->hasOne(\App\Users\Model\Users::class, 'id', 'user_id');
+        return $this->hasOne(Users::class, 'id', 'user_id');
     }
 
     /**
-     * 定义 coursePeriod 关联
-     * @return \Hyperf\Database\Model\Relations\hasOne
+     * 定义 coursePeriod 关联.
      */
-    public function coursePeriod() : hasOne
+    public function coursePeriod(): HasOne
     {
         return $this->hasOne(CoursePeriod::class, 'id', 'period_id');
     }
@@ -69,11 +76,10 @@ class UserCourseRecord extends MineModel
     /**
      * 远程关联课程表
      * author:ZQ
-     * time:2022-01-10 16:39
+     * time:2022-01-10 16:39.
      */
     public function courseBasis(): hasOneThrough
     {
         return $this->hasOneThrough(CourseBasis::class, CoursePeriod::class, 'id', 'id', 'period_id', 'course_basis_id');
     }
-
 }

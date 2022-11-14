@@ -1,13 +1,23 @@
 <?php
 
-declare (strict_types=1);
-
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Users\Model;
 
 use App\Order\Model\Order;
 use App\Score\Model\Avatar;
 use App\System\Model\SystemDictData;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\BelongsToMany;
+use Hyperf\Database\Model\Relations\HasMany;
+use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
 
 /**
@@ -27,8 +37,8 @@ use Mine\MineModel;
  * @property string $birthday 生日
  * @property string $signature 个性签名
  * @property string $avatar 用户头像
- * @property \Carbon\Carbon $created_at 创建时间
- * @property \Carbon\Carbon $updated_at 更新时间
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
  * @property int $is_buy 用户是否购买 1购买 0未购买
  * @property string $wx_openid 微信openid
  * @property string $qq_openid qq openid
@@ -95,14 +105,17 @@ class Users extends MineModel
      * @description 无会员
      */
     public const VIP_TYPE_NONE = [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME];
+
     /**
      * @description 优享会员
      */
     public const VIP_TYPE_ENJOY = 1355;
+
     /**
      * @description 超级会员
      */
     public const VIP_TYPE_SUPER = 950;
+
     /**
      * @description 至尊会员
      */
@@ -114,19 +127,23 @@ class Users extends MineModel
      * @var string
      */
     protected $table = 'users';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'user_name', 'real_name', 'user_nickname', 'user_pass', 'user_email', 'id_card', 'remember_token', 'mobile', 'status', 'sex', 'last_login_ip', 'last_login_time', 'birthday', 'signature', 'avatar', 'created_at', 'updated_at', 'is_buy', 'wx_openid', 'qq_openid', 'integral', 'grade_id', 'province_id', 'city_id', 'area_id', 'user_type', 'dis_id', 'identity_card', 'bank_user_name', 'user_from', 'extension_from_user_id', 'qq', 'is_teacher', 'is_assistant', 'is_student', 'attribute_grade_id', 'edit_username', 't_type', 'sale_platform', 'headmaster', 'is_headmaster', 'parent_name', 'parent_wx', 'teacher_wx', 'address', 'remark', 'yw', 'sx', 'yy', 'wl', 'hx', 'ls', 'dl', 'sw', 'zz', 'platform', 'is_show', 'wxgzh_openid', 'old_platform', 'is_adviser', 'order_updated_at', 'experience', 'created_name', 'created_id', 'is_playback_type', 'contact_time', 'user_property', 'days', 'score', 'is_remind', 'first_month', 'tag', 'market_id', 'remark_case', 'is_student_type', 'mp_openid'];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'status' => 'string', 'sex' => 'string', 'last_login_time' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s', 'is_buy' => 'string', 'integral' => 'integer', 'grade_id' => 'string', 'province_id' => 'integer', 'city_id' => 'integer', 'area_id' => 'integer', 'user_type' => 'string', 'dis_id' => 'integer', 'user_from' => 'integer', 'extension_from_user_id' => 'integer', 'qq' => 'integer', 'is_teacher' => 'integer', 'is_assistant' => 'integer', 'is_student' => 'integer', 'attribute_grade_id' => 'integer', 'edit_username' => 'integer', 't_type' => 'integer', 'headmaster' => 'integer', 'is_headmaster' => 'integer', 'yw' => 'integer', 'sx' => 'integer', 'yy' => 'integer', 'wl' => 'integer', 'hx' => 'integer', 'ls' => 'integer', 'dl' => 'integer', 'sw' => 'integer', 'zz' => 'integer', 'is_show' => 'integer', 'is_adviser' => 'integer', 'experience' => 'integer', 'created_id' => 'integer', 'is_playback_type' => 'integer', 'contact_time' => 'integer', 'days' => 'integer', 'score' => 'integer', 'is_remind' => 'integer', 'first_month' => 'integer', 'market_id' => 'integer', 'is_student_type' => 'integer'];
+
     protected $dateFormat = 'U';
+
     protected $hidden = ['user_pass', 'remember_token', 'wx_openid', 'wxgzh_openid', 'mp_openid'];
 
     /**
@@ -141,35 +158,35 @@ class Users extends MineModel
     }
 
     /**
-     * 关联订单表
-     * @return \Hyperf\Database\Model\Relations\HasMany
-     * author:ZQ
-     * time:2022-05-29 16:56
+     * 关联订单表.
+     * @return HasMany
+     *                 author:ZQ
+     *                 time:2022-05-29 16:56
      */
-    public function orders(): \Hyperf\Database\Model\Relations\HasMany
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'user_id', 'id');
     }
 
     /**
-     * 关联年级表
-     * @return \Hyperf\Database\Model\Relations\HasOne
-     * author:ZQ
-     * time:2022-05-29 17:43
+     * 关联年级表.
+     * @return HasOne
+     *                author:ZQ
+     *                time:2022-05-29 17:43
      */
-    public function grades(): \Hyperf\Database\Model\Relations\HasOne
+    public function grades(): HasOne
     {
         return $this->hasOne(SystemDictData::class, 'value', 'grade_id')
             ->where('code', 'grade')->where('status', MineModel::ENABLE);
     }
 
-    public function status(): \Hyperf\Database\Model\Relations\HasOne
+    public function status(): HasOne
     {
         return $this->hasOne(SystemDictData::class, 'value', 'status')
             ->where('code', 'data_status')->where('status', MineModel::ENABLE);
     }
 
-    public function userType(): \Hyperf\Database\Model\Relations\HasOne
+    public function userType(): HasOne
     {
         return $this->hasOne(SystemDictData::class, 'value', 'user_type')
             ->where('code', 'userType')->where('status', MineModel::ENABLE);
@@ -194,9 +211,8 @@ class Users extends MineModel
     }
 
     /**
-     * 密码加密
+     * 密码加密.
      * @param $value
-     * @return void
      */
     public function setUserPassAttribute($value): void
     {
@@ -204,8 +220,7 @@ class Users extends MineModel
     }
 
     /**
-     * 关联用户头像表
-     * @return BelongsToMany
+     * 关联用户头像表.
      */
     public function avatarTable(): BelongsToMany
     {
@@ -213,14 +228,14 @@ class Users extends MineModel
     }
 
     /**
-     * 用户头像获取器
+     * 用户头像获取器.
      * @param $value
      * @return string
-     * author:ZQ
-     * time:2022-07-04 12:22
+     *                author:ZQ
+     *                time:2022-07-04 12:22
      */
     public function getAvatarAttribute($value): string
     {
-        return (!str_contains($value, 'https')) ? config('file.storage.qiniu.domain') . '/' . $value : $value;
+        return (! str_contains($value, 'https')) ? config('file.storage.qiniu.domain') . '/' . $value : $value;
     }
 }

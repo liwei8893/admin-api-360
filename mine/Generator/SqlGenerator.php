@@ -12,6 +12,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Generator;
 
 use App\Setting\Model\SettingGenerateTables;
@@ -81,7 +82,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
         $this->filesystem->put($path, $this->placeholderReplace()->getCodeContent());
 
         if ($this->model->build_menu === self::YES) {
-            Db::connection()->getPdo()->exec(
+            Db::connection('default')->getPdo()->exec(
                 str_replace(["\r", "\n"], ['', ''], $this->replace()->getCodeContent())
             );
         }
@@ -101,7 +102,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
      */
     protected function getTemplatePath(): string
     {
-        return $this->getStubDir().'/Sql/main.stub';
+        return $this->getStubDir() . '/Sql/main.stub';
     }
 
     /**
@@ -212,9 +213,9 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
         if ($this->model->belong_menu_id !== 0) {
             $model = SystemMenu::find($this->model->belong_menu_id, ['id', 'level']);
             return $model->level . ',' . $model->id;
-        } else {
-            return '0';
         }
+
+        return '0';
     }
 
     /**
@@ -264,14 +265,14 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
      */
     protected function getAdminId(): string
     {
-        return (string) $this->adminId;
+        return (string)$this->adminId;
     }
 
     /**
      * 设置代码内容
      * @param string $content
      */
-    public function setCodeContent(string $content)
+    public function setCodeContent(string $content): void
     {
         $this->codeContent = $content;
     }

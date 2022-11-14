@@ -1,23 +1,28 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace Mine\Traits;
 
+use Closure;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Utils\Arr;
+use Hyperf\Utils\HigherOrderTapProxy;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 use Mine\MineCollection;
 use Mine\MineModel;
 use Mine\MineResponse;
+use PhpOffice\PhpSpreadsheet\Reader\Exception;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 trait ServiceTrait
@@ -28,10 +33,7 @@ trait ServiceTrait
     public $mapper;
 
     /**
-     * 获取列表数据
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 获取列表数据.
      */
     public function getList(?array $params = null, bool $isScope = true): array
     {
@@ -43,10 +45,7 @@ trait ServiceTrait
     }
 
     /**
-     * 从回收站过去列表数据
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 从回收站过去列表数据.
      */
     public function getListByRecycle(?array $params = null, bool $isScope = true): array
     {
@@ -58,10 +57,7 @@ trait ServiceTrait
     }
 
     /**
-     * 获取列表数据（带分页）
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 获取列表数据（带分页）.
      */
     public function getPageList(?array $params = null, bool $isScope = true): array
     {
@@ -72,10 +68,7 @@ trait ServiceTrait
     }
 
     /**
-     * 从回收站获取列表数据（带分页）
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 从回收站获取列表数据（带分页）.
      */
     public function getPageListByRecycle(?array $params = null, bool $isScope = true): array
     {
@@ -87,10 +80,7 @@ trait ServiceTrait
     }
 
     /**
-     * 获取树列表
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 获取树列表.
      */
     public function getTreeList(?array $params = null, bool $isScope = true): array
     {
@@ -102,10 +92,7 @@ trait ServiceTrait
     }
 
     /**
-     * 从回收站获取树列表
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 从回收站获取树列表.
      */
     public function getTreeListByRecycle(?array $params = null, bool $isScope = true): array
     {
@@ -117,9 +104,7 @@ trait ServiceTrait
     }
 
     /**
-     * 新增数据
-     * @param array $data
-     * @return int
+     * 新增数据.
      */
     public function save(array $data): int
     {
@@ -127,9 +112,7 @@ trait ServiceTrait
     }
 
     /**
-     * 批量新增
-     * @param array $collects
-     * @return bool
+     * 批量新增.
      */
     #[Transaction]
     public function batchSave(array $collects): bool
@@ -141,9 +124,7 @@ trait ServiceTrait
     }
 
     /**
-     * 读取一条数据
-     * @param int $id
-     * @return MineModel|null
+     * 读取一条数据.
      */
     public function read(int $id): ?MineModel
     {
@@ -152,10 +133,8 @@ trait ServiceTrait
 
     /**
      * Description:获取单个值
-     * User:mike
-     * @param array $condition
-     * @param string $columns
-     * @return \Hyperf\Utils\HigherOrderTapProxy|mixed|void|null
+     * User:mike.
+     * @return null|HigherOrderTapProxy|mixed|void
      */
     public function value(array $condition, string $columns = 'id')
     {
@@ -164,10 +143,10 @@ trait ServiceTrait
 
     /**
      * Description:获取单列值
-     * User:mike
+     * User:mike.
      * @param array $condition
      * @param string $columns
-     * @return array|null
+     * @return array
      */
     public function pluck(array $condition, string $columns = 'id'): array
     {
@@ -175,9 +154,7 @@ trait ServiceTrait
     }
 
     /**
-     * 从回收站读取一条数据
-     * @param int $id
-     * @return MineModel
+     * 从回收站读取一条数据.
      * @noinspection PhpUnused
      */
     public function readByRecycle(int $id): MineModel
@@ -186,20 +163,15 @@ trait ServiceTrait
     }
 
     /**
-     * 单个或批量软删除数据
-     * @param array $ids
-     * @return bool
+     * 单个或批量软删除数据.
      */
     public function delete(array $ids): bool
     {
-        return !empty($ids) && $this->mapper->delete($ids);
+        return ! empty($ids) && $this->mapper->delete($ids);
     }
 
     /**
-     * 更新一条数据
-     * @param int $id
-     * @param array $data
-     * @return bool
+     * 更新一条数据.
      */
     public function update(int $id, array $data): bool
     {
@@ -207,10 +179,7 @@ trait ServiceTrait
     }
 
     /**
-     * 按条件更新数据
-     * @param array $condition
-     * @param array $data
-     * @return bool
+     * 按条件更新数据.
      */
     public function updateByCondition(array $condition, array $data): bool
     {
@@ -218,65 +187,47 @@ trait ServiceTrait
     }
 
     /**
-     * 单个或批量真实删除数据
-     * @param array $ids
-     * @return bool
+     * 单个或批量真实删除数据.
      */
     public function realDelete(array $ids): bool
     {
-        return !empty($ids) && $this->mapper->realDelete($ids);
+        return ! empty($ids) && $this->mapper->realDelete($ids);
     }
 
     /**
-     * 单个或批量从回收站恢复数据
-     * @param array $ids
-     * @return bool
+     * 单个或批量从回收站恢复数据.
      */
     public function recovery(array $ids): bool
     {
-        return !empty($ids) && $this->mapper->recovery($ids);
+        return ! empty($ids) && $this->mapper->recovery($ids);
     }
 
     /**
-     * 单个或批量禁用数据
-     * @param array $ids
-     * @param string $field
-     * @return bool
+     * 单个或批量禁用数据.
      */
     public function disable(array $ids, string $field = 'status'): bool
     {
-        return !empty($ids) && $this->mapper->disable($ids, $field);
+        return ! empty($ids) && $this->mapper->disable($ids, $field);
     }
 
     /**
-     * 单个或批量启用数据
-     * @param array $ids
-     * @param string $field
-     * @return bool
+     * 单个或批量启用数据.
      */
     public function enable(array $ids, string $field = 'status'): bool
     {
-        return !empty($ids) && $this->mapper->enable($ids, $field);
+        return ! empty($ids) && $this->mapper->enable($ids, $field);
     }
 
     /**
      * 修改数据状态
-     * @param int $id
-     * @param string $value
-     * @param string $filed
-     * @return bool
      */
     public function changeStatus(int $id, string $value, string $filed = 'status'): bool
     {
-        return (int)$value === MineModel::ENABLE ? $this->mapper->enable([$id], $filed) : $this->mapper->disable([$id], $filed);
+        return (int) $value === MineModel::ENABLE ? $this->mapper->enable([$id], $filed) : $this->mapper->disable([$id], $filed);
     }
 
     /**
-     * 数字更新操作
-     * @param int $id
-     * @param string $field
-     * @param int $value
-     * @return bool
+     * 数字更新操作.
      */
     public function numberOperation(int $id, string $field, int $value): bool
     {
@@ -284,25 +235,10 @@ trait ServiceTrait
     }
 
     /**
-     * 需要处理导出数据时,重写函数
-     * @param array $data
-     * @return void
-     * author:ZQ
-     * time:2022-08-30 15:14
-     */
-    protected function handleExportData(array &$data): void
-    {
-    }
-
-    /**
-     * 导出数据
-     * @param array $params
-     * @param string|null $dto
-     * @param string|null $filename
-     * @return ResponseInterface
+     * 导出数据.
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function export(array $params, ?string $dto, string $filename = null): ResponseInterface
     {
@@ -318,16 +254,11 @@ trait ServiceTrait
         return (new MineCollection())->export($dto, $filename, $data);
     }
 
-
     /**
-     * @param array $params
-     * @param string|null $dto
-     * @param string|null $filename
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * author:ZQ
-     * time:2022-08-30 17:45
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     *                                    author:ZQ
+     *                                    time:2022-08-30 17:45
      */
     public function bigExport(array $params, ?string $dto, string $filename = null): ResponseInterface
     {
@@ -339,21 +270,21 @@ trait ServiceTrait
         }
         $closure = function ($fileObject, $pro) use ($params) {
             $rowIndex = 1;
-            $this->mapper->getListChunk($params, function ($items) use (&$rowIndex,$fileObject, $pro) {
+            $this->mapper->getListChunk($params, function ($items) use (&$rowIndex, $fileObject, $pro) {
                 foreach ($items as $item) {
                     $item = $item->toArray();
                     $this->handleExportData($item);
                     $columnIndex = 0;
                     foreach ($pro as $property) {
-                        if (!empty($property['customField'])) {
+                        if (! empty($property['customField'])) {
                             $value = Arr::get($item, $property['customField']);
                         } else {
                             $value = Arr::get($item, $property['name']);
                         }
                         $fileObject->insertText($rowIndex, $columnIndex, $value);
-                        $columnIndex++;
+                        ++$columnIndex;
                     }
-                    $rowIndex++;
+                    ++$rowIndex;
                 }
             });
         };
@@ -361,25 +292,19 @@ trait ServiceTrait
     }
 
     /**
-     * 数据导入
-     * @param string $dto
-     * @param \Closure|null $closure
-     * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 数据导入.
+     * @throws Exception
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[Transaction]
-    public function import(string $dto, ?\Closure $closure = null): bool
+    public function import(string $dto, ?Closure $closure = null): bool
     {
         return $this->mapper->import($dto, $closure);
     }
 
     /**
-     * 数组数据转分页数据显示
-     * @param array|null $params
-     * @param string $pageName
-     * @return array
+     * 数组数据转分页数据显示.
      */
     public function getArrayToPageList(?array $params = [], string $pageName = 'page'): array
     {
@@ -389,11 +314,11 @@ trait ServiceTrait
         $page = 1;
 
         if ($params[$pageName] ?? false) {
-            $page = (int)$params[$pageName];
+            $page = (int) $params[$pageName];
         }
 
         if ($params['pageSize'] ?? false) {
-            $pageSize = (int)$params['pageSize'];
+            $pageSize = (int) $params['pageSize'];
         }
 
         $data = $collect->forPage($page, $pageSize)->toArray();
@@ -403,15 +328,20 @@ trait ServiceTrait
             'pageInfo' => [
                 'total' => $collect->count(),
                 'currentPage' => $page,
-                'totalPage' => ceil($collect->count() / $pageSize)
-            ]
+                'totalPage' => ceil($collect->count() / $pageSize),
+            ],
         ];
     }
 
     /**
-     * 数组数据搜索器
-     * @param \Hyperf\Utils\Collection $collect
-     * @param array $params
+     * 需要处理导出数据时,重写函数.
+     */
+    protected function handleExportData(array &$data): void
+    {
+    }
+
+    /**
+     * 数组数据搜索器.
      * @return Collection
      */
     protected function handleArraySearch(\Hyperf\Utils\Collection $collect, array $params): \Hyperf\Utils\Collection
@@ -420,10 +350,7 @@ trait ServiceTrait
     }
 
     /**
-     * 数组当前页数据返回之前处理器，默认对key重置
-     * @param array $data
-     * @param array $params
-     * @return array
+     * 数组当前页数据返回之前处理器，默认对key重置.
      */
     protected function getCurrentArrayPageBefore(array &$data, array $params = []): array
     {
@@ -432,9 +359,7 @@ trait ServiceTrait
     }
 
     /**
-     * 设置需要分页的数组数据
-     * @param array $params
-     * @return array
+     * 设置需要分页的数组数据.
      */
     protected function getArrayData(array $params = []): array
     {

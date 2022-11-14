@@ -1,5 +1,14 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Users\Controller;
 
 use App\Users\Request\UsersRequest;
@@ -11,38 +20,36 @@ use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
 use Mine\MineController;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
-#[Controller(prefix: "users"), Auth]
+#[Controller(prefix: 'users'), Auth]
 class UsersController extends MineController
 {
     #[Inject]
     protected UsersService $service;
 
     /**
-     * @param \App\Users\Request\UsersRequest $request
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
      * author:ZQ
-     * time:2022-08-28 11:33
+     * time:2022-08-28 11:33.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    #[PostMapping("batchChangePlatform"), Permission("users:batchChangePlatform"), OperationLog('批量更改平台')]
+    #[PostMapping('batchChangePlatform'), Permission('users:batchChangePlatform'), OperationLog('批量更改平台')]
     public function batchChangePlatform(UsersRequest $request): ResponseInterface
     {
         return $this->success($this->service->batchChangePlatform($request->all()));
     }
 
     /**
-     * 更换手机号
-     * @param \App\Users\Request\UsersRequest $request
-     * @return \Psr\Http\Message\ResponseInterface
+     * 更换手机号.
      * author:ZQ
-     * time:2022-08-28 14:49
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * time:2022-08-28 14:49.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    #[PostMapping("changeMobile"), Permission("users:changeMobile"), OperationLog('更换手机号')]
+    #[PostMapping('changeMobile'), Permission('users:changeMobile'), OperationLog('更换手机号')]
     public function changeMobile(UsersRequest $request): ResponseInterface
     {
         return $this->service->changeMobile($request->all()) ? $this->success() : $this->error();

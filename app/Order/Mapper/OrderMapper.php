@@ -1,15 +1,14 @@
 <?php
+
 declare(strict_types=1);
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace App\Order\Mapper;
 
 use App\Order\Model\Order;
@@ -18,7 +17,7 @@ use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * 订单管理Mapper类
+ * 订单管理Mapper类.
  */
 class OrderMapper extends AbstractMapper
 {
@@ -33,13 +32,11 @@ class OrderMapper extends AbstractMapper
     }
 
     /**
-     * 有效期增加
-     * @param int $id
-     * @param int $day
+     * 有效期增加.
      * @param array $update 可选,更新order表其他字段
      * @return int
-     * author:ZQ
-     * time:2022-08-18 15:26
+     *             author:ZQ
+     *             time:2022-08-18 15:26
      */
     public function incrementInDate(int $id, int $day, array $update = []): int
     {
@@ -47,13 +44,11 @@ class OrderMapper extends AbstractMapper
     }
 
     /**
-     * 有效期减少
-     * @param int $id
-     * @param int $day
+     * 有效期减少.
      * @param array $update 可选,更新order表其他字段
      * @return int
-     * author:ZQ
-     * time:2022-08-18 15:27
+     *             author:ZQ
+     *             time:2022-08-18 15:27
      */
     public function decrementInDate(int $id, int $day, array $update = []): int
     {
@@ -61,11 +56,11 @@ class OrderMapper extends AbstractMapper
     }
 
     /**
-     * 软删除
+     * 软删除.
      * @param $id
      * @return int
-     * author:ZQ
-     * time:2022-08-21 11:50
+     *             author:ZQ
+     *             time:2022-08-21 11:50
      */
     public function softDelete($id): int
     {
@@ -74,12 +69,10 @@ class OrderMapper extends AbstractMapper
     }
 
     /**
-     * 返回数据集合
-     * @param array $ids
-     * @param array $column
+     * 返回数据集合.
      * @return Collection
-     * author:ZQ
-     * time:2022-08-18 17:52
+     *                    author:ZQ
+     *                    time:2022-08-18 17:52
      */
     public function getCollectByIds(array $ids, array $column = ['*']): Collection
     {
@@ -87,10 +80,7 @@ class OrderMapper extends AbstractMapper
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -98,14 +88,14 @@ class OrderMapper extends AbstractMapper
             $query->where('user_id', $params['user_id']);
         }
 
-        if (isset($params['status']) && !is_array($params['status'])) {
+        if (isset($params['status']) && ! is_array($params['status'])) {
             $query->where('status', $params['status']);
         }
         if (isset($params['status']) && is_array($params['status'])) {
             $query->whereIn('status', $params['status']);
         }
 
-        if (isset($params['pay_states']) && !is_array($params['pay_states'])) {
+        if (isset($params['pay_states']) && ! is_array($params['pay_states'])) {
             $query->where('pay_states', $params['pay_states']);
         }
 
@@ -128,23 +118,23 @@ class OrderMapper extends AbstractMapper
             $query->noDeleteOrder();
         }
 
-        //关联续费表
-        if (!empty($params['withRenew'])) {
+        // 关联续费表
+        if (! empty($params['withRenew'])) {
             $query->with('usersRenew');
         }
 
         // 关联订单年级
-        if (!empty($params['withOrderGrade'])) {
+        if (! empty($params['withOrderGrade'])) {
             $query->with('orderGrade');
         }
 
         // 关联订单科目
-        if (!empty($params['withOrderSubject'])) {
+        if (! empty($params['withOrderSubject'])) {
             $query->with('orderSubject');
         }
 
         // 关联付款表
-        if (!empty($params['withPayment'])) {
+        if (! empty($params['withPayment'])) {
             $query->with('payment');
         }
         if (isset($params['payment_number'])) {
@@ -156,7 +146,7 @@ class OrderMapper extends AbstractMapper
         }
 
         // 关联用户表
-        if (!empty($params['withUsers'])) {
+        if (! empty($params['withUsers'])) {
             $query->with('users:id,user_name,mobile,platform,old_platform,user_type,status');
         }
         $query->whereHas('users', function ($query) use ($params) {
@@ -185,29 +175,33 @@ class OrderMapper extends AbstractMapper
         if (isset($params['course_end_time'][0], $params['course_end_time'][1])) {
             $startTime = $params['course_end_time'][0] . ' 00:00:00';
             $endTime = $params['course_end_time'][1] . ' 23:59:59';
-            $query->whereRaw("created_at + (indate * 86400) > UNIX_TIMESTAMP('$startTime')");
-            $query->whereRaw("created_at + (indate * 86400) < UNIX_TIMESTAMP('$endTime')");
+            $query->whereRaw("created_at + (indate * 86400) > UNIX_TIMESTAMP('{$startTime}')");
+            $query->whereRaw("created_at + (indate * 86400) < UNIX_TIMESTAMP('{$endTime}')");
         }
         return $query;
     }
 
     /**
-     * 课程购买记录
+     * 课程购买记录.
      * @param $data
      * @return array
-     * author:ZQ
-     * time:2022-09-20 13:52
+     *               author:ZQ
+     *               time:2022-09-20 13:52
      */
     public function getBuyRecordList($data): array
     {
         $query = $this->listQuerySetting($data, true);
-        $query->where('status', '!=', 2)->noDeleteOrder();
-        $query->with(['users:id,user_name,old_platform,platform,mobile,remark', 'orderGrade', 'orderSubject']);
-        $query->whereHas('users', function (Builder $query) {
-            $query->where('user_type', 1);
-        });
+        $query->where('status', '!=', 2)
+            ->with(['users:id,user_name,old_platform,platform,mobile,remark', 'orderGrade', 'orderSubject'])
+            ->whereHas('users', function (Builder $query) {
+                $query->where('user_type', 1);
+            })
+            ->noDeleteOrder();
         $query = $query->paginate(
-            $params['pageSize'] ?? $this->model::PAGE_SIZE, ['*'], 'page', $params['page'] ?? 1
+            $params['pageSize'] ?? $this->model::PAGE_SIZE,
+            ['*'],
+            'page',
+            $params['page'] ?? 1
         );
         return $this->setPaginate($query);
     }

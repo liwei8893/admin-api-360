@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\System\Service;
 
 use App\System\Mapper\SystemUploadFileMapper;
+use Exception;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Upload\UploadedFile;
@@ -153,9 +154,9 @@ class SystemUploadFileService extends AbstractService
         $data = $this->mineUpload->upload($uploadedFile, $config);
         if ($this->save($data)) {
             return $data;
-        } else {
-            return [];
         }
+
+        return [];
     }
 
     public function chunkUpload(array $data): array
@@ -209,7 +210,7 @@ class SystemUploadFileService extends AbstractService
      */
     protected function getArrayData(array $params = []): array
     {
-        $directory = $this->getDirectory($params['storage_path'] ?? '');
+        $directory = $this->mineUpload->getDirectory($params['storage_path'] ?? '');
 
         $params['select'] = [
             'id',

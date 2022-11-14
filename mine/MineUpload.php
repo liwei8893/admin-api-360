@@ -278,7 +278,7 @@ class MineUpload
      * @param bool $isChildren
      * @return array
      */
-    public function getDirectory(string $path, bool $isChildren): array
+    public function getDirectory(string $path, bool $isChildren = false): array
     {
         $contents = $this->filesystem->listContents($path, $isChildren);
         $dirs = [];

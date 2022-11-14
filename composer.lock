@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe2d045898fb269d6b859333c4482ff9",
+    "content-hash": "98603723d04c514dc8f476d3bdc1d863",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -9274,52 +9274,6 @@
             "time": "2022-05-24T13:10:54+00:00"
         },
         {
-            "name": "hyperf/ide-helper",
-            "version": "v2.2.33",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hyperf/ide-helper.git",
-                "reference": "e7e26af552f7cf5512c357df9604ff9aa77ed3f3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hyperf/ide-helper/zipball/e7e26af552f7cf5512c357df9604ff9aa77ed3f3",
-                "reference": "e7e26af552f7cf5512c357df9604ff9aa77ed3f3",
-                "shasum": "",
-                "mirrors": [
-                    {
-                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
-                        "preferred": true
-                    }
-                ]
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.2-dev"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "IDE help files for Hyperf.",
-            "homepage": "https://hyperf.io",
-            "keywords": [
-                "hyperf",
-                "ide-helper",
-                "php",
-                "swoole"
-            ],
-            "support": {
-                "docs": "https://hyperf.wiki",
-                "issues": "https://github.com/hyperf/hyperf/issues",
-                "pull-request": "https://github.com/hyperf/hyperf/pulls",
-                "source": "https://github.com/hyperf/hyperf"
-            },
-            "time": "2022-05-24T13:10:54+00:00"
-        },
-        {
             "name": "hyperf/testing",
             "version": "v2.2.33",
             "source": {
@@ -12103,8 +12057,9 @@
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-redis": "*",
+        "ext-xlswriter": "*",
         "ext-swoole": ">=4.5"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }

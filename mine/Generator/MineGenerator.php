@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Generator;
 
 use Psr\Container\ContainerInterface;
@@ -31,7 +32,7 @@ abstract class MineGenerator
      */
     protected ContainerInterface $container;
 
-    public const NO  = 1;
+    public const NO = 1;
     public const YES = 2;
 
     /**
@@ -49,7 +50,7 @@ abstract class MineGenerator
         return $this->stubDir;
     }
 
-    public function setStubDir(string $stubDir)
+    public function setStubDir(string $stubDir): void
     {
         $this->stubDir = $stubDir;
     }
@@ -63,7 +64,7 @@ abstract class MineGenerator
     }
 
     /**
-     * @param mixed $namespace
+     * @param string $namespace
      */
     public function setNamespace(string $namespace): void
     {

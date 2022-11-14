@@ -1,15 +1,14 @@
 <?php
+
 declare(strict_types=1);
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace App\Users\Mapper;
 
 use App\Users\Model\Users;
@@ -18,38 +17,33 @@ use Hyperf\Database\Model\Model;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * 用户表Mapper类
+ * 用户表Mapper类.
  */
 class UsersMapper extends AbstractMapper
 {
-    /**
-     * @var Users
-     */
-    public $model;
-
     public function assignModel(): void
     {
         $this->model = Users::class;
     }
 
     /**
-     * 用手机号检测用户是否存在
+     * 用手机号检测用户是否存在.
      * @param $mobile
      * @return bool
-     * author:ZQ
-     * time:2022-05-31 14:05
+     *              author:ZQ
+     *              time:2022-05-31 14:05
      */
     public function existsByMobile($mobile): bool
     {
-        return $this->model::where('mobile', $mobile)->exists();
+        return $this->model::query()->where('mobile', $mobile)->exists();
     }
 
     /**
-     * 用手机号查询一条数据
+     * 用手机号查询一条数据.
      * @param $mobile
-     * @return \Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|null
-     * author:ZQ
-     * time:2022-08-20 10:26
+     * @return null|Builder|Model
+     *                            author:ZQ
+     *                            time:2022-08-20 10:26
      */
     public function readByMobile($mobile): Model|Builder|null
     {
@@ -57,14 +51,14 @@ class UsersMapper extends AbstractMapper
     }
 
     /**
-     * 初始化用户密码,手机号后六位
+     * 初始化用户密码,手机号后六位.
      * @param int $id
-     * @param $password
+     * @param null $password
      * @return bool
      */
     public function initUserPassword(int $id, $password = null): bool
     {
-        $model = $this->model::find($id);
+        $model = $this->model::query()->find($id);
         if ($model) {
             $model->user_pass = $password ?? $this->getInitPassword($model->mobile);
             return $model->save();
@@ -73,11 +67,11 @@ class UsersMapper extends AbstractMapper
     }
 
     /**
-     * 获取初始密码,手机号后六位
+     * 获取初始密码,手机号后六位.
      * @param $mobile
      * @return string
-     * author:ZQ
-     * time:2022-06-01 15:37
+     *                author:ZQ
+     *                time:2022-06-01 15:37
      */
     public function getInitPassword($mobile): string
     {
@@ -85,11 +79,11 @@ class UsersMapper extends AbstractMapper
     }
 
     /**
-     * 获取初始用户名,手机号隐藏中间4位
+     * 获取初始用户名,手机号隐藏中间4位.
      * @param $mobile
      * @return string
-     * author:ZQ
-     * time:2022-08-16 14:26
+     *                author:ZQ
+     *                time:2022-08-16 14:26
      */
     public function getInitUserName($mobile): string
     {
@@ -97,39 +91,37 @@ class UsersMapper extends AbstractMapper
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-        if (isset($params['status']) && !is_array($params['status'])) {
+        if (isset($params['status']) && ! is_array($params['status'])) {
             $query->where('status', $params['status']);
         }
         if (isset($params['status']) && is_array($params['status'])) {
             $query->whereIn('status', $params['status']);
         }
 
-        if (isset($params['user_type']) && !is_array($params['user_type'])) {
+        if (isset($params['user_type']) && ! is_array($params['user_type'])) {
             $query->where('user_type', $params['user_type']);
         }
         if (isset($params['user_type']) && is_array($params['user_type'])) {
             $query->whereIn('user_type', $params['user_type']);
         }
 
-        if (!empty($params['mobile'])) {
+        if (! empty($params['mobile'])) {
             $query->where('mobile', 'like', $params['mobile'] . '%');
         }
 
-        if (!empty($params['user_name'])) {
+        if (! empty($params['user_name'])) {
             $query->where('user_name', 'like', '%' . $params['user_name'] . '%');
         }
 
-        if (!empty($params['keywords'])) {
-            $query->where(fn($query) => $query->where('mobile', 'like', '%' . $params['keywords'] . '%')
-                ->orWhere('user_name', 'like', '%' . $params['keywords'] . '%')
-                ->orWhere('remark', 'like', '%' . $params['keywords'] . '%')
+        if (! empty($params['keywords'])) {
+            $query->where(
+                fn ($query) => $query->where('mobile', 'like', '%' . $params['keywords'] . '%')
+                    ->orWhere('user_name', 'like', '%' . $params['keywords'] . '%')
+                    ->orWhere('remark', 'like', '%' . $params['keywords'] . '%')
             );
         }
 
@@ -140,7 +132,7 @@ class UsersMapper extends AbstractMapper
             );
         }
 
-        if (isset($params['platform']) && !is_array($params['platform'])) {
+        if (isset($params['platform']) && ! is_array($params['platform'])) {
             $query->where('platform', '=', $params['platform']);
         }
 
@@ -154,44 +146,46 @@ class UsersMapper extends AbstractMapper
 
         if (isset($params['vipType'])) {
             if ($params['vipType'] === '0') {
-                $query->whereHas('orders',
-                    fn(Builder $query) => $query->normalOrder()->whereNotIn('shop_id', $this->model::VIP_TYPE_NONE)
+                $query->whereHas(
+                    'orders',
+                    fn (Builder $query) => $query->normalOrder()->whereNotIn('shop_id', Users::VIP_TYPE_NONE)
                 );
             }
             if ($params['vipType'] === '1') {
-                $query->whereHas('orders',
-                    fn(Builder $query) => $query->normalOrder()->where('shop_id', $this->model::VIP_TYPE_ENJOY)
+                $query->whereHas(
+                    'orders',
+                    fn (Builder $query) => $query->normalOrder()->where('shop_id', Users::VIP_TYPE_ENJOY)
                 );
             }
             if ($params['vipType'] === '2') {
-                $query->whereHas('orders',
-                    fn(Builder $query) => $query->normalOrder()->where('shop_id', $this->model::VIP_TYPE_SUPER)
+                $query->whereHas(
+                    'orders',
+                    fn (Builder $query) => $query->normalOrder()->where('shop_id', Users::VIP_TYPE_SUPER)
                 );
             }
             if ($params['vipType'] === '3') {
-                $query->whereHas('orders',
-                    fn(Builder $query) => $query->normalOrder()->where('shop_id', $this->model::VIP_TYPE_SUPREME)
+                $query->whereHas(
+                    'orders',
+                    fn (Builder $query) => $query->normalOrder()->where('shop_id', Users::VIP_TYPE_SUPREME)
                 );
             }
         }
 
-        if (!empty($params['withGrades'])) {
+        if (! empty($params['withGrades'])) {
             $query->with(['grades:label,value']);
         }
 
-        if (!empty($params['withVipType'])) {
+        if (! empty($params['withVipType'])) {
             $query->with(['vipType']);
         }
 
-        if (!empty($params['withStatus'])) {
+        if (! empty($params['withStatus'])) {
             $query->with(['status']);
         }
 
-        if (!empty($params['withUserType'])) {
+        if (! empty($params['withUserType'])) {
             $query->with(['userType']);
         }
         return $query;
     }
-
-
 }
