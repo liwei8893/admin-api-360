@@ -138,6 +138,18 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
                     $value = Arr::get($item, $property['name']);
                 }
                 $yield[] = $value;
+                foreach ($item as $name => $value) {
+                    if ($property['name'] == $name) {
+                        if (!empty($property['dictName'])) {
+                            $yield[] = $property['dictName'][$value];
+                        } else if (!empty($property['dictData'])) {
+                            $yield[] = $property['dictData'][$value];
+                        } else {
+                            $yield[] = $value;
+                        }
+                        break;
+                    }
+                }
             }
             $exportData[] = $yield;
         }
