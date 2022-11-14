@@ -137,19 +137,12 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
                 } else {
                     $value = Arr::get($item, $property['name']);
                 }
-                $yield[] = $value;
-                foreach ($item as $name => $value) {
-                    if ($property['name'] == $name) {
-                        if (!empty($property['dictName'])) {
-                            $yield[] = $property['dictName'][$value];
-                        } else if (!empty($property['dictData'])) {
-                            $yield[] = $property['dictData'][$value];
-                        } else {
-                            $yield[] = $value;
-                        }
-                        break;
-                    }
+                if (!empty($property['dictName'])) {
+                    $yield[] = $property['dictName'][$value];
+                } else if (!empty($property['dictData'])) {
+                    $yield[] = $property['dictData'][$value];
                 }
+                $yield[] = $value;
             }
             $exportData[] = $yield;
         }
@@ -189,7 +182,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         $tempFileName = 'export_' . time() . '.xlsx';
         $xlsxObject = new \Vtiful\Kernel\Excel(['path' => BASE_PATH . '/runtime/']);
         $fileObject = $xlsxObject->constMemory($tempFileName)->header($columnName);
-        $closure($fileObject,$this->property);
+        $closure($fileObject, $this->property);
 
         $response = container()->get(MineResponse::class);
         $filePath = $fileObject->output();
