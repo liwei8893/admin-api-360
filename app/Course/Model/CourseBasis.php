@@ -1,12 +1,23 @@
 <?php
 
-declare (strict_types=1);
-
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Course\Model;
 
+use App\Order\Model\Order;
 use App\Score\Model\ScoreShop;
 use App\System\Model\SystemDictData;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\BelongsToMany;
+use Hyperf\Database\Model\Relations\HasMany;
+use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\Relations\MorphOne;
 use Mine\MineModel;
 
@@ -38,8 +49,8 @@ use Mine\MineModel;
  * @property int $browse_base 浏览基数
  * @property int $states 状态
  * @property int $browse_num 浏览量
- * @property \Carbon\Carbon $created_at 创建时间
- * @property \Carbon\Carbon $updated_at 更新时间
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
  * @property int $indate 有效期，单位天
  * @property int $need_address 是否需要地址
  * @property int $is_del 是否删除
@@ -72,20 +83,22 @@ class CourseBasis extends MineModel
      * @var string
      */
     protected $table = 'course_basis';
+
     protected $dateFormat = 'U';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'title', 'subtitle', 'course_type', 'course_sub_type', 'course_classify_id', 'sort', 'price', 'origin_price', 'vip_price', 'course_cover', 'cover_video', 'advance_time', 'is_free', 'is_playback', 'is_generated_class', 'is_vip_class', 'watch_num', 'validity_date', 'start_play_date', 'end_play_date', 'start_play_year', 'sales_num', 'sales_base', 'browse_base', 'states', 'browse_num', 'created_at', 'updated_at', 'indate', 'need_address', 'is_del', 'is_top', 'is_hot', 'material_name', 'note', 'class_id', 'is_group', 'grade_id', 'subject_id', 'is_deal', 'is_signup', 'course_title', 'course_second_title', 'other_img', 'is_playback_type', 'is_show_pic', 'season', 'is_show_sub_title', 'vip_type', 'is_give', 'class_type'];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'course_type' => 'string', 'course_sub_type' => 'integer', 'course_classify_id' => 'integer', 'sort' => 'integer', 'price' => 'integer', 'origin_price' => 'integer', 'vip_price' => 'integer', 'advance_time' => 'integer', 'is_free' => 'integer', 'is_playback' => 'integer', 'is_generated_class' => 'integer', 'is_vip_class' => 'integer', 'watch_num' => 'integer', 'validity_date' => 'integer', 'start_play_date' => 'integer', 'end_play_date' => 'integer', 'start_play_year' => 'integer', 'sales_num' => 'integer', 'sales_base' => 'integer', 'browse_base' => 'integer', 'states' => 'string', 'browse_num' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'need_address' => 'integer', 'is_del' => 'integer', 'is_top' => 'integer', 'is_hot' => 'integer', 'class_id' => 'integer', 'is_group' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'string', 'is_deal' => 'integer', 'is_signup' => 'string', 'course_title' => 'string', 'course_second_title' => 'integer', 'is_playback_type' => 'integer', 'is_show_pic' => 'integer', 'season' => 'integer', 'is_show_sub_title' => 'integer', 'vip_type' => 'string', 'is_give' => 'integer', 'class_type' => 'integer'];
-
 
     public function getPriceAttribute(): float|int
     {
@@ -94,10 +107,10 @@ class CourseBasis extends MineModel
 
     public function setPriceAttribute($value): void
     {
-        $this->attributes['price'] = (int)$value * 100;
+        $this->attributes['price'] = (int) $value * 100;
     }
 
-    public function basisType(): \Hyperf\Database\Model\Relations\HasOne
+    public function basisType(): HasOne
     {
         return $this->hasOne(CourseBasisType::class, 'id', 'course_title');
     }
@@ -109,17 +122,24 @@ class CourseBasis extends MineModel
             ->where('code', 'grade')->where('status', MineModel::ENABLE);
     }
 
-    public function chapter(): \Hyperf\Database\Model\Relations\HasMany
+    public function chapter(): HasMany
     {
         return $this->hasMany(CourseChapter::class, 'course_basis_id', 'id');
     }
 
     /**
-     * 多态一对一关联积分商品表
-     * @return MorphOne
+     * 多态一对一关联积分商品表.
      */
     public function scoreShop(): MorphOne
     {
         return $this->morphOne(ScoreShop::class, 'shop');
+    }
+
+    /**
+     * 关联订单表.
+     */
+    public function order(): HasMany
+    {
+        return $this->hasMany(Order::class, 'shop_id', 'id');
     }
 }

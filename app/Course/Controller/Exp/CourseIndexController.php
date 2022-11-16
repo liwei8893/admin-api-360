@@ -1,15 +1,14 @@
 <?php
+
 declare(strict_types=1);
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace App\Course\Controller\Exp;
 
 use App\Course\Request\CourseIndexRequest;
@@ -24,85 +23,76 @@ use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
 use Mine\MineController;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * 体验课管理控制器
- * Class CourseIndexController
+ * Class CourseIndexController.
  */
-#[Controller(prefix: "course/exp"), Auth]
+#[Controller(prefix: 'course/exp'), Auth]
 class CourseIndexController extends MineController
 {
     /**
      * 业务处理服务
-     * CourseIndexService
+     * CourseIndexService.
      */
     #[Inject]
     protected CourseIndexService $service;
 
-
     /**
-     * 列表
-     * @return ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 列表.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    #[GetMapping("index"), Permission("course:exp:index")]
+    #[GetMapping('index'), Permission('course:exp:index')]
     public function index(): ResponseInterface
     {
         return $this->success($this->service->getPageList($this->request->all()));
     }
 
     /**
-     * 新增
-     * @param CourseIndexRequest $request
-     * @return ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 新增.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    #[PostMapping("save"), Permission("course:exp:save"), OperationLog]
+    #[PostMapping('save'), Permission('course:exp:save'), OperationLog]
     public function save(CourseIndexRequest $request): ResponseInterface
     {
         return $this->success(['id' => $this->service->save($request->all())]);
     }
 
     /**
-     * 更新
-     * @param int $id
-     * @param CourseIndexRequest $request
-     * @return ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 更新.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    #[PutMapping("update/{id}"), Permission("course:exp:update"), OperationLog]
+    #[PutMapping('update/{id}'), Permission('course:exp:update'), OperationLog]
     public function update(int $id, CourseIndexRequest $request): ResponseInterface
     {
         return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
     }
 
     /**
-     * 读取数据
-     * @param int $id
-     * @return ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 读取数据.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    #[GetMapping("read/{id}"), Permission("course:exp:read")]
+    #[GetMapping('read/{id}'), Permission('course:exp:read')]
     public function read(int $id): ResponseInterface
     {
         return $this->success($this->service->read($id));
     }
 
     /**
-     * 单个或批量删除数据到回收站
-     * @return ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 单个或批量删除数据到回收站.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    #[DeleteMapping("delete"), Permission("course:exp:delete"), OperationLog]
+    #[DeleteMapping('delete'), Permission('course:exp:delete'), OperationLog]
     public function delete(): ResponseInterface
     {
-        return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
     }
-
 }

@@ -16,7 +16,7 @@ use Mine\MineFormRequest;
 /**
  * 订单管理验证数据类.
  */
-class OrderRequest extends MineFormRequest
+class OrderHistoryRequest extends MineFormRequest
 {
     /**
      * 公共规则.
@@ -26,31 +26,11 @@ class OrderRequest extends MineFormRequest
         return [];
     }
 
-    public function changeEndDateRules(): array
-    {
-        return [
-            'ids' => 'required|array',
-            'renew' => 'required',
-            'type' => 'required',
-        ];
-    }
 
-    public function changeOrderToUserRules(): array
+    public function index(): array
     {
         return [
-            'oldUserId' => 'required',
-            'newUserId' => 'required',
-            'orderId' => 'required',
-        ];
-    }
-
-    public function changeOrderToRefundRules(): array
-    {
-        return [
-            'orderId' => 'required',
-            'userId' => 'required',
-            'money' => 'required',
-            'remark' => 'required',
+            'shop_id' => 'required',
         ];
     }
 

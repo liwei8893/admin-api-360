@@ -1,15 +1,14 @@
 <?php
+
 declare(strict_types=1);
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace App\Course\Mapper;
 
 use App\Course\Model\CourseBasis;
@@ -18,7 +17,7 @@ use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 
 /**
- * 课时详情表Mapper类
+ * 课时详情表Mapper类.
  */
 class CourseBasisMapper extends AbstractMapper
 {
@@ -33,12 +32,12 @@ class CourseBasisMapper extends AbstractMapper
     }
 
     /**
-     * 批量更新
+     * 批量更新.
      * @param $ids
      * @param $data
      * @return int
-     * author:ZQ
-     * time:2022-08-21 17:54
+     *             author:ZQ
+     *             time:2022-08-21 17:54
      */
     public function batchUpdate($ids, $data): int
     {
@@ -51,7 +50,7 @@ class CourseBasisMapper extends AbstractMapper
         $grade = $data['grade'] ?? [];
         $this->filterExecuteAttributes($data, true);
         $model = $this->model::find($id);
-        if (!$model) {
+        if (! $model) {
             return false;
         }
         $state = $model->update($data);
@@ -69,12 +68,8 @@ class CourseBasisMapper extends AbstractMapper
         return $model->id;
     }
 
-
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -83,7 +78,7 @@ class CourseBasisMapper extends AbstractMapper
             $query->where('course_type', '=', $params['course_type']);
         }
 
-        if (isset($params['id']) && !is_array($params['id'])) {
+        if (isset($params['id']) && ! is_array($params['id'])) {
             $query->where('id', $params['id']);
         }
 
@@ -105,10 +100,10 @@ class CourseBasisMapper extends AbstractMapper
         }
 
         // 是否删除
-        if (!isset($params['is_del'])) {
+        if (! isset($params['is_del'])) {
             $query->where('is_del', '=', 0);
         }
-        if (!empty($params['is_del'])) {
+        if (! empty($params['is_del'])) {
             $query->where('is_del', '=', $params['is_del']);
         }
 
@@ -136,25 +131,25 @@ class CourseBasisMapper extends AbstractMapper
             $query->where('subject_id', '=', $params['subject_id']);
         }
 
-        if (!empty($params['course_title'])) {
+        if (! empty($params['course_title'])) {
             $query->where('course_title', $params['course_title']);
         }
 
-        if (!empty($params['withBasisType'])) {
+        if (! empty($params['withBasisType'])) {
             $query->with(['basisType:id,name']);
         }
 
-        if (!empty($params['withBasisGrade'])) {
+        if (! empty($params['withBasisGrade'])) {
             $query->with(['basisGrade']);
         }
 
-        if (!empty($params['withCountChapter'])) {
+        if (! empty($params['withCountChapter'])) {
             $query->withCount(['chapter' => function (Builder $query) {
                 $query->where('parent_id', '!=', 0);
             }]);
         }
 
-        if (!empty($params['excludeShop'])) {
+        if (! empty($params['excludeShop'])) {
             $query->has('scoreShop', '<');
         }
 

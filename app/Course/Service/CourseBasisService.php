@@ -1,15 +1,14 @@
 <?php
+
 declare(strict_types=1);
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace App\Course\Service;
 
 use App\Course\Mapper\CourseBasisMapper;
@@ -17,7 +16,7 @@ use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 
 /**
- * 课时详情表服务类
+ * 课时详情表服务类.
  */
 class CourseBasisService extends AbstractService
 {
@@ -27,7 +26,6 @@ class CourseBasisService extends AbstractService
     #[Inject]
     public $mapper;
 
-
     public function getPageListByRecycle(?array $params = null, bool $isScope = true): array
     {
         $params['is_del'] = 1;
@@ -36,20 +34,18 @@ class CourseBasisService extends AbstractService
 
     public function recovery(array $ids): bool
     {
-        return !empty($ids) && $this->mapper->disable($ids, 'is_del');
+        return ! empty($ids) && $this->mapper->disable($ids, 'is_del');
     }
 
     public function delete(array $ids): bool
     {
-        return !empty($ids) && $this->mapper->enable($ids, 'is_del');
+        return ! empty($ids) && $this->mapper->enable($ids, 'is_del');
     }
 
     /**
-     * 批量更新
+     * 批量更新.
      * @param $data
      * @return int
-     * author:ZQ
-     * time:2022-08-21 17:56
      */
     public function batchUpdate($data): int
     {
@@ -63,12 +59,9 @@ class CourseBasisService extends AbstractService
      * @param $id
      * @param $statusValue
      * @return bool
-     * author:ZQ
-     * time:2022-08-22 10:45
      */
     public function changeCourseStatus($id, $statusValue): bool
     {
         return $this->mapper->update($id, ['states' => $statusValue]);
     }
-
 }

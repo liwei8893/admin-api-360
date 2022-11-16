@@ -155,7 +155,7 @@ class OrderMapper extends AbstractMapper
                     $query->where('user_type', $params['users_user_type']);
                 })
                 ->when(isset($params['users_mobile']), function ($query) use ($params) {
-                    $query->where('mobile', $params['users_mobile']);
+                    $query->where('mobile', 'like', "{$params['users_mobile']}%");
                 })->when(isset($params['users_platform']), function ($query) use ($params) {
                     $query->where('platform', $params['users_platform']);
                 });
@@ -179,30 +179,5 @@ class OrderMapper extends AbstractMapper
             $query->whereRaw("created_at + (indate * 86400) < UNIX_TIMESTAMP('{$endTime}')");
         }
         return $query;
-    }
-
-    /**
-     * 课程购买记录.
-     * @param $data
-     * @return array
-     *               author:ZQ
-     *               time:2022-09-20 13:52
-     */
-    public function getBuyRecordList($data): array
-    {
-        $query = $this->listQuerySetting($data, true);
-        $query->where('status', '!=', 2)
-            ->with(['users:id,user_name,old_platform,platform,mobile,remark', 'orderGrade', 'orderSubject'])
-            ->whereHas('users', function (Builder $query) {
-                $query->where('user_type', 1);
-            })
-            ->noDeleteOrder();
-        $query = $query->paginate(
-            $params['pageSize'] ?? $this->model::PAGE_SIZE,
-            ['*'],
-            'page',
-            $params['page'] ?? 1
-        );
-        return $this->setPaginate($query);
     }
 }
