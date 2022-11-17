@@ -22,22 +22,27 @@ use Mine\MineModel;
 class Order extends MineModel
 {
     /**
-     * pay_states 需要审核.
+     * @description pay_states 需要审核.
      */
     public const PAY_AUDIT = 8;
 
     /**
-     * pay_states 不需要审核.
+     * @description pay_states 不需要审核.
      */
     public const PAY_NO_AUDIT = 7;
 
     /**
-     * audit_status 需要审核.
+     * @description audit_status 审核不通过.
+     */
+    public const AUDIT_REJECT = 2;
+
+    /**
+     * @description audit_status 需要审核.
      */
     public const AUDIT_PENDING = 1;
 
     /**
-     * audit_status 不需要审核.
+     * @description audit_status 不需要审核.
      */
     public const AUDIT_SUCCESS = 0;
 
@@ -57,14 +62,12 @@ class Order extends MineModel
     // 订单需要审核
     protected $casts = ['created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s', 'status_time' => 'datetime:Y-m-d H:i:s', 'status' => 'string', 'pay_type' => 'string'];
 
-    // 订单不需要审核
+    // 追加字段
     protected $appends = ['created_at|indate' => 'course_end_time'];
 
     /**
      * 追加字段访问器，订单结束时间.
      * @return string
-     *                author:ZQ
-     *                time:2021-06-15 16:05
      */
     public function getCourseEndTimeAttribute(): string
     {
@@ -76,9 +79,6 @@ class Order extends MineModel
 
     /**
      * 反向关联用户表.
-     * @return \Hyperf\Database\Model\Relations\BelongsTo
-     *                                                    author:ZQ
-     *                                                    time:2022-05-29 16:57
      */
     public function users(): BelongsTo
     {
@@ -87,9 +87,6 @@ class Order extends MineModel
 
     /**
      * 关联课程表.
-     * @return \Hyperf\Database\Model\Relations\BelongsTo
-     *                                                    author:ZQ
-     *                                                    time:2022-11-12 15:02
      */
     public function course(): BelongsTo
     {
@@ -98,9 +95,6 @@ class Order extends MineModel
 
     /**
      * 关联付款表.
-     * @return \Hyperf\Database\Model\Relations\HasMany
-     *                                                  author:ZQ
-     *                                                  time:2022-11-12 15:16
      */
     public function payment(): HasMany
     {
@@ -110,9 +104,6 @@ class Order extends MineModel
 
     /**
      * 关联续费表.
-     * @return \Hyperf\Database\Model\Relations\HasMany
-     *                                                  author:ZQ
-     *                                                  time:2022-08-19 17:05
      */
     public function usersRenew(): HasMany
     {
@@ -120,9 +111,7 @@ class Order extends MineModel
     }
 
     /**
-     * 远程关联订单科目
-     * author:ZQ
-     * time:2022-08-24 11:09.
+     * 远程关联订单科目.
      */
     public function orderSubject(): BelongsToMany
     {
@@ -132,9 +121,7 @@ class Order extends MineModel
     }
 
     /**
-     * 远程关联订单年级
-     * author:ZQ
-     * time:2022-08-24 13:37.
+     * 远程关联订单年级.
      */
     public function orderGrade(): BelongsToMany
     {
@@ -144,10 +131,8 @@ class Order extends MineModel
     }
 
     /**
-     * 局部作用域,查询订单状态正常的订单
-     * author:ZQ
-     * time:2022-05-29 17:09.
-     * @param mixed $query
+     * 局部作用域,查询订单状态正常的订单.
+     * @param $query
      */
     public function scopeNormalOrder($query)
     {
@@ -155,10 +140,8 @@ class Order extends MineModel
     }
 
     /**
-     * 局部作用域,查询所有状态的未删除的订单
-     * author:ZQ
-     * time:2022-05-29 17:09.
-     * @param mixed $query
+     * 局部作用域,查询所有状态的未删除的订单.
+     * @param $query
      */
     public function scopeNoDeleteOrder($query)
     {
@@ -168,11 +151,8 @@ class Order extends MineModel
     /**
      * 查询没过期的订单.
      * @param $query
-     * @return mixed
-     *               author:ZQ
-     *               time:2022-06-01 09:42
      */
-    public function scopeIsNotExpire($query): mixed
+    public function scopeIsNotExpire($query)
     {
         return $query->whereRaw('(created_at + (indate * 86400)) > unix_timestamp(now())');
     }

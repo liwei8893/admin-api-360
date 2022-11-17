@@ -1,21 +1,21 @@
 <?php
+
 declare(strict_types=1);
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace App\Users\Service;
 
 use App\System\Service\SystemDeptService;
 use App\System\Service\SystemDictDataService;
 use App\Users\Mapper\UsersMapper;
 use App\Users\Model\Users;
+use Closure;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
 use Hyperf\Di\Annotation\Inject;
@@ -24,39 +24,50 @@ use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\LoginUser;
-use Mine\MineCollection;
-use Mine\MineResponse;
+use PhpOffice\PhpSpreadsheet\Reader\Exception;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use RedisException;
 
 /**
- * 用户表服务类
+ * 用户表服务类.
  */
 class UsersService extends AbstractService
 {
-    #[Inject]
-    protected SystemDictDataService $systemDictDataService;
-
-    #[Inject]
-    protected SystemDeptService $systemDeptService;
-
-    #[Inject]
-    protected LoginUser $loginUser;
-
-    #[Inject]
-    protected UserSalePlatformService $userSalePlatformService;
-
     /**
      * @var UsersMapper
      */
     #[Inject]
     public $mapper;
 
+    /**
+     * @var SystemDictDataService
+     */
+    #[Inject]
+    protected SystemDictDataService $systemDictDataService;
 
     /**
-     * 更换手机号
+     * @var SystemDeptService
+     */
+    #[Inject]
+    protected SystemDeptService $systemDeptService;
+
+    /**
+     * @var LoginUser
+     */
+    #[Inject]
+    protected LoginUser $loginUser;
+
+    /**
+     * @var UserSalePlatformService
+     */
+    #[Inject]
+    protected UserSalePlatformService $userSalePlatformService;
+
+    /**
+     * 更换手机号.
      * @param $params
      * @return bool
-     * author:ZQ
-     * time:2022-08-28 15:03
      */
     public function changeMobile($params): bool
     {
@@ -66,7 +77,7 @@ class UsersService extends AbstractService
         }
         // 更换手机号
         $userModel = $this->mapper->read($params['userId']);
-        if (!$userModel) {
+        if (! $userModel) {
             throw new NormalStatusException('用户不存在!');
         }
         $userModel->mobile = $params['mobile'];
@@ -75,11 +86,9 @@ class UsersService extends AbstractService
     }
 
     /**
-     * 批量更换平台
+     * 批量更换平台.
      * @param $params
      * @return array
-     * author:ZQ
-     * time:2022-08-28 13:55
      */
     public function batchChangePlatform($params): array
     {
@@ -88,7 +97,7 @@ class UsersService extends AbstractService
         foreach ($mobilesArr as $mobile) {
             // 查询用户
             $userModel = $this->mapper->readByMobile($mobile);
-            if (!$userModel) {
+            if (! $userModel) {
                 $logInfo[] = ['mobile' => $mobile, 'info' => '未查询到用户'];
                 continue;
             }
@@ -103,7 +112,7 @@ class UsersService extends AbstractService
             $userModel->sale_platform = $platformData['sale_platform'];
             $userModel->old_platform = $platformData['old_platform'];
             $status = $userModel->save();
-            if (!$status) {
+            if (! $status) {
                 $logInfo[] = ['mobile' => $mobile, 'info' => '失败'];
             }
             $logInfo[] = ['mobile' => $mobile, 'info' => '成功'];
@@ -111,13 +120,10 @@ class UsersService extends AbstractService
         return $logInfo;
     }
 
-
     /**
-     * 创建用户
+     * 创建用户.
      * @param $data
      * @return int
-     * author:ZQ
-     * time:2022-08-16 16:09
      */
     public function save($data): int
     {
@@ -129,20 +135,18 @@ class UsersService extends AbstractService
     }
 
     /**
-     * 更新用户信息
+     * 更新用户信息.
      * @param int $id
      * @param array $data
      * @return bool
-     * author:ZQ
-     * time:2022-08-28 15:48
      */
     public function update(int $id, array $data): bool
     {
-        if (!empty($data['mobile'])) {
+        if (! empty($data['mobile'])) {
             unset($data['mobile']);
         }
         $userModel = $this->mapper->read($id);
-        if (!$userModel) {
+        if (! $userModel) {
             throw new NormalStatusException('用户不存在!');
         }
         // 更换平台
@@ -152,12 +156,9 @@ class UsersService extends AbstractService
         return $this->mapper->update($id, $data);
     }
 
-
     /**
      * @param array $data
      * @return array
-     * author:ZQ
-     * time:2022-08-17 10:06
      */
     public function handleSaveData(array $data): array
     {
@@ -183,8 +184,6 @@ class UsersService extends AbstractService
      * 初始化密码
      * @param int $id
      * @return bool
-     * author:ZQ
-     * time:2022-06-01 15:23
      */
     public function initUserPassword(int $id): bool
     {
@@ -192,21 +191,10 @@ class UsersService extends AbstractService
     }
 
     /**
-     * 处理提交数据
-     * @param $params
+     * @param array|null $params
+     * @param bool $isScope
      * @return array
      */
-    protected function handleData($params): array
-    {
-        if (!isset($params['orderBy'])) {
-            $params['orderBy'] = ['id'];
-        }
-        if (!isset($params['orderType'])) {
-            $params['orderType'] = ['desc'];
-        }
-        return $params;
-    }
-
     public function getPageList(?array $params = null, bool $isScope = true): array
     {
         $params = $this->handleData($params);
@@ -214,33 +202,27 @@ class UsersService extends AbstractService
     }
 
     /**
-     * 用手机号查询一条数据
+     * 用手机号查询一条数据.
      * @param $mobile
-     * author:ZQ
-     * time:2022-08-20 10:35
+     * @return Builder|Model
      */
-    public function readByMobile($mobile)
+    public function readByMobile($mobile): Model|Builder
     {
         $model = $this->mapper->readByMobile($mobile);
-        if (!$model) {
+        if (! $model) {
             throw new NormalStatusException('此手机号用户不存在!');
         }
         return $model;
     }
 
     /**
-     * 用户导入
-     * @param string $dto
-     * @param \Closure|null $closure
-     * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * author:ZQ
-     * time:2022-08-16 16:16
+     * 用户导入.
+     * @throws Exception
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface|RedisException
      */
     #[Transaction]
-    public function import(string $dto, ?\Closure $closure = null): bool
+    public function import(string $dto, ?Closure $closure = null): bool
     {
         $grade = $this->systemDictDataService->getList(['code' => 'grade']);
         $platform = $this->systemDeptService->getPlatformSelect();
@@ -255,17 +237,17 @@ class UsersService extends AbstractService
                 if (empty($value['user_name'])) {
                     $errMessage[] = "第{$row}行用户名不能为空";
                 }
-                if (empty($value['mobile']) || !preg_match("/^1[3456789]\d{9}$/", $value['mobile'])) {
+                if (empty($value['mobile']) || ! preg_match('/^1[3456789]\\d{9}$/', $value['mobile'])) {
                     $errMessage[] = "第{$row}行手机号错误";
                 }
-                if (empty($value['platform']) || !$platform->contains('key', $value['platform'])) {
+                if (empty($value['platform']) || ! $platform->contains('key', $value['platform'])) {
                     $errMessage[] = "第{$row}行平台错误";
                 }
-                if (empty($value['grade']) || !$grade->contains('title', $value['grade'])) {
+                if (empty($value['grade']) || ! $grade->contains('title', $value['grade'])) {
                     $errMessage[] = "第{$row}行年级错误";
                 }
             }
-            if (!empty($errMessage)) {
+            if (! empty($errMessage)) {
                 throw new NormalStatusException(implode(';', $errMessage));
             }
             // 数据处理
@@ -282,5 +264,21 @@ class UsersService extends AbstractService
             return true;
         };
         return parent::import($dto, $closure);
+    }
+
+    /**
+     * 处理提交数据.
+     * @param $params
+     * @return array
+     */
+    protected function handleData($params): array
+    {
+        if (! isset($params['orderBy'])) {
+            $params['orderBy'] = ['id'];
+        }
+        if (! isset($params['orderType'])) {
+            $params['orderType'] = ['desc'];
+        }
+        return $params;
     }
 }

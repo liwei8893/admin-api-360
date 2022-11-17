@@ -1,15 +1,14 @@
 <?php
+
 declare(strict_types=1);
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace App\Order\Controller\Sta;
 
 use App\Order\Request\OrderStaRequest;
@@ -25,28 +24,52 @@ use Psr\Http\Message\ResponseInterface;
 
 /**
  * 订单管理控制器
- * Class OrderController
+ * Class OrderController.
  */
-#[Controller(prefix: "order/sta"), Auth]
+#[Controller(prefix: 'order/sta'), Auth]
 class OrderStaController extends MineController
 {
     /**
      * 业务处理服务
-     * OrderService
+     * OrderService.
      */
     #[Inject]
     protected OrderStaService $service;
 
     /**
+     * 新增统计表.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getNewVipSta')]
+    public function getNewVipSta(OrderStaRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getNewVipSta($request->all()));
+    }
+
+    /**
+     * 续费统计表.
      * @param OrderStaRequest $request
      * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getStaByPlatform')]
-    public function getStaByPlatform(OrderStaRequest $request): ResponseInterface
+    #[GetMapping('getRenewalSta')]
+    public function getRenewalSta(OrderStaRequest $request): ResponseInterface
     {
-        return $this->success($this->service->getStaByPlatform($request->all()));
+        return $this->success($this->service->getRenewalSta($request->all()));
     }
 
+    /**
+     * 退费统计表.
+     * @param OrderStaRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getRefundSta')]
+    public function getRefundSta(OrderStaRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getRefundSta($request->all()));
+    }
 }

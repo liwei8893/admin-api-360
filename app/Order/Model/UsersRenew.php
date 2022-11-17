@@ -1,17 +1,27 @@
 <?php
 
-declare (strict_types=1);
-
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Order\Model;
 
+use App\Users\Model\Users;
+use Carbon\Carbon;
+use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
 
 /**
  * @property int $id
  * @property int $order_id
- * @property string $indate_start
- * @property string $indate_end
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $indate_start
+ * @property Carbon $indate_end
+ * @property Carbon $created_at
  * @property int $created_id
  * @property int $status
  * @property string $money
@@ -22,27 +32,65 @@ use Mine\MineModel;
  * @property string $remark
  * @property string $cause_text
  * @property int $renew_experience 续费时属性
+ * @property string $in_date
  */
 class UsersRenew extends MineModel
 {
+    /**
+     * 续费.
+     * @description 续费
+     */
+    public const STATUS_RENEW = 1;
+
+    /**
+     * @description 修改有效期
+     */
+    public const STATUS_CHANGE = 0;
+
     public $timestamps = false;
+
     /**
      * The table associated with the model.
-     * 续费表
+     * 续费表.
      * @var string
      */
     protected $table = 'users_renew';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['order_id', 'indate_start', 'indate_end', 'created_at', 'created_id', 'status', 'money', 'created_name', 'shop_id', 'user_id', 'audit_status', 'remark', 'cause_text', 'renew_experience'];
+    protected $fillable = ['id', 'order_id', 'indate_start', 'indate_end', 'created_at', 'created_id', 'status', 'money', 'created_name', 'shop_id', 'user_id', 'audit_status', 'remark', 'cause_text', 'renew_experience'];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'order_id' => 'integer', 'created_at' => 'datetime', 'created_id' => 'integer', 'status' => 'string', 'money' => 'decimal:2', 'shop_id' => 'integer', 'user_id' => 'integer', 'audit_status' => 'integer', 'renew_experience' => 'integer'];
+    protected $casts = ['id' => 'integer', 'order_id' => 'integer', 'indate_start' => 'datetime', 'indate_end' => 'datetime', 'created_at' => 'datetime', 'created_id' => 'integer', 'status' => 'integer', 'money' => 'decimal:2', 'shop_id' => 'integer', 'user_id' => 'integer', 'audit_status' => 'integer', 'renew_experience' => 'integer'];
 
+    protected $dates = ['indate_start', 'indate_end', 'created_at'];
+
+    // 追加字段
+    protected $appends = ['indate_start|indate_end' => 'renew_day'];
+
+    /**
+     * 追加字段访问器，续费天数.
+     */
+    public function getRenewDayAttribute(): int
+    {
+        if (isset($this->attributes['indate_start'], $this->attributes['indate_end'])) {
+            return $this->indate_end->diffInDays($this->indate_start);
+        }
+        return 0;
+    }
+
+    /**
+     * 关联用户表.
+     */
+    public function users(): HasOne
+    {
+        return $this->hasOne(Users::class, 'id', 'user_id');
+    }
 }

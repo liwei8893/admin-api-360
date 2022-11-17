@@ -1,24 +1,25 @@
 <?php
+
 declare(strict_types=1);
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace App\Order\Mapper;
 
 use App\Order\Model\Order;
+use App\Order\Model\UsersRenew;
 use App\Users\Model\Users;
+use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * 订单管理Mapper类
+ * 订单管理Mapper类.
  */
 class OrderStaMapper extends AbstractMapper
 {
@@ -33,19 +34,18 @@ class OrderStaMapper extends AbstractMapper
     }
 
     /**
-     * 按月份获取各平台订单数据
+     * 按月份获取各平台订单数据.
      * @param $params
-     * @return Collection|array
      */
-    public function getStaByPlatform($params): Collection|array
+    public function getNewVipSta($params): Collection|array
     {
         $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
         $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
-        $lastDay = date('Y-m-d', strtotime("$firstDay +1 month -1 day"));
+        $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
 
         $query = Users::query()->leftJoin('order', 'users.id', 'order.user_id')
             ->where('order.shop_id', 950)
-            ->where('users.user_type', 1)
+            ->where('users.user_type', Users::USER_TYPE)
             ->whereIn('order.pay_states', [2, 7])
             ->where('order.deleted_at', 0)
             ->where('order.status', '!=', 2)
@@ -63,4 +63,34 @@ class OrderStaMapper extends AbstractMapper
         return $this->handleSearch($query, $params)->get();
     }
 
+    public function getRenewalSta($params): Collection|array
+    {
+        $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
+        $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
+        $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
+
+        $query = UsersRenew::query()
+            ->leftJoin('order', 'users_renew.order_id', 'order.id')
+            ->leftJoin('users', 'users.id', 'users_renew.user_id')
+            ->whereHas('users', function (Builder $query) use ($params) {
+                $query->platformDataScope()
+                    ->where('user_type', Users::USER_TYPE)
+                    ->when(isset($params['platform']) && is_array($params['platform']), function (Builder $query) use ($params) {
+                        $query->whereIn('platform', $params['platform']);
+                    });
+            })
+            ->where('users_renew.audit_status', Order::AUDIT_SUCCESS)
+            ->where('users_renew.status', UsersRenew::STATUS_RENEW)
+            ->whereBetween(
+                'users_renew.created_at',
+                [strtotime($firstDay . ' 00:00:00'), strtotime($lastDay . ' 23:59:59')]
+            )
+            ->where('order.shop_id', 950)
+            ->where('order.pay_states', 7)
+            ->where('order.deleted_at', 0)
+            ->where('order.status', '!=', 2)
+            ->select(['users_renew.*', 'users.platform', 'users.mobile', 'order.shop_id', 'order.shop_name', 'order.indate'])
+            ->orderBy('users_renew.created_at');
+        return $this->handleSearch($query, $params)->get();
+    }
 }

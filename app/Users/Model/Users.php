@@ -122,6 +122,16 @@ class Users extends MineModel
     public const VIP_TYPE_SUPREME = 1143;
 
     /**
+     * @description 用户类型-用户
+     */
+    public const USER_TYPE = 1;
+
+    /**
+     * @description 用户类型-内部人员
+     */
+    public const ADMIN_TYPE = 0;
+
+    /**
      * The table associated with the model.
      *
      * @var string
@@ -150,7 +160,6 @@ class Users extends MineModel
      * 验证密码
      * @param $password
      * @param $hash
-     * @return bool
      */
     public static function passwordVerify($password, $hash): bool
     {

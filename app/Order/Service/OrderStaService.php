@@ -1,15 +1,14 @@
 <?php
+
 declare(strict_types=1);
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace App\Order\Service;
 
 use App\Order\Mapper\OrderStaMapper;
@@ -17,7 +16,7 @@ use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 
 /**
- * 订单管理服务类
+ * 订单管理服务类.
  */
 class OrderStaService extends AbstractService
 {
@@ -27,37 +26,85 @@ class OrderStaService extends AbstractService
     #[inject]
     public $mapper;
 
-    public function getStaByPlatform($data): array
+    /**
+     * 会员新增统计
+     * @param $data
+     * @return array
+     */
+    public function getNewVipSta($data): array
     {
-        // 没传月份默认当月
-        if (!isset($data['dateMonth'])) {
-            $data['dateMonth'] = date('Y-m');
-        }
-        $data = $this->mapper->getStaByPlatform($data);
+        $data = $this->mapper->getNewVipSta($data);
         if ($data->isEmpty()) {
             return $data->toArray();
         }
         $allPlatform = $data->pluck('platform')->unique()->values()->toArray();
-        // 处理时间,created_at->Y-m-d
-        $data = $data->reduce(function ($carry, $item) {
+        $data = $this->handleStaDate($data);
+        $this->handleStaDataSum($data, $allPlatform);
+        return array_values($data);
+    }
+
+    /**
+     * 续费统计
+     * @param $data
+     * @return array
+     */
+    public function getRenewalSta($data): array
+    {
+        $data = $this->mapper->getRenewalSta($data);
+        if ($data->isEmpty()) {
+            return $data->toArray();
+        }
+        $allPlatform = $data->pluck('platform')->unique()->values()->toArray();
+        $data = $this->handleStaDate($data, 'renew_day');
+        $this->handleStaDataSum($data, $allPlatform);
+        return array_values($data);
+    }
+
+    public function getRefundSta($data)
+    {
+        $data = $this->mapper->getRenewalSta($data);
+        if ($data->isEmpty()) {
+            return $data->toArray();
+        }
+        return $data;
+    }
+
+    /**
+     * 处理时间,created_at->Y-m-d.
+     * @param $data
+     * @param string $dayField
+     * @return array
+     */
+    protected function handleStaDate($data, string $dayField = 'indate'): array
+    {
+        return $data->reduce(function ($carry, $item) use ($dayField) {
             $item['date'] = $item->created_at->toDateString();
             $item['tag'] = 'other';
-            if ($item['indate'] >= 100 && $item['indate'] <= 730) {
+            if ($item[$dayField] >= 100 && $item[$dayField] <= 730) {
                 $item['tag'] = 'd1';
-            } elseif ($item['indate'] >= 731 && $item['indate'] <= 1095) {
+            } elseif ($item[$dayField] >= 731 && $item[$dayField] <= 1095) {
                 $item['tag'] = 'd2';
-            } elseif ($item['indate'] >= 1096 && $item['indate'] <= 1200) {
+            } elseif ($item[$dayField] >= 1096 && $item[$dayField] <= 1200) {
                 $item['tag'] = 'd3';
-            } elseif ($item['indate'] > 1200) {
+            } elseif ($item[$dayField] > 1200) {
                 $item['tag'] = 'd4';
             }
-            if (!isset($carry[$item['date']][$item['platform']][$item['tag']])) {
+            if (! isset($carry[$item['date']][$item['platform']][$item['tag']])) {
                 $carry[$item['date']][$item['platform']][$item['tag']] = 1;
             } else {
-                $carry[$item['date']][$item['platform']][$item['tag']]++;
+                ++$carry[$item['date']][$item['platform']][$item['tag']];
             }
             return $carry;
         }, []);
+    }
+
+    /**
+     * 处理合计行列.
+     * @param $data
+     * @param $allPlatform
+     */
+    protected function handleStaDataSum(&$data, $allPlatform): void
+    {
         // 计算合计
         $colSum = ['date' => '合计', 'sum' => 0];
         foreach ($data as $key => &$value) {
@@ -77,7 +124,7 @@ class OrderStaService extends AbstractService
                     continue;
                 }
                 // 合计行
-                $sum = ($item['d1'] ?? 0) + (!empty($item['d2']) ? ($item['d2'] * 2) : 0) + (!empty($item['d3']) ? ($item['d3'] * 3) : 0) + (!empty($item['d4']) ? ($item['d4'] * 4) : 0);
+                $sum = ($item['d1'] ?? 0) + (! empty($item['d2']) ? ($item['d2'] * 2) : 0) + (! empty($item['d3']) ? ($item['d3'] * 3) : 0) + (! empty($item['d4']) ? ($item['d4'] * 4) : 0);
                 $value[$itemKey]['sum'] = $sum;
                 $value['sum'] += $sum;
                 $colSum['sum'] += $sum;
@@ -94,6 +141,5 @@ class OrderStaService extends AbstractService
         }
         unset($value);
         $data[] = $colSum;
-        return array_values($data);
     }
 }

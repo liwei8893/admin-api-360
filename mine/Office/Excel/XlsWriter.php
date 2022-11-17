@@ -1,46 +1,49 @@
 <?php
+
 declare(strict_types=1);
-
 /**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
+ * This file is part of Hyperf.
  *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 namespace Mine\Office\Excel;
 
+use Closure;
+use Exception;
 use Hyperf\Utils\Arr;
 use Mine\Exception\MineException;
+use Mine\MineModel;
+use Mine\MineRequest;
 use Mine\MineResponse;
 use Mine\Office\ExcelPropertyInterface;
 use Mine\Office\MineExcel;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
+use Vtiful\Kernel\Excel;
 use Vtiful\Kernel\Format;
 
 class XlsWriter extends MineExcel implements ExcelPropertyInterface
 {
-
     /**
-     * 导入数据
-     * @param \Mine\MineModel $model
-     * @param \Closure|null $closure
-     * @return bool
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Exception
+     * 导入数据.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
-    public function import(\Mine\MineModel $model, ?\Closure $closure = null): bool
+    public function import(MineModel $model, ?Closure $closure = null): bool
     {
-        $request = container()->get(\Mine\MineRequest::class);
+        $request = container()->get(MineRequest::class);
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $tempFileName = 'import_' . time() . '.' . $file->getExtension();
             $tempFilePath = BASE_PATH . '/runtime/' . $tempFileName;
             file_put_contents($tempFilePath, $file->getStream()->getContents());
-            $xlsxObject = new \Vtiful\Kernel\Excel(['path' => BASE_PATH . '/runtime/']);
+            $xlsxObject = new Excel(['path' => BASE_PATH . '/runtime/']);
             $data = $xlsxObject->openFile($tempFileName)->openSheet()->getSheetData();
             unset($data[0]);
 
@@ -48,12 +51,12 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             foreach ($data as $item) {
                 $tmp = [];
                 foreach ($item as $key => $value) {
-                    $tmp[$this->property[$key]['name']] = (string)$value;
+                    $tmp[$this->property[$key]['name']] = (string) $value;
                 }
                 $importData[] = $tmp;
             }
 
-            if ($closure instanceof \Closure) {
+            if ($closure instanceof Closure) {
                 return $closure($model, $importData);
             }
 
@@ -62,9 +65,9 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
                     $model::create($item);
                 }
                 @unlink($tempFilePath);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 @unlink($tempFilePath);
-                throw new \RuntimeException($e->getMessage());
+                throw new RuntimeException($e->getMessage());
             }
             return true;
         }
@@ -73,14 +76,11 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
     }
 
     /**
-     * 导出excel
-     * @param string $filename
-     * @param array|\Closure $closure
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 导出excel.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    public function export(string $filename, array|\Closure $closure): \Psr\Http\Message\ResponseInterface
+    public function export(string $filename, array|Closure $closure): ResponseInterface
     {
         $filename .= '.xlsx';
         is_array($closure) ? $data = &$closure : $data = $closure();
@@ -99,13 +99,13 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         }
 
         $tempFileName = 'export_' . time() . '.xlsx';
-        $xlsxObject = new \Vtiful\Kernel\Excel(['path' => BASE_PATH . '/runtime/']);
+        $xlsxObject = new Excel(['path' => BASE_PATH . '/runtime/']);
         $fileObject = $xlsxObject->constMemory($tempFileName)->header($columnName);
         $columnFormat = new Format($fileObject->getHandle());
         $rowFormat = new Format($fileObject->getHandle());
 
         $index = 0;
-        for ($i = 65; $i < (65 + count($columnField)); $i++) {
+        for ($i = 65; $i < (65 + count($columnField)); ++$i) {
             $columnNumber = chr($i) . '1';
             $fileObject->setColumn(
                 sprintf('%s:%s', $columnNumber, $columnNumber),
@@ -116,12 +116,13 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
                     ->fontColor($this->property[$index]['color'] ?? Format::COLOR_BLACK)
                     ->toResource()
             );
-            $index++;
+            ++$index;
         }
 
         // 表头加样式
         $fileObject->setRow(
-            sprintf('A1:%s1', chr(65 + count($columnField))), 20,
+            sprintf('A1:%s1', chr(65 + count($columnField))),
+            20,
             $rowFormat->bold()->align(Format::FORMAT_ALIGN_CENTER, Format::FORMAT_ALIGN_VERTICAL_CENTER)
 //                ->background(0x4ac1ff)->fontColor(Format::COLOR_BLACK)
 //                ->border(Format::BORDER_THIN)
@@ -132,14 +133,14 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         foreach ($data as $item) {
             $yield = [];
             foreach ($this->property as $property) {
-                if (!empty($property['customField'])) {
+                if (! empty($property['customField'])) {
                     $value = Arr::get($item, $property['customField']);
                 } else {
                     $value = Arr::get($item, $property['name']);
                 }
-                if (!empty($property['dictName'])) {
+                if (! empty($property['dictName'])) {
                     $yield[] = $property['dictName'][$value];
-                } else if (!empty($property['dictData'])) {
+                } elseif (! empty($property['dictData'])) {
                     $yield[] = $property['dictData'][$value];
                 }
                 $yield[] = $value;
@@ -157,22 +158,16 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             throw new MineException('导出数据失败', 500);
         }
         $res = $this->downloadExcel($filename, ob_get_clean());
-
         @unlink($filePath);
 
         return $res;
     }
 
     /**
-     * @param string $filename
-     * @param \Closure $closure
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * author:ZQ
-     * time:2022-08-31 10:12
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    public function bigExport(string $filename, \Closure $closure): \Psr\Http\Message\ResponseInterface
+    public function bigExport(string $filename, Closure $closure): ResponseInterface
     {
         $filename .= '.xlsx';
         $columnName = [];
@@ -180,8 +175,8 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             $columnName[] = $item['value'];
         }
         $tempFileName = 'export_' . time() . '.xlsx';
-        $xlsxObject = new \Vtiful\Kernel\Excel(['path' => BASE_PATH . '/runtime/']);
-        $fileObject = $xlsxObject->constMemory($tempFileName)->header($columnName);
+        $xlsxObject = new Excel(['path' => BASE_PATH . '/runtime/']);
+        $fileObject = $xlsxObject->constMemory($tempFileName, 'Sheet1', false)->header($columnName);
         $closure($fileObject, $this->property);
 
         $response = container()->get(MineResponse::class);
@@ -194,7 +189,6 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             throw new MineException('导出数据失败', 500);
         }
         $res = $this->downloadExcel($filename, ob_get_clean());
-
         @unlink($filePath);
 
         return $res;
