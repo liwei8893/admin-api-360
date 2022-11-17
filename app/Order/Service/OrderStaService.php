@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace App\Order\Service;
 
 use App\Order\Mapper\OrderStaMapper;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 
@@ -60,13 +61,24 @@ class OrderStaService extends AbstractService
         return array_values($data);
     }
 
-    public function getRefundSta($data)
+    /**
+     * 退费统计.
+     * @param $data
+     * @return array
+     */
+    public function getRefundSta($data): array
     {
-        $data = $this->mapper->getRenewalSta($data);
+        $data = $this->mapper->getRefundSta($data);
         if ($data->isEmpty()) {
             return $data->toArray();
         }
-        return $data;
+        $data->each(function ($item) {
+            $item->created_at = $item->create_at;
+        });
+        $allPlatform = $data->pluck('platform')->unique()->values()->toArray();
+        $data = $this->handleStaDate($data);
+        $this->handleStaDataSum($data, $allPlatform);
+        return array_values($data);
     }
 
     /**

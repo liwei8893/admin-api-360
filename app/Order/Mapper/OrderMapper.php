@@ -58,9 +58,6 @@ class OrderMapper extends AbstractMapper
     /**
      * 软删除.
      * @param $id
-     * @return int
-     *             author:ZQ
-     *             time:2022-08-21 11:50
      */
     public function softDelete($id): int
     {
@@ -70,9 +67,6 @@ class OrderMapper extends AbstractMapper
 
     /**
      * 返回数据集合.
-     * @return Collection
-     *                    author:ZQ
-     *                    time:2022-08-18 17:52
      */
     public function getCollectByIds(array $ids, array $column = ['*']): Collection
     {
@@ -157,7 +151,11 @@ class OrderMapper extends AbstractMapper
                 ->when(isset($params['users_mobile']), function ($query) use ($params) {
                     $query->where('mobile', 'like', "{$params['users_mobile']}%");
                 })->when(isset($params['users_platform']), function ($query) use ($params) {
-                    $query->where('platform', $params['users_platform']);
+                    if (is_array($params['users_platform'])) {
+                        $query->whereIn('platform', $params['users_platform']);
+                    } else {
+                        $query->where('platform', $params['users_platform']);
+                    }
                 });
         });
         if (isset($params['created_at'][0], $params['created_at'][1])) {

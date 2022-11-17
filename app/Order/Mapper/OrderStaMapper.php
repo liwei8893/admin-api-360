@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace App\Order\Mapper;
 
 use App\Order\Model\Order;
+use App\Order\Model\OrderTransaction;
 use App\Order\Model\UsersRenew;
 use App\Users\Model\Users;
 use Hyperf\Database\Model\Builder;
@@ -34,8 +35,9 @@ class OrderStaMapper extends AbstractMapper
     }
 
     /**
-     * 按月份获取各平台订单数据.
+     * 新增统计.
      * @param $params
+     * @return Collection|array
      */
     public function getNewVipSta($params): Collection|array
     {
@@ -63,6 +65,11 @@ class OrderStaMapper extends AbstractMapper
         return $this->handleSearch($query, $params)->get();
     }
 
+    /**
+     * 续费统计
+     * @param $params
+     * @return Collection|array
+     */
     public function getRenewalSta($params): Collection|array
     {
         $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
@@ -91,6 +98,40 @@ class OrderStaMapper extends AbstractMapper
             ->where('order.status', '!=', 2)
             ->select(['users_renew.*', 'users.platform', 'users.mobile', 'order.shop_id', 'order.shop_name', 'order.indate'])
             ->orderBy('users_renew.created_at');
+        return $this->handleSearch($query, $params)->get();
+    }
+
+    /**
+     * 退费统计
+     * @param $params
+     * @return Collection|array
+     */
+    public function getRefundSta($params): Collection|array
+    {
+        $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
+        $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
+        $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
+
+        $query = OrderTransaction::query()
+            ->leftJoin('order', 'order_transaction.order_id', 'order.id')
+            ->leftJoin('users', 'users.id', 'order_transaction.user_id')
+            ->whereHas('users', function (Builder $query) use ($params) {
+                $query->platformDataScope()
+                    ->where('user_type', Users::USER_TYPE)
+                    ->when(isset($params['platform']) && is_array($params['platform']), function (Builder $query) use ($params) {
+                        $query->whereIn('platform', $params['platform']);
+                    });
+            })
+            ->where('order_transaction.type_id', OrderTransaction::TYPE_REFUND)
+            ->whereBetween(
+                'order_transaction.create_at',
+                [$firstDay . ' 00:00:00', $lastDay . ' 23:59:59']
+            )
+            ->where('order.shop_id', 950)
+            ->where('order.pay_states', 7)
+            ->where('order.deleted_at', 0)
+            ->select(['order_transaction.*', 'users.platform', 'users.mobile', 'order.shop_id', 'order.shop_name', 'order.indate'])
+            ->orderBy('order_transaction.create_at');
         return $this->handleSearch($query, $params)->get();
     }
 }
