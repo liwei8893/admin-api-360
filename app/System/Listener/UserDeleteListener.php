@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\System\Listener;
 
 use Hyperf\Event\Annotation\Listener;
@@ -11,8 +12,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 
 /**
- * Class UserDeleteListener
- * @package App\System\Listener
+ * Class UserDeleteListener.
  */
 #[Listener]
 class UserDeleteListener implements ListenerInterface
@@ -20,12 +20,11 @@ class UserDeleteListener implements ListenerInterface
     public function listen(): array
     {
         return [
-            UserDelete::class
+            UserDelete::class,
         ];
     }
 
     /**
-     * @param object $event
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws InvalidArgumentException

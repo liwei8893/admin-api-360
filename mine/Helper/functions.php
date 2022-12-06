@@ -1,57 +1,44 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
+declare(strict_types=1);
 
 use App\System\Vo\QueueMessageVo;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\Utils\ApplicationContext;
-use Mine\Helper\LoginUser;
 use Mine\Helper\AppVerify;
 use Mine\Helper\Id;
+use Mine\Helper\LoginUser;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 if (! function_exists('container')) {
-
     /**
-     * 获取容器实例
+     * 获取容器实例.
      * @return \Psr\Container\ContainerInterface
      */
-    function container(): \Psr\Container\ContainerInterface
+    function container(): Psr\Container\ContainerInterface
     {
         return ApplicationContext::getContainer();
     }
-
 }
 
 if (! function_exists('redis')) {
-
     /**
-     * 获取Redis实例
+     * 获取Redis实例.
      * @return \Hyperf\Redis\Redis
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    function redis(): \Hyperf\Redis\Redis
+    function redis(): Hyperf\Redis\Redis
     {
         return container()->get(\Hyperf\Redis\Redis::class);
     }
-
 }
 
 if (! function_exists('console')) {
-
     /**
-     * 获取控制台输出实例
-     * @return StdoutLoggerInterface
+     * 获取控制台输出实例.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -59,15 +46,11 @@ if (! function_exists('console')) {
     {
         return container()->get(StdoutLoggerInterface::class);
     }
-
 }
 
 if (! function_exists('logger')) {
-
     /**
-     * 获取日志实例
-     * @param string $name
-     * @return LoggerInterface
+     * 获取日志实例.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -75,14 +58,11 @@ if (! function_exists('logger')) {
     {
         return container()->get(LoggerFactory::class)->get($name);
     }
-
 }
 
 if (! function_exists('user')) {
     /**
-     * 获取当前登录用户实例
-     * @param string $scene
-     * @return LoginUser
+     * 获取当前登录用户实例.
      */
     function user(string $scene = 'default'): LoginUser
     {
@@ -92,15 +72,13 @@ if (! function_exists('user')) {
 
 if (! function_exists('format_size')) {
     /**
-     * 格式化大小
-     * @param int $size
-     * @return string
+     * 格式化大小.
      */
     function format_size(int $size): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         $index = 0;
-        for ($i = 0; $size >= 1024 && $i < 5; $i++) {
+        for ($i = 0; $size >= 1024 && $i < 5; ++$i) {
             $size /= 1024;
             $index = $i;
         }
@@ -110,28 +88,25 @@ if (! function_exists('format_size')) {
 
 if (! function_exists('t')) {
     /**
-     * 多语言函数
-     * @param string $key
-     * @param array $replace
-     * @return string
+     * 多语言函数.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     function t(string $key, array $replace = []): string
     {
         $acceptLanguage = container()->get(\Mine\MineRequest::class)->getHeaderLine('accept-language');
-        $language = !empty($acceptLanguage) ? explode(',',$acceptLanguage)[0] : 'zh_CN';
+        $language = ! empty($acceptLanguage) ? explode(',', $acceptLanguage)[0] : 'zh_CN';
         return __($key, $replace, $language);
     }
 }
 
 if (! function_exists('mine_collect')) {
     /**
-     * 创建一个Mine的集合类
+     * 创建一个Mine的集合类.
      * @param null|mixed $value
      * @return \Mine\MineCollection
      */
-    function mine_collect($value = null): \Mine\MineCollection
+    function mine_collect($value = null): Mine\MineCollection
     {
         return new \Mine\MineCollection($value);
     }
@@ -139,21 +114,18 @@ if (! function_exists('mine_collect')) {
 
 if (! function_exists('context_set')) {
     /**
-     * 设置上下文数据
-     * @param string $key
+     * 设置上下文数据.
      * @param $data
-     * @return bool
      */
     function context_set(string $key, $data): bool
     {
-        return (bool)\Hyperf\Context\Context::set($key, $data);
+        return (bool) \Hyperf\Context\Context::set($key, $data);
     }
 }
 
 if (! function_exists('context_get')) {
     /**
-     * 获取上下文数据
-     * @param string $key
+     * 获取上下文数据.
      * @return mixed
      */
     function context_get(string $key)
@@ -164,9 +136,7 @@ if (! function_exists('context_get')) {
 
 if (! function_exists('app_verify')) {
     /**
-     * 获取APP应用请求实例
-     * @param string $scene
-     * @return AppVerify
+     * 获取APP应用请求实例.
      */
     function app_verify(string $scene = 'api'): AppVerify
     {
@@ -176,13 +146,11 @@ if (! function_exists('app_verify')) {
 
 if (! function_exists('snowflake_id')) {
     /**
-     * 生成雪花ID
-     * @param int|null $workerId
-     * @return String
+     * 生成雪花ID.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    function snowflake_id(?int $workerId = null): String
+    function snowflake_id(?int $workerId = null): string
     {
         return container()->get(Id::class)->getId($workerId);
     }
@@ -190,9 +158,7 @@ if (! function_exists('snowflake_id')) {
 
 if (! function_exists('event')) {
     /**
-     * 事件调度快捷方法
-     * @param object $dispatch
-     * @return object
+     * 事件调度快捷方法.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -204,10 +170,7 @@ if (! function_exists('event')) {
 
 if (! function_exists('push_queue_message')) {
     /**
-     * 推送消息到队列
-     * @param QueueMessageVo $message
-     * @param array $receiveUsers
-     * @return bool
+     * 推送消息到队列.
      * @throws Throwable
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -222,14 +185,13 @@ if (! function_exists('push_queue_message')) {
 
 if (! function_exists('add_queue')) {
     /**
-     * 添加任务到队列
+     * 添加任务到队列.
      * @param \App\System\Vo\AmqpQueueVo $amqpQueueVo
-     * @return bool
      * @throws Throwable
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    function add_queue(\App\System\Vo\AmqpQueueVo $amqpQueueVo): bool
+    function add_queue(App\System\Vo\AmqpQueueVo $amqpQueueVo): bool
     {
         return container()
             ->get(\App\System\Service\SystemQueueLogService::class)

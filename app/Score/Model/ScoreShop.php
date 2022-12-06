@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace App\Score\Model;
 
@@ -22,18 +22,21 @@ class ScoreShop extends MineModel
     use SoftDeletes;
 
     protected $dateFormat = 'U';
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'score_shop';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'shop_type', 'shop_id', 'score', 'sort', 'created_at', 'updated_at', 'deleted_at'];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -41,10 +44,8 @@ class ScoreShop extends MineModel
      */
     protected $casts = ['id' => 'integer', 'shop_type' => 'string', 'shop_id' => 'integer', 'score' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
-
     /**
      * 获得拥有此商品的模型。
-     * @return MorphTo
      */
     public function shop(): MorphTo
     {

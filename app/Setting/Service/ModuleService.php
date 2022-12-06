@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Setting\Service;
 
 use Hyperf\Config\Annotation\Value;
@@ -14,14 +15,8 @@ use Symfony\Component\Console\Output\NullOutput;
 
 class ModuleService extends AbstractService
 {
-    /**
-     * @var Mine
-     */
     protected Mine $mine;
 
-    /**
-     * @var string|null
-     */
     #[Value('cache.default.prefix')]
     protected ?string $prefix = null;
 
@@ -31,10 +26,7 @@ class ModuleService extends AbstractService
     }
 
     /**
-     * 获取表状态分页列表
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 获取表状态分页列表.
      */
     public function getPageList(?array $params = [], bool $isScope = true): array
     {
@@ -42,43 +34,7 @@ class ModuleService extends AbstractService
     }
 
     /**
-     * 数组数据搜索器
-     * @param Collection $collect
-     * @param array $params
-     * @return Collection
-     */
-    protected function handleArraySearch(Collection $collect, array $params): Collection
-    {
-        if ($params['name'] ?? false) {
-            $collect = $collect->filter(function ($row) use ($params) {
-                return \Mine\Helper\Str::contains($row['name'], $params['name']);
-            });
-        }
-
-        if ($params['label'] ?? false) {
-            $collect = $collect->filter(function ($row) use ($params) {
-                return \Mine\Helper\Str::contains($row['label'], $params['label']);
-            });
-        }
-        return $collect;
-    }
-
-    /**
-     * 设置需要分页的数组数据
-     * @param array $params
-     * @return array
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    protected function getArrayData(array $params = []): array
-    {
-        return $this->getModuleCache();
-    }
-
-    /**
-     * 创建模块
-     * @param array $moduleInfo
-     * @return bool
+     * 创建模块.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -92,17 +48,15 @@ class ModuleService extends AbstractService
     }
 
     /**
-     * 执行模块安装
-     * @param string $name
-     * @return bool
+     * 执行模块安装.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function installModuleData(string $name): bool
     {
         try {
-            $migrateCommand = [ 'command' => 'mine:migrate-run', 'name' => $name ];
-            $seedCommand = [ 'command' => 'mine:seeder-run', 'name' => $name ];
+            $migrateCommand = ['command' => 'mine:migrate-run', 'name' => $name];
+            $seedCommand = ['command' => 'mine:seeder-run', 'name' => $name];
             $application = container()->get(\Hyperf\Contract\ApplicationInterface::class);
             $application->setAutoExit(false);
             $application->run(new ArrayInput($migrateCommand), new NullOutput());
@@ -116,9 +70,7 @@ class ModuleService extends AbstractService
     }
 
     /**
-     * 卸载模块
-     * @param string $name
-     * @return bool
+     * 卸载模块.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Throwable
@@ -140,9 +92,7 @@ class ModuleService extends AbstractService
     }
 
     /**
-     * 删除模块
-     * @param string $name
-     * @return bool
+     * 删除模块.
      */
     public function deleteModule(string $name): bool
     {
@@ -153,8 +103,8 @@ class ModuleService extends AbstractService
     }
 
     /**
-     * 缓存模块信息
-     * @param string|null $moduleName 模块名
+     * 缓存模块信息.
+     * @param null|string $moduleName 模块名
      * @param array $data 模块数据
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -171,9 +121,7 @@ class ModuleService extends AbstractService
     }
 
     /**
-     * 获取模块缓存信息
-     * @param string|null $moduleName
-     * @return array
+     * 获取模块缓存信息.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -183,18 +131,15 @@ class ModuleService extends AbstractService
         $redis = redis();
         if ($data = $redis->get($key)) {
             $data = unserialize($data);
-            return !empty($moduleName) && isset($data[$moduleName]) ? $data[$moduleName] : $data;
-        } else {
-            $this->setModuleCache();
-            $this->mine->scanModule();
-            return $this->mine->getModuleInfo();
+            return ! empty($moduleName) && isset($data[$moduleName]) ? $data[$moduleName] : $data;
         }
+        $this->setModuleCache();
+        $this->mine->scanModule();
+        return $this->mine->getModuleInfo();
     }
 
     /**
-     * 启停用模块
-     * @param array $data
-     * @return bool
+     * 启停用模块.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -212,8 +157,36 @@ class ModuleService extends AbstractService
             $result = (bool) file_put_contents($filePath, $content);
             $this->setModuleCache();
             return $result;
-        } else {
-            return false;
         }
+        return false;
+    }
+
+    /**
+     * 数组数据搜索器.
+     */
+    protected function handleArraySearch(Collection $collect, array $params): Collection
+    {
+        if ($params['name'] ?? false) {
+            $collect = $collect->filter(function ($row) use ($params) {
+                return \Mine\Helper\Str::contains($row['name'], $params['name']);
+            });
+        }
+
+        if ($params['label'] ?? false) {
+            $collect = $collect->filter(function ($row) use ($params) {
+                return \Mine\Helper\Str::contains($row['label'], $params['label']);
+            });
+        }
+        return $collect;
+    }
+
+    /**
+     * 设置需要分页的数组数据.
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    protected function getArrayData(array $params = []): array
+    {
+        return $this->getModuleCache();
     }
 }

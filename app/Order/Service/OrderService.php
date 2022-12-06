@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Order\Service;
 
 use App\Order\Mapper\OrderMapper;
@@ -189,7 +182,6 @@ class OrderService extends AbstractService
 
     /**
      * 处理导出数据.
-     * @param array $data
      */
     protected function handleExportData(array &$data): void
     {

@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\System\Controller\DataCenter;
-
 
 use App\System\Service\DataMaintainService;
 use Hyperf\Di\Annotation\Inject;
@@ -16,46 +16,42 @@ use Mine\MineController;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class DataMaintainController
- * @package App\System\Controller\DataCenter
+ * Class DataMaintainController.
  */
-#[Controller(prefix: "system/dataMaintain"), Auth]
+#[Controller(prefix: 'system/dataMaintain'), Auth]
 class DataMaintainController extends MineController
 {
     #[Inject]
     protected DataMaintainService $service;
 
     /**
-     * 列表
-     * @return ResponseInterface
+     * 列表.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("index"), Permission("system:dataMaintain, system:dataMaintain:index")]
+    #[GetMapping('index'), Permission('system:dataMaintain, system:dataMaintain:index')]
     public function index(): ResponseInterface
     {
         return $this->success($this->service->getPageList($this->request->all()));
     }
 
     /**
-     * 详情
-     * @return ResponseInterface
+     * 详情.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("detailed"), Permission("system:dataMaintain:detailed")]
+    #[GetMapping('detailed'), Permission('system:dataMaintain:detailed')]
     public function detailed(): ResponseInterface
     {
         return $this->success($this->service->getColumnList($this->request->input('table', null)));
     }
 
     /**
-     * 优化表
-     * @return ResponseInterface
+     * 优化表.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PostMapping("optimize"), Permission("system:dataMaintain:optimize"), OperationLog]
+    #[PostMapping('optimize'), Permission('system:dataMaintain:optimize'), OperationLog]
     public function optimize(): ResponseInterface
     {
         $tables = $this->request->input('tables', []);
@@ -63,12 +59,11 @@ class DataMaintainController extends MineController
     }
 
     /**
-     * 清理表碎片
-     * @return ResponseInterface
+     * 清理表碎片.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PostMapping("fragment"), Permission("system:dataMaintain:fragment"), OperationLog]
+    #[PostMapping('fragment'), Permission('system:dataMaintain:fragment'), OperationLog]
     public function fragment(): ResponseInterface
     {
         $tables = $this->request->input('tables', []);

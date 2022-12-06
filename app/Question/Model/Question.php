@@ -1,11 +1,10 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace App\Question\Model;
 
 use App\System\Model\SystemDictData;
-use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
 
 /**
@@ -41,25 +40,28 @@ class Question extends MineModel
      * @var string
      */
     protected $table = 'question';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'knows_id', 'classify_id', 'parent_id', 'channel', 'semester', 'ques_type', 'ques_title', 'ques_stem', 'ques_stem_text', 'ques_option', 'right_answer', 'ques_analysis', 'ques_difficulty', 'sort', 'states', 'deleted_at', 'created_id', 'created_at', 'updated_id', 'updated_at', 'form_at', 'knows_text'];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'classify_id' => 'integer', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'integer', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'form_at' => 'integer'];
+
     protected $dateFormat = 'U';
 
     /**
-     * 题目科目
+     * 题目科目.
      * @return \Hyperf\Database\Model\Relations\HasOne
-     * author:ZQ
-     * time:2022-09-01 15:40
+     *                                                 author:ZQ
+     *                                                 time:2022-09-01 15:40
      */
     public function questionSubject(): \Hyperf\Database\Model\Relations\HasOne
     {
@@ -68,10 +70,10 @@ class Question extends MineModel
     }
 
     /**
-     * 题目类型,单选多选填空
+     * 题目类型,单选多选填空.
      * @return \Hyperf\Database\Model\Relations\HasOne
-     * author:ZQ
-     * time:2022-09-01 15:40
+     *                                                 author:ZQ
+     *                                                 time:2022-09-01 15:40
      */
     public function questionType(): \Hyperf\Database\Model\Relations\HasOne
     {
@@ -80,16 +82,15 @@ class Question extends MineModel
     }
 
     /**
-     * 知识点表
+     * 知识点表.
      * @return \Hyperf\Database\Model\Relations\HasOne
-     * author:ZQ
-     * time:2022-09-01 15:42
+     *                                                 author:ZQ
+     *                                                 time:2022-09-01 15:42
      */
     public function knows(): \Hyperf\Database\Model\Relations\HasOne
     {
         return $this->hasOne(Know::class, 'id', 'knows_id')
             ->where('deleted_at', 0)
-            ->where('status',1);
+            ->where('status', 1);
     }
-
 }

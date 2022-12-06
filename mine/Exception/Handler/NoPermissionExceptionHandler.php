@@ -22,8 +22,7 @@ use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 /**
- * Class TokenExceptionHandler
- * @package Mine\Exception\Handler
+ * Class TokenExceptionHandler.
  */
 class NoPermissionExceptionHandler extends ExceptionHandler
 {
@@ -33,7 +32,7 @@ class NoPermissionExceptionHandler extends ExceptionHandler
         $format = [
             'success' => false,
             'message' => $throwable->getMessage(),
-            'code'    => MineCode::NO_PERMISSION,
+            'code' => MineCode::NO_PERMISSION,
         ];
         return $response->withHeader('Server', 'MineAdmin')
             ->withAddedHeader('content-type', 'application/json; charset=utf-8')

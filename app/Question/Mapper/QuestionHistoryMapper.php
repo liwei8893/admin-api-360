@@ -1,14 +1,6 @@
 <?php
+
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 namespace App\Question\Mapper;
 
@@ -17,7 +9,7 @@ use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * 错题表Mapper类
+ * 错题表Mapper类.
  */
 class QuestionHistoryMapper extends AbstractMapper
 {
@@ -26,16 +18,13 @@ class QuestionHistoryMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = QuestionHistory::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -52,7 +41,6 @@ class QuestionHistoryMapper extends AbstractMapper
             $query->where('is_right', '=', $params['is_right']);
         }
 
-        //
         if (isset($params['is_mark']) && $params['is_mark'] !== '') {
             $query->where('is_mark', '=', $params['is_mark']);
         }
@@ -69,7 +57,7 @@ class QuestionHistoryMapper extends AbstractMapper
             );
         }
 
-        if (!empty($params['withQuestion'])) {
+        if (! empty($params['withQuestion'])) {
             $query->with(['question' => function ($query) {
                 $query->with(['questionSubject:value,label', 'questionType:value,label', 'knows:id,name,season']);
             }]);

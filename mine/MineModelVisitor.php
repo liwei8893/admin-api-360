@@ -10,21 +10,17 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine;
 
 use Hyperf\Database\Commands\Ast\ModelUpdateVisitor as Visitor;
 use Hyperf\Utils\Str;
 
 /**
- * Class MineModelVisitor
- * @package System
+ * Class MineModelVisitor.
  */
-class MineModelVisitor extends  Visitor
+class MineModelVisitor extends Visitor
 {
-    /**
-     * @param string $type
-     * @return string|null
-     */
     protected function formatDatabaseType(string $type): ?string
     {
         return match ($type) {
@@ -36,11 +32,6 @@ class MineModelVisitor extends  Visitor
         };
     }
 
-    /**
-     * @param string $type
-     * @param string|null $cast
-     * @return string|null
-     */
     protected function formatPropertyType(string $type, ?string $cast): ?string
     {
         if (! isset($cast)) {

@@ -1,9 +1,11 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Setting\Mapper;
 
 use App\Setting\Model\SettingConfigGroup;
+use Exception;
 use Mine\Abstracts\AbstractMapper;
 
 class SettingConfigGroupMapper extends AbstractMapper
@@ -13,16 +15,14 @@ class SettingConfigGroupMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SettingConfigGroup::class;
     }
 
     /**
-     * 删除组和所属配置
-     * @param int $id
-     * @return bool
-     * @throws \Exception
+     * 删除组和所属配置.
+     * @throws Exception
      */
     public function deleteGroupAndConfig(int $id): bool
     {

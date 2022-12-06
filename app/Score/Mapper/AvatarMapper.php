@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Score\Mapper;
 
 use App\Score\Model\Avatar;
@@ -8,7 +10,6 @@ use Mine\Abstracts\AbstractMapper;
 
 class AvatarMapper extends AbstractMapper
 {
-
     public function assignModel(): void
     {
         $this->model = Avatar::class;
@@ -16,10 +17,9 @@ class AvatarMapper extends AbstractMapper
 
     public function handleSearch(Builder $query, array $params): Builder
     {
-        if (!empty($params['excludeShop'])) {
+        if (! empty($params['excludeShop'])) {
             $query->has('scoreShop', '<');
         }
         return $query;
     }
-
 }

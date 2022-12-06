@@ -17,10 +17,9 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class UploadController
- * @package App\System\Controller
+ * Class UploadController.
  */
-#[Controller(prefix: "system")]
+#[Controller(prefix: 'system')]
 class UploadController extends MineController
 {
     #[Inject]
@@ -28,67 +27,60 @@ class UploadController extends MineController
 
     /**
      * 获取七牛云认证
-     * @param UploadRequest $request
-     * @return ResponseInterface
      * @throws \JsonException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * author:ZQ
-     * time:2022-09-08 10:52
+     *                                    author:ZQ
+     *                                    time:2022-09-08 10:52
      */
-    #[GetMapping("getUploadToken"), Auth]
+    #[GetMapping('getUploadToken'), Auth]
     public function getUploadToken(UploadRequest $request): ResponseInterface
     {
         return $this->success($this->service->getUploadToken($request->all()));
     }
 
     /**
-     * @param UploadRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping("saveUploadInfo"), Auth]
+    #[PostMapping('saveUploadInfo'), Auth]
     public function saveUploadInfo(UploadRequest $request): ResponseInterface
     {
         return $this->success($this->service->saveUploadInfo($request->all()));
     }
 
     /**
-     * 上传文件
-     * @param UploadRequest $request
-     * @return ResponseInterface
+     * 上传文件.
      * @throws \League\Flysystem\FileExistsException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PostMapping("uploadFile"), Auth]
+    #[PostMapping('uploadFile'), Auth]
     public function uploadFile(UploadRequest $request): ResponseInterface
     {
         if ($request->validated() && $request->file('file')->isValid()) {
             $data = $this->service->upload(
-                $request->file('file'), $request->all()
+                $request->file('file'),
+                $request->all()
             );
             return empty($data) ? $this->error() : $this->success($data);
-        } else {
-            return $this->error(t('system.upload_file_verification_fail'));
         }
+        return $this->error(t('system.upload_file_verification_fail'));
     }
 
     /**
-     * 上传图片
-     * @param UploadRequest $request
-     * @return ResponseInterface
+     * 上传图片.
      * @throws \League\Flysystem\FileExistsException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PostMapping("uploadImage"), Auth]
+    #[PostMapping('uploadImage'), Auth]
     public function uploadImage(UploadRequest $request): ResponseInterface
     {
         if ($request->validated() && $request->file('image')->isValid()) {
             $data = $this->service->upload(
-                $request->file('image'), $request->all()
+                $request->file('image'),
+                $request->all()
             );
             return empty($data) ? $this->error() : $this->success($data);
         }
@@ -97,39 +89,34 @@ class UploadController extends MineController
     }
 
     /**
-     * 分块上传
-     * @param UploadRequest $request
-     * @return ResponseInterface
+     * 分块上传.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[PostMapping("chunkUpload"), Auth]
+    #[PostMapping('chunkUpload'), Auth]
     public function chunkUpload(UploadRequest $request): ResponseInterface
     {
         return ($data = $this->service->chunkUpload($request->validated())) ? $this->success($data) : $this->error();
     }
 
     /**
-     * 保存网络图片
-     * @param UploadRequest $request
-     * @return ResponseInterface
+     * 保存网络图片.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Exception
      */
-    #[PostMapping("saveNetworkImage"), Auth]
+    #[PostMapping('saveNetworkImage'), Auth]
     public function saveNetworkImage(UploadRequest $request): ResponseInterface
     {
         return $this->success($this->service->saveNetworkImage($request->validated()));
     }
 
     /**
-     * 获取当前目录所有文件和目录
-     * @return ResponseInterface
+     * 获取当前目录所有文件和目录.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("getAllFiles"), Auth]
+    #[GetMapping('getAllFiles'), Auth]
     public function getAllFile(): ResponseInterface
     {
         return $this->success(
@@ -138,64 +125,60 @@ class UploadController extends MineController
     }
 
     /**
-     * 通过ID获取文件信息
-     * @return \Psr\Http\Message\ResponseInterface
+     * 通过ID获取文件信息.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("getFileInfoById")]
-    public function getFileInfoByid(): \Psr\Http\Message\ResponseInterface
+    #[GetMapping('getFileInfoById')]
+    public function getFileInfoByid(): ResponseInterface
     {
-        return $this->success($this->service->read((int)$this->request->input('id', null)));
+        return $this->success($this->service->read((int) $this->request->input('id', null)));
     }
 
     /**
-     * 通过HASH获取文件信息
-     * @return \Psr\Http\Message\ResponseInterface
+     * 通过HASH获取文件信息.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("getFileInfoByHash")]
-    public function getFileInfoByHash(): \Psr\Http\Message\ResponseInterface
+    #[GetMapping('getFileInfoByHash')]
+    public function getFileInfoByHash(): ResponseInterface
     {
         return $this->success($this->service->readByHash($this->request->input('hash', null)));
     }
 
     /**
-     * 根据id下载文件
-     * @return ResponseInterface
+     * 根据id下载文件.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("downloadById")]
+    #[GetMapping('downloadById')]
     public function downloadById(): ResponseInterface
     {
         $id = $this->request->input('id');
         if (empty($id)) {
-            return $this->error("附件ID必填");
+            return $this->error('附件ID必填');
         }
-        $model = $this->service->read((int)$id);
-        if (!$model) {
+        $model = $this->service->read((int) $id);
+        if (! $model) {
             throw new \Mine\Exception\MineException('附件不存在', 500);
         }
         return $this->_download(BASE_PATH . '/public' . $model->url, $model->origin_name);
     }
 
     /**
-     * 根据hash下载文件
-     * @return ResponseInterface
+     * 根据hash下载文件.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("downloadByHash")]
+    #[GetMapping('downloadByHash')]
     public function downloadByHash(): ResponseInterface
     {
         $hash = $this->request->input('hash');
         if (empty($hash)) {
-            return $this->error("附件hash必填");
+            return $this->error('附件hash必填');
         }
         $model = $this->service->readByHash($hash);
-        if (!$model) {
+        if (! $model) {
             throw new \Mine\Exception\MineException('附件不存在', 500);
         }
         return $this->_download(BASE_PATH . '/public' . $model->url, $model->origin_name);

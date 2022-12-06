@@ -1,19 +1,19 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\System\Mapper;
 
 use App\System\Model\SystemDept;
 use App\System\Model\SystemUser;
 use Hyperf\Database\Model\Builder;
-use Hyperf\Database\Model\ModelNotFoundException;
+use Hyperf\Database\Model\Model;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 use Mine\MineModel;
 
 /**
- * Class SystemUserMapper
- * @package App\System\Mapper
+ * Class SystemUserMapper.
  */
 class SystemUserMapper extends AbstractMapper
 {
@@ -22,15 +22,14 @@ class SystemUserMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemUser::class;
     }
 
     /**
-     * 通过用户名检查用户
-     * @param string $username
-     * @return Builder|\Hyperf\Database\Model\Model
+     * 通过用户名检查用户.
+     * @return Builder|Model
      */
     public function checkUserByUsername(string $username)
     {
@@ -38,9 +37,7 @@ class SystemUserMapper extends AbstractMapper
     }
 
     /**
-     * 通过用户名检查是否存在
-     * @param string $username
-     * @return bool
+     * 通过用户名检查是否存在.
      */
     public function existsByUsername(string $username): bool
     {
@@ -49,19 +46,14 @@ class SystemUserMapper extends AbstractMapper
 
     /**
      * 检查用户密码
-     * @param String $password
-     * @param string $hash
-     * @return bool
      */
-    public function checkPass(String $password, string $hash): bool
+    public function checkPass(string $password, string $hash): bool
     {
         return $this->model::passwordVerify($password, $hash);
     }
 
     /**
-     * 新增用户
-     * @param array $data
-     * @return int
+     * 新增用户.
      */
     #[Transaction]
     public function save(array $data): int
@@ -77,10 +69,7 @@ class SystemUserMapper extends AbstractMapper
     }
 
     /**
-     * 更新用户
-     * @param int $id
-     * @param array $data
-     * @return bool
+     * 更新用户.
      */
     #[Transaction]
     public function update(int $id, array $data): bool
@@ -92,7 +81,7 @@ class SystemUserMapper extends AbstractMapper
         $result = parent::update($id, $data);
         $user = $this->model::find($id);
         if ($user && $result) {
-            !empty($role_ids) && $user->roles()->sync($role_ids);
+            ! empty($role_ids) && $user->roles()->sync($role_ids);
             $user->posts()->sync($post_ids);
             return true;
         }
@@ -100,9 +89,7 @@ class SystemUserMapper extends AbstractMapper
     }
 
     /**
-     * 真实批量删除用户
-     * @param array $ids
-     * @return bool
+     * 真实批量删除用户.
      */
     #[Transaction]
     public function realDelete(array $ids): bool
@@ -119,9 +106,7 @@ class SystemUserMapper extends AbstractMapper
     }
 
     /**
-     * 获取用户信息
-     * @param int $id
-     * @return MineModel
+     * 获取用户信息.
      */
     public function read(int $id): ?MineModel
     {
@@ -134,10 +119,7 @@ class SystemUserMapper extends AbstractMapper
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -145,10 +127,10 @@ class SystemUserMapper extends AbstractMapper
             $query->whereIn('dept_id', explode(',', $params['dept_id']));
         }
         if (isset($params['username'])) {
-            $query->where('username', 'like', '%'.$params['username'].'%');
+            $query->where('username', 'like', '%' . $params['username'] . '%');
         }
         if (isset($params['nickname'])) {
-            $query->where('nickname', 'like', '%'.$params['nickname'].'%');
+            $query->where('nickname', 'like', '%' . $params['nickname'] . '%');
         }
         if (isset($params['phone'])) {
             $query->where('phone', '=', $params['phone']);
@@ -167,7 +149,7 @@ class SystemUserMapper extends AbstractMapper
         if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
             $query->whereBetween(
                 'created_at',
-                [ $params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59' ]
+                [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
             );
         }
 
@@ -178,8 +160,8 @@ class SystemUserMapper extends AbstractMapper
         if (isset($params['showDept'])) {
             $isAll = $params['showDeptAll'] ?? false;
 
-            $query->with(['dept' => function($query) use($isAll){
-                /* @var Builder $query*/
+            $query->with(['dept' => function ($query) use ($isAll) {
+                /* @var Builder $query */
                 $query->where('status', SystemDept::ENABLE);
                 return $isAll ? $query->select(['*']) : $query->select(['id', 'name']);
             }]);
@@ -189,7 +171,7 @@ class SystemUserMapper extends AbstractMapper
             $tablePrefix = env('DB_PREFIX');
             $query->whereRaw(
                 "id IN ( SELECT user_id FROM {$tablePrefix}system_user_role WHERE role_id = ? )",
-                [ $params['role_id'] ]
+                [$params['role_id']]
             );
         }
 
@@ -197,7 +179,7 @@ class SystemUserMapper extends AbstractMapper
             $tablePrefix = env('DB_PREFIX');
             $query->whereRaw(
                 "id IN ( SELECT user_id FROM {$tablePrefix}system_user_post WHERE post_id = ? )",
-                [ $params['post_id'] ]
+                [$params['post_id']]
             );
         }
 
@@ -206,9 +188,6 @@ class SystemUserMapper extends AbstractMapper
 
     /**
      * 初始化用户密码
-     * @param int $id
-     * @param string $password
-     * @return bool
      */
     public function initUserPassword(int $id, string $password): bool
     {
@@ -221,11 +200,13 @@ class SystemUserMapper extends AbstractMapper
     }
 
     /**
-     * 根据用户ID列表获取用户基础信息
+     * 根据用户ID列表获取用户基础信息.
      */
     public function getUserInfoByIds(array $ids, ?array $select = null): array
     {
-        if (! $select) $select = ['id', 'dept_id', 'username', 'nickname', 'phone', 'email', 'created_at'];
+        if (! $select) {
+            $select = ['id', 'dept_id', 'username', 'nickname', 'phone', 'email', 'created_at'];
+        }
         return $this->model::query()->whereIn('id', $ids)->select($select)->get()->toArray();
     }
 }

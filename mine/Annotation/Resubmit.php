@@ -9,14 +9,15 @@
  * @Link   https://gitee.com/xmo/MineAdmin
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Mine\Annotation;
 
 use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;
 
 /**
- * 禁止重复提交
+ * 禁止重复提交.
  * @Annotation
  * @Target({"METHOD"})
  */
@@ -24,21 +25,19 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
 class Resubmit extends AbstractAnnotation
 {
     /**
-     * second
-     * @var int
+     * second.
      */
     public int $second = 3;
 
     /**
-     * 提示信息
-     * @var string
+     * 提示信息.
      */
     public string $message;
 
     public function __construct($value, $message = null)
     {
         parent::__construct($value);
-        $this->bindMainProperty('second', [ $value ]);
-        $this->bindMainProperty('message', [ $message ]);
+        $this->bindMainProperty('second', [$value]);
+        $this->bindMainProperty('message', [$message]);
     }
 }

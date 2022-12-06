@@ -15,5 +15,4 @@ namespace Mine\Interfaces;
 
 interface MineModelExcel
 {
-    
 }

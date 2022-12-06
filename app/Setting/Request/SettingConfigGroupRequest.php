@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Setting\Request;
 
 use Mine\MineFormRequest;
@@ -8,7 +9,7 @@ use Mine\MineFormRequest;
 class SettingConfigGroupRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
@@ -32,13 +33,13 @@ class SettingConfigGroupRequest extends MineFormRequest
     public function updateRules(): array
     {
         return [
-            'id' => 'required'
+            'id' => 'required',
         ];
     }
 
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {

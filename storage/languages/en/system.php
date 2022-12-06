@@ -28,5 +28,5 @@ return [
     'queue_missing_message_title' => 'queue message missing title',
     'queue_missing_message_content_type' => 'queue message missing content type',
     'queue_missing_content' => 'queue message missing content',
-    'queue_annotation_not_open' => 'Queue-related features are not turned on'
+    'queue_annotation_not_open' => 'Queue-related features are not turned on',
 ];

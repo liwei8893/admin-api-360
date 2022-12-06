@@ -18,19 +18,18 @@ trait MapperGeneratorTraits
     /**
      * 获取搜索代码
      * @param $column
-     * @return string
      */
     protected function getSearchCode($column): string
     {
         return match ($column['query_type']) {
-            'neq'     => $this->getSearchPHPString($column['column_name'], '!=', $column['column_comment']),
-            'gt'      => $this->getSearchPHPString($column['column_name'], '<', $column['column_comment']),
-            'gte'     => $this->getSearchPHPString($column['column_name'], '<=', $column['column_comment']),
-            'lt'      => $this->getSearchPHPString($column['column_name'], '>', $column['column_comment']),
-            'lte'     => $this->getSearchPHPString($column['column_name'], '>=', $column['column_comment']),
-            'like'    => $this->getSearchPHPString($column['column_name'], 'like', $column['column_comment']),
+            'neq' => $this->getSearchPHPString($column['column_name'], '!=', $column['column_comment']),
+            'gt' => $this->getSearchPHPString($column['column_name'], '<', $column['column_comment']),
+            'gte' => $this->getSearchPHPString($column['column_name'], '<=', $column['column_comment']),
+            'lt' => $this->getSearchPHPString($column['column_name'], '>', $column['column_comment']),
+            'lte' => $this->getSearchPHPString($column['column_name'], '>=', $column['column_comment']),
+            'like' => $this->getSearchPHPString($column['column_name'], 'like', $column['column_comment']),
             'between' => $this->getSearchPHPString($column['column_name'], 'between', $column['column_comment']),
-            default   => $this->getSearchPHPString($column['column_name'], '=', $column['column_comment']),
+            default => $this->getSearchPHPString($column['column_name'], '=', $column['column_comment']),
         };
     }
 
@@ -38,7 +37,6 @@ trait MapperGeneratorTraits
      * @param $name
      * @param $mark
      * @param $comment
-     * @return string
      */
     protected function getSearchPHPString($name, $mark, $comment): string
     {
@@ -51,17 +49,16 @@ trait MapperGeneratorTraits
         }
 
 php;
-
         }
 
         if ($mark == 'between') {
             return <<<php
 
         // {$comment}
-        if (isset(\$params['${name}']) && is_array(\$params['${name}']) && count(\$params['${name}']) == 2) {
+        if (isset(\$params['{$name}']) && is_array(\$params['{$name}']) && count(\$params['{$name}']) == 2) {
             \$query->whereBetween(
-                '${name}',
-                [ \$params['${name}'][0], \$params['${name}'][1] ]
+                '{$name}',
+                [ \$params['{$name}'][0], \$params['{$name}'][1] ]
             );
         }
 

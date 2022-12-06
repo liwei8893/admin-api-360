@@ -9,16 +9,13 @@
  * @Link   https://gitee.com/xmo/MineAdmin
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Mine\Event;
 
 class Operation
 {
-    /**
-     * @var array
-     */
     protected array $requestInfo;
-
 
     public function __construct(array $requestInfo)
     {

@@ -1,15 +1,6 @@
 <?php
-declare(strict_types=1);
 
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+declare(strict_types=1);
 
 namespace Mine\Office;
 
@@ -26,57 +17,42 @@ abstract class MineExcel
 {
     public const ANNOTATION_NAME = 'Mine\Annotation\ExcelProperty';
 
-    /**
-     * @var array|null
-     */
     protected ?array $annotationMate;
 
-    /**
-     * @var array
-     */
     protected array $property = [];
 
-
     /**
-     * @param String $dto
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws \RedisException
      */
     public function __construct(string $dto)
     {
-        if (!(new $dto) instanceof MineModelExcel) {
+        if (! (new $dto()) instanceof MineModelExcel) {
             throw new MineException('dto does not implement an interface of the MineModelExcel', 500);
         }
         $this->annotationMate = AnnotationCollector::get($dto);
         $this->parseProperty();
     }
 
-    /**
-     * @return array
-     */
     public function getProperty(): array
     {
         return $this->property;
     }
 
-    /**
-     * @return array
-     */
     public function getAnnotationInfo(): array
     {
         return $this->annotationMate;
     }
 
     /**
-     * @return void
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws \RedisException
      */
     protected function parseProperty(): void
     {
-        if (empty($this->annotationMate) || !isset($this->annotationMate['_c'])) {
+        if (empty($this->annotationMate) || ! isset($this->annotationMate['_c'])) {
             throw new MineException('dto annotation info is empty', 500);
         }
 
@@ -100,10 +76,7 @@ abstract class MineExcel
     }
 
     /**
-     * 下载excel
-     * @param string $filename
-     * @param string $content
-     * @return \Psr\Http\Message\ResponseInterface
+     * 下载excel.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -114,16 +87,14 @@ abstract class MineExcel
             ->withHeader('content-description', 'File Transfer')
             ->withHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader('content-disposition', "attachment; filename={$filename}; filename*=UTF-8''" . rawurlencode($filename))
-            ->withHeader("Access-Control-Expose-Headers","Content-Disposition")
+            ->withHeader('Access-Control-Expose-Headers', 'Content-Disposition')
             ->withHeader('content-transfer-encoding', 'binary')
             ->withHeader('pragma', 'public')
             ->withBody(new SwooleStream($content));
     }
 
     /**
-     * 获取字典数据
-     * @param string $dictName
-     * @return array
+     * 获取字典数据.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws \RedisException

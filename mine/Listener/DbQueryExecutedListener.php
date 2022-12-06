@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace Mine\Listener;
 
 use Hyperf\Contract\StdoutLoggerInterface;
@@ -26,15 +19,9 @@ use Psr\Log\LoggerInterface;
  */
 class DbQueryExecutedListener implements ListenerInterface
 {
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
-     * @var StdoutLoggerInterface
-     */
     protected StdoutLoggerInterface $console;
+
+    private LoggerInterface $logger;
 
     public function __construct(StdoutLoggerInterface $console, ContainerInterface $container)
     {
@@ -64,8 +51,8 @@ class DbQueryExecutedListener implements ListenerInterface
                 }
             }
 
-            if ( env('CONSOLE_SQL') ) {
-                $this->console->info(sprintf('SQL[%s ms] %s ', $event->time , $sql));
+            if (env('CONSOLE_SQL')) {
+                $this->console->info(sprintf('SQL[%s ms] %s ', $event->time, $sql));
                 $this->logger->info(sprintf('[%s] %s', $event->time, $sql));
             }
         }

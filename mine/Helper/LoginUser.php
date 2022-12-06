@@ -21,20 +21,14 @@ use Mine\MineRequest;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\SimpleCache\InvalidArgumentException;
+use Throwable;
 use Xmo\JWTAuth\JWT;
 
 class LoginUser
 {
-    /**
-     * @var JWT
-     */
     protected JWT $jwt;
 
-    /**
-     * @var MineRequest
-     */
     protected MineRequest $request;
-
 
     /**
      * LoginUser constructor.
@@ -47,12 +41,9 @@ class LoginUser
     }
 
     /**
-     * 验证token
-     * @param string|null $token
-     * @param string $scene
-     * @return bool
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 验证token.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function check(?string $token = null, string $scene = 'default'): bool
     {
@@ -62,7 +53,7 @@ class LoginUser
             }
         } catch (InvalidArgumentException $e) {
             throw new TokenException(t('jwt.no_token'));
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new TokenException(t('jwt.no_login'));
         }
 
@@ -71,7 +62,6 @@ class LoginUser
 
     /**
      * 获取JWT对象
-     * @return Jwt
      */
     public function getJwt(): Jwt
     {
@@ -79,9 +69,7 @@ class LoginUser
     }
 
     /**
-     * 获取当前登录用户信息
-     * @param string|null $token
-     * @return array
+     * 获取当前登录用户信息.
      */
     public function getUserInfo(?string $token = null): array
     {
@@ -89,8 +77,7 @@ class LoginUser
     }
 
     /**
-     * 获取当前登录用户名
-     * @return string
+     * 获取当前登录用户名.
      */
     public function getUsername(): string
     {
@@ -98,9 +85,7 @@ class LoginUser
     }
 
     /**
-     * 获取当前登录用户角色
-     * @param array $columns
-     * @return array
+     * 获取当前登录用户角色.
      */
     public function getUserRole(array $columns = ['id', 'name', 'code']): array
     {
@@ -108,8 +93,7 @@ class LoginUser
     }
 
     /**
-     * 获取当前登录用户ID
-     * @return int
+     * 获取当前登录用户ID.
      */
     public function getId(): int
     {
@@ -117,9 +101,7 @@ class LoginUser
     }
 
     /**
-     * 获取当前登录用户岗位
-     * @param array $columns
-     * @return array
+     * 获取当前登录用户岗位.
      */
     public function getUserPost(array $columns = ['id', 'name', 'code']): array
     {
@@ -127,8 +109,7 @@ class LoginUser
     }
 
     /**
-     * 获取当前token用户类型
-     * @return string
+     * 获取当前token用户类型.
      */
     public function getUserType(): string
     {
@@ -136,41 +117,33 @@ class LoginUser
     }
 
     /**
-     * 获取当前token用户部门ID
-     * @return int
+     * 获取当前token用户部门ID.
      */
     public function getDeptId(): int
     {
-        return (int)$this->jwt->getParserData()['dept_id'];
+        return (int) $this->jwt->getParserData()['dept_id'];
     }
 
     /**
-     * 是否为超级管理员（创始人），用户禁用对创始人没用
-     * @return bool
+     * 是否为超级管理员（创始人），用户禁用对创始人没用.
      */
     public function isSuperAdmin(): bool
     {
-        return env('SUPER_ADMIN') == $this->getId();
+        return (int) env('SUPER_ADMIN') === $this->getId();
     }
 
     /**
-     * 是否为管理员角色
-     * @return bool
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 是否为管理员角色.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function isAdminRole(): bool
     {
-        return in_array(
-            SystemRole::find(env('ADMIN_ROLE'), ['code'])->code,
-            container()->get(SystemUserService::class)->getInfo()['roles']
-        );
+        return in_array(SystemRole::find(env('ADMIN_ROLE'), ['code'])->code, container()->get(SystemUserService::class)->getInfo()['roles'], true);
     }
 
     /**
-     * 获取Token
-     * @param array $user
-     * @return string
+     * 获取Token.
      * @throws InvalidArgumentException
      */
     public function getToken(array $user): string
@@ -179,8 +152,7 @@ class LoginUser
     }
 
     /**
-     * 刷新token
-     * @return string
+     * 刷新token.
      * @throws InvalidArgumentException
      */
     public function refresh(): string
@@ -189,10 +161,7 @@ class LoginUser
     }
 
     /**
-     * 报名|修改有效期是否不需要审核
-     * @return bool
-     * author:ZQ
-     * time:2022-11-13 16:19
+     * 报名|修改有效期是否不需要审核.
      */
     public function isNoAuditRole(): bool
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Users\Service;
 
 use App\Users\Mapper\UserSalePlatformMapper;
@@ -16,18 +18,14 @@ class UserSalePlatformService extends AbstractService
     public $mapper;
 
     /**
-     * 获取平台编号,挂载到数组
-     * @param array $data
-     * @return array
-     * author:ZQ
-     * time:2022-08-17 11:02
+     * 获取平台编号,挂载到数组.
      */
     public function withPlatformNum(array $data): array
     {
         // 是否有平台,有平台就生成编号
-        if (!empty($data['platform'])){
+        if (! empty($data['platform'])) {
             $platformData = $this->mapper->getPlatformNum($data['platform']);
-            if (!empty($platformData['sale_platform'])){
+            if (! empty($platformData['sale_platform'])) {
                 $data['sale_platform'] = $platformData['sale_platform'];
                 $data['old_platform'] = $platformData['old_platform'];
             }
@@ -36,13 +34,9 @@ class UserSalePlatformService extends AbstractService
     }
 
     /**
-     * 获取平台编号
-     * @param string $platform
-     * @return array
-     * author:ZQ
-     * time:2022-08-28 13:41
+     * 获取平台编号.
      */
-    #[ArrayShape(['platform'=>'string','sale_platform'=>'string','old_platform'=>'string'])]
+    #[ArrayShape(['platform' => 'string', 'sale_platform' => 'string', 'old_platform' => 'string'])]
     public function getPlatformNum(string $platform): array
     {
         return $this->mapper->getPlatformNum($platform);

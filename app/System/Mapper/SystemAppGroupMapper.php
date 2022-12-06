@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\System\Mapper;
 
 use App\System\Model\SystemAppGroup;
@@ -7,8 +9,7 @@ use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * Class SystemAppGroupMapper
- * @package App\System\Mapper
+ * Class SystemAppGroupMapper.
  */
 class SystemAppGroupMapper extends AbstractMapper
 {
@@ -17,16 +18,13 @@ class SystemAppGroupMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemAppGroup::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {

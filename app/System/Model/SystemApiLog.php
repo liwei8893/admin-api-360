@@ -1,9 +1,11 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
+
 namespace App\System\Model;
 
 use Mine\MineModel;
+
 /**
  * @property int $id 主键
  * @property int $api_id api ID
@@ -20,18 +22,21 @@ use Mine\MineModel;
 class SystemApiLog extends MineModel
 {
     public $timestamps = false;
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'system_api_log';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'api_id', 'api_name', 'access_name', 'request_data', 'response_code', 'response_data', 'ip', 'ip_location', 'access_time', 'remark'];
+
     /**
      * The attributes that should be cast to native types.
      *

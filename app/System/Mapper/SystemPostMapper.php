@@ -1,8 +1,8 @@
 <?php
 
-declare(strict_types = 1);
-namespace App\System\Mapper;
+declare(strict_types=1);
 
+namespace App\System\Mapper;
 
 use App\System\Model\SystemPost;
 use Hyperf\Database\Model\Builder;
@@ -15,21 +15,18 @@ class SystemPostMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemPost::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
         if (isset($params['name'])) {
-            $query->where('name', 'like', '%'.$params['name'].'%');
+            $query->where('name', 'like', '%' . $params['name'] . '%');
         }
         if (isset($params['code'])) {
             $query->where('code', $params['code']);
@@ -40,7 +37,7 @@ class SystemPostMapper extends AbstractMapper
         if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
             $query->whereBetween(
                 'created_at',
-                [ $params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59' ]
+                [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
             );
         }
         return $query;

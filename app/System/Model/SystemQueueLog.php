@@ -1,9 +1,11 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
+
 namespace App\System\Model;
 
 use Mine\MineModel;
+
 /**
  * @property int $id 主键
  * @property string $exchange_name 交换机名称
@@ -23,55 +25,67 @@ class SystemQueueLog extends MineModel
     /**
      * @Message("未生产")
      */
-    const PRODUCE_STATUS_WAITING = 1;
+    public const PRODUCE_STATUS_WAITING = 1;
+
     /**
      * @Message("生产中")
      */
-    const PRODUCE_STATUS_DOING = 2;
+    public const PRODUCE_STATUS_DOING = 2;
+
     /**
      * @Message("生产成功")
      */
-    const PRODUCE_STATUS_SUCCESS = 3;
+    public const PRODUCE_STATUS_SUCCESS = 3;
+
     /**
      * @Message("生产失败")
      */
-    const PRODUCE_STATUS_FAIL = 4;
+    public const PRODUCE_STATUS_FAIL = 4;
+
     /**
      * @Message("生产重复")
      */
-    const PRODUCE_STATUS_REPEAT = 5;
+    public const PRODUCE_STATUS_REPEAT = 5;
+
     /**
      * @Message("未消费")
      */
-    const CONSUME_STATUS_NO = 1;
+    public const CONSUME_STATUS_NO = 1;
+
     /**
      * @Message("消费中")
      */
-    const CONSUME_STATUS_DOING = 2;
+    public const CONSUME_STATUS_DOING = 2;
+
     /**
      * @Message("消费成功")
      */
-    const CONSUME_STATUS_SUCCESS = 3;
+    public const CONSUME_STATUS_SUCCESS = 3;
+
     /**
      * @Message("消费失败")
      */
-    const CONSUME_STATUS_FAIL = 4;
+    public const CONSUME_STATUS_FAIL = 4;
+
     /**
      * @Message("消费重复")
      */
-    const CONSUME_STATUS_REPEAT = 5;
+    public const CONSUME_STATUS_REPEAT = 5;
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'system_queue_log';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'exchange_name', 'routing_key_name', 'queue_name', 'queue_content', 'log_content', 'produce_status', 'consume_status', 'delay_time', 'created_by', 'created_at', 'updated_at'];
+
     /**
      * The attributes that should be cast to native types.
      *

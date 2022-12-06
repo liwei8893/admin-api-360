@@ -1,14 +1,6 @@
 <?php
+
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 namespace App\Course\Mapper;
 
@@ -18,7 +10,7 @@ use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 
 /**
- * 课程报名配置表Mapper类
+ * 课程报名配置表Mapper类.
  */
 class CourseSignupConfigMapper extends AbstractMapper
 {
@@ -57,16 +49,11 @@ class CourseSignupConfigMapper extends AbstractMapper
         return $updateState;
     }
 
-
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-
         // 主键
         if (isset($params['id']) && $params['id'] !== '') {
             $query->where('id', '=', $params['id']);
@@ -87,24 +74,21 @@ class CourseSignupConfigMapper extends AbstractMapper
             $query->where('updated_by', '=', $params['updated_by']);
         }
 
-        //
         if (isset($params['created_at']) && $params['created_at'] !== '') {
             $query->where('created_at', '=', $params['created_at']);
         }
 
-        //
         if (isset($params['updated_at']) && $params['updated_at'] !== '') {
             $query->where('updated_at', '=', $params['updated_at']);
         }
 
-        //
         if (isset($params['deleted_at']) && $params['deleted_at'] !== '') {
             $query->where('deleted_at', '=', $params['deleted_at']);
         }
-        if (!empty($params['withCourse'])) {
+        if (! empty($params['withCourse'])) {
             $query->with(['courseSignup:id,title']);
         }
-        if (!empty($params['withGrade'])) {
+        if (! empty($params['withGrade'])) {
             $query->with(['gradeSignup']);
         }
 

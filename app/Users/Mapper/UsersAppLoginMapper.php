@@ -1,0 +1,80 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Users\Mapper;
+
+use App\Users\Model\Users;
+use App\Users\Model\UsersLog;
+use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Model;
+use Mine\Abstracts\AbstractMapper;
+use Mine\MineRequest;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+
+class UsersAppLoginMapper extends AbstractMapper
+{
+    public function assignModel(): void
+    {
+        $this->model = Users::class;
+    }
+
+    /**
+     * 用手机号检测用户是否存在.
+     * @param $mobile
+     */
+    public function checkUserByMobile($mobile, array $select = ['*']): Model|Builder|null
+    {
+        return Users::query()->where('mobile', $mobile)->select($select)->first();
+    }
+
+    /**
+     * 检查用户密码
+     */
+    public function checkPass(string $password, string $hash): bool
+    {
+        return Users::passwordVerify($password, $hash);
+    }
+
+    /**
+     * 是否初始密码
+     * @param $userModel
+     */
+    public function hasSimplePwd($userModel): bool
+    {
+        $simplePwd = substr($userModel['mobile'], -6);
+        if ($this->checkPass($simplePwd, $userModel['user_pass'])) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 写登录日志.
+     * @param $params
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function setLoginLog($params): void
+    {
+        $request = container()->get(MineRequest::class);
+        UsersLog::insert([
+            'users_id' => $params['users_id'],
+            'last_login_ip' => $request->ip(),
+            'last_login_time' => time(),
+            'continuous_count' => 1,
+            'api_token' => $params['token'],
+            'device_type' => $this->device($request->userAgent()),
+        ]);
+    }
+
+    public function device($agent): int
+    {
+        $keywords = ['nokia', 'sony', 'ericsson', 'mot', 'samsung', 'htc', 'sgh', 'lg', 'sharp', 'sie-', 'philips', 'panasonic', 'alcatel', 'lenovo', 'iphone', 'ipod', 'blackberry', 'meizu', 'android', 'netfront', 'symbian', 'ucweb', 'windowsce', 'palm', 'operamini', 'operamobi', 'openwave', 'nexusone', 'cldc', 'midp', 'wap', 'mobile', 'MicroMessenger'];
+        if (preg_match('/(' . implode('|', $keywords) . ')/i', strtolower($agent))) {
+            return 1;
+        }
+        return 2;
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace App\Score\Model;
 
@@ -28,12 +28,14 @@ class Avatar extends MineModel
      * @var string
      */
     protected $table = 'avatar';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['type', 'url', 'sort', 'created_at', 'updated_at', 'deleted_at'];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -42,8 +44,7 @@ class Avatar extends MineModel
     protected $casts = ['id' => 'integer', 'type' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
     /**
-     * 多态一对一关联积分商品表
-     * @return MorphOne
+     * 多态一对一关联积分商品表.
      */
     public function scoreShop(): MorphOne
     {
@@ -51,8 +52,7 @@ class Avatar extends MineModel
     }
 
     /**
-     * 关联用户表
-     * @return BelongsToMany
+     * 关联用户表.
      */
     public function usersTable(): BelongsToMany
     {

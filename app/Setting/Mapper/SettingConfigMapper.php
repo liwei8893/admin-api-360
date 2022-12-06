@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Setting\Mapper;
 
 use App\Setting\Model\SettingConfig;
@@ -14,29 +15,24 @@ class SettingConfigMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SettingConfig::class;
     }
 
     /**
-     * 按Key获取配置
-     * @param string $key
-     * @return array
+     * 按Key获取配置.
      */
     public function getConfigByKey(string $key): array
     {
         $model = $this->model::query()->find($key, [
-            'group_id', 'name', 'key', 'value', 'sort', 'input_type', 'config_select_data'
+            'group_id', 'name', 'key', 'value', 'sort', 'input_type', 'config_select_data',
         ]);
         return $model ? $model->toArray() : [];
     }
 
     /**
-     * 更新配置
-     * @param string $key
-     * @param array $data
-     * @return bool
+     * 更新配置.
      */
     public function updateConfig(string $key, array $data): bool
     {
@@ -44,10 +40,8 @@ class SettingConfigMapper extends AbstractMapper
     }
 
     /**
-     * 按 keys 更新配置
-     * @param string $key
+     * 按 keys 更新配置.
      * @param array $data
-     * @return bool
      */
     public function updateByKey(string $key, string $value): bool
     {
@@ -55,9 +49,7 @@ class SettingConfigMapper extends AbstractMapper
     }
 
     /**
-     * 保存配置
-     * @param array $data
-     * @return int
+     * 保存配置.
      */
     public function save(array $data): int
     {
@@ -67,18 +59,18 @@ class SettingConfigMapper extends AbstractMapper
     }
 
     /**
-     * 搜索处理器
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-        if (isset($params['group_id']) && !empty($params['group_id'])) {
+        if (isset($params['group_id']) && ! empty($params['group_id'])) {
             $query->where('group_id', $params['group_id']);
         }
-        if (isset($params['name']) && !empty($params['name'])) {
+        if (isset($params['name']) && ! empty($params['name'])) {
             $query->where('name', $params['name']);
         }
-        if (isset($params['key']) && !empty($params['key'])) {
-            $query->where('key', 'like',  '%'.$params['key'].'%');
+        if (isset($params['key']) && ! empty($params['key'])) {
+            $query->where('key', 'like', '%' . $params['key'] . '%');
         }
         return $query;
     }

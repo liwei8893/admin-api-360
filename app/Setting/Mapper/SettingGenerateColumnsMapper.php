@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Setting\Mapper;
 
 use App\Setting\Model\SettingGenerateColumns;
@@ -9,8 +10,7 @@ use Mine\Abstracts\AbstractMapper;
 
 /**
  * 生成业务字段信息表查询类
- * Class SettingGenerateColumnsMapper
- * @package App\Setting\Mapper
+ * Class SettingGenerateColumnsMapper.
  */
 class SettingGenerateColumnsMapper extends AbstractMapper
 {
@@ -19,16 +19,13 @@ class SettingGenerateColumnsMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SettingGenerateColumns::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {

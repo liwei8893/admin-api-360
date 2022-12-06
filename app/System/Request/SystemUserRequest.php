@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\System\Request;
 
 use App\System\Service\SystemUserService;
@@ -8,56 +10,55 @@ use Mine\MineFormRequest;
 class SystemUserRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
         return [];
     }
 
-
     /**
      * 新增数据验证规则
-     * return array
+     * return array.
      */
     public function saveRules(): array
     {
         return [
             'username' => 'required|max:20',
             'password' => 'required|min:6',
-            'dept_id'  => 'required',
-            'role_ids' => 'required'
+            'dept_id' => 'required',
+            'role_ids' => 'required',
         ];
     }
 
     /**
      * 新增数据验证规则
-     * return array
+     * return array.
      */
     public function updateRules(): array
     {
         return [
             'username' => 'required|max:20',
-            'dept_id'  => 'required',
-            'role_ids' => 'required'
+            'dept_id' => 'required',
+            'role_ids' => 'required',
         ];
     }
 
     /**
      * 修改状态数据验证规则
-     * return array
+     * return array.
      */
     public function changeStatusRules(): array
     {
         return [
             'id' => 'required',
-            'status' => 'required'
+            'status' => 'required',
         ];
     }
 
     /**
      * 修改密码验证规则
-     * return array
+     * return array.
      */
     public function modifyPasswordRules(): array
     {
@@ -76,18 +77,18 @@ class SystemUserRequest extends MineFormRequest
     }
 
     /**
-     * 设置用户首页数据验证规则
+     * 设置用户首页数据验证规则.
      */
     public function setHomePageRules(): array
     {
         return [
             'id' => 'required',
-            'dashboard' => 'required'
+            'dashboard' => 'required',
         ];
     }
 
     /**
-     * 登录规则
+     * 登录规则.
      * @return string[]
      */
     public function loginRules(): array
@@ -100,7 +101,7 @@ class SystemUserRequest extends MineFormRequest
 
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {
@@ -117,5 +118,4 @@ class SystemUserRequest extends MineFormRequest
             'role_ids' => '角色列表',
         ];
     }
-
 }

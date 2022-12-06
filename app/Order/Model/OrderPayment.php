@@ -1,9 +1,11 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
+
 namespace App\Order\Model;
 
 use Mine\MineModel;
+
 /**
  * @property int $payment_id ID
  * @property string $payment_number 支付单编码
@@ -20,20 +22,24 @@ use Mine\MineModel;
  */
 class OrderPayment extends MineModel
 {
-    protected $primaryKey = 'payment_id';
     public $timestamps = false;
+
+    protected $primaryKey = 'payment_id';
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'order_payments';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['payment_id', 'payment_number', 'order_number', 'pay_price', 'pay_app_id', 'tag_type', 'subject', 'user_id', 'trade_no', 'begin_time', 'payed_time', 'status'];
+
     /**
      * The attributes that should be cast to native types.
      *

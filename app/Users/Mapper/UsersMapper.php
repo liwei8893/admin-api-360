@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Users\Mapper;
 
 use App\Users\Model\Users;
@@ -29,9 +22,6 @@ class UsersMapper extends AbstractMapper
     /**
      * 用手机号检测用户是否存在.
      * @param $mobile
-     * @return bool
-     *              author:ZQ
-     *              time:2022-05-31 14:05
      */
     public function existsByMobile($mobile): bool
     {
@@ -41,9 +31,6 @@ class UsersMapper extends AbstractMapper
     /**
      * 用手机号查询一条数据.
      * @param $mobile
-     * @return null|Builder|Model
-     *                            author:ZQ
-     *                            time:2022-08-20 10:26
      */
     public function readByMobile($mobile): Model|Builder|null
     {
@@ -52,9 +39,7 @@ class UsersMapper extends AbstractMapper
 
     /**
      * 初始化用户密码,手机号后六位.
-     * @param int $id
      * @param null $password
-     * @return bool
      */
     public function initUserPassword(int $id, $password = null): bool
     {
@@ -69,9 +54,6 @@ class UsersMapper extends AbstractMapper
     /**
      * 获取初始密码,手机号后六位.
      * @param $mobile
-     * @return string
-     *                author:ZQ
-     *                time:2022-06-01 15:37
      */
     public function getInitPassword($mobile): string
     {
@@ -81,9 +63,6 @@ class UsersMapper extends AbstractMapper
     /**
      * 获取初始用户名,手机号隐藏中间4位.
      * @param $mobile
-     * @return string
-     *                author:ZQ
-     *                time:2022-08-16 14:26
      */
     public function getInitUserName($mobile): string
     {

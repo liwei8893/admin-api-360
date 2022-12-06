@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\System\Request;
 
 use Mine\MineFormRequest;
@@ -7,7 +9,7 @@ use Mine\MineFormRequest;
 class MessageRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
@@ -22,13 +24,13 @@ class MessageRequest extends MineFormRequest
         return [
             'title' => 'required',
             'users' => 'required|array',
-            'content' => 'required'
+            'content' => 'required',
         ];
     }
 
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {

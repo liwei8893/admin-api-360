@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Order\Service;
 
 use App\Order\Mapper\OrderTransactionMapper;
@@ -25,7 +27,8 @@ class OrderTransactionService extends AbstractService
     /**
      * 转人记录
      * author:ZQ
-     * time:2022-08-19 14:34
+     * time:2022-08-19 14:34.
+     * @param mixed $data
      */
     public function OrderToUserRecord($data): bool
     {
@@ -40,11 +43,11 @@ class OrderTransactionService extends AbstractService
         ];
         $oldParams = [
             'user_id' => $data['oldUserId'],
-            'new_user_id' => $data['newUserId']
+            'new_user_id' => $data['newUserId'],
         ];
         $newParams = [
             'user_id' => $data['newUserId'],
-            'new_user_id' => $data['oldUserId']
+            'new_user_id' => $data['oldUserId'],
         ];
         // 老订单续费记录用户id换成新用户id
         $this->usersRenewMapper->transformUser($data['oldUserId'], $data['oldOrderId'], $data['newUserId'], $data['newOrderId']);
@@ -55,11 +58,11 @@ class OrderTransactionService extends AbstractService
     }
 
     /**
-     * 转班
+     * 转班.
      * @param $data
      * @return bool
-     * author:ZQ
-     * time:2022-08-20 11:31
+     *              author:ZQ
+     *              time:2022-08-20 11:31
      */
     public function OrderToCourseRecord($data): bool
     {
@@ -92,5 +95,4 @@ class OrderTransactionService extends AbstractService
         ];
         return $this->mapper->insert($params);
     }
-
 }

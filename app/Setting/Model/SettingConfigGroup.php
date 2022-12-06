@@ -1,9 +1,11 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
+
 namespace App\Setting\Model;
 
 use Mine\MineModel;
+
 /**
  * @property int $id 主键
  * @property string $name 配置组名称
@@ -22,12 +24,14 @@ class SettingConfigGroup extends MineModel
      * @var string
      */
     protected $table = 'setting_config_group';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'name', 'code', 'created_by', 'updated_by', 'created_at', 'updated_at', 'remark'];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -36,8 +40,7 @@ class SettingConfigGroup extends MineModel
     protected $casts = ['id' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     /**
-     * 关联config表
-     * @return \Hyperf\Database\Model\Relations\HasMany
+     * 关联config表.
      */
     public function configs(): \Hyperf\Database\Model\Relations\HasMany
     {

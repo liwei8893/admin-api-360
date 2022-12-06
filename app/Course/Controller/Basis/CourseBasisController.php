@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Course\Controller\Basis;
 
 use App\Course\Dto\CourseBasisDto;
@@ -89,8 +82,6 @@ class CourseBasisController extends MineController
 
     /**
      * 新增.
-     * @param CourseBasisRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -102,9 +93,6 @@ class CourseBasisController extends MineController
 
     /**
      * 更新.
-     * @param int $id
-     * @param CourseBasisRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

@@ -1,32 +1,23 @@
 <?php
+
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 namespace App\Order\Request;
 
 use Mine\MineFormRequest;
 
 /**
- * 订单管理验证数据类
+ * 订单管理验证数据类.
  */
 class OrderSignupRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
         return [];
     }
-
 
     public function adminSaveRules(): array
     {
@@ -41,30 +32,27 @@ class OrderSignupRequest extends MineFormRequest
 
     /**
      * 新增数据验证规则
-     * return array
+     * return array.
      */
     public function saveRules(): array
     {
         return [
-
         ];
     }
 
     /**
      * 更新数据验证规则
-     * return array
+     * return array.
      */
     public function updateRules(): array
     {
         return [
-
         ];
     }
 
-
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {
@@ -121,8 +109,6 @@ class OrderSignupRequest extends MineFormRequest
             'apply_type' => '1首月  2正价',
             'is_vip' => '1:普通会员，2:超级会员，3:至尊会员',
             'platform' => '用户平台',
-
         ];
     }
-
 }

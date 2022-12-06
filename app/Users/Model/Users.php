@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Users\Model;
 
 use App\Order\Model\Order;
@@ -131,6 +124,8 @@ class Users extends MineModel
      */
     public const ADMIN_TYPE = 0;
 
+    public const COMMON_FIELDS = ['id', 'user_name', 'user_pass', 'real_name', 'user_nickname', 'remember_token', 'mobile', 'status', 'sex', 'last_login_ip', 'last_login_time', 'birthday', 'avatar', 'avatar_frame', 'grade_id', 'province_id', 'city_id', 'area_id', 'score', 'days'];
+
     /**
      * The table associated with the model.
      *
@@ -168,9 +163,6 @@ class Users extends MineModel
 
     /**
      * 关联订单表.
-     * @return HasMany
-     *                 author:ZQ
-     *                 time:2022-05-29 16:56
      */
     public function orders(): HasMany
     {
@@ -179,9 +171,6 @@ class Users extends MineModel
 
     /**
      * 关联年级表.
-     * @return HasOne
-     *                author:ZQ
-     *                time:2022-05-29 17:43
      */
     public function grades(): HasOne
     {
@@ -238,12 +227,8 @@ class Users extends MineModel
 
     /**
      * 用户头像获取器.
-     * @param $value
-     * @return string
-     *                author:ZQ
-     *                time:2022-07-04 12:22
      */
-    public function getAvatarAttribute($value): string
+    public function getAvatarAttribute(string $value): string
     {
         return (! str_contains($value, 'https')) ? config('file.storage.qiniu.domain') . '/' . $value : $value;
     }

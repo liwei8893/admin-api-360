@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\System\Mapper;
-
 
 use App\System\Model\SystemOperLog;
 use Hyperf\Database\Model\Builder;
@@ -15,16 +15,13 @@ class SystemOperLogMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemOperLog::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -32,18 +29,17 @@ class SystemOperLogMapper extends AbstractMapper
             $query->where('ip', $params['ip']);
         }
         if (isset($params['service_name'])) {
-            $query->where('service_name', 'like', '%'.$params['service_name'].'%');
+            $query->where('service_name', 'like', '%' . $params['service_name'] . '%');
         }
         if (isset($params['username'])) {
-            $query->where('username', 'like', '%'.$params['username'].'%');
+            $query->where('username', 'like', '%' . $params['username'] . '%');
         }
         if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
             $query->whereBetween(
                 'created_at',
-                [ $params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59' ]
+                [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
             );
         }
         return $query;
     }
-
 }

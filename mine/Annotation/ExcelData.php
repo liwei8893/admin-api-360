@@ -9,7 +9,8 @@
  * @Link   https://gitee.com/xmo/MineAdmin
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Mine\Annotation;
 
 use Attribute;
@@ -21,4 +22,6 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
  * @Target("CLASS")
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class ExcelData extends AbstractAnnotation {}
+class ExcelData extends AbstractAnnotation
+{
+}

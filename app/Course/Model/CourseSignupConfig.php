@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace App\Course\Model;
 
@@ -31,12 +31,14 @@ class CourseSignupConfig extends MineModel
      * @var string
      */
     protected $table = 'course_signup_config';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'title', 'price', 'day', 'sort', 'remark', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -51,8 +53,8 @@ class CourseSignupConfig extends MineModel
 
     public function gradeSignup(): BelongsToMany
     {
-      return  $this->belongsToMany(SystemDictData::class, 'course_signup_grade', 'course_signup_config_id', 'grade_id','id','value')
-            ->select(['id','label as title', 'value as key'])
+        return $this->belongsToMany(SystemDictData::class, 'course_signup_grade', 'course_signup_config_id', 'grade_id', 'id', 'value')
+            ->select(['id', 'label as title', 'value as key'])
             ->where('code', 'grade')->where('status', MineModel::ENABLE);
     }
 }

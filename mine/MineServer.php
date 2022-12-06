@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine;
 
 use Hyperf\HttpServer\Server;
@@ -27,8 +28,7 @@ class MineServer extends Server
     }
 
     /**
-     * MineServer bootstrap
-     * @return void
+     * MineServer bootstrap.
      */
     protected function bootstrap(): void
     {

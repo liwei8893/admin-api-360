@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Crontab;
 
 use App\Setting\Model\SettingCrontab;
@@ -22,34 +23,32 @@ use Psr\Container\ContainerInterface;
 
 /**
  * 定时任务管理器
- * Class MineCrontabManage
- * @package Mine\Crontab
+ * Class MineCrontabManage.
  */
 class MineCrontabManage
 {
     /**
-     * ContainerInterface
+     * ContainerInterface.
      */
     #[Inject]
     protected ContainerInterface $container;
 
     /**
-     * Parser
+     * Parser.
      */
     #[Inject]
     protected Parser $parser;
 
     /**
-     * ClientFactory
+     * ClientFactory.
      */
     #[Inject]
     protected ClientFactory $clientFactory;
 
     /**
-     * Redis
+     * Redis.
      */
     protected Redis $redis;
-
 
     /**
      * MineCrontabManage constructor.
@@ -62,8 +61,7 @@ class MineCrontabManage
     }
 
     /**
-     * 获取定时任务列表
-     * @return array
+     * 获取定时任务列表.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -89,7 +87,6 @@ class MineCrontabManage
         $list = [];
 
         foreach ($data as $item) {
-
             $crontab = new MineCrontab();
             $crontab->setCallback($item['target']);
             $crontab->setType((string) $item['type']);
@@ -99,8 +96,8 @@ class MineCrontabManage
             $crontab->setParameter($item['parameter'] ?: '');
             $crontab->setRule($item['rule']);
 
-            if (!$this->parser->isValid($crontab->getRule())) {
-                console()->info('Crontab task ['.$item['name'].'] rule error, skipping execution');
+            if (! $this->parser->isValid($crontab->getRule())) {
+                console()->info('Crontab task [' . $item['name'] . '] rule error, skipping execution');
                 continue;
             }
 

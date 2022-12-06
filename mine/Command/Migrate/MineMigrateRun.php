@@ -10,18 +10,18 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Command\Migrate;
 
+use Hyperf\Command\Annotation\Command;
 use Hyperf\Command\ConfirmableTrait;
 use Hyperf\Database\Commands\Migrations\BaseCommand;
 use Hyperf\Database\Migrations\Migrator;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use Hyperf\Command\Annotation\Command;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class MineMigrateRun
- * @package System\Command\Migrate
+ * Class MineMigrateRun.
  */
 #[Command]
 class MineMigrateRun extends BaseCommand
@@ -48,7 +48,6 @@ class MineMigrateRun extends BaseCommand
 
     /**
      * Create a new migration command instance.
-     * @param Migrator $migrator
      */
     public function __construct(Migrator $migrator)
     {
@@ -125,8 +124,6 @@ class MineMigrateRun extends BaseCommand
 
     /**
      * Get migration path (either specified by '--path' option or default location).
-     *
-     * @return string
      */
     protected function getMigrationPath(): string
     {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\System\Crontab;
@@ -12,8 +13,7 @@ use Mine\Annotation\Transaction;
 class ClearLogCrontab
 {
     /**
-     * 清理所有日志
-     * @return string
+     * 清理所有日志.
      */
     #[Transaction]
     public function execute(): string

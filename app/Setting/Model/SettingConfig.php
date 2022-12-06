@@ -1,9 +1,11 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
+
 namespace App\Setting\Model;
 
 use Mine\MineModel;
+
 /**
  * @property int $group_id 组ID
  * @property string $key 配置键名
@@ -17,21 +19,27 @@ use Mine\MineModel;
 class SettingConfig extends MineModel
 {
     public $incrementing = false;
-    protected $primaryKey = 'key';
-    protected $keyType = 'string';
+
     public $timestamps = false;
+
+    protected $primaryKey = 'key';
+
+    protected $keyType = 'string';
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'setting_config';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['group_id', 'key', 'value', 'name', 'input_type', 'config_select_data', 'sort', 'remark'];
+
     /**
      * The attributes that should be cast to native types.
      *

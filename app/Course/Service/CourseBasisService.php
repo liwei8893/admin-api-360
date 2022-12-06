@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Course\Service;
 
 use App\Course\Mapper\CourseBasisMapper;
@@ -45,7 +38,6 @@ class CourseBasisService extends AbstractService
     /**
      * 批量更新.
      * @param $data
-     * @return int
      */
     public function batchUpdate($data): int
     {
@@ -58,7 +50,6 @@ class CourseBasisService extends AbstractService
      * 修改状态
      * @param $id
      * @param $statusValue
-     * @return bool
      */
     public function changeCourseStatus($id, $statusValue): bool
     {

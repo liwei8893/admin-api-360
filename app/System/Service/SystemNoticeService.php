@@ -1,19 +1,19 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace App\System\Service;
 
 use App\System\Mapper\SystemNoticeMapper;
 use App\System\Mapper\SystemUserMapper;
 use App\System\Model\SystemQueueMessage;
 use App\System\Vo\QueueMessageVo;
-use Co\System;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
 
 /**
- * 通知管理服务类
+ * 通知管理服务类.
  */
 class SystemNoticeService extends AbstractService
 {
@@ -28,7 +28,7 @@ class SystemNoticeService extends AbstractService
     }
 
     /**
-     * 保存公告
+     * 保存公告.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Throwable
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -58,7 +58,6 @@ class SystemNoticeService extends AbstractService
             return parent::save($data);
         }
 
-        throw new NormalStatusException;
+        throw new NormalStatusException();
     }
-
 }

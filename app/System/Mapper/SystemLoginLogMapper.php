@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\System\Mapper;
 
 use App\System\Model\SystemLoginLog;
@@ -7,8 +9,7 @@ use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * Class SystemUserMapper
- * @package App\System\Mapper
+ * Class SystemUserMapper.
  */
 class SystemLoginLogMapper extends AbstractMapper
 {
@@ -17,16 +18,13 @@ class SystemLoginLogMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemLoginLog::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -35,7 +33,7 @@ class SystemLoginLogMapper extends AbstractMapper
         }
 
         if (isset($params['username'])) {
-            $query->where('username', 'like', '%'.$params['username'].'%');
+            $query->where('username', 'like', '%' . $params['username'] . '%');
         }
 
         if (isset($params['status'])) {
@@ -45,7 +43,7 @@ class SystemLoginLogMapper extends AbstractMapper
         if (isset($params['login_time']) && is_array($params['login_time']) && count($params['login_time']) == 2) {
             $query->whereBetween(
                 'login_time',
-                [ $params['login_time'][0] . ' 00:00:00', $params['login_time'][1] . ' 23:59:59' ]
+                [$params['login_time'][0] . ' 00:00:00', $params['login_time'][1] . ' 23:59:59']
             );
         }
         return $query;

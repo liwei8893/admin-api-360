@@ -10,14 +10,7 @@
  */
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace Mine\Abstracts;
 
 use Hyperf\Context\Context;
@@ -50,7 +43,7 @@ abstract class AbstractMapper
         return $this->getAttributes()[$name] ?? '';
     }
 
-    abstract public function assignModel();
+    abstract public function assignModel(): void;
 
     /**
      * 把数据设置为类属性.

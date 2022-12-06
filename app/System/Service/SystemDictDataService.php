@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\System\Service;
 
 use App\System\Mapper\SystemDictDataMapper;
@@ -11,8 +12,7 @@ use Psr\Container\ContainerInterface;
 
 /**
  * 字典类型业务
- * Class SystemLoginLogService
- * @package App\System\Service
+ * Class SystemLoginLogService.
  */
 class SystemDictDataService extends AbstractService
 {
@@ -22,20 +22,17 @@ class SystemDictDataService extends AbstractService
     public $mapper;
 
     /**
-     * 容器
-     * @var ContainerInterface
+     * 容器.
      */
     protected ContainerInterface $container;
 
     /**
-     * Redis
-     * @var Redis
+     * Redis.
      */
     protected Redis $redis;
 
-    #[Value("cache.default.prefix")]
+    #[Value('cache.default.prefix')]
     protected ?string $prefix = null;
-
 
     /**
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -49,9 +46,7 @@ class SystemDictDataService extends AbstractService
     }
 
     /**
-     * 查询多个字典
-     * @param array|null $params
-     * @return array
+     * 查询多个字典.
      * @throws \RedisException
      */
     public function getLists(?array $params = null): array
@@ -71,10 +66,7 @@ class SystemDictDataService extends AbstractService
     }
 
     /**
-     * 查询一个字典
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 查询一个字典.
      * @throws \RedisException
      */
     public function getList(?array $params = null, bool $isScope = false): array
@@ -93,7 +85,7 @@ class SystemDictDataService extends AbstractService
             'select' => ['id', 'label as title', 'value as key'],
             'status' => \Mine\MineModel::ENABLE,
             'orderBy' => 'sort',
-            'orderType' => 'desc'
+            'orderType' => 'desc',
         ];
         $data = $this->mapper->getList(array_merge($args, $params), $isScope);
 
@@ -103,8 +95,7 @@ class SystemDictDataService extends AbstractService
     }
 
     /**
-     * 清除缓存
-     * @return bool
+     * 清除缓存.
      * @throws \RedisException
      */
     public function clearCache(): bool

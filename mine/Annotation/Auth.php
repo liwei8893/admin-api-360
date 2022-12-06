@@ -9,7 +9,8 @@
  * @Link   https://gitee.com/xmo/MineAdmin
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Mine\Annotation;
 
 use Attribute;
@@ -24,14 +25,13 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
 class Auth extends AbstractAnnotation
 {
     /**
-     * scene
-     * @var string
+     * scene.
      */
     public string $scene;
 
     public function __construct($value = 'default')
     {
         parent::__construct($value);
-        $this->bindMainProperty('scene', [ $value ]);
+        $this->bindMainProperty('scene', [$value]);
     }
 }

@@ -1,18 +1,10 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Order\Service;
 
 use App\Order\Mapper\OrderStaMapper;
-use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 
@@ -30,7 +22,6 @@ class OrderStaService extends AbstractService
     /**
      * 会员新增统计
      * @param $data
-     * @return array
      */
     public function getNewVipSta($data): array
     {
@@ -47,7 +38,6 @@ class OrderStaService extends AbstractService
     /**
      * 续费统计
      * @param $data
-     * @return array
      */
     public function getRenewalSta($data): array
     {
@@ -64,7 +54,6 @@ class OrderStaService extends AbstractService
     /**
      * 退费统计.
      * @param $data
-     * @return array
      */
     public function getRefundSta($data): array
     {
@@ -84,8 +73,6 @@ class OrderStaService extends AbstractService
     /**
      * 处理时间,created_at->Y-m-d.
      * @param $data
-     * @param string $dayField
-     * @return array
      */
     protected function handleStaDate($data, string $dayField = 'indate'): array
     {

@@ -9,7 +9,8 @@
  * @Link   https://gitee.com/xmo/MineAdmin
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Mine\Annotation;
 
 use Attribute;
@@ -24,14 +25,13 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
 class OperationLog extends AbstractAnnotation
 {
     /**
-     * 菜单名称
-     * @var string
+     * 菜单名称.
      */
     public string $menuName;
 
     public function __construct($value = '')
     {
         parent::__construct($value);
-        $this->bindMainProperty('menuName', [ $value ]);
+        $this->bindMainProperty('menuName', [$value]);
     }
 }

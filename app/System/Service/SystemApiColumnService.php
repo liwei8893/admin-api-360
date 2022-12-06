@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\System\Service;
 
 use App\System\Mapper\SystemApiColumnMapper;
@@ -8,8 +9,7 @@ use Mine\Abstracts\AbstractService;
 
 /**
  * api接口字段业务
- * Class SystemApiColumnService
- * @package App\System\Service
+ * Class SystemApiColumnService.
  */
 class SystemApiColumnService extends AbstractService
 {

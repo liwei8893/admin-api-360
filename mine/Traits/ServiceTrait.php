@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace Mine\Traits;
 
 use Closure;
@@ -144,9 +137,6 @@ trait ServiceTrait
     /**
      * Description:获取单列值
      * User:mike.
-     * @param array $condition
-     * @param string $columns
-     * @return array
      */
     public function pluck(array $condition, string $columns = 'id'): array
     {

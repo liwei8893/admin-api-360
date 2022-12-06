@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\System\Service;
@@ -7,7 +8,7 @@ use App\System\Mapper\SystemApiMapper;
 use Mine\Abstracts\AbstractService;
 
 /**
- * 接口表服务类
+ * 接口表服务类.
  */
 class SystemApiService extends AbstractService
 {
@@ -22,9 +23,7 @@ class SystemApiService extends AbstractService
     }
 
     /**
-     * 获取字段列
-     * @param string $id
-     * @return array
+     * 获取字段列.
      */
     public function getColumnListByApiId(string $id): array
     {

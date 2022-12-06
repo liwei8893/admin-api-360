@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Order\Controller\Sta;
 
 use App\Order\Request\OrderStaRequest;
@@ -49,8 +42,6 @@ class OrderStaController extends MineController
 
     /**
      * 续费统计表.
-     * @param OrderStaRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -62,8 +53,6 @@ class OrderStaController extends MineController
 
     /**
      * 退费统计表.
-     * @param OrderStaRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace App\System\Queue\Consumer;
 
-use Hyperf\Amqp\Result;
 use Hyperf\Amqp\Annotation\Consumer;
 use Hyperf\Amqp\Message\ConsumerMessage;
+use Hyperf\Amqp\Result;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
- * 后台内部消息队列消费处理
+ * 后台内部消息队列消费处理.
  */
-#[Consumer(exchange: "mineadmin", routingKey: "message.routing", queue: "message.queue", name: "message.queue", nums: 1)]
+#[Consumer(exchange: 'mineadmin', routingKey: 'message.routing', queue: 'message.queue', name: 'message.queue', nums: 1)]
 class MessageConsumer extends ConsumerMessage
 {
     /**
      * @param $data
-     * @param AMQPMessage $message
-     * @return string
      */
     public function consumeMessage($data, AMQPMessage $message): string
     {
@@ -31,8 +29,7 @@ class MessageConsumer extends ConsumerMessage
     }
 
     /**
-     * 设置是否启动amqp
-     * @return bool
+     * 设置是否启动amqp.
      */
     public function isEnable(): bool
     {

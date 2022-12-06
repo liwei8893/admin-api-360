@@ -10,24 +10,23 @@
  */
 
 declare(strict_types=1);
-namespace Mine\Crontab;
 
+namespace Mine\Crontab;
 
 class MineCrontabScheduler
 {
     /**
-     * MineCrontabManage
+     * MineCrontabManage.
      */
     protected MineCrontabManage $crontabManager;
 
     /**
-     * \SplQueue
+     * \SplQueue.
      */
     protected \SplQueue $schedules;
 
     /**
      * MineCrontabScheduler constructor.
-     * @param MineCrontabManage $crontabManager
      */
     public function __construct(MineCrontabManage $crontabManager)
     {

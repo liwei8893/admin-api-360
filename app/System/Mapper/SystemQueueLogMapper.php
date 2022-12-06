@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace App\System\Mapper;
 
 use App\System\Model\SystemQueueLog;
@@ -8,7 +9,7 @@ use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * 队列管理Mapper类
+ * 队列管理Mapper类.
  */
 class SystemQueueLogMapper extends AbstractMapper
 {
@@ -17,16 +18,13 @@ class SystemQueueLogMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemQueueLog::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {

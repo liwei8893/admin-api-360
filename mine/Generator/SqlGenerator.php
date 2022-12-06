@@ -1,7 +1,8 @@
 <?php
+
 /** @noinspection PhpExpressionResultUnusedInspection */
-/** @noinspection PhpSignatureMismatchDuringInheritanceInspection */
-/**
+/* @noinspection PhpSignatureMismatchDuringInheritanceInspection */
+/*
  * MineAdmin is committed to providing solutions for quickly building web applications
  * Please view the LICENSE file that was distributed with this source code,
  * For the full copyright and license information.
@@ -26,36 +27,20 @@ use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 菜单SQL文件生成
- * Class SqlGenerator
- * @package Mine\Generator
+ * Class SqlGenerator.
  */
 class SqlGenerator extends MineGenerator implements CodeGenerator
 {
-    /**
-     * @var SettingGenerateTables
-     */
     protected SettingGenerateTables $model;
 
-    /**
-     * @var string
-     */
     protected string $codeContent;
 
-    /**
-     * @var Filesystem
-     */
     protected Filesystem $filesystem;
 
-    /**
-     * @var int
-     */
     protected int $adminId;
 
     /**
-     * 设置生成信息
-     * @param SettingGenerateTables $model
-     * @param int $adminId
-     * @return SqlGenerator
+     * 设置生成信息.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws \Exception
@@ -78,7 +63,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
     public function generator(): void
     {
         $path = BASE_PATH . "/runtime/generate/{$this->getShortBusinessName()}Menu.sql";
-        $this->filesystem->makeDirectory(BASE_PATH . "/runtime/generate/", 0755, true, true);
+        $this->filesystem->makeDirectory(BASE_PATH . '/runtime/generate/', 0755, true, true);
         $this->filesystem->put($path, $this->placeholderReplace()->getCodeContent());
 
         if ($this->model->build_menu === self::YES) {
@@ -97,8 +82,35 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
     }
 
     /**
+     * 获取短业务名称.
+     */
+    public function getShortBusinessName(): string
+    {
+        return Str::camel(str_replace(
+            Str::lower($this->model->module_name),
+            '',
+            str_replace(env('DB_PREFIX'), '', $this->model->table_name)
+        ));
+    }
+
+    /**
+     * 设置代码内容.
+     */
+    public function setCodeContent(string $content): void
+    {
+        $this->codeContent = $content;
+    }
+
+    /**
+     * 获取代码内容.
+     */
+    public function getCodeContent(): string
+    {
+        return $this->codeContent;
+    }
+
+    /**
      * 获取模板地址
-     * @return string
      */
     protected function getTemplatePath(): string
     {
@@ -106,8 +118,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
     }
 
     /**
-     * 读取模板内容
-     * @return string
+     * 读取模板内容.
      */
     protected function readTemplate(): string
     {
@@ -115,7 +126,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
     }
 
     /**
-     * 占位符替换
+     * 占位符替换.
      * @throws \Exception
      */
     protected function placeholderReplace(): SqlGenerator
@@ -130,7 +141,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
     }
 
     /**
-     * 获取要替换的占位符
+     * 获取要替换的占位符.
      */
     protected function getPlaceHolderContent(): array
     {
@@ -143,12 +154,12 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
             '{CODE}',
             '{ROUTE}',
             '{VUE_TEMPLATE}',
-            '{ADMIN_ID}'
+            '{ADMIN_ID}',
         ];
     }
 
     /**
-     * 获取要替换占位符的内容
+     * 获取要替换占位符的内容.
      * @throws \Exception
      */
     protected function getReplaceContent(): array
@@ -162,7 +173,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
             $this->getCode(),
             $this->getRoute(),
             $this->getVueTemplate(),
-            $this->getAdminId()
+            $this->getAdminId(),
         ];
     }
 
@@ -187,8 +198,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
     }
 
     /**
-     * 获取菜单父ID
-     * @return int
+     * 获取菜单父ID.
      */
     protected function getParentId(): int
     {
@@ -196,17 +206,15 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
     }
 
     /**
-     * 获取菜单表表名
-     * @return string
+     * 获取菜单表表名.
      */
     protected function getTableName(): string
     {
-        return env('DB_PREFIX') . (SystemMenu::getModel())->getTable();
+        return env('DB_PREFIX') . SystemMenu::getModel()->getTable();
     }
 
     /**
-     * 获取菜单层级value
-     * @return string
+     * 获取菜单层级value.
      */
     protected function getLevel(): string
     {
@@ -220,7 +228,6 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
 
     /**
      * 获取菜单标识代码
-     * @return string
      */
     protected function getCode(): string
     {
@@ -229,17 +236,14 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
 
     /**
      * 获取vue router地址
-     * @return string
      */
     protected function getRoute(): string
     {
         return Str::lower($this->model->module_name) . '/' . $this->getShortBusinessName();
     }
 
-
     /**
-     * 获取Vue模板路径
-     * @return string
+     * 获取Vue模板路径.
      */
     protected function getVueTemplate(): string
     {
@@ -247,43 +251,10 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
     }
 
     /**
-     * 获取短业务名称
-     * @return string
-     */
-    public function getShortBusinessName(): string
-    {
-        return Str::camel(str_replace(
-            Str::lower($this->model->module_name),
-            '',
-            str_replace(env('DB_PREFIX'), '', $this->model->table_name)
-        ));
-    }
-
-    /**
-     * 获取当前登陆人ID
-     * @return string
+     * 获取当前登陆人ID.
      */
     protected function getAdminId(): string
     {
-        return (string)$this->adminId;
+        return (string) $this->adminId;
     }
-
-    /**
-     * 设置代码内容
-     * @param string $content
-     */
-    public function setCodeContent(string $content): void
-    {
-        $this->codeContent = $content;
-    }
-
-    /**
-     * 获取代码内容
-     * @return string
-     */
-    public function getCodeContent(): string
-    {
-        return $this->codeContent;
-    }
-
 }

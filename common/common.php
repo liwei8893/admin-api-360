@@ -1,2 +1,3 @@
 <?php
-// 自定义函数库
+
+declare(strict_types=1);

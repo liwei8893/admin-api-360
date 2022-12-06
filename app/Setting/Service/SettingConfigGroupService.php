@@ -1,8 +1,8 @@
 <?php
 
 declare(strict_types=1);
-namespace App\Setting\Service;
 
+namespace App\Setting\Service;
 
 use App\Setting\Mapper\SettingConfigGroupMapper;
 use Mine\Abstracts\AbstractService;
@@ -17,7 +17,6 @@ class SettingConfigGroupService extends AbstractService
 
     /**
      * SettingConfigGroupService constructor.
-     * @param SettingConfigGroupMapper $mapper
      */
     public function __construct(SettingConfigGroupMapper $mapper)
     {
@@ -25,9 +24,7 @@ class SettingConfigGroupService extends AbstractService
     }
 
     /**
-     * 删除配置组和其所属配置
-     * @param int $id
-     * @return bool
+     * 删除配置组和其所属配置.
      */
     #[Transaction]
     public function deleteConfigGroup(int $id): bool

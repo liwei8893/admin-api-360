@@ -18,8 +18,6 @@ class SystemDictTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run()
     {
@@ -46,7 +44,6 @@ class SystemDictTypeSeeder extends Seeder
             "INSERT INTO `{$tableName}` VALUES (10, '队列消费状态', 'queue_consume_status', 1, NULL, NULL, '2021-12-25 18:23:19', '2021-12-25 18:23:19', NULL, NULL)",
             "INSERT INTO `{$tableName}` VALUES (11, '队列消息类型', 'queue_msg_type', 1, NULL, NULL, '2021-12-25 18:28:40', '2021-12-25 18:28:40', NULL, NULL)",
             "INSERT INTO `{$tableName}` VALUES (12, '附件类型', 'attachment_type', 1, NULL, NULL, '2022-03-17 14:49:23', '2022-03-17 14:49:23', NULL, NULL)",
-
         ];
     }
 }

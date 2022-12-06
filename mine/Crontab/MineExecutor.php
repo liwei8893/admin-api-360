@@ -10,52 +10,39 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Crontab;
 
+use App\Setting\Model\SettingCrontab;
 use App\Setting\Service\SettingCrontabLogService;
 use Carbon\Carbon;
 use Closure;
 use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Crontab\LoggerInterface;
-use Hyperf\Logger\Logger;
+use Hyperf\Guzzle\ClientFactory;
+use Hyperf\Utils\Coroutine;
 use Mine\Crontab\Mutex\RedisServerMutex;
 use Mine\Crontab\Mutex\RedisTaskMutex;
 use Mine\Crontab\Mutex\ServerMutex;
 use Mine\Crontab\Mutex\TaskMutex;
-use Hyperf\Guzzle\ClientFactory;
-use Hyperf\Utils\Coroutine;
 use Mine\MineModel;
 use Psr\Container\ContainerInterface;
 use Swoole\Timer;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
-use App\Setting\Model\SettingCrontab;
 
 class MineExecutor
 {
-    /**
-     * @var ContainerInterface
-     */
     protected ContainerInterface $container;
 
-    /**
-     * @var Object
-     */
     protected Object $logger;
 
-    /**
-     * @var TaskMutex
-     */
     protected TaskMutex $taskMutex;
 
-    /**
-     * @var ServerMutex
-     */
     protected ServerMutex $serverMutex;
 
     /**
-     * @param ContainerInterface $container
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -71,19 +58,16 @@ class MineExecutor
 
     /**
      * 执行定时任务
-     * @param MineCrontab $crontab
-     * @param bool $run
-     * @return bool|null
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function execute(MineCrontab $crontab, bool $run = false): ?bool
     {
-        if ((! $crontab instanceof MineCrontab || ! $crontab->getExecuteTime()) && !$run) {
+        if ((! $crontab instanceof MineCrontab || ! $crontab->getExecuteTime()) && ! $run) {
             return null;
         }
         $diff = 0;
-        !$run && $diff = $crontab->getExecuteTime()->diffInRealSeconds(new Carbon());
+        ! $run && $diff = $crontab->getExecuteTime()->diffInRealSeconds(new Carbon());
         $callback = null;
         switch ($crontab->getType()) {
             case SettingCrontab::CLASS_CRONTAB:
@@ -97,7 +81,7 @@ class MineExecutor
                                 $result = true;
                                 $res = null;
                                 $instance = make($class);
-                                if (!empty($parameters)) {
+                                if (! empty($parameters)) {
                                     $res = $instance->{$method}($parameters);
                                 } else {
                                     $res = $instance->{$method}();
@@ -142,7 +126,7 @@ class MineExecutor
                         $this->logResult(
                             $crontab,
                             $result,
-                            (!$result && isset($response)) ? $response->getBody() : ''
+                            (! $result && isset($response)) ? $response->getBody() : ''
                         );
                     };
                     $this->decorateRunnable($crontab, $runnable)();
@@ -220,11 +204,6 @@ class MineExecutor
         return $this->serverMutex;
     }
 
-    /**
-     * @param MineCrontab $crontab
-     * @param Closure $runnable
-     * @return Closure
-     */
     protected function decorateRunnable(MineCrontab $crontab, Closure $runnable): Closure
     {
         if ($crontab->isSingleton()) {
@@ -255,7 +234,7 @@ class MineExecutor
             'parameter' => $crontab->getParameter(),
             'exception_info' => $result,
             'status' => $isSuccess ? MineModel::ENABLE : MineModel::DISABLE,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
         ];
         $logService->save($data);
     }

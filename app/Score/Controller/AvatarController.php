@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Score\Controller;
 
 use App\Score\Service\AvatarService;
@@ -12,18 +14,17 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
-#[Controller(prefix: "score/avatar"), Auth]
+#[Controller(prefix: 'score/avatar'), Auth]
 class AvatarController extends MineController
 {
     #[Inject]
     protected AvatarService $service;
 
     /**
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping("index")]
+    #[GetMapping('index')]
     public function index(): ResponseInterface
     {
         return $this->success($this->service->getPageList($this->request->all()));

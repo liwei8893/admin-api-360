@@ -22,8 +22,7 @@ use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 /**
- * Class TokenExceptionHandler
- * @package Mine\Exception\Handler
+ * Class TokenExceptionHandler.
  */
 class TokenExceptionHandler extends ExceptionHandler
 {
@@ -33,7 +32,7 @@ class TokenExceptionHandler extends ExceptionHandler
         $format = [
             'success' => false,
             'message' => $throwable->getMessage(),
-            'code'    => MineCode::TOKEN_EXPIRED,
+            'code' => MineCode::TOKEN_EXPIRED,
         ];
         return $response->withHeader('Server', 'MineAdmin')
             ->withAddedHeader('content-type', 'application/json; charset=utf-8')

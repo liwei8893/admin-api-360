@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\Setting\Service;
-
 
 use App\Setting\Mapper\SettingCrontabLogMapper;
 use Mine\Abstracts\AbstractService;

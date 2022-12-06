@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Aspect;
 
 use Hyperf\Di\Annotation\Aspect;
@@ -17,21 +18,18 @@ use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\Di\Exception\Exception;
 use Mine\MineModel;
-use Mine\MineRequest;
 
 /**
- * Class SaveAspect
- * @package Mine\Aspect
+ * Class SaveAspect.
  */
 #[Aspect]
 class SaveAspect extends AbstractAspect
 {
     public $classes = [
-        'Mine\MineModel::save'
+        'Mine\MineModel::save',
     ];
 
     /**
-     * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
      * @throws Exception
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -46,9 +44,9 @@ class SaveAspect extends AbstractAspect
             try {
                 $user = user();
                 // 设置创建人
-                if ($instance instanceof MineModel &&
-                    in_array('created_by', $instance->getFillable()) &&
-                    is_null($instance->created_by)
+                if ($instance instanceof MineModel
+                    && in_array('created_by', $instance->getFillable())
+                    && is_null($instance->created_by)
                 ) {
                     $user->check();
                     $instance->created_by = $user->getId();
@@ -59,14 +57,14 @@ class SaveAspect extends AbstractAspect
                     $user->check();
                     $instance->updated_by = $user->getId();
                 }
-
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
         // 生成ID
-        if ($instance instanceof MineModel &&
-            !$instance->incrementing &&
-            $instance->getPrimaryKeyType() === 'int' &&
-            empty($instance->{$instance->getKeyName()})
+        if ($instance instanceof MineModel
+            && ! $instance->incrementing
+            && $instance->getPrimaryKeyType() === 'int'
+            && empty($instance->{$instance->getKeyName()})
         ) {
             $instance->setPrimaryKeyValue(snowflake_id());
         }

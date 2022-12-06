@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Order\Model;
 
 use App\Course\Model\CourseBasis;
@@ -67,7 +60,6 @@ class Order extends MineModel
 
     /**
      * 追加字段访问器，订单结束时间.
-     * @return string
      */
     public function getCourseEndTimeAttribute(): string
     {

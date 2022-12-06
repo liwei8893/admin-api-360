@@ -20,8 +20,7 @@ use Mine\Event\Operation;
 use Psr\Container\ContainerInterface;
 
 /**
- * Class OperationListener
- * @package Mine\Listener
+ * Class OperationListener.
  * @Listener
  */
 class OperationListener implements ListenerInterface
@@ -41,21 +40,20 @@ class OperationListener implements ListenerInterface
     public function listen(): array
     {
         return [
-            Operation::class
+            Operation::class,
         ];
     }
 
     /**
      * Handle the Event when the event is triggered, all listeners will
      * complete before the event is returned to the EventDispatcher.
-     * @param object $event
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function process(object $event)
     {
         $requestInfo = $event->getRequestInfo();
-        if (!in_array($requestInfo['router'], $this->ignoreRouter)) {
+        if (! in_array($requestInfo['router'], $this->ignoreRouter)) {
             $service = $this->container->get(SystemOperLogService::class);
             $requestInfo['request_data'] = json_encode($requestInfo['request_data'], JSON_UNESCAPED_UNICODE);
 //            $requestInfo['response_data'] = $requestInfo['response_data'];

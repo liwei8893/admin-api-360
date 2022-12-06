@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Setting\Service;
 
 use App\Setting\Mapper\SettingCrontabMapper;
@@ -19,25 +20,15 @@ class SettingCrontabService extends AbstractService
      */
     public $mapper;
 
-    /**
-     * @var ContainerInterface
-     */
     #[Inject]
     protected ContainerInterface $container;
 
-    /**
-     * @var Redis
-     */
     protected Redis $redis;
 
-    /**
-     * @var string
-     */
-    #[Value("cache.default.prefix")]
+    #[Value('cache.default.prefix')]
     protected string $prefix;
 
     /**
-     * @param SettingCrontabMapper $mapper
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -48,9 +39,7 @@ class SettingCrontabService extends AbstractService
     }
 
     /**
-     * 保存
-     * @param array $data
-     * @return int
+     * 保存.
      */
     public function save(array $data): int
     {
@@ -61,10 +50,7 @@ class SettingCrontabService extends AbstractService
     }
 
     /**
-     * 更新
-     * @param int $id
-     * @param array $data
-     * @return bool
+     * 更新.
      */
     public function update(int $id, array $data): bool
     {
@@ -75,9 +61,7 @@ class SettingCrontabService extends AbstractService
     }
 
     /**
-     * 删除
-     * @param array $ids
-     * @return bool
+     * 删除.
      */
     public function delete(array $ids): bool
     {
@@ -90,7 +74,6 @@ class SettingCrontabService extends AbstractService
     /**
      * 立即执行一次定时任务
      * @param $id
-     * @return bool|null
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */

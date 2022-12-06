@@ -1,9 +1,11 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
+
 namespace App\Question\Model;
 
 use Mine\MineModel;
+
 /**
  * @property int $id 文件ID
  * @property int $ques_id 试题ID
@@ -24,12 +26,14 @@ class QuesUploadFile extends MineModel
      * @var string
      */
     protected $table = 'ques_upload_file';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'ques_id', 'file_name', 'file_path', 'file_type', 'file_size', 'created_id', 'created_at', 'updated_id', 'updated_at'];
+
     /**
      * The attributes that should be cast to native types.
      *

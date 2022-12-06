@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Command\Migrate;
 
 use Hyperf\Command\Annotation\Command;
@@ -21,14 +22,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Throwable;
 
 /**
- * Class MineMigrate
- * @package System\Command\Migrate
+ * Class MineMigrate.
  */
 #[Command]
 class MineMigrate extends BaseCommand
 {
-
     protected $module;
+
     /**
      * The migration creator instance.
      *
@@ -38,11 +38,9 @@ class MineMigrate extends BaseCommand
 
     /**
      * Create a new migration install command instance.
-     * @param MineMigrationCreator $creator
      */
     public function __construct(MineMigrationCreator $creator)
     {
-
         parent::__construct('mine:migrate-gen');
         $this->setDescription('Generate a new MineAdmin module migration file');
         $this->creator = $creator;
@@ -56,12 +54,12 @@ class MineMigrate extends BaseCommand
         // It's possible for the developer to specify the tables to modify in this
         // schema operation. The developer may also specify if this table needs
         // to be freshly created so we can create the appropriate migrations.
-        $name = 'create_' . Str::snake(trim($this->input->getArgument('name'))).'_table';
+        $name = 'create_' . Str::snake(trim($this->input->getArgument('name'))) . '_table';
 
         $this->module = $this->input->getOption('module');
 
         if (empty($this->module)) {
-            $this->error("<--module module_name> required");
+            $this->error('<--module module_name> required');
             exit;
         }
 
@@ -113,9 +111,6 @@ class MineMigrate extends BaseCommand
 
     /**
      * Write the migration file to disk.
-     * @param string $name
-     * @param string|null $table
-     * @param bool $create
      */
     protected function writeMigration(string $name, ?string $table, bool $create): void
     {
@@ -134,8 +129,6 @@ class MineMigrate extends BaseCommand
 
     /**
      * Get migration path (either specified by '--path' option or default location).
-     *
-     * @return string
      */
     protected function getMigrationPath(): string
     {

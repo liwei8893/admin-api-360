@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\System\Request;
 
 use Mine\MineFormRequest;
@@ -7,17 +9,16 @@ use Mine\MineFormRequest;
 class SystemDictTypeRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
         return [];
     }
 
-
     /**
      * 新增数据验证规则
-     * return array
+     * return array.
      */
     public function saveRules(): array
     {
@@ -29,7 +30,7 @@ class SystemDictTypeRequest extends MineFormRequest
 
     /**
      * 更新数据验证规则
-     * return array
+     * return array.
      */
     public function updateRules(): array
     {
@@ -41,19 +42,19 @@ class SystemDictTypeRequest extends MineFormRequest
 
     /**
      * 修改状态数据验证规则
-     * return array
+     * return array.
      */
     public function changeStatusRules(): array
     {
         return [
             'id' => 'required',
-            'status' => 'required'
+            'status' => 'required',
         ];
     }
 
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {
@@ -64,5 +65,4 @@ class SystemDictTypeRequest extends MineFormRequest
             'status' => '字典类型状态',
         ];
     }
-
 }

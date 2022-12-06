@@ -31,7 +31,7 @@ class ValidationExceptionHandler extends ExceptionHandler
         $format = [
             'success' => false,
             'message' => $body,
-            'code'    => MineCode::VALIDATE_FAILED,
+            'code' => MineCode::VALIDATE_FAILED,
         ];
         return $response->withHeader('Server', 'MineAdmin')
             ->withAddedHeader('content-type', 'application/json; charset=utf-8')

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\System\Mapper;
 
 use App\System\Model\SystemDictData;
@@ -7,8 +9,7 @@ use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * Class SystemUserMapper
- * @package App\System\Mapper
+ * Class SystemUserMapper.
  */
 class SystemDictDataMapper extends AbstractMapper
 {
@@ -17,16 +18,13 @@ class SystemDictDataMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemDictData::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -37,10 +35,10 @@ class SystemDictDataMapper extends AbstractMapper
             $query->where('code', $params['code']);
         }
         if (isset($params['value'])) {
-            $query->where('value', 'like', '%'.$params['value'].'%');
+            $query->where('value', 'like', '%' . $params['value'] . '%');
         }
         if (isset($params['label'])) {
-            $query->where('label', 'like', '%'.$params['label'].'%');
+            $query->where('label', 'like', '%' . $params['label'] . '%');
         }
         if (isset($params['status'])) {
             $query->where('status', $params['status']);

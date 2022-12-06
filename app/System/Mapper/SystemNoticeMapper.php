@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace App\System\Mapper;
 
 use App\System\Model\SystemNotice;
@@ -8,7 +9,7 @@ use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * 通知管理Mapper类
+ * 通知管理Mapper类.
  */
 class SystemNoticeMapper extends AbstractMapper
 {
@@ -17,16 +18,13 @@ class SystemNoticeMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemNotice::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -41,7 +39,7 @@ class SystemNoticeMapper extends AbstractMapper
         if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
             $query->whereBetween(
                 'created_at',
-                [ $params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59' ]
+                [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
             );
         }
 

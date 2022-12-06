@@ -25,31 +25,18 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 class MineUpload
 {
-    /**
-     * @var FilesystemFactory
-     */
     #[Inject]
     protected FilesystemFactory $factory;
 
-    /**
-     * @var Filesystem
-     */
     protected Filesystem $filesystem;
 
-    /**
-     * @var EventDispatcherInterface
-     */
     #[Inject]
     protected EventDispatcherInterface $evDispatcher;
 
-    /**
-     * @var ContainerInterface
-     */
     protected ContainerInterface $container;
 
     /**
      * MineUpload constructor.
-     * @param ContainerInterface $container
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -61,7 +48,6 @@ class MineUpload
 
     /**
      * 获取文件操作处理系统
-     * @return Filesystem
      */
     public function getFileSystem(): Filesystem
     {
@@ -69,10 +55,7 @@ class MineUpload
     }
 
     /**
-     * 上传文件
-     * @param UploadedFile $uploadedFile
-     * @param array $config
-     * @return array
+     * 上传文件.
      * @throws \League\Flysystem\FileExistsException
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -83,47 +66,7 @@ class MineUpload
     }
 
     /**
-     * 处理上传
-     * @param UploadedFile $uploadedFile
-     * @param array $config
-     * @return array
-     * @throws \League\Flysystem\FileExistsException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Exception
-     */
-    protected function handleUpload(UploadedFile $uploadedFile, array $config): array
-    {
-        $tmpFile = $uploadedFile->getPath() . '/' . $uploadedFile->getFilename();
-        $path = $this->getPath($config['path'] ?? null, $this->getStorageMode() != 1);
-        $filename = $this->getNewName() . '.' . Str::lower($uploadedFile->getExtension());
-
-        if (!$this->filesystem->writeStream($path . '/' . $filename, $uploadedFile->getStream()->detach())) {
-            throw new NormalStatusException((string)$uploadedFile->getError(), 500);
-        }
-
-        $fileInfo = [
-            'storage_mode' => $this->getStorageMode(),
-            'origin_name' => $uploadedFile->getClientFilename(),
-            'object_name' => $filename,
-            'mime_type' => $uploadedFile->getClientMediaType(),
-            'storage_path' => $path,
-            'hash' => md5_file($tmpFile),
-            'suffix' => Str::lower($uploadedFile->getExtension()),
-            'size_byte' => $uploadedFile->getSize(),
-            'size_info' => format_size($uploadedFile->getSize() * 1024),
-            'url' => $this->assembleUrl($config['path'] ?? null, $filename),
-        ];
-
-        $this->evDispatcher->dispatch(new \Mine\Event\UploadAfter($fileInfo));
-
-        return $fileInfo;
-    }
-
-    /**
-     * 处理分块上传
-     * @param array $data
-     * @return array
+     * 处理分块上传.
      */
     public function handleChunkUpload(array $data): array
     {
@@ -136,9 +79,9 @@ class MineUpload
         $uploadFile->moveTo($chunkName);
         if ($data['index'] === $data['total']) {
             $content = '';
-            for ($i = 1; $i <= $data['total']; $i++) {
+            for ($i = 1; $i <= $data['total']; ++$i) {
                 $chunkFile = "{$path}{$data['hash']}_{$data['total']}_{$i}.chunk";
-                if (!$fs->isFile($chunkFile)) {
+                if (! $fs->isFile($chunkFile)) {
                     return ['chunk' => $data['index'], 'code' => 500, 'status' => 'fail'];
                 }
                 $content .= $fs->get($chunkFile);
@@ -146,7 +89,7 @@ class MineUpload
             }
             $fileName = $this->getNewName() . '.' . Str::lower($data['ext']);
             $storagePath = $this->getPath(null, $this->getStorageMode() != 1);
-            if (!$this->filesystem->write($storagePath . '/' . $fileName, $content)) {
+            if (! $this->filesystem->write($storagePath . '/' . $fileName, $content)) {
                 throw new NormalStatusException('分块上传失败', 500);
             }
             $fileInfo = [
@@ -158,7 +101,7 @@ class MineUpload
                 'hash' => $data['hash'],
                 'suffix' => $data['ext'],
                 'size_byte' => $data['size'],
-                'size_info' => format_size(((int)$data['size'] * 1024)),
+                'size_info' => format_size((int) $data['size'] * 1024),
                 'url' => $this->assembleUrl(null, $fileName),
             ];
 
@@ -170,9 +113,7 @@ class MineUpload
     }
 
     /**
-     * 保存网络图片
-     * @param array $data
-     * @return array
+     * 保存网络图片.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Exception
@@ -207,25 +148,24 @@ class MineUpload
             $hash = md5_file($realPath);
             $fs->delete($realPath);
 
-            if (!$hash) {
+            if (! $hash) {
                 throw new \Exception(t('network_image_save_fail'));
             }
 
-            if ($model = (new \App\System\Mapper\SystemUploadFileMapper)->getFileInfoByHash($hash)) {
+            if ($model = (new \App\System\Mapper\SystemUploadFileMapper())->getFileInfoByHash($hash)) {
                 return $model->toArray();
             }
 
-            if (!$this->filesystem->write($path . '/' . $filename, $content)) {
+            if (! $this->filesystem->write($path . '/' . $filename, $content)) {
                 throw new \Exception(t('network_image_save_fail'));
             }
-
         } catch (\Throwable $e) {
             throw new NormalStatusException($e->getMessage(), 500);
         }
 
         $fileInfo = [
             'storage_mode' => $this->getStorageMode(),
-            'origin_name' => md5((string)time()) . '.jpg',
+            'origin_name' => md5((string) time()) . '.jpg',
             'object_name' => $filename,
             'mime_type' => 'image/jpg',
             'storage_path' => $path,
@@ -242,20 +182,7 @@ class MineUpload
     }
 
     /**
-     * @param string $config
-     * @param false $isContainRoot
-     * @return string
-     */
-    protected function getPath(?string $path = null, bool $isContainRoot = false): string
-    {
-        $uploadfile = $isContainRoot ? '/' . env('UPLOAD_PATH', 'uploadfile') . '/' : '';
-        return empty($path) ? $uploadfile . date('Ymd') : $uploadfile . $path;
-    }
-
-    /**
-     * 创建目录
-     * @param string $name
-     * @return bool
+     * 创建目录.
      */
     public function createUploadDir(string $name): bool
     {
@@ -263,9 +190,7 @@ class MineUpload
     }
 
     /**
-     * 获取目录内容
-     * @param string $path
-     * @return array
+     * 获取目录内容.
      */
     public function listContents(string $path = ''): array
     {
@@ -273,10 +198,7 @@ class MineUpload
     }
 
     /**
-     * 获取目录
-     * @param string $path
-     * @param bool $isChildren
-     * @return array
+     * 获取目录.
      */
     public function getDirectory(string $path, bool $isChildren = false): array
     {
@@ -291,11 +213,7 @@ class MineUpload
     }
 
     /**
-     * 组装url
-     * @param string|null $path
-     * @param string $filename
-     * @param bool $isContainRoot
-     * @return string
+     * 组装url.
      */
     public function assembleUrl(?string $path, string $filename, bool $isContainRoot = true): string
     {
@@ -303,8 +221,7 @@ class MineUpload
     }
 
     /**
-     * 获取存储方式
-     * @return int|string
+     * 获取存储方式.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -314,18 +231,61 @@ class MineUpload
     }
 
     /**
-     * 获取编码后的文件名
-     * @return string
+     * 获取编码后的文件名.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getNewName(): string
     {
-        return (string)container()->get(\Hyperf\Snowflake\IdGeneratorInterface::class)->generate();
+        return (string) container()->get(\Hyperf\Snowflake\IdGeneratorInterface::class)->generate();
     }
 
     /**
-     * @return string
+     * 处理上传.
+     * @throws \League\Flysystem\FileExistsException
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws \Exception
+     */
+    protected function handleUpload(UploadedFile $uploadedFile, array $config): array
+    {
+        $tmpFile = $uploadedFile->getPath() . '/' . $uploadedFile->getFilename();
+        $path = $this->getPath($config['path'] ?? null, $this->getStorageMode() != 1);
+        $filename = $this->getNewName() . '.' . Str::lower($uploadedFile->getExtension());
+
+        if (! $this->filesystem->writeStream($path . '/' . $filename, $uploadedFile->getStream()->detach())) {
+            throw new NormalStatusException((string) $uploadedFile->getError(), 500);
+        }
+
+        $fileInfo = [
+            'storage_mode' => $this->getStorageMode(),
+            'origin_name' => $uploadedFile->getClientFilename(),
+            'object_name' => $filename,
+            'mime_type' => $uploadedFile->getClientMediaType(),
+            'storage_path' => $path,
+            'hash' => md5_file($tmpFile),
+            'suffix' => Str::lower($uploadedFile->getExtension()),
+            'size_byte' => $uploadedFile->getSize(),
+            'size_info' => format_size($uploadedFile->getSize() * 1024),
+            'url' => $this->assembleUrl($config['path'] ?? null, $filename),
+        ];
+
+        $this->evDispatcher->dispatch(new \Mine\Event\UploadAfter($fileInfo));
+
+        return $fileInfo;
+    }
+
+    /**
+     * @param string $config
+     * @param false $isContainRoot
+     */
+    protected function getPath(?string $path = null, bool $isContainRoot = false): string
+    {
+        $uploadfile = $isContainRoot ? '/' . env('UPLOAD_PATH', 'uploadfile') . '/' : '';
+        return empty($path) ? $uploadfile . date('Ymd') : $uploadfile . $path;
+    }
+
+    /**
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */

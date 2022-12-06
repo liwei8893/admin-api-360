@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace App\System\Controller\Monitor;
 
 use App\System\Service\SystemUserService;
@@ -14,35 +15,32 @@ use Mine\MineController;
 
 /**
  * 在线用户监控
- * Class OnlineUserMonitorController
- * @package App\System\Controller\Monitor
+ * Class OnlineUserMonitorController.
  */
-#[Controller(prefix: "system/onlineUser"), Auth]
+#[Controller(prefix: 'system/onlineUser'), Auth]
 class OnlineUserMonitorController extends MineController
 {
     #[Inject]
     protected SystemUserService $service;
 
     /**
-     * 获取在线用户列表
-     * @return \Psr\Http\Message\ResponseInterface
+     * 获取在线用户列表.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    #[GetMapping("index"), Permission("system:onlineUser, system:onlineUser:index")]
+    #[GetMapping('index'), Permission('system:onlineUser, system:onlineUser:index')]
     public function getPageList(): \Psr\Http\Message\ResponseInterface
     {
         return $this->success($this->service->getOnlineUserPageList($this->request->all()));
     }
 
     /**
-     * 强退用户
-     * @return \Psr\Http\Message\ResponseInterface
+     * 强退用户.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    #[PostMapping("kick"), Permission("system:onlineUser:kick")]
+    #[PostMapping('kick'), Permission('system:onlineUser:kick')]
     public function kickUser(): \Psr\Http\Message\ResponseInterface
     {
         return $this->service->kickUser((string) $this->request->input('id')) ?

@@ -9,7 +9,8 @@
  * @Link   https://gitee.com/xmo/MineAdmin
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Mine\Annotation;
 
 use Attribute;
@@ -21,19 +22,16 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
  * @Target({"METHOD"})
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class DeleteCache extends AbstractAnnotation {
-
+class DeleteCache extends AbstractAnnotation
+{
     /**
      * 缓存key，多个以逗号分开
-     * @var string
      */
     public string $keys;
 
     public function __construct($value = null)
     {
         parent::__construct($value);
-        $this->bindMainProperty('keys', [ $value ]);
+        $this->bindMainProperty('keys', [$value]);
     }
-
-
 }

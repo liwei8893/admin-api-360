@@ -1,17 +1,18 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Setting\Mapper;
 
 use App\Setting\Model\SettingGenerateTables;
+use Exception;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 
 /**
  * 生成业务信息表查询类
- * Class SettingGenerateTablesMapper
- * @package App\Setting\Mapper
+ * Class SettingGenerateTablesMapper.
  */
 class SettingGenerateTablesMapper extends AbstractMapper
 {
@@ -20,14 +21,14 @@ class SettingGenerateTablesMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SettingGenerateTables::class;
     }
 
     /**
-     * 删除业务信息表和字段信息表
-     * @throws \Exception
+     * 删除业务信息表和字段信息表.
+     * @throws Exception
      */
     #[Transaction]
     public function delete(array $ids): bool
@@ -43,17 +44,14 @@ class SettingGenerateTablesMapper extends AbstractMapper
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
         if (isset($params['table_name'])) {
-            $query->where('table_name', 'like', '%'.$params['table_name'].'%');
+            $query->where('table_name', 'like', '%' . $params['table_name'] . '%');
         }
-        if (isset($params['minDate']) && isset($params['maxDate'])) {
+        if (isset($params['minDate'], $params['maxDate'])) {
             $query->whereBetween(
                 'created_at',
                 [$params['minDate'] . ' 00:00:00', $params['maxDate'] . ' 23:59:59']

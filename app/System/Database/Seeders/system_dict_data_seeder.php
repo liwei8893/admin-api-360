@@ -17,8 +17,6 @@ class SystemDictDataSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run()
     {
@@ -81,7 +79,6 @@ class SystemDictDataSeeder extends Seeder
             "INSERT INTO `{$tableName}` VALUES (46, 12, '音频', 'audio', 'attachment_type', 8, 1, NULL, NULL, '2022-03-17 14:50:37', '2022-03-17 14:50:52', NULL, NULL)",
             "INSERT INTO `{$tableName}` VALUES (47, 12, '视频', 'video', 'attachment_type', 7, 1, NULL, NULL, '2022-03-17 14:50:45', '2022-03-17 14:50:57', NULL, NULL)",
             "INSERT INTO `{$tableName}` VALUES (48, 12, '应用程序', 'application', 'attachment_type', 6, 1, NULL, NULL, '2022-03-17 14:50:52', '2022-03-17 14:50:59', NULL, NULL)",
-
         ];
     }
 }

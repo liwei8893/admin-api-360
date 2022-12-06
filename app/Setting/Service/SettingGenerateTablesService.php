@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Setting\Service;
 
 use App\Setting\Mapper\SettingGenerateTablesMapper;
@@ -22,8 +23,7 @@ use Psr\Container\ContainerInterface;
 
 /**
  * 业务生成信息表业务处理类
- * Class SettingGenerateTablesService
- * @package App\Setting\Service
+ * Class SettingGenerateTablesService.
  */
 class SettingGenerateTablesService extends AbstractService
 {
@@ -32,33 +32,16 @@ class SettingGenerateTablesService extends AbstractService
      */
     public $mapper;
 
-    /**
-     * @var DataMaintainService
-     */
     protected DataMaintainService $dataMaintainService;
 
-    /**
-     * @var SettingGenerateColumnsService
-     */
     protected SettingGenerateColumnsService $settingGenerateColumnsService;
 
-    /**
-     * @var ModuleService
-     */
     protected ModuleService $moduleService;
 
-    /**
-     * @var ContainerInterface
-     */
     protected ContainerInterface $container;
 
     /**
      * SettingGenerateTablesService constructor.
-     * @param SettingGenerateTablesMapper $mapper
-     * @param DataMaintainService $dataMaintainService
-     * @param SettingGenerateColumnsService $settingGenerateColumnsService
-     * @param ModuleService $moduleService
-     * @param ContainerInterface $container
      */
     public function __construct(
         SettingGenerateTablesMapper $mapper,
@@ -66,8 +49,7 @@ class SettingGenerateTablesService extends AbstractService
         SettingGenerateColumnsService $settingGenerateColumnsService,
         ModuleService $moduleService,
         ContainerInterface $container
-    )
-    {
+    ) {
         $this->mapper = $mapper;
         $this->dataMaintainService = $dataMaintainService;
         $this->settingGenerateColumnsService = $settingGenerateColumnsService;
@@ -76,9 +58,7 @@ class SettingGenerateTablesService extends AbstractService
     }
 
     /**
-     * 装载数据表
-     * @param array $names
-     * @return bool
+     * 装载数据表.
      */
     #[Transaction]
     public function loadTable(array $names): bool
@@ -104,9 +84,7 @@ class SettingGenerateTablesService extends AbstractService
     }
 
     /**
-     * 同步数据表
-     * @param int $id
-     * @return bool
+     * 同步数据表.
      */
     #[Transaction]
     public function sync(int $id): bool
@@ -127,9 +105,7 @@ class SettingGenerateTablesService extends AbstractService
     }
 
     /**
-     * 更新业务表
-     * @param array $data
-     * @return bool
+     * 更新业务表.
      */
     #[Transaction]
     public function updateTableAndColumns(array $data): bool
@@ -139,7 +115,7 @@ class SettingGenerateTablesService extends AbstractService
 
         unset($data['columns']);
 
-        if (!empty($data['belong_menu_id'])) {
+        if (! empty($data['belong_menu_id'])) {
             $data['belong_menu_id'] = is_array($data['belong_menu_id']) ? array_pop($data['belong_menu_id']) : $data['belong_menu_id'];
         } else {
             $data['belong_menu_id'] = 0;
@@ -165,8 +141,6 @@ class SettingGenerateTablesService extends AbstractService
 
     /**
      * 生成代码
-     * @param array $ids
-     * @return string
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -182,123 +156,23 @@ class SettingGenerateTablesService extends AbstractService
     }
 
     /**
-     * 生成步骤
-     * @param int $id
-     * @param int $adminId
-     * @return SettingGenerateTables
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Exception
-     */
-    protected function generateCodeFile(int $id, int $adminId): SettingGenerateTables
-    {
-        /** @var SettingGenerateTables $model */
-        $model = $this->read($id);
-
-        $classList = [
-            ControllerGenerator::class,
-            ModelGenerator::class,
-            ServiceGenerator::class,
-            MapperGenerator::class,
-            RequestGenerator::class,
-            ApiGenerator::class,
-            VueIndexGenerator::class,
-            SqlGenerator::class,
-            DtoGenerator::class,
-        ];
-
-        foreach ($classList as $cls) {
-            $class = make($cls);
-            if (get_class($class) == 'Mine\Generator\SqlGenerator'){
-                $class->setGenInfo($model, $adminId)->generator();
-            } else {
-                $class->setGenInfo($model)->generator();
-            }
-        }
-
-        return $model;
-    }
-
-    /**
-     * 打包代码文件
-     * @return string
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    protected function packageCodeFile(): string
-    {
-        $fs = $this->container->get(Filesystem::class);
-        $zipFileName = BASE_PATH. '/runtime/mineadmin.zip';
-        $path = BASE_PATH . '/runtime/generate';
-        // 删除老的压缩包
-        @unlink($zipFileName);
-        $archive = new \ZipArchive();
-        $archive->open($zipFileName, \ZipArchive::CREATE);
-        $files = $fs->files($path);
-        foreach ($files as $file) {
-            $archive->addFile(
-                $path . '/' . $file->getFilename(),
-                $file->getFilename()
-            );
-        }
-        $this->addZipFile($archive, $path);
-        $archive->close();
-        return $zipFileName;
-    }
-
-    protected function addZipFile(\ZipArchive $archive, string $path): void
-    {
-        $fs = $this->container->get(Filesystem::class);
-        foreach ($fs->directories($path) as $directory) {
-            if ($fs->isDirectory($directory)) {
-                $archive->addEmptyDir(str_replace(BASE_PATH. '/runtime/generate/', '', $directory));
-                $files = $fs->files($directory);
-                foreach ($files as $file) {
-                    $archive->addFile(
-                        $directory . '/' . $file->getFilename(),
-                        str_replace(
-                            BASE_PATH. '/runtime/generate/', '', $directory
-                        ) . '/' . $file->getFilename()
-                    );
-                }
-                $this->addZipFile($archive, $directory);
-            }
-        }
-    }
-
-    /**
-     * 初始化生成设置
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    protected function initGenerateSetting(): void
-    {
-        // 设置生成目录
-        $genDirectory = BASE_PATH . '/runtime/generate';
-        $fs = $this->container->get(Filesystem::class);
-
-        // 先删除再创建
-        $fs->cleanDirectory($genDirectory);
-        $fs->deleteDirectory($genDirectory);
-    }
-
-    /**
-     * 获取所有模型
-     * @return array
+     * 获取所有模型.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getModels(): array
     {
         $models = [];
-        foreach ($this->moduleService->getModuleCache() as $item) if ($item['enabled']) {
-            $path = sprintf("%s/app/%s/Model/*", BASE_PATH, $item['name']);
-            foreach (glob($path) as $file) {
-                $models[] = sprintf(
-                    '\App\%s\Model\%s',
-                    $item['name'],
-                    str_replace('.php', '', basename($file))
-                );
+        foreach ($this->moduleService->getModuleCache() as $item) {
+            if ($item['enabled']) {
+                $path = sprintf('%s/app/%s/Model/*', BASE_PATH, $item['name']);
+                foreach (glob($path) as $file) {
+                    $models[] = sprintf(
+                        '\App\%s\Model\%s',
+                        $item['name'],
+                        str_replace('.php', '', basename($file))
+                    );
+                }
             }
         }
 
@@ -307,8 +181,6 @@ class SettingGenerateTablesService extends AbstractService
 
     /**
      * 预览代码
-     * @param int $id
-     * @return array
      * @throws \Exception
      */
     public function preview(int $id): array
@@ -321,7 +193,7 @@ class SettingGenerateTablesService extends AbstractService
                 'tab_name' => 'Controller.php',
                 'name' => 'controller',
                 'code' => make(ControllerGenerator::class)->setGenInfo($model)->preview(),
-                'lang' => 'php'
+                'lang' => 'php',
             ],
             [
                 'tab_name' => 'Model.php',
@@ -372,5 +244,104 @@ class SettingGenerateTablesService extends AbstractService
                 'lang' => 'mysql',
             ],
         ];
+    }
+
+    /**
+     * 生成步骤.
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws \Exception
+     */
+    protected function generateCodeFile(int $id, int $adminId): SettingGenerateTables
+    {
+        /** @var SettingGenerateTables $model */
+        $model = $this->read($id);
+
+        $classList = [
+            ControllerGenerator::class,
+            ModelGenerator::class,
+            ServiceGenerator::class,
+            MapperGenerator::class,
+            RequestGenerator::class,
+            ApiGenerator::class,
+            VueIndexGenerator::class,
+            SqlGenerator::class,
+            DtoGenerator::class,
+        ];
+
+        foreach ($classList as $cls) {
+            $class = make($cls);
+            if (get_class($class) == 'Mine\Generator\SqlGenerator') {
+                $class->setGenInfo($model, $adminId)->generator();
+            } else {
+                $class->setGenInfo($model)->generator();
+            }
+        }
+
+        return $model;
+    }
+
+    /**
+     * 打包代码文件.
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    protected function packageCodeFile(): string
+    {
+        $fs = $this->container->get(Filesystem::class);
+        $zipFileName = BASE_PATH . '/runtime/mineadmin.zip';
+        $path = BASE_PATH . '/runtime/generate';
+        // 删除老的压缩包
+        @unlink($zipFileName);
+        $archive = new \ZipArchive();
+        $archive->open($zipFileName, \ZipArchive::CREATE);
+        $files = $fs->files($path);
+        foreach ($files as $file) {
+            $archive->addFile(
+                $path . '/' . $file->getFilename(),
+                $file->getFilename()
+            );
+        }
+        $this->addZipFile($archive, $path);
+        $archive->close();
+        return $zipFileName;
+    }
+
+    protected function addZipFile(\ZipArchive $archive, string $path): void
+    {
+        $fs = $this->container->get(Filesystem::class);
+        foreach ($fs->directories($path) as $directory) {
+            if ($fs->isDirectory($directory)) {
+                $archive->addEmptyDir(str_replace(BASE_PATH . '/runtime/generate/', '', $directory));
+                $files = $fs->files($directory);
+                foreach ($files as $file) {
+                    $archive->addFile(
+                        $directory . '/' . $file->getFilename(),
+                        str_replace(
+                            BASE_PATH . '/runtime/generate/',
+                            '',
+                            $directory
+                        ) . '/' . $file->getFilename()
+                    );
+                }
+                $this->addZipFile($archive, $directory);
+            }
+        }
+    }
+
+    /**
+     * 初始化生成设置.
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    protected function initGenerateSetting(): void
+    {
+        // 设置生成目录
+        $genDirectory = BASE_PATH . '/runtime/generate';
+        $fs = $this->container->get(Filesystem::class);
+
+        // 先删除再创建
+        $fs->cleanDirectory($genDirectory);
+        $fs->deleteDirectory($genDirectory);
     }
 }

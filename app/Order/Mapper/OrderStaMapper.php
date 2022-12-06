@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Order\Mapper;
 
 use App\Order\Model\Order;
@@ -37,7 +30,6 @@ class OrderStaMapper extends AbstractMapper
     /**
      * 新增统计.
      * @param $params
-     * @return Collection|array
      */
     public function getNewVipSta($params): Collection|array
     {
@@ -68,7 +60,6 @@ class OrderStaMapper extends AbstractMapper
     /**
      * 续费统计
      * @param $params
-     * @return Collection|array
      */
     public function getRenewalSta($params): Collection|array
     {
@@ -104,7 +95,6 @@ class OrderStaMapper extends AbstractMapper
     /**
      * 退费统计
      * @param $params
-     * @return Collection|array
      */
     public function getRefundSta($params): Collection|array
     {

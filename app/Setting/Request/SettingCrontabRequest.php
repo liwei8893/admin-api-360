@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Setting\Request;
 
 use Mine\MineFormRequest;
@@ -7,7 +9,7 @@ use Mine\MineFormRequest;
 class SettingCrontabRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
@@ -21,7 +23,7 @@ class SettingCrontabRequest extends MineFormRequest
 
     /**
      * 新增数据验证规则
-     * return array
+     * return array.
      */
     public function saveRules(): array
     {
@@ -30,7 +32,7 @@ class SettingCrontabRequest extends MineFormRequest
 
     /**
      * 新增数据验证规则
-     * return array
+     * return array.
      */
     public function updateRules(): array
     {
@@ -39,7 +41,7 @@ class SettingCrontabRequest extends MineFormRequest
 
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {
@@ -50,5 +52,4 @@ class SettingCrontabRequest extends MineFormRequest
             'rule' => '定时规则表达式',
         ];
     }
-
 }

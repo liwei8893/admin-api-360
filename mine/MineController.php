@@ -10,24 +10,20 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine;
 
 use Hyperf\Di\Annotation\Inject;
-use Psr\Container\ContainerInterface;
 use Mine\Traits\ControllerTrait;
 
 /**
  * 后台控制器基类
- * Class MineController
- * @package Mine
+ * Class MineController.
  */
 abstract class MineController
 {
     use ControllerTrait;
 
-    /**
-     * @var Mine
-     */
     #[Inject]
     protected Mine $mine;
 }

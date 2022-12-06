@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\System\Mapper;
 
 use App\System\Model\SystemDictData;
@@ -9,8 +11,7 @@ use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 
 /**
- * Class SystemUserMapper
- * @package App\System\Mapper
+ * Class SystemUserMapper.
  */
 class SystemDictTypeMapper extends AbstractMapper
 {
@@ -19,16 +20,11 @@ class SystemDictTypeMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemDictType::class;
     }
 
-    /**
-     * @param int $id
-     * @param array $data
-     * @return bool
-     */
     #[Transaction]
     public function update(int $id, array $data): bool
     {
@@ -37,10 +33,6 @@ class SystemDictTypeMapper extends AbstractMapper
         return true;
     }
 
-    /**
-     * @param array $ids
-     * @return bool
-     */
     #[Transaction]
     public function realDelete(array $ids): bool
     {
@@ -55,18 +47,15 @@ class SystemDictTypeMapper extends AbstractMapper
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
         if (isset($params['code'])) {
-            $query->where('code', 'like', '%'.$params['code'].'%');
+            $query->where('code', 'like', '%' . $params['code'] . '%');
         }
         if (isset($params['name'])) {
-            $query->where('name', 'like', '%'.$params['name'].'%');
+            $query->where('name', 'like', '%' . $params['name'] . '%');
         }
         if (isset($params['status'])) {
             $query->where('status', $params['status']);

@@ -19,27 +19,22 @@ use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 文件上传业务
- * Class SystemLoginLogService
- * @package App\System\Service
+ * Class SystemLoginLogService.
  */
 class SystemUploadFileService extends AbstractService
 {
-    /**
-     * @var ConfigInterface
-     */
-    #[Inject]
-    protected $config;
-
     /**
      * @var SystemUploadFileMapper
      */
     public $mapper;
 
     /**
-     * @var MineUpload
+     * @var ConfigInterface
      */
-    protected MineUpload $mineUpload;
+    #[Inject]
+    protected $config;
 
+    protected MineUpload $mineUpload;
 
     public function __construct(SystemUploadFileMapper $mapper, MineUpload $mineUpload)
     {
@@ -49,15 +44,14 @@ class SystemUploadFileService extends AbstractService
 
     /**
      * @param $params
-     * @return array
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface|\JsonException
-     * author:ZQ
-     * time:2022-09-07 18:00
+     * @throws \JsonException|NotFoundExceptionInterface
+     *                                                   author:ZQ
+     *                                                   time:2022-09-07 18:00
      */
     public function getUploadToken($params): array
     {
-        if (!isset($params['fileExt'])) {
+        if (! isset($params['fileExt'])) {
             throw new NormalStatusException('fileExt is null');
         }
 
@@ -83,13 +77,12 @@ class SystemUploadFileService extends AbstractService
     }
 
     /**
-     * 存入七牛云前端上传文件
+     * 存入七牛云前端上传文件.
      * @param $params
-     * @return array
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * author:ZQ
-     * time:2022-09-08 10:01
+     *                                    author:ZQ
+     *                                    time:2022-09-08 10:01
      */
     public function saveUploadInfo($params): array
     {
@@ -110,11 +103,11 @@ class SystemUploadFileService extends AbstractService
     }
 
     /**
-     * 组装保存数据
+     * 组装保存数据.
      * @param $params
      * @return array
-     * author:ZQ
-     * time:2022-09-08 10:01
+     *               author:ZQ
+     *               time:2022-09-08 10:01
      */
     public function getUploadFileInfo($params): array
     {
@@ -133,10 +126,7 @@ class SystemUploadFileService extends AbstractService
     }
 
     /**
-     * 上传文件
-     * @param UploadedFile $uploadedFile
-     * @param array $config
-     * @return array
+     * 上传文件.
      * @throws \League\Flysystem\FileExistsException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -172,9 +162,7 @@ class SystemUploadFileService extends AbstractService
     }
 
     /**
-     * 获取当前目录下所有文件（包含目录）
-     * @param array $params
-     * @return array
+     * 获取当前目录下所有文件（包含目录）.
      */
     public function getAllFile(array $params = []): array
     {
@@ -182,10 +170,31 @@ class SystemUploadFileService extends AbstractService
     }
 
     /**
-     * 数组数据搜索器
-     * @param Collection $collect
-     * @param array $params
-     * @return Collection
+     * 保存网络图片.
+     * @param array $data ['url', 'path']
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function saveNetworkImage(array $data): array
+    {
+        $data = $this->mineUpload->handleSaveNetworkImage($data);
+        if (! isset($data['id']) && $this->save($data)) {
+            return $data;
+        }
+        return $data;
+    }
+
+    /**
+     * 通过hash获取文件信息.
+     * @return null|\Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object
+     */
+    public function readByHash(string $hash)
+    {
+        return $this->mapper->getFileInfoByHash($hash);
+    }
+
+    /**
+     * 数组数据搜索器.
      */
     protected function handleArraySearch(Collection $collect, array $params): Collection
     {
@@ -204,9 +213,7 @@ class SystemUploadFileService extends AbstractService
     }
 
     /**
-     * 设置需要分页的数组数据
-     * @param array $params
-     * @return array
+     * 设置需要分页的数组数据.
      */
     protected function getArrayData(array $params = []): array
     {
@@ -220,38 +227,11 @@ class SystemUploadFileService extends AbstractService
             'url',
             'size_info',
             'storage_path',
-            'created_at'
+            'created_at',
         ];
 
         $params['select'] = implode(',', $params['select']);
 
         return array_merge($directory, $this->getList($params));
-    }
-
-    /**
-     * 保存网络图片
-     * @param array $data ['url', 'path']
-     * @return array
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public function saveNetworkImage(array $data): array
-    {
-        $data = $this->mineUpload->handleSaveNetworkImage($data);
-        if (!isset($data['id']) && $this->save($data)) {
-            return $data;
-        } else {
-            return $data;
-        }
-    }
-
-    /**
-     * 通过hash获取文件信息
-     * @param string $hash
-     * @return \Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|null
-     */
-    public function readByHash(string $hash)
-    {
-        return $this->mapper->getFileInfoByHash($hash);
     }
 }

@@ -8,12 +8,13 @@ use Hyperf\Amqp\Annotation\Producer;
 use Hyperf\Amqp\Message\ProducerMessage;
 
 /**
- * 后台内部消息队列生产处理
+ * 后台内部消息队列生产处理.
  */
-#[Producer(exchange: "mineadmin", routingKey: "message.routing")]
+#[Producer(exchange: 'mineadmin', routingKey: 'message.routing')]
 class MessageProducer extends ProducerMessage
 {
     /**
+     * @param mixed $data
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */

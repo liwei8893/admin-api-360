@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Order\Service;
 
 use App\Order\Model\Order;
@@ -21,7 +23,8 @@ class UsersRenewService extends AbstractService
     /**
      * 写入续费表
      * author:ZQ
-     * time:2022-08-19 14:34
+     * time:2022-08-19 14:34.
+     * @param mixed $data
      */
     public function recordUserRenew($data): bool
     {
@@ -41,5 +44,4 @@ class UsersRenewService extends AbstractService
         ];
         return $this->mapper->insert($params);
     }
-
 }

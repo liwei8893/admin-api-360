@@ -10,15 +10,16 @@
  */
 
 declare(strict_types=1);
+
 namespace Api\Middleware;
 
-use App\System\Service\SystemAppService;
-use Mine\Event\ApiAfter;
-use Mine\Event\ApiBefore;
 use App\System\Model\SystemApi;
 use App\System\Service\SystemApiService;
-use Hyperf\Di\Annotation\Inject;
+use App\System\Service\SystemAppService;
 use Hyperf\Context\Context;
+use Hyperf\Di\Annotation\Inject;
+use Mine\Event\ApiAfter;
+use Mine\Event\ApiBefore;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\MineCode;
 use Mine\MineRequest;
@@ -29,26 +30,25 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\SimpleCache\InvalidArgumentException;
+use RuntimeException;
+use Throwable;
 
 class VerifyInterfaceMiddleware implements MiddlewareInterface
 {
     /**
-     * 事件调度器
-     * @var EventDispatcherInterface
+     * 事件调度器.
      */
     #[Inject]
     protected EventDispatcherInterface $evDispatcher;
 
     /**
-     * 验证检查接口
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
+     * 验证检查接口.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler):ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $this->crossSetting($request);
 
@@ -56,16 +56,16 @@ class VerifyInterfaceMiddleware implements MiddlewareInterface
     }
 
     /**
-     * 跨域设置
+     * 跨域设置.
      * @param $request
      */
     protected function crossSetting($request): void
     {
         $crossData = [
-            'Access-Control-Allow-Origin'      => '*',
-            'Access-Control-Allow-Methods'     => 'POST,GET,PUT,DELETE,OPTIONS',
-            'Access-Control-Allow-Headers'     => 'Version, Access-Token, User-Token, Api-Auth, User-Agent, Keep-Alive, Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With',
-            'Access-Control-Allow-Credentials' => 'true'
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => 'POST,GET,PUT,DELETE,OPTIONS',
+            'Access-Control-Allow-Headers' => 'Version, Access-Token, User-Token, Api-Auth, User-Agent, Keep-Alive, Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With',
+            'Access-Control-Allow-Credentials' => 'true',
         ];
 
         foreach ($crossData as $name => $value) {
@@ -74,12 +74,10 @@ class VerifyInterfaceMiddleware implements MiddlewareInterface
     }
 
     /**
-     * 访问接口鉴权处理
-     * @param ServerRequestInterface $request
-     * @return int
+     * 访问接口鉴权处理.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function auth(ServerRequestInterface $request): int
     {
@@ -97,28 +95,28 @@ class VerifyInterfaceMiddleware implements MiddlewareInterface
                     }
                     return $service->verifyEasyMode($queryParams['app_id'], $queryParams['identity']);
                 case SystemApi::AUTH_MODE_NORMAL:
-
                     if (empty($queryParams['access_token'])) {
                         return MineCode::API_ACCESS_TOKEN_MISSING;
                     }
                     return $service->verifyNormalMode($queryParams['access_token']);
                 default:
-                    throw new \RuntimeException();
+                    throw new RuntimeException();
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new NormalStatusException(t('mineadmin.api_auth_exception'), MineCode::API_AUTH_EXCEPTION);
         }
     }
 
     /**
-     * API常规检查
+     * API常规检查.
+     * @param mixed $request
      * @throws NotFoundExceptionInterface
      * @throws ContainerExceptionInterface
      */
     protected function apiModelCheck($request): ServerRequestInterface
     {
         $service = container()->get(SystemApiService::class);
-        $apiModel = $service->mapper->one(function($query) {
+        $apiModel = $service->mapper->one(function ($query) {
             $request = container()->get(MineRequest::class);
             $query->where('access_name', $request->route('method'));
         });
@@ -145,18 +143,16 @@ class VerifyInterfaceMiddleware implements MiddlewareInterface
 
         // 合并入参
         return $request->withParsedBody(array_merge(
-            $request->getParsedBody(), ['apiData' => $apiModel->toArray()]
+            $request->getParsedBody(),
+            ['apiData' => $apiModel->toArray()]
         ));
     }
 
     /**
-     * 运行
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
+     * 运行.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function run(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -177,8 +173,7 @@ class VerifyInterfaceMiddleware implements MiddlewareInterface
     }
 
     /**
-     * 设置协程上下文
-     * @param array $data
+     * 设置协程上下文.
      */
     private function _setApiData(array $data)
     {
@@ -186,8 +181,7 @@ class VerifyInterfaceMiddleware implements MiddlewareInterface
     }
 
     /**
-     * 获取协程上下文
-     * @return array
+     * 获取协程上下文.
      */
     private function _getApiData(): array
     {

@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Aspect;
 
 use App\System\Service\SystemUserService;
@@ -23,51 +24,44 @@ use Mine\Helper\LoginUser;
 use Mine\MineRequest;
 
 /**
- * Class PermissionAspect
- * @package Mine\Aspect
+ * Class PermissionAspect.
  */
 #[Aspect]
 class PermissionAspect extends AbstractAspect
 {
-
     public $annotations = [
-        Permission::class
+        Permission::class,
     ];
 
     /**
-     * SystemUserService
+     * SystemUserService.
      */
     protected SystemUserService $service;
 
     /**
-     * MineRequest
+     * MineRequest.
      */
     protected MineRequest $request;
 
     /**
-     * LoginUser
+     * LoginUser.
      */
     protected LoginUser $loginUser;
 
     /**
      * PermissionAspect constructor.
-     * @param SystemUserService $service
-     * @param MineRequest $request
-     * @param LoginUser $loginUser
      */
     public function __construct(
         SystemUserService $service,
         MineRequest $request,
         LoginUser $loginUser
-    )
-    {
+    ) {
         $this->service = $service;
         $this->request = $request;
         $this->loginUser = $loginUser;
     }
 
     /**
-     * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
      * @throws Exception
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -79,7 +73,7 @@ class PermissionAspect extends AbstractAspect
             return $proceedingJoinPoint->process();
         }
 
-        /** @var Permission $permission */
+        /* @var Permission $permission */
         if (isset($proceedingJoinPoint->getAnnotationMetadata()->method[Permission::class])) {
             $permission = $proceedingJoinPoint->getAnnotationMetadata()->method[Permission::class];
         }
@@ -95,10 +89,7 @@ class PermissionAspect extends AbstractAspect
     }
 
     /**
-     * 检查权限
-     * @param string $codeString
-     * @param string $where
-     * @return bool
+     * 检查权限.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */

@@ -1,15 +1,7 @@
 <?php
+
 declare(strict_types=1);
 
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 namespace Mine;
 
 use Hyperf\Validation\Request\FormRequest;
@@ -25,8 +17,7 @@ class MineFormRequest extends FormRequest
     }
 
     /**
-     * 公共规则
-     * @return array
+     * 公共规则.
      */
     public function commonRules(): array
     {
@@ -35,19 +26,15 @@ class MineFormRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     * @return array
      */
     public function rules(): array
     {
         $operation = $this->getOperation();
         $method = $operation . 'Rules';
-        $rules = ( $operation && method_exists($this, $method) ) ? $this->$method() : [];
+        $rules = ($operation && method_exists($this, $method)) ? $this->{$method}() : [];
         return array_merge($rules, $this->commonRules());
     }
 
-    /**
-     * @return string|null
-     */
     protected function getOperation(): ?string
     {
         $path = explode('/', $this->path());
@@ -57,6 +44,4 @@ class MineFormRequest extends FormRequest
 
         return $operation;
     }
-
-
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\System\Mapper;
 
-
 use App\System\Model\SystemDept;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
@@ -17,14 +16,13 @@ class SystemDeptMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemDept::class;
     }
 
     /**
-     * 获取前端选择树
-     * @return array
+     * 获取前端选择树.
      */
     public function getSelectTree(): array
     {
@@ -38,29 +36,20 @@ class SystemDeptMapper extends AbstractMapper
     }
 
     /**
-     * 查询部门名称
-     * @param array|null $ids
-     * @return array
+     * 查询部门名称.
      */
     public function getDeptName(array $ids = null): array
     {
         return $this->model::withTrashed()->whereIn('id', $ids)->pluck('name')->toArray();
     }
 
-    /**
-     * @param int $id
-     * @return bool
-     */
     public function checkChildrenExists(int $id): bool
     {
         return $this->model::withTrashed()->where('parent_id', $id)->exists();
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -90,10 +79,10 @@ class SystemDeptMapper extends AbstractMapper
     }
 
     /**
-     * 获取部门平台下拉
+     * 获取部门平台下拉.
      * @return mixed
-     * author:ZQ
-     * time:2022-05-29 15:42
+     *               author:ZQ
+     *               time:2022-05-29 15:42
      */
     public function getPlatformSelect(): mixed
     {

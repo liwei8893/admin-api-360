@@ -1,8 +1,8 @@
 <?php
 
-declare(strict_types = 1);
-namespace App\System\Service;
+declare(strict_types=1);
 
+namespace App\System\Service;
 
 use App\System\Mapper\SystemDeptMapper;
 use Mine\Abstracts\AbstractService;
@@ -20,11 +20,6 @@ class SystemDeptService extends AbstractService
         $this->mapper = $mapper;
     }
 
-    /**
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
-     */
     public function getTreeList(?array $params = null, bool $isScope = true): array
     {
         $params = array_merge(['orderBy' => 'sort', 'orderType' => 'desc'], $params);
@@ -32,8 +27,7 @@ class SystemDeptService extends AbstractService
     }
 
     /**
-     * 获取前端选择树
-     * @return array
+     * 获取前端选择树.
      */
     public function getSelectTree(): array
     {
@@ -41,9 +35,7 @@ class SystemDeptService extends AbstractService
     }
 
     /**
-     * 新增部门
-     * @param array $data
-     * @return int
+     * 新增部门.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -53,10 +45,7 @@ class SystemDeptService extends AbstractService
     }
 
     /**
-     * 更新部门
-     * @param int $id
-     * @param array $data
-     * @return bool
+     * 更新部门.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -66,9 +55,46 @@ class SystemDeptService extends AbstractService
     }
 
     /**
-     * 处理数据
+     * 真实删除部门.
+     */
+    public function realDel(array $ids): ?array
+    {
+        // 跳过的部门
+        $ctuIds = [];
+        if (count($ids)) {
+            foreach ($ids as $id) {
+                if (! $this->checkChildrenExists((int) $id)) {
+                    $this->mapper->realDelete([$id]);
+                } else {
+                    $ctuIds[] = $id;
+                }
+            }
+        }
+        return count($ctuIds) ? $this->mapper->getDeptName($ctuIds) : null;
+    }
+
+    /**
+     * 检查子部门是否存在.
+     */
+    public function checkChildrenExists(int $id): bool
+    {
+        return $this->mapper->checkChildrenExists($id);
+    }
+
+    /**
+     * 获取部门平台下拉.
+     * @return mixed
+     *               author:ZQ
+     *               time:2022-05-29 15:43
+     */
+    public function getPlatformSelect(): mixed
+    {
+        return $this->mapper->getPlatformSelect();
+    }
+
+    /**
+     * 处理数据.
      * @param $data
-     * @return array
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -87,45 +113,5 @@ class SystemDeptService extends AbstractService
         }
 
         return $data;
-    }
-
-    /**
-     * 真实删除部门
-     * @param array $ids
-     * @return array|null
-     */
-    public function realDel(array $ids): ?array
-    {
-        // 跳过的部门
-        $ctuIds = [];
-        if (count($ids)) foreach ($ids as $id) {
-            if (!$this->checkChildrenExists( (int) $id)) {
-                $this->mapper->realDelete([$id]);
-            } else {
-                $ctuIds[] = $id;
-            }
-        }
-        return count($ctuIds) ? $this->mapper->getDeptName($ctuIds) : null;
-    }
-
-    /**
-     * 检查子部门是否存在
-     * @param int $id
-     * @return bool
-     */
-    public function checkChildrenExists(int $id): bool
-    {
-        return $this->mapper->checkChildrenExists($id);
-    }
-
-    /**
-     * 获取部门平台下拉
-     * @return mixed
-     * author:ZQ
-     * time:2022-05-29 15:43
-     */
-    public function getPlatformSelect(): mixed
-    {
-        return $this->mapper->getPlatformSelect();
     }
 }

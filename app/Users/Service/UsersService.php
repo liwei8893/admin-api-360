@@ -1,14 +1,7 @@
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+
 namespace App\Users\Service;
 
 use App\System\Service\SystemDeptService;
@@ -40,34 +33,21 @@ class UsersService extends AbstractService
     #[Inject]
     public $mapper;
 
-    /**
-     * @var SystemDictDataService
-     */
     #[Inject]
     protected SystemDictDataService $systemDictDataService;
 
-    /**
-     * @var SystemDeptService
-     */
     #[Inject]
     protected SystemDeptService $systemDeptService;
 
-    /**
-     * @var LoginUser
-     */
     #[Inject]
     protected LoginUser $loginUser;
 
-    /**
-     * @var UserSalePlatformService
-     */
     #[Inject]
     protected UserSalePlatformService $userSalePlatformService;
 
     /**
      * 更换手机号.
      * @param $params
-     * @return bool
      */
     public function changeMobile($params): bool
     {
@@ -88,7 +68,6 @@ class UsersService extends AbstractService
     /**
      * 批量更换平台.
      * @param $params
-     * @return array
      */
     public function batchChangePlatform($params): array
     {
@@ -123,11 +102,10 @@ class UsersService extends AbstractService
     /**
      * 创建用户.
      * @param $data
-     * @return int
      */
     public function save($data): int
     {
-        if ($this->mapper->existsByMobile($data['mobile'])) {
+        if ($this->existsByMobile($data['mobile'])) {
             throw new NormalStatusException('手机号已存在');
         }
         $data = $this->handleSaveData($data);
@@ -135,10 +113,16 @@ class UsersService extends AbstractService
     }
 
     /**
+     * 用手机号检测用户是否存在.
+     * @param $mobile
+     */
+    public function existsByMobile($mobile): bool
+    {
+        return $this->mapper->existsByMobile($mobile);
+    }
+
+    /**
      * 更新用户信息.
-     * @param int $id
-     * @param array $data
-     * @return bool
      */
     public function update(int $id, array $data): bool
     {
@@ -156,10 +140,6 @@ class UsersService extends AbstractService
         return $this->mapper->update($id, $data);
     }
 
-    /**
-     * @param array $data
-     * @return array
-     */
     public function handleSaveData(array $data): array
     {
         // 获取平台编号,挂载到数组
@@ -167,10 +147,10 @@ class UsersService extends AbstractService
         // 合并初始化参数
         return array_merge([
             'mobile' => $data['mobile'],
-            'user_name' => $this->mapper->getInitUserName($data['mobile']),
-            'user_nickname' => $this->mapper->getInitUserName($data['mobile']),
-            'real_name' => $this->mapper->getInitUserName($data['mobile']),
-            'user_pass' => $this->mapper->getInitPassword($data['mobile']),
+            'user_name' => $this->getInitUserName($data['mobile']),
+            'user_nickname' => $this->getInitUserName($data['mobile']),
+            'real_name' => $this->getInitUserName($data['mobile']),
+            'user_pass' => $this->getInitPassword($data['mobile']),
             'avatar' => config('hxt-app.defaultAvatar'),
             'user_type' => 1,
             'status' => 1,
@@ -181,20 +161,31 @@ class UsersService extends AbstractService
     }
 
     /**
+     * 获取初始用户名.
+     * @param $mobile
+     */
+    public function getInitUserName($mobile): string
+    {
+        return $this->mapper->getInitUserName($mobile);
+    }
+
+    /**
+     * 获取初始密码
+     * @param $mobile
+     */
+    public function getInitPassword($mobile): string
+    {
+        return $this->mapper->getInitPassword($mobile);
+    }
+
+    /**
      * 初始化密码
-     * @param int $id
-     * @return bool
      */
     public function initUserPassword(int $id): bool
     {
         return $this->mapper->initUserPassword($id);
     }
 
-    /**
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
-     */
     public function getPageList(?array $params = null, bool $isScope = true): array
     {
         $params = $this->handleData($params);
@@ -204,7 +195,6 @@ class UsersService extends AbstractService
     /**
      * 用手机号查询一条数据.
      * @param $mobile
-     * @return Builder|Model
      */
     public function readByMobile($mobile): Model|Builder
     {
@@ -269,7 +259,6 @@ class UsersService extends AbstractService
     /**
      * 处理提交数据.
      * @param $params
-     * @return array
      */
     protected function handleData($params): array
     {

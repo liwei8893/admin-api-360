@@ -1,10 +1,11 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
+
 namespace App\Question\Model;
 
-use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
+
 /**
  * @property int $id 知识点ID
  * @property int $parent_id 父级ID
@@ -20,8 +21,8 @@ use Mine\MineModel;
  * @property \Carbon\Carbon $created_at 创建时间
  * @property int $updated_id 修改人
  * @property \Carbon\Carbon $updated_at 修改时间
- * @property int $grade_id 
- * @property string $shop_id 
+ * @property int $grade_id
+ * @property string $shop_id
  */
 class Know extends MineModel
 {
@@ -31,12 +32,14 @@ class Know extends MineModel
      * @var string
      */
     protected $table = 'knows';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'parent_id', 'knows_grade', 'knows_rule', 'name', 'states', 'sort', 'season', 'status', 'deleted_at', 'created_id', 'created_at', 'updated_id', 'updated_at', 'grade_id', 'shop_id'];
+
     /**
      * The attributes that should be cast to native types.
      *

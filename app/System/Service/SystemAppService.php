@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\System\Service;
 
 use Api\ApiController;
@@ -13,8 +14,7 @@ use Mine\Helper\MineCode;
 
 /**
  * app应用业务
- * Class SystemAppService
- * @package App\System\Service
+ * Class SystemAppService.
  */
 class SystemAppService extends AbstractService
 {
@@ -29,8 +29,7 @@ class SystemAppService extends AbstractService
     }
 
     /**
-     * 生成新的app id
-     * @return string
+     * 生成新的app id.
      * @throws \Exception
      */
     public function getAppId(): string
@@ -39,8 +38,7 @@ class SystemAppService extends AbstractService
     }
 
     /**
-     * 生成新的app secret
-     * @return string
+     * 生成新的app secret.
      * @throws \Exception
      */
     public function getAppSecret(): string
@@ -49,10 +47,7 @@ class SystemAppService extends AbstractService
     }
 
     /**
-     * 绑定接口
-     * @param int $id
-     * @param array $ids
-     * @return bool
+     * 绑定接口.
      */
     #[Transaction]
     public function bind(int $id, array $ids): bool
@@ -60,21 +55,17 @@ class SystemAppService extends AbstractService
         return $this->mapper->bind($id, $ids);
     }
 
-    /**
-     * @param int|null $id
-     * @return array
-     */
     public function getApiList(?int $id): array
     {
-        if (! $id) return [];
+        if (! $id) {
+            return [];
+        }
 
         return $this->mapper->getApiList($id);
     }
 
     /**
-     * 获取AccessToken
-     * @param array $params
-     * @return array
+     * 获取AccessToken.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Psr\SimpleCache\InvalidArgumentException
@@ -89,7 +80,7 @@ class SystemAppService extends AbstractService
             throw new NormalStatusException(t('mineadmin.api_auth_fail'), MineCode::API_SIGN_MISSING);
         }
 
-        $model = $this->mapper->one(function($query) use(&$params){
+        $model = $this->mapper->one(function ($query) use (&$params) {
             $query->where('status', SystemApp::ENABLE)->where('app_id', $params['app_id']);
         });
 
@@ -107,18 +98,17 @@ class SystemAppService extends AbstractService
     }
 
     /**
-     * 获取签名
+     * 获取签名.
      * @param $appSecret
      * @param $params
-     * @return string
      */
     public function getSignature($appSecret, $params): string
     {
         unset($params['signature']);
 
         $data = [
-            'sign_ver'   => ApiController::SIGN_VERSION,
-            'app_secret' => $appSecret
+            'sign_ver' => ApiController::SIGN_VERSION,
+            'app_secret' => $appSecret,
         ];
 
         $data = array_merge($data, $params);
@@ -128,11 +118,11 @@ class SystemAppService extends AbstractService
     }
 
     /**
-     * 登录文档
+     * 登录文档.
      */
     public function loginDoc(string $appId, string $appSecret): int
     {
-        $model = $this->mapper->one(function($query) use($appId, $appSecret){
+        $model = $this->mapper->one(function ($query) use ($appId, $appSecret) {
             $query->where('app_id', $appId)->where('app_secret', $appSecret);
         }, ['id', 'status']);
 
@@ -148,16 +138,13 @@ class SystemAppService extends AbstractService
     }
 
     /**
-     * 简易验证方式
-     * @param string $appId
-     * @param string $identity
-     * @return int
+     * 简易验证方式.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function verifyEasyMode(string $appId, string $identity): int
     {
-        $model = $this->mapper->one(function($query) use($appId){
+        $model = $this->mapper->one(function ($query) use ($appId) {
             $query->where('app_id', $appId);
         }, ['id', 'status', 'app_secret']);
 
@@ -177,9 +164,7 @@ class SystemAppService extends AbstractService
     }
 
     /**
-     * 正常（复杂）验证方式
-     * @param string $accessToken
-     * @return int
+     * 正常（复杂）验证方式.
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function verifyNormalMode(string $accessToken): int
@@ -188,9 +173,7 @@ class SystemAppService extends AbstractService
     }
 
     /**
-     * 通过app_id获取app信息和接口数据
-     * @param string $appId
-     * @return array
+     * 通过app_id获取app信息和接口数据.
      */
     public function getAppAndInterfaceList(string $appId): array
     {

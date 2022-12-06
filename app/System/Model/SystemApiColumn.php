@@ -1,10 +1,12 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
+
 namespace App\System\Model;
 
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
+
 /**
  * @property int $id 主键
  * @property int $api_id 接口主键
@@ -21,34 +23,37 @@ use Mine\MineModel;
  * @property \Carbon\Carbon $updated_at 更新时间
  * @property string $deleted_at 删除时间
  * @property string $remark 备注
- * @property-read SystemApi $api 
+ * @property SystemApi $api
  */
 class SystemApiColumn extends MineModel
 {
     use SoftDeletes;
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'system_api_column';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'api_id', 'name', 'type', 'data_type', 'is_required', 'default_value', 'status', 'description', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at', 'remark'];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'api_id' => 'integer', 'type' => 'integer', 'is_required' => 'integer', 'status' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+
     /**
-     * 关联API
-     * @return \Hyperf\Database\Model\Relations\BelongsTo
+     * 关联API.
      */
-    public function api() : \Hyperf\Database\Model\Relations\BelongsTo
+    public function api(): \Hyperf\Database\Model\Relations\BelongsTo
     {
         return $this->belongsTo(SystemApi::class, 'api_id', 'id');
     }

@@ -1,23 +1,14 @@
 <?php
+
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 namespace App\Course\Service;
-
 
 use App\Course\Mapper\CourseBasisTypeMapper;
 use Mine\Abstracts\AbstractService;
 
 /**
- * 课程分类服务类
+ * 课程分类服务类.
  */
 class CourseBasisTypeService extends AbstractService
 {
@@ -32,10 +23,7 @@ class CourseBasisTypeService extends AbstractService
     }
 
     /**
-     * 获取树列表
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 获取树列表.
      */
     public function getTreeList(?array $params = null, bool $isScope = true): array
     {
@@ -47,10 +35,7 @@ class CourseBasisTypeService extends AbstractService
     }
 
     /**
-     * 从回收站获取树列表
-     * @param array|null $params
-     * @param bool $isScope
-     * @return array
+     * 从回收站获取树列表.
      */
     public function getTreeListByRecycle(?array $params = null, bool $isScope = true): array
     {
@@ -62,8 +47,7 @@ class CourseBasisTypeService extends AbstractService
     }
 
     /**
-     * 获取前端选择树
-     * @return array
+     * 获取前端选择树.
      */
     public function getSelectTree(): array
     {
@@ -71,9 +55,7 @@ class CourseBasisTypeService extends AbstractService
     }
 
     /**
-     * 新增数据
-     * @param array $data
-     * @return int
+     * 新增数据.
      */
     public function save(array $data): int
     {
@@ -81,10 +63,7 @@ class CourseBasisTypeService extends AbstractService
     }
 
     /**
-     * 更新
-     * @param int $id
-     * @param array $data
-     * @return bool
+     * 更新.
      */
     public function update(int $id, array $data): bool
     {
@@ -92,20 +71,7 @@ class CourseBasisTypeService extends AbstractService
     }
 
     /**
-     * 处理数据
-     * @param $data
-     * @return array
-     */
-    protected function handleData($data): array
-    {
-        if (is_array($data['parent_id']) && !empty($data['parent_id'])) {
-            $data['parent_id'] = array_pop($data['parent_id']);
-        }
-        return $data;
-    }
-
-    /**
-     * 真实删除数据，跳过存在子节点的数据
+     * 真实删除数据，跳过存在子节点的数据.
      * @return array
      */
     public function realDel(array $ids): ?array
@@ -114,7 +80,7 @@ class CourseBasisTypeService extends AbstractService
         $ctuIds = [];
         if (count($ids)) {
             foreach ($ids as $id) {
-                if (!$this->checkChildrenExists((int)$id)) {
+                if (! $this->checkChildrenExists((int) $id)) {
                     $this->mapper->realDelete([$id]);
                 } else {
                     $ctuIds[] = $id;
@@ -125,12 +91,22 @@ class CourseBasisTypeService extends AbstractService
     }
 
     /**
-     * 检查子节点是否存在
-     * @param int $id
-     * @return bool
+     * 检查子节点是否存在.
      */
     public function checkChildrenExists(int $id): bool
     {
         return $this->mapper->checkChildrenExists($id);
+    }
+
+    /**
+     * 处理数据.
+     * @param $data
+     */
+    protected function handleData($data): array
+    {
+        if (is_array($data['parent_id']) && ! empty($data['parent_id'])) {
+            $data['parent_id'] = array_pop($data['parent_id']);
+        }
+        return $data;
     }
 }

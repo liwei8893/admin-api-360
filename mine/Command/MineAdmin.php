@@ -10,14 +10,14 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Command;
 
 use Hyperf\Command\Annotation\Command;
 use Mine\MineCommand;
 
 /**
- * Class MineAdmin
- * @package System\Command
+ * Class MineAdmin.
  */
 #[Command]
 class MineAdmin extends MineCommand

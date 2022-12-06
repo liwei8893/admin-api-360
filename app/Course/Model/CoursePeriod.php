@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace App\Course\Model;
 
@@ -52,17 +52,20 @@ class CoursePeriod extends MineModel
      * @var string
      */
     protected $table = 'course_periods';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'title', 'course_basis_id', 'course_chapter_id', 'room_video_id', 'room_id', 'is_playback', 'is_free', 'is_vip_class', 'is_try_see', 'is_download', 'try_see_time', 'start_play', 'end_play', 'start_play_date', 'admin_code', 'teacher_code', 'student_code', 'created_at', 'updated_at', 'is_push', 'is_getroominfo', 'cloud_type', 'tencent_play_url', 'teacher_id', 'assistant_id', 'template_name', 'play_back_url', 'assistant_name', 'is_login', 'subject_id', 'subject_name', 'qiniu_url', 'filePath', 'is_group_live', 'qurstion_str'];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'course_chapter_id' => 'integer', 'is_playback' => 'integer', 'is_free' => 'integer', 'is_vip_class' => 'integer', 'is_try_see' => 'integer', 'is_download' => 'integer', 'try_see_time' => 'integer', 'start_play' => 'integer', 'end_play' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_push' => 'integer', 'is_getroominfo' => 'integer', 'cloud_type' => 'integer', 'is_login' => 'integer', 'is_group_live' => 'integer'];
+
     protected $dateFormat = 'U';
 }

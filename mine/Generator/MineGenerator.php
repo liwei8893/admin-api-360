@@ -17,27 +17,18 @@ use Psr\Container\ContainerInterface;
 
 abstract class MineGenerator
 {
-    /**
-     * @var string
-     */
+    public const NO = 1;
+
+    public const YES = 2;
+
     protected string $stubDir;
 
-    /**
-     * @var string
-     */
     protected string $namespace;
 
-    /**
-     * @var ContainerInterface
-     */
     protected ContainerInterface $container;
-
-    public const NO = 1;
-    public const YES = 2;
 
     /**
      * MineGenerator constructor.
-     * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
@@ -55,17 +46,11 @@ abstract class MineGenerator
         $this->stubDir = $stubDir;
     }
 
-    /**
-     * @return string
-     */
     public function getNamespace(): string
     {
         return $this->namespace;
     }
 
-    /**
-     * @param string $namespace
-     */
     public function setNamespace(string $namespace): void
     {
         $this->namespace = $namespace;

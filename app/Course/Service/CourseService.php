@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Course\Service;
 
 use Hyperf\Database\Model\Collection;
@@ -15,11 +17,9 @@ class CourseService extends AbstractService
     public $mapper;
 
     /**
-     * @param array $ids
-     * @param array $select
-     * @return \Hyperf\Database\Model\Collection|array
-     * author:ZQ
-     * time:2022-08-26 15:38
+     * @return array|\Hyperf\Database\Model\Collection
+     *                                                 author:ZQ
+     *                                                 time:2022-08-26 15:38
      */
     public function getCourseInfoByIds(array $ids, array $select = []): Collection|array
     {

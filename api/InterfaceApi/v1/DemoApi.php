@@ -1,13 +1,6 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
+declare(strict_types=1);
 
 namespace Api\InterfaceApi\v1;
 
@@ -19,26 +12,18 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * 演示，测试专用
+ * 演示，测试专用.
  */
 class DemoApi
 {
-    /**
-     * @var SystemUserMapper
-     */
     protected SystemUserMapper $user;
 
-    /**
-     * @var SystemDeptMapper
-     */
     protected SystemDeptMapper $dept;
 
     protected MineResponse $response;
 
     /**
      * DemoApi constructor.
-     * @param SystemUserMapper $user
-     * @param SystemDeptMapper $dept
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -50,8 +35,7 @@ class DemoApi
     }
 
     /**
-     * 获取用户列表接口
-     * @return ResponseInterface
+     * 获取用户列表接口.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -62,8 +46,7 @@ class DemoApi
     }
 
     /**
-     * 获取部门列表接口
-     * @return ResponseInterface
+     * 获取部门列表接口.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

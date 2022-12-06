@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Aspect;
 
 use Hyperf\Di\Annotation\Aspect;
@@ -22,18 +23,16 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
 /**
- * Class UpdateAspect
- * @package Mine\Aspect
+ * Class UpdateAspect.
  */
 #[Aspect]
 class UpdateAspect extends AbstractAspect
 {
     public $classes = [
-        'Mine\MineModel::update'
+        'Mine\MineModel::update',
     ];
 
     /**
-     * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
      * @throws Exception
      * @throws ContainerExceptionInterface
@@ -43,14 +42,15 @@ class UpdateAspect extends AbstractAspect
     {
         $instance = $proceedingJoinPoint->getInstance();
         // 更新更改人
-        if ($instance instanceof MineModel &&
-            in_array('updated_by', $instance->getFillable()) &&
-            config('mineadmin.data_scope_enabled') &&
-            container()->get(MineRequest::class)->getHeaderLine('authorization')
+        if ($instance instanceof MineModel
+            && in_array('updated_by', $instance->getFillable())
+            && config('mineadmin.data_scope_enabled')
+            && container()->get(MineRequest::class)->getHeaderLine('authorization')
         ) {
             try {
                 $instance->updated_by = user()->getId();
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+            }
         }
         return $proceedingJoinPoint->process();
     }

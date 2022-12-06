@@ -1,14 +1,6 @@
 <?php
+
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 namespace App\Score\Mapper;
 
@@ -17,7 +9,7 @@ use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * 积分管理Mapper类
+ * 积分管理Mapper类.
  */
 class ScoreShopMapper extends AbstractMapper
 {
@@ -26,20 +18,16 @@ class ScoreShopMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel():void
+    public function assignModel(): void
     {
         $this->model = ScoreShop::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-        
         // 1:头像,3课程
         if (isset($params['shop_type']) && $params['shop_type'] !== '') {
             $query->where('shop_type', '=', $params['shop_type']);
@@ -54,7 +42,7 @@ class ScoreShopMapper extends AbstractMapper
         if (isset($params['score']) && $params['score'] !== '') {
             $query->where('score', '=', $params['score']);
         }
-        if (!empty($params['withShop'])){
+        if (! empty($params['withShop'])) {
             $query->with('shop');
         }
         return $query;

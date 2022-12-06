@@ -1,16 +1,16 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\System\Mapper;
 
-use App\System\Model\SystemApi;
 use App\System\Model\SystemApp;
 use Hyperf\Database\Model\Builder;
 use Hyperf\DbConnection\Db;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * Class SystemAppMapper
- * @package App\System\Mapper
+ * Class SystemAppMapper.
  */
 class SystemAppMapper extends AbstractMapper
 {
@@ -19,16 +19,13 @@ class SystemAppMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemApp::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -51,10 +48,7 @@ class SystemAppMapper extends AbstractMapper
     }
 
     /**
-     * 绑定接口
-     * @param int $id
-     * @param array $ids
-     * @return bool
+     * 绑定接口.
      */
     public function bind(int $id, array $ids): bool
     {
@@ -64,9 +58,8 @@ class SystemAppMapper extends AbstractMapper
     }
 
     /**
-     * 获取api列表
+     * 获取api列表.
      * @param int $id
-     * @return array
      */
     public function getApiList(int $appId): array
     {
@@ -74,14 +67,12 @@ class SystemAppMapper extends AbstractMapper
     }
 
     /**
-     * 通过app_id获取app信息和接口数据
-     * @param string $appId
-     * @return array
+     * 通过app_id获取app信息和接口数据.
      */
     public function getAppAndInterfaceList(string $appId): array
     {
         return $this->model::query()->where('app_id', $appId)
-            ->with(['apis' => function($query) {
+            ->with(['apis' => function ($query) {
                 $query->where('status', SystemApp::ENABLE);
             }])->first(['id', 'app_id', 'app_secret', 'app_name', 'updated_at', 'description'])->toArray();
     }

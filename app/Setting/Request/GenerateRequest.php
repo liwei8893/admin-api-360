@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Setting\Request;
 
 use Mine\MineFormRequest;
@@ -7,7 +9,7 @@ use Mine\MineFormRequest;
 class GenerateRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
@@ -47,7 +49,7 @@ class GenerateRequest extends MineFormRequest
 
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {
@@ -63,7 +65,7 @@ class GenerateRequest extends MineFormRequest
             'type' => '生成类型',
             'component_type' => '组件类型',
             'columns' => '字段列表',
-            'names' => '业务表名称组'
+            'names' => '业务表名称组',
         ];
     }
 }

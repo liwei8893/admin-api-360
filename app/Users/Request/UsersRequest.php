@@ -1,26 +1,18 @@
 <?php
+
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 namespace App\Users\Request;
 
 use Mine\MineFormRequest;
 
 /**
- * 用户表验证数据类
+ * 用户表验证数据类.
  */
 class UsersRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
@@ -28,12 +20,12 @@ class UsersRequest extends MineFormRequest
     }
 
     /**
-     * 更换手机号
+     * 更换手机号.
      * @return string[]
-     * author:ZQ
-     * time:2022-08-28 14:52
+     *                  author:ZQ
+     *                  time:2022-08-28 14:52
      */
-    public function changeMobileRules():array
+    public function changeMobileRules(): array
     {
         return [
             'mobile' => 'required|regex:/^1[3456789]\d{9}$/',
@@ -42,22 +34,22 @@ class UsersRequest extends MineFormRequest
     }
 
     /**
-     * 批量更新平台
+     * 批量更新平台.
      * @return string[]
-     * author:ZQ
-     * time:2022-08-28 11:36
+     *                  author:ZQ
+     *                  time:2022-08-28 11:36
      */
     public function batchChangePlatformRules(): array
     {
         return [
             'mobiles' => 'required',
-            'platform' => 'required'
+            'platform' => 'required',
         ];
     }
 
     /**
      * 新增数据验证规则
-     * return array
+     * return array.
      */
     public function saveRules(): array
     {
@@ -70,25 +62,21 @@ class UsersRequest extends MineFormRequest
 
     /**
      * 更新数据验证规则
-     * return array
+     * return array.
      */
     public function updateRules(): array
     {
         return [
-
         ];
     }
 
-
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {
         return [
-
         ];
     }
-
 }

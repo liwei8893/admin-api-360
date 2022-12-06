@@ -19,7 +19,6 @@ class SystemDeptSeeder extends Seeder
     /**
      * Run the database seeds.
      *
-     * @return void
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */

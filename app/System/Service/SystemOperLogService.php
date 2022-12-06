@@ -1,8 +1,8 @@
 <?php
 
-declare(strict_types = 1);
-namespace App\System\Service;
+declare(strict_types=1);
 
+namespace App\System\Service;
 
 use App\System\Mapper\SystemOperLogMapper;
 use Mine\Abstracts\AbstractService;

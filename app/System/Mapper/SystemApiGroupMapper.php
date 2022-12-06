@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\System\Mapper;
 
 use App\System\Model\SystemApi;
@@ -8,8 +10,7 @@ use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
 /**
- * Class SystemApiGroupMapper
- * @package App\System\Mapper
+ * Class SystemApiGroupMapper.
  */
 class SystemApiGroupMapper extends AbstractMapper
 {
@@ -18,16 +19,13 @@ class SystemApiGroupMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SystemApiGroup::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -43,7 +41,7 @@ class SystemApiGroupMapper extends AbstractMapper
 
         // 关联查询api列表
         if (isset($params['getApiList']) && $params['getApiList'] == true) {
-            $query->with(['apis' => function($query) {
+            $query->with(['apis' => function ($query) {
                 $query->where('status', SystemApi::ENABLE)->select(['id', 'group_id', 'name', 'access_name']);
             }]);
         }

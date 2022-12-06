@@ -1,19 +1,20 @@
 <?php
-declare(strict_types=1);
 
+declare(strict_types=1);
 use App\System\Model\SystemUser;
+use App\Users\Model\Users;
 
 return [
     'login_type' => env('JWT_LOGIN_TYPE', 'sso'), //  登录方式，sso为单点登录，mpop为多点登录
 
-    /**
+    /*
      * 单点登录自定义数据中必须存在uid的键值，这个key你可以自行定义，只要自定义数据中存在该键即可
      */
     'sso_key' => 'id',
 
     'secret' => env('JWT_SECRET', 'mineAdmin'), // 非对称加密使用字符串,请使用自己加密的字符串
 
-    /**
+    /*
      * JWT 权限keys
      * 对称算法: HS256, HS384 & HS512 使用 `JWT_SECRET`.
      * 非对称算法: RS256, RS384 & RS512 / ES256, ES384 & ES512 使用下面的公钥私钥.
@@ -27,7 +28,7 @@ return [
 
     'alg' => env('JWT_ALG', 'HS256'), // jwt的hearder加密算法
 
-    /**
+    /*
      * 支持的算法
      */
     'supported_algs' => [
@@ -42,16 +43,16 @@ return [
         'RS512' => 'Lcobucci\JWT\Signer\Rsa\Sha512',
     ],
 
-    /**
+    /*
      * 对称算法名称
      */
     'symmetry_algs' => [
         'HS256',
         'HS384',
-        'HS512'
+        'HS512',
     ],
 
-    /**
+    /*
      * 非对称算法名称
      */
     'asymmetric_algs' => [
@@ -63,24 +64,24 @@ return [
         'ES512',
     ],
 
-    /**
+    /*
      * 是否开启黑名单，单点登录和多点登录的注销、刷新使原token失效，必须要开启黑名单，目前黑名单缓存只支持hyperf缓存驱动
      */
     'blacklist_enabled' => env('JWT_BLACKLIST_ENABLED', true),
 
-    /**
+    /*
      * 黑名单的宽限时间 单位为：秒，注意：如果使用单点登录，该宽限时间无效
      */
     'blacklist_grace_period' => env('JWT_BLACKLIST_GRACE_PERIOD', 0),
 
-    /**
+    /*
      * 黑名单缓存token时间，注意：该时间一定要设置比token过期时间要大一点，默认为1天,最好设置跟过期时间一样
      */
     'blacklist_cache_ttl' => env('JWT_TTL', 86400),
 
-    'blacklist_prefix' => 'MineAdmin_jwt', // 黑名单缓存的前缀
+    'blacklist_prefix' => 'jwtBlacklist:', // 黑名单缓存的前缀
 
-    /**
+    /*
      * 区分不同场景的token，比如你一个项目可能会有多种类型的应用接口鉴权,下面自行定义，我只是举例子
      * 下面的配置会自动覆盖根配置，比如application1会里面的数据会覆盖掉根数据
      * 下面的scene会和根数据合并
@@ -102,16 +103,14 @@ return [
             'sso_key' => 'id',
             'ttl' => env('JWT_TTL', 86400), // token过期时间，单位为秒
             'blacklist_cache_ttl' => env('JWT_TTL', 86400), // 黑名单缓存token时间，注意：该时间一定要设置比token过期时间要大一点，默认为100秒,最好设置跟过期时间一样
+            'model' => [
+                'class' => Users::class,
+                'pk' => 'id',
+            ],
         ],
-        'application3' => [
-            'secret' => 'application3', // 非对称加密使用字符串,请使用自己加密的字符串
-            'login_type' => 'mppo', //  登录方式，sso为单点登录，mpop为多点登录
-            'ttl' => env('JWT_TTL', 86400), // token过期时间，单位为秒
-            'blacklist_cache_ttl' => env('JWT_TTL', 86400), // 黑名单缓存token时间，注意：该时间一定要设置比token过期时间要大一点，默认为100秒,最好设置跟过期时间一样
-        ]
     ],
     'model' => [
         'class' => SystemUser::class,
-        'pk' => 'id'
-    ]
+        'pk' => 'id',
+    ],
 ];

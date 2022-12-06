@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Setting\Request;
 
 use Mine\MineFormRequest;
@@ -7,17 +9,16 @@ use Mine\MineFormRequest;
 class ModuleRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
         return [];
     }
 
-
     /**
      * 新增数据验证规则
-     * return array
+     * return array.
      */
     public function saveRules(): array
     {
@@ -28,9 +29,10 @@ class ModuleRequest extends MineFormRequest
             'description' => 'required|max:255',
         ];
     }
+
     /**
      * 修改状态数据验证规则
-     * return array
+     * return array.
      */
     public function modifyStatusRules(): array
     {
@@ -40,10 +42,9 @@ class ModuleRequest extends MineFormRequest
         ];
     }
 
-
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {
@@ -55,5 +56,4 @@ class ModuleRequest extends MineFormRequest
             'status' => '模块状态',
         ];
     }
-
 }

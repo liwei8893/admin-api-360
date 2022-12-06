@@ -15,20 +15,19 @@ declare(strict_types=1);
 namespace Mine\Command;
 
 use Hyperf\Command\Annotation\Command;
-use Hyperf\Database\Seeders\Seed;
 use Hyperf\Database\Migrations\Migrator;
-use Mine\MineCommand;
+use Hyperf\Database\Seeders\Seed;
 use Mine\Mine;
+use Mine\MineCommand;
 
 /**
- * Class UpdateProjectCommand
- * @package System\Command
+ * Class UpdateProjectCommand.
  */
 #[Command]
 class UpdateProjectCommand extends MineCommand
 {
     /**
-     * 更新项目命令
+     * 更新项目命令.
      * @var string
      */
     protected $name = 'mine:update';
@@ -41,9 +40,6 @@ class UpdateProjectCommand extends MineCommand
 
     /**
      * UpdateProjectCommand constructor.
-     * @param string|null $name
-     * @param Migrator $migrator
-     * @param Seed $seed
      */
     public function __construct(string $name = null, Migrator $migrator, Seed $seed)
     {

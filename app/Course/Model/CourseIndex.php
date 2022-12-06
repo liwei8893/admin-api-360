@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace App\Course\Model;
 
@@ -23,18 +23,21 @@ use Mine\MineModel;
 class CourseIndex extends MineModel
 {
     public $timestamps = false;
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'course_index';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'course_name', 'sub_title', 'sort', 'img_url', 'video_url', 'type_name', 'type', 'nav_to', 'pc_img_url', 'grade', 'subject'];
+
     /**
      * The attributes that should be cast to native types.
      *

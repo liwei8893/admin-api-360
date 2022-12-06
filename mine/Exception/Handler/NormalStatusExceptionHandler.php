@@ -21,16 +21,10 @@ use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 /**
- * Class DataNotFoundExceptionHandler
- * @package Mine\Exception\Handler
+ * Class DataNotFoundExceptionHandler.
  */
 class NormalStatusExceptionHandler extends ExceptionHandler
 {
-    /**
-     * @param Throwable $throwable
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
     public function handle(Throwable $throwable, ResponseInterface $response): ResponseInterface
     {
         $this->stopPropagation();

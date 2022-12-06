@@ -1,9 +1,11 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
+
 namespace App\System\Model;
 
 use Mine\MineModel;
+
 /**
  * @property int $id 主键
  * @property string $username 用户名
@@ -18,10 +20,11 @@ use Mine\MineModel;
  */
 class SystemLoginLog extends MineModel
 {
-    public $timestamps = false;
-
     public const SUCCESS = 1;
+
     public const FAIL = 2;
+
+    public $timestamps = false;
 
     /**
      * The table associated with the model.
@@ -29,12 +32,14 @@ class SystemLoginLog extends MineModel
      * @var string
      */
     protected $table = 'system_login_log';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'username', 'ip', 'ip_location', 'os', 'browser', 'status', 'message', 'login_time', 'remark'];
+
     /**
      * The attributes that should be cast to native types.
      *

@@ -1,8 +1,8 @@
 <?php
 
 declare(strict_types=1);
-namespace App\Setting\Mapper;
 
+namespace App\Setting\Mapper;
 
 use App\Setting\Model\SettingCrontabLog;
 use Hyperf\Database\Model\Builder;
@@ -15,16 +15,13 @@ class SettingCrontabLogMapper extends AbstractMapper
      */
     public $model;
 
-    public function assignModel()
+    public function assignModel(): void
     {
         $this->model = SettingCrontabLog::class;
     }
 
     /**
-     * 搜索处理器
-     * @param Builder $query
-     * @param array $params
-     * @return Builder
+     * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
@@ -33,5 +30,4 @@ class SettingCrontabLogMapper extends AbstractMapper
         }
         return $query;
     }
-
 }

@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Aspect;
 
 use Hyperf\Config\Annotation\Value;
@@ -21,24 +22,22 @@ use Mine\Annotation\DeleteCache;
 use Mine\Helper\Str;
 
 /**
- * Class DeleteCacheAspect
- * @package Mine\Aspect
+ * Class DeleteCacheAspect.
  */
 #[Aspect]
 class DeleteCacheAspect extends AbstractAspect
 {
     public $annotations = [
-        DeleteCache::class
+        DeleteCache::class,
     ];
 
     /**
      * 缓存前缀
      */
-    #[Value("cache.default.prefix")]
+    #[Value('cache.default.prefix')]
     protected string $prefix;
 
     /**
-     * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
      * @throws Exception
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -53,7 +52,7 @@ class DeleteCacheAspect extends AbstractAspect
 
         $result = $proceedingJoinPoint->process();
 
-        if ( !empty($deleteCache->keys)) {
+        if (! empty($deleteCache->keys)) {
             $keys = explode(',', $deleteCache->keys);
             $iterator = null;
             $n = [];

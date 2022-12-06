@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Aspect;
 
 use Hyperf\DbConnection\Db;
@@ -20,31 +21,28 @@ use Mine\Annotation\Transaction;
 use Mine\Exception\MineException;
 
 /**
- * Class TransactionAspect
- * @package Mine\Aspect
+ * Class TransactionAspect.
  */
 #[Aspect]
 class TransactionAspect extends AbstractAspect
 {
-
     public $annotations = [
-        Transaction::class
+        Transaction::class,
     ];
 
     /**
-     * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
      */
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        /** @var Transaction $transaction */
+        /* @var Transaction $transaction */
         if (isset($proceedingJoinPoint->getAnnotationMetadata()->method[Transaction::class])) {
             $transaction = $proceedingJoinPoint->getAnnotationMetadata()->method[Transaction::class];
         }
         try {
             Db::beginTransaction();
             $number = 0;
-            $retry  = (int)$transaction->retry;
+            $retry = (int) $transaction->retry;
             do {
                 $result = $proceedingJoinPoint->process();
                 if (! is_null($result)) {

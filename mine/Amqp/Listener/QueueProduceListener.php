@@ -4,9 +4,10 @@
  * Created by phpStorm.
  * User: mike
  * Date: 2021/9/30
- * Time: 3:13 下午
+ * Time: 3:13 下午.
  */
 declare(strict_types=1);
+
 namespace Mine\Amqp\Listener;
 
 use App\System\Mapper\SystemQueueMessageMapper;
@@ -14,18 +15,17 @@ use App\System\Model\SystemQueueLog;
 use App\System\Queue\Producer\MessageProducer;
 use App\System\Service\SystemQueueLogService;
 use Hyperf\Context\Context;
+use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
 use Mine\Amqp\Event\AfterProduce;
 use Mine\Amqp\Event\BeforeProduce;
 use Mine\Amqp\Event\FailToProduce;
 use Mine\Amqp\Event\ProduceEvent;
 use Mine\Amqp\Event\WaitTimeout;
-use Hyperf\Event\Contract\ListenerInterface;
-use Hyperf\Event\Annotation\Listener;
 
 /**
  * 生产队列监听
- * Class QueueProduceListener
- * @package Mine\Amqp\Listener
+ * Class QueueProduceListener.
  */
 #[Listener]
 class QueueProduceListener implements ListenerInterface
@@ -45,7 +45,6 @@ class QueueProduceListener implements ListenerInterface
     }
 
     /**
-     * @param object $event
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Exception
@@ -54,14 +53,13 @@ class QueueProduceListener implements ListenerInterface
     {
         $this->service = container()->get(SystemQueueLogService::class);
         $class = get_class($event);
-        $func = lcfirst(trim(strrchr($class, '\\'),'\\'));
-        $this->$func($event);
+        $func = lcfirst(trim(strrchr($class, '\\'), '\\'));
+        $this->{$func}($event);
     }
 
     /**
      * Description:生产前
-     * User:mike, x.mo
-     * @param object $event
+     * User:mike, x.mo.
      */
     public function beforeProduce(object $event)
     {
@@ -73,26 +71,25 @@ class QueueProduceListener implements ListenerInterface
             'queue_name' => $queueName,
             'queue_content' => $event->producer->payload(),
             'delay_time' => $event->delayTime ?? 0,
-            'produce_status' => SystemQueueLog::PRODUCE_STATUS_SUCCESS
+            'produce_status' => SystemQueueLog::PRODUCE_STATUS_SUCCESS,
         ]);
 
         $this->setId($id);
 
         $payload = json_decode($event->producer->payload(), true);
 
-        if (!isset($payload['queue_id'])) {
+        if (! isset($payload['queue_id'])) {
             $event->producer->setPayload([
-                'queue_id' => $id, 'data' => $payload
+                'queue_id' => $id, 'data' => $payload,
             ]);
         }
 
-        $this->service->update($id, [ 'queue_content' => $event->producer->payload() ]);
+        $this->service->update($id, ['queue_content' => $event->producer->payload()]);
     }
 
     /**
      * Description:生产中
-     * User:mike, x.mo
-     * @param object $event
+     * User:mike, x.mo.
      */
     public function produceEvent(object $event): void
     {
@@ -101,13 +98,12 @@ class QueueProduceListener implements ListenerInterface
 
     /**
      * Description:生产后
-     * User:mike, x.mo
-     * @param object $event
+     * User:mike, x.mo.
      */
     public function afterProduce(object $event): void
     {
         if (isset($event->producer) && $event->producer instanceof MessageProducer) {
-            (new SystemQueueMessageMapper)->save(
+            (new SystemQueueMessageMapper())->save(
                 json_decode($event->producer->payload(), true)['data']
             );
         }
@@ -115,13 +111,13 @@ class QueueProduceListener implements ListenerInterface
 
     /**
      * Description:生产失败
-     * User:mike, x.mo
+     * User:mike, x.mo.
      */
     public function failToProduce(object $event): void
     {
         $this->service->update((int) $this->getId(), [
             'produce_status' => SystemQueueLog::PRODUCE_STATUS_FAIL,
-            'log_content' => $event->throwable ?: $event->throwable->getMessage()
+            'log_content' => $event->throwable ?: $event->throwable->getMessage(),
         ]);
     }
 

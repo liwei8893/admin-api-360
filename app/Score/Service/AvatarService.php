@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Score\Service;
 
 use App\Score\Mapper\AvatarMapper;

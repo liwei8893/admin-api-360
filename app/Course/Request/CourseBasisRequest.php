@@ -1,26 +1,18 @@
 <?php
+
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 namespace App\Course\Request;
 
 use Mine\MineFormRequest;
 
 /**
- * 课时详情表验证数据类
+ * 课时详情表验证数据类.
  */
 class CourseBasisRequest extends MineFormRequest
 {
     /**
-     * 公共规则
+     * 公共规则.
      */
     public function commonRules(): array
     {
@@ -34,30 +26,27 @@ class CourseBasisRequest extends MineFormRequest
 
     /**
      * 新增数据验证规则
-     * return array
+     * return array.
      */
     public function saveRules(): array
     {
         return [
-
         ];
     }
 
     /**
      * 更新数据验证规则
-     * return array
+     * return array.
      */
     public function updateRules(): array
     {
         return [
-
         ];
     }
 
-
     /**
      * 字段映射名称
-     * return array
+     * return array.
      */
     public function attributes(): array
     {
@@ -114,8 +103,6 @@ class CourseBasisRequest extends MineFormRequest
             'vip_type' => '1:优享会员,2:超级会员,3:至尊会员',
             'is_give' => '1:表示是活动赠送的课程,如果学员购买了这个课添加到素养课里面',
             'class_type' => '0:小学中学高中都能查,1小学,2中学,3高中',
-
         ];
     }
-
 }

@@ -1,17 +1,10 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
-use Hyperf\Database\Schema\Schema;
-use Hyperf\Database\Schema\Blueprint;
+declare(strict_types=1);
+
 use Hyperf\Database\Migrations\Migration;
+use Hyperf\Database\Schema\Blueprint;
+use Hyperf\Database\Schema\Schema;
 
 class CreateCourseSignupConfigTable extends Migration
 {
@@ -24,11 +17,11 @@ class CreateCourseSignupConfigTable extends Migration
             $table->engine = 'Innodb';
             $table->comment('课程报名配置表');
             $table->increments('id')->comment('主键');
-            $table->string('title',255)->nullable()->comment('课程名称');
+            $table->string('title', 255)->nullable()->comment('课程名称');
             $table->integer('price')->comment('金额');
             $table->integer('day')->comment('天数');
             $table->integer('sort')->default(0)->comment('排序');
-            $table->string('remark',255)->nullable()->comment('备注');
+            $table->string('remark', 255)->nullable()->comment('备注');
             $table->integer('created_by')->nullable()->comment('创建者');
             $table->integer('updated_by')->nullable()->comment('更新者');
             $table->timestamps();
