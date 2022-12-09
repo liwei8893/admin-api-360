@@ -47,8 +47,7 @@ class HttpCoreMiddleware extends \Hyperf\HttpServer\CoreMiddleware
     protected function handleMethodNotAllowed(
         array $methods,
         ServerRequestInterface $request
-    ): ResponseInterface
-    {
+    ): ResponseInterface {
         $format = [
             'success' => false,
             'code' => MineCode::METHOD_NOT_ALLOW,

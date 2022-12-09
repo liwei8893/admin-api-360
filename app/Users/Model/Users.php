@@ -153,8 +153,8 @@ class Users extends MineModel
 
     /**
      * 验证密码
-     * @param $password
-     * @param $hash
+     * @param mixed $password
+     * @param mixed $hash
      */
     public static function passwordVerify($password, $hash): bool
     {
@@ -210,7 +210,7 @@ class Users extends MineModel
 
     /**
      * 密码加密.
-     * @param $value
+     * @param mixed $value
      */
     public function setUserPassAttribute($value): void
     {

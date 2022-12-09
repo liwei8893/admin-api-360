@@ -67,7 +67,7 @@ class LoginListener implements ListenerInterface
     }
 
     /**
-     * @param $agent
+     * @param mixed $agent
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -98,7 +98,7 @@ class LoginListener implements ListenerInterface
     }
 
     /**
-     * @param $agent
+     * @param mixed $agent
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */

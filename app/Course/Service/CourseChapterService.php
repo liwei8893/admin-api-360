@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Course\Service;
 
-use App\Course\Mapper\CourseBasisTypeMapper;
+use App\Course\Mapper\CourseChapterMapper;
 use Mine\Abstracts\AbstractService;
 
 /**
- * 课程分类服务类.
+ * 课程大纲服务类.
  */
-class CourseBasisTypeService extends AbstractService
+class CourseChapterService extends AbstractService
 {
     /**
-     * @var CourseBasisTypeMapper
+     * @var CourseChapterMapper
      */
     public $mapper;
 
-    public function __construct(CourseBasisTypeMapper $mapper)
+    public function __construct(CourseChapterMapper $mapper)
     {
         $this->mapper = $mapper;
     }
@@ -59,7 +59,22 @@ class CourseBasisTypeService extends AbstractService
      */
     public function save(array $data): int
     {
-        return $this->mapper->save($this->handleData($data));
+        if ($data['parent_id'] === 0) {
+            return $this->mapper->save($this->handleData($data));
+        }
+        $data['course_period'] = array_merge($this->handlePeriodInsetData($data), $data['course_period']);
+        return $this->mapper->saveChapter($data);
+    }
+
+    public function handlePeriodInsetData(array $data): array
+    {
+        return [
+            'course_basis_id' => $data['course_basis_id'],
+            'title' => $data['title'],
+            'start_play' => $data['start_play'] ?? 0,
+            'end_play' => $data['end_play'] ?? 0,
+            'qiniu_url' => $data['qiniu_url'] ?? '',
+        ];
     }
 
     /**
@@ -83,7 +98,7 @@ class CourseBasisTypeService extends AbstractService
                 if (! $this->checkChildrenExists((int) $id)) {
                     $this->mapper->realDelete([$id]);
                 } else {
-                    $ctuIds[] = $id;
+                    array_push($ctuIds, $id);
                 }
             }
         }
@@ -100,12 +115,15 @@ class CourseBasisTypeService extends AbstractService
 
     /**
      * 处理数据.
-     * @param mixed $data
      */
-    protected function handleData($data): array
+    protected function handleData(array $data): array
     {
         if (is_array($data['parent_id']) && ! empty($data['parent_id'])) {
             $data['parent_id'] = array_pop($data['parent_id']);
+        }
+        if (isset($data['course_period'])) {
+            // 同步chapter和period部分数据
+            $data['course_period']['title'] = $data['title'];
         }
         return $data;
     }

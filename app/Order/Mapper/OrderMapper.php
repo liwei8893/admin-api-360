@@ -50,7 +50,7 @@ class OrderMapper extends AbstractMapper
 
     /**
      * 软删除.
-     * @param $id
+     * @param mixed $id
      */
     public function softDelete($id): int
     {

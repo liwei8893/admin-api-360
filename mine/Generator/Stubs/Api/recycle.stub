@@ -1,36 +1,27 @@
 
-  /**
-   * 从回收站获取{BUSINESS_NAME}数据列表
-   * @returns
-   */
-  getRecycleList (params = {}) {
-    return request({
-      url: '{REQUEST_ROUTE}/recycle',
-      method: 'get',
-      params
-    })
-  },
+/**
+ * 从回收站获取{BUSINESS_NAME}数据列表
+ * @returns
+ */
+export const getRecycleList = (params = {}) => request.get({
+  url: '{REQUEST_ROUTE}/recycle',
+  params,
+})
 
-  /**
-   * 恢复{BUSINESS_NAME}数据
-   * @returns
-   */
-  recoverys (data) {
-    return request({
-      url: '{REQUEST_ROUTE}/recovery',
-      method: 'put',
-      data
-    })
-  },
+/**
+ * 恢复{BUSINESS_NAME}数据
+ * @returns
+ */
+export const recoverys = data => request.put({
+  url: '{REQUEST_ROUTE}/recovery',
+  data,
+})
 
-  /**
-   * 真实删除{BUSINESS_NAME}
-   * @returns
-   */
-  realDeletes (data) {
-    return request({
-      url: '{REQUEST_ROUTE}/realDelete',
-      method: 'delete',
-      data
-    })
-  },
+/**
+ * 真实删除{BUSINESS_NAME}
+ * @returns
+ */
+export const realDeletes = data => request.delete({
+  url: '{REQUEST_ROUTE}/realDelete',
+  data,
+})

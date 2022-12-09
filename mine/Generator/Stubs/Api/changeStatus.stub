@@ -1,12 +1,9 @@
 
-  /**
-   * 更改{BUSINESS_NAME}数据
-   * @returns
-   */
-  changeStatus (data = {}) {
-    return request({
-      url: '{REQUEST_ROUTE}/changeStatus',
-      method: 'put',
-      data
-    })
-  },
+/**
+ * 更改{BUSINESS_NAME}数据
+ * @returns
+ */
+export const changeStatus = (data = {}) => request.put({
+  url: '{REQUEST_ROUTE}/changeStatus',
+  data,
+})

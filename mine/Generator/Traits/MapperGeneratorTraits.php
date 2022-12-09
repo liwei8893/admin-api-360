@@ -17,7 +17,7 @@ trait MapperGeneratorTraits
 {
     /**
      * 获取搜索代码
-     * @param $column
+     * @param mixed $column
      */
     protected function getSearchCode($column): string
     {
@@ -33,11 +33,6 @@ trait MapperGeneratorTraits
         };
     }
 
-    /**
-     * @param $name
-     * @param $mark
-     * @param $comment
-     */
     protected function getSearchPHPString($name, $mark, $comment): string
     {
         if ($mark == 'like') {

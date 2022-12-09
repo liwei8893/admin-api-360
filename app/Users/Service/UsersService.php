@@ -47,7 +47,7 @@ class UsersService extends AbstractService
 
     /**
      * 更换手机号.
-     * @param $params
+     * @param mixed $params
      */
     public function changeMobile($params): bool
     {
@@ -67,7 +67,7 @@ class UsersService extends AbstractService
 
     /**
      * 批量更换平台.
-     * @param $params
+     * @param mixed $params
      */
     public function batchChangePlatform($params): array
     {
@@ -101,7 +101,7 @@ class UsersService extends AbstractService
 
     /**
      * 创建用户.
-     * @param $data
+     * @param mixed $data
      */
     public function save($data): int
     {
@@ -114,7 +114,7 @@ class UsersService extends AbstractService
 
     /**
      * 用手机号检测用户是否存在.
-     * @param $mobile
+     * @param mixed $mobile
      */
     public function existsByMobile($mobile): bool
     {
@@ -162,7 +162,7 @@ class UsersService extends AbstractService
 
     /**
      * 获取初始用户名.
-     * @param $mobile
+     * @param mixed $mobile
      */
     public function getInitUserName($mobile): string
     {
@@ -171,7 +171,7 @@ class UsersService extends AbstractService
 
     /**
      * 获取初始密码
-     * @param $mobile
+     * @param mixed $mobile
      */
     public function getInitPassword($mobile): string
     {
@@ -194,7 +194,7 @@ class UsersService extends AbstractService
 
     /**
      * 用手机号查询一条数据.
-     * @param $mobile
+     * @param mixed $mobile
      */
     public function readByMobile($mobile): Model|Builder
     {
@@ -258,7 +258,7 @@ class UsersService extends AbstractService
 
     /**
      * 处理提交数据.
-     * @param $params
+     * @param mixed $params
      */
     protected function handleData($params): array
     {

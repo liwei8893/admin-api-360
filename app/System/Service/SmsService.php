@@ -17,8 +17,8 @@ class SmsService extends AbstractService
 
     /**
      * 检测短信验证码
-     * @param $mobile
-     * @param $smsCode
+     * @param mixed $mobile
+     * @param mixed $smsCode
      */
     public function checkSmsCaptcha($mobile, $smsCode): bool
     {

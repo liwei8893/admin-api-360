@@ -402,4 +402,22 @@ trait MapperTrait
         }
         $model = null;
     }
+
+    /**
+     * 过滤新增或写入不存在的字段.
+     */
+    public function comFilterExecuteAttributes(string $modelClass, array &$data, bool $removePk = true): void
+    {
+        $model = new $modelClass();
+        $attrs = $model->getFillable();
+        foreach ($data as $name => $val) {
+            if (!in_array($name, $attrs, true)) {
+                unset($data[$name]);
+            }
+        }
+        if ($removePk && isset($data[$model->getKeyName()])) {
+            unset($data[$model->getKeyName()]);
+        }
+        $model = null;
+    }
 }

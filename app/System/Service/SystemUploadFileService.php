@@ -7,9 +7,13 @@ namespace App\System\Service;
 use App\System\Mapper\SystemUploadFileMapper;
 use Exception;
 use Hyperf\Contract\ConfigInterface;
+use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Model;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\Utils\Collection;
+use JsonException;
+use League\Flysystem\FileExistsException;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\Str;
@@ -43,11 +47,11 @@ class SystemUploadFileService extends AbstractService
     }
 
     /**
-     * @param $params
+     * @param mixed $params
      * @throws ContainerExceptionInterface
-     * @throws \JsonException|NotFoundExceptionInterface
-     *                                                   author:ZQ
-     *                                                   time:2022-09-07 18:00
+     * @throws JsonException|NotFoundExceptionInterface
+     *                                                  author:ZQ
+     *                                                  time:2022-09-07 18:00
      */
     public function getUploadToken($params): array
     {
@@ -78,13 +82,10 @@ class SystemUploadFileService extends AbstractService
 
     /**
      * 存入七牛云前端上传文件.
-     * @param $params
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     *                                    author:ZQ
-     *                                    time:2022-09-08 10:01
      */
-    public function saveUploadInfo($params): array
+    public function saveUploadInfo(array $params): array
     {
         if ($this->mineUpload->getStorageMode() !== '3') {
             throw new NormalStatusException('请更改上传模式为七牛云');
@@ -104,12 +105,10 @@ class SystemUploadFileService extends AbstractService
 
     /**
      * 组装保存数据.
-     * @param $params
+     * @param mixed $params
      * @return array
-     *               author:ZQ
-     *               time:2022-09-08 10:01
      */
-    public function getUploadFileInfo($params): array
+    public function getUploadFileInfo(array $params): array
     {
         return [
             'storage_mode' => $params['storage_mode'],
@@ -127,7 +126,7 @@ class SystemUploadFileService extends AbstractService
 
     /**
      * 上传文件.
-     * @throws \League\Flysystem\FileExistsException
+     * @throws FileExistsException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -186,7 +185,7 @@ class SystemUploadFileService extends AbstractService
 
     /**
      * 通过hash获取文件信息.
-     * @return null|\Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object
+     * @return null|Builder|Model|object
      */
     public function readByHash(string $hash)
     {
@@ -200,13 +199,13 @@ class SystemUploadFileService extends AbstractService
     {
         if ($params['name'] ?? false) {
             $collect = $collect->filter(function ($row) use ($params) {
-                return \Mine\Helper\Str::contains($row['name'], $params['name']);
+                return Str::contains($row['name'], $params['name']);
             });
         }
 
         if ($params['label'] ?? false) {
             $collect = $collect->filter(function ($row) use ($params) {
-                return \Mine\Helper\Str::contains($row['label'], $params['label']);
+                return Str::contains($row['label'], $params['label']);
             });
         }
         return $collect;

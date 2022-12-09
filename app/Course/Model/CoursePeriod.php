@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace App\Course\Model;
 
+use App\Question\Model\Question;
+use App\System\Model\Tag;
+use App\Users\Model\Users;
+use Carbon\Carbon;
+use Hyperf\Database\Model\Relations\BelongsTo;
+use Hyperf\Database\Model\Relations\BelongsToMany;
+use Hyperf\Database\Model\Relations\HasMany;
+use Hyperf\Database\Model\Relations\MorphToMany;
 use Mine\MineModel;
 
 /**
@@ -25,8 +33,8 @@ use Mine\MineModel;
  * @property string $admin_code 管理员进入房间的参加码
  * @property string $teacher_code 老师进入房间的参加码
  * @property string $student_code 学生公共参加码
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property int $is_push 是否推送,0否1是
  * @property int $is_getroominfo 0未拉取直播教室学员观看记录;1已成功拉取到数据；2已拉取未成功或未拉取到数据;
  * @property int $cloud_type 云平台，0 = 百家云，1 = 腾讯云
@@ -68,4 +76,33 @@ class CoursePeriod extends MineModel
     protected $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'course_chapter_id' => 'integer', 'is_playback' => 'integer', 'is_free' => 'integer', 'is_vip_class' => 'integer', 'is_try_see' => 'integer', 'is_download' => 'integer', 'try_see_time' => 'integer', 'start_play' => 'integer', 'end_play' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_push' => 'integer', 'is_getroominfo' => 'integer', 'cloud_type' => 'integer', 'is_login' => 'integer', 'is_group_live' => 'integer'];
 
     protected $dateFormat = 'U';
+
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Users::class, 'teacher_id', 'id')->select(['id', 'user_name', 'mobile']);
+    }
+
+    public function talk(): HasMany
+    {
+        return $this->hasMany(Talk::class, 'course_period_id', 'id');
+    }
+
+    public function sun(): HasMany
+    {
+        return $this->hasMany(Sun::class, 'course_period_id', 'id');
+    }
+
+    public function questionPeriod(): BelongsToMany
+    {
+        return $this->belongsToMany(Question::class, 'question_period', 'period_id', 'question_id')
+            ->withPivot('type');
+    }
+
+    /**
+     * 多态关联标签.
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
 }

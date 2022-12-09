@@ -70,8 +70,8 @@ class HttpGenCommand extends MineCommand
 
     /**
      * 生成http文件.
-     * @param $file
-     * @param $content
+     * @param mixed $file
+     * @param mixed $content
      */
     public function genHttpFile($file, $content): void
     {

@@ -24,8 +24,8 @@ class OrderSignupMapper extends AbstractMapper
 
     /**
      * 查询用户报名的正常课程.
-     * @param $userId
-     * @param $courseIds
+     * @param mixed $userId
+     * @param mixed $courseIds
      * @return mixed
      *               author:ZQ
      *               time:2022-08-26 15:47

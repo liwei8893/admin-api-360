@@ -1,4 +1,4 @@
-<script lang="tsx"> export default { name: '{CODE}' } </script>
+
 <template>
   <div class="ma-content-block lg:flex justify-between p-4">
     <!-- CRUD 组件 -->
@@ -13,8 +13,9 @@ import { Message } from '@arco-design/web-vue'
 import tool from '@/utils/tool'
 import * as common from '@/utils/common'
 import { BasicColumn, BasicCrud } from '@cps/ma-crud/types'
+import MaCrud from '@cps/ma-crud/index.vue'
 
-const crudRef = ref()
+const crudRef = ref<InstanceType<typeof MaCrud>>()
 
 {INPUT_NUMBER}
 {SWITCH_STATUS}
@@ -23,3 +24,4 @@ const crudRef = ref()
 
 {COLUMNS}
 </script>
+<script lang="tsx"> export default { name: '{CODE}' } </script>

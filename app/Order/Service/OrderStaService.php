@@ -21,7 +21,7 @@ class OrderStaService extends AbstractService
 
     /**
      * 会员新增统计
-     * @param $data
+     * @param mixed $data
      */
     public function getNewVipSta($data): array
     {
@@ -37,7 +37,7 @@ class OrderStaService extends AbstractService
 
     /**
      * 续费统计
-     * @param $data
+     * @param mixed $data
      */
     public function getRenewalSta($data): array
     {
@@ -53,7 +53,7 @@ class OrderStaService extends AbstractService
 
     /**
      * 退费统计.
-     * @param $data
+     * @param mixed $data
      */
     public function getRefundSta($data): array
     {
@@ -72,7 +72,7 @@ class OrderStaService extends AbstractService
 
     /**
      * 处理时间,created_at->Y-m-d.
-     * @param $data
+     * @param mixed $data
      */
     protected function handleStaDate($data, string $dayField = 'indate'): array
     {
@@ -99,8 +99,8 @@ class OrderStaService extends AbstractService
 
     /**
      * 处理合计行列.
-     * @param $data
-     * @param $allPlatform
+     * @param mixed $data
+     * @param mixed $allPlatform
      */
     protected function handleStaDataSum(&$data, $allPlatform): void
     {

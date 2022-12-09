@@ -18,7 +18,7 @@ class CourseHistoryService extends AbstractService
 
     /**
      * 课程购买记录列表.
-     * @param $data
+     * @param mixed $data
      */
     public function getHistoryList($data): array
     {

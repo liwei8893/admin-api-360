@@ -1,12 +1,9 @@
 
-  /**
-   * 更新{BUSINESS_NAME}数据
-   * @returns
-   */
-  update (id, data = {}) {
-    return request({
-      url: '{REQUEST_ROUTE}/update/' + id,
-      method: 'put',
-      data
-    })
-  },
+/**
+ * 更新{BUSINESS_NAME}数据
+ * @returns
+ */
+export const update = (id, data = {}) => request.put({
+  url: `{REQUEST_ROUTE}/update/${id}`,
+  data,
+})

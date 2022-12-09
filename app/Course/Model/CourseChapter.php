@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Course\Model;
 
+use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
 
 /**
@@ -37,4 +38,20 @@ class CourseChapter extends MineModel
      * @var array
      */
     protected $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'serial_num' => 'integer', 'parent_id' => 'integer'];
+
+    /**
+     * 关联章节表.
+     */
+    public function coursePeriod(): HasOne
+    {
+        return $this->hasOne(CoursePeriod::class, 'course_chapter_id', 'id');
+    }
+
+    /**
+     * 关联课程表.
+     */
+    public function courseBasis(): HasOne
+    {
+        return $this->hasOne(CourseBasis::class, 'id', 'course_basis_id');
+    }
 }

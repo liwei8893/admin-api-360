@@ -15,9 +15,6 @@ use PhpAmqpLib\Message\AMQPMessage;
 #[Consumer(exchange: 'mineadmin', routingKey: 'message.routing', queue: 'message.queue', name: 'message.queue', nums: 1)]
 class MessageConsumer extends ConsumerMessage
 {
-    /**
-     * @param $data
-     */
     public function consumeMessage($data, AMQPMessage $message): string
     {
         return parent::consumeMessage($data, $message);

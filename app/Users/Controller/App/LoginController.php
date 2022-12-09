@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Users\Controller\App;
 
-use _PHPStan_76800bfb5\Nette\Neon\Exception;
 use App\Users\Request\UsersAppLoginRequest;
 use App\Users\Service\UsersAppLoginService;
 use Hyperf\Di\Annotation\Inject;
@@ -12,7 +11,6 @@ use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
 use Mine\Annotation\Auth;
-use Mine\Exception\NormalStatusException;
 use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -52,7 +50,6 @@ class LoginController extends MineController
     }
 
     /**
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

@@ -59,7 +59,7 @@ class OrderTransactionService extends AbstractService
 
     /**
      * 转班.
-     * @param $data
+     * @param mixed $data
      * @return bool
      *              author:ZQ
      *              time:2022-08-20 11:31

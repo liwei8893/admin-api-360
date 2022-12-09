@@ -124,7 +124,7 @@ class Order extends MineModel
 
     /**
      * 局部作用域,查询订单状态正常的订单.
-     * @param $query
+     * @param mixed $query
      */
     public function scopeNormalOrder($query)
     {
@@ -133,7 +133,7 @@ class Order extends MineModel
 
     /**
      * 局部作用域,查询所有状态的未删除的订单.
-     * @param $query
+     * @param mixed $query
      */
     public function scopeNoDeleteOrder($query)
     {
@@ -142,7 +142,7 @@ class Order extends MineModel
 
     /**
      * 查询没过期的订单.
-     * @param $query
+     * @param mixed $query
      */
     public function scopeIsNotExpire($query)
     {

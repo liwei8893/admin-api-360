@@ -9,7 +9,6 @@ use App\Users\Mapper\UsersAppLoginMapper;
 use App\Users\Model\Users;
 use Exception;
 use Hyperf\Database\Model\Builder;
-use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\ModelNotFoundException;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -39,12 +38,12 @@ class UsersAppLoginService extends AbstractService
     protected UserSalePlatformService $userSalePlatformService;
 
     /**
-     * @param $params
+     * @param mixed $params
      * @throws ContainerExceptionInterface
      * @throws InvalidArgumentException
      * @throws NotFoundExceptionInterface
      */
-    public function login($params): array
+    public function login( array$params): array
     {
         try {
             $userinfo = $this->mapper->checkUserByMobile($params['mobile'], Users::COMMON_FIELDS);

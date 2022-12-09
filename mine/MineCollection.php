@@ -36,9 +36,6 @@ class MineCollection extends Collection
         return $this->toTree($routers);
     }
 
-    /**
-     * @param $menu
-     */
     public function setRouter(&$menu): array
     {
         $route = ($menu['type'] == 'L' || $menu['type'] == 'I') ? $menu['route'] : '/' . $menu['route'];

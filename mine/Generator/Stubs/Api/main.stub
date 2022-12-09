@@ -1,10 +1,8 @@
-import { request } from '@/utils/request.js'
+import { request } from '@/libs/request'
+import type { BasicFetchResult, BasicPageParams } from '@/types/request'
 
 /**
  * {COMMENT}
  */
 
-export default {
 {LOAD_API}
-
-}

@@ -67,7 +67,7 @@ class OrderSignupService extends AbstractService
 
     /**
      * 过滤已经报名的课程.
-     * @param $userId
+     * @param mixed $userId
      * @return \Hyperf\Database\Model\Collection|\Hyperf\Utils\Collection
      *                                                                    author:ZQ
      *                                                                    time:2022-08-26 15:49
@@ -83,8 +83,8 @@ class OrderSignupService extends AbstractService
 
     /**
      * 处理插入数据.
-     * @param $data
-     * @param $course
+     * @param mixed $data
+     * @param mixed $course
      * @throws \Exception
      *                    author:ZQ
      *                    time:2022-08-26 16:16

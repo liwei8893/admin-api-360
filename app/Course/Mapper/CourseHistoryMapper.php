@@ -19,7 +19,7 @@ class CourseHistoryMapper extends AbstractMapper
 
     /**
      * 课程购买记录.
-     * @param $data
+     * @param mixed $data
      */
     public function getHistoryList($data): array
     {

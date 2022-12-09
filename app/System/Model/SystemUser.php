@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\System\Model;
 
+use Carbon\Carbon;
+use Hyperf\Database\Model\Collection;
+use Hyperf\Database\Model\Relations\BelongsToMany;
+use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
 
@@ -24,13 +28,13 @@ use Mine\MineModel;
  * @property string $backend_setting 后台设置数据
  * @property int $created_by 创建者
  * @property int $updated_by 更新者
- * @property \Carbon\Carbon $created_at 创建时间
- * @property \Carbon\Carbon $updated_at 更新时间
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
  * @property string $deleted_at 删除时间
  * @property string $remark 备注
  * @property SystemDept $dept
- * @property \Hyperf\Database\Model\Collection|SystemPost[] $posts
- * @property \Hyperf\Database\Model\Collection|SystemRole[] $roles
+ * @property Collection|SystemPost[] $posts
+ * @property Collection|SystemRole[] $roles
  * @property mixed $password 密码
  */
 class SystemUser extends MineModel
@@ -70,7 +74,7 @@ class SystemUser extends MineModel
     /**
      * 通过中间表关联角色.
      */
-    public function roles(): \Hyperf\Database\Model\Relations\BelongsToMany
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(SystemRole::class, 'system_user_role', 'user_id', 'role_id');
     }
@@ -78,7 +82,7 @@ class SystemUser extends MineModel
     /**
      * 通过中间表关联岗位.
      */
-    public function posts(): \Hyperf\Database\Model\Relations\BelongsToMany
+    public function posts(): BelongsToMany
     {
         return $this->belongsToMany(SystemPost::class, 'system_user_post', 'user_id', 'post_id');
     }
@@ -86,14 +90,14 @@ class SystemUser extends MineModel
     /**
      * 关联部门.
      */
-    public function dept(): \Hyperf\Database\Model\Relations\HasOne
+    public function dept(): HasOne
     {
         return $this->hasOne(SystemDept::class, 'id', 'dept_id');
     }
 
     /**
      * 密码加密.
-     * @param $value
+     * @param mixed $value
      */
     public function setPasswordAttribute($value): void
     {
@@ -102,8 +106,8 @@ class SystemUser extends MineModel
 
     /**
      * 验证密码
-     * @param $password
-     * @param $hash
+     * @param mixed $password
+     * @param mixed $hash
      */
     public static function passwordVerify($password, $hash): bool
     {

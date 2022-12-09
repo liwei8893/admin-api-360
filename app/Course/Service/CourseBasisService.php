@@ -37,7 +37,7 @@ class CourseBasisService extends AbstractService
 
     /**
      * 批量更新.
-     * @param $data
+     * @param mixed $data
      */
     public function batchUpdate($data): int
     {
@@ -48,8 +48,8 @@ class CourseBasisService extends AbstractService
 
     /**
      * 修改状态
-     * @param $id
-     * @param $statusValue
+     * @param mixed $id
+     * @param mixed $statusValue
      */
     public function changeCourseStatus($id, $statusValue): bool
     {

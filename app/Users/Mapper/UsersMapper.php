@@ -12,7 +12,7 @@ use Mine\Abstracts\AbstractMapper;
 /**
  * 用户表Mapper类.
  */
-class UsersMapper extends AbstractMapper
+class UsersMapper extends AbstractMapper 
 {
     public function assignModel(): void
     {
@@ -21,7 +21,7 @@ class UsersMapper extends AbstractMapper
 
     /**
      * 用手机号检测用户是否存在.
-     * @param $mobile
+     * @param mixed $mobile
      */
     public function existsByMobile($mobile): bool
     {
@@ -30,7 +30,7 @@ class UsersMapper extends AbstractMapper
 
     /**
      * 用手机号查询一条数据.
-     * @param $mobile
+     * @param mixed $mobile
      */
     public function readByMobile($mobile): Model|Builder|null
     {
@@ -53,7 +53,7 @@ class UsersMapper extends AbstractMapper
 
     /**
      * 获取初始密码,手机号后六位.
-     * @param $mobile
+     * @param mixed $mobile
      */
     public function getInitPassword($mobile): string
     {
@@ -62,7 +62,7 @@ class UsersMapper extends AbstractMapper
 
     /**
      * 获取初始用户名,手机号隐藏中间4位.
-     * @param $mobile
+     * @param mixed $mobile
      */
     public function getInitUserName($mobile): string
     {
@@ -74,6 +74,13 @@ class UsersMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
+        if (isset($params['id']) && ! is_array($params['id'])) {
+            $query->where('id', $params['id']);
+        }
+        if (isset($params['id']) && is_array($params['id'])) {
+            $query->whereIn('id', $params['id']);
+        }
+
         if (isset($params['status']) && ! is_array($params['status'])) {
             $query->where('status', $params['status']);
         }
@@ -90,6 +97,14 @@ class UsersMapper extends AbstractMapper
 
         if (! empty($params['mobile'])) {
             $query->where('mobile', 'like', $params['mobile'] . '%');
+        }
+
+        if (! empty($params['is_teacher'])) {
+            $query->where('is_teacher', $params['is_teacher']);
+        }
+
+        if (! empty($params['is_assistant'])) {
+            $query->where('is_assistant', $params['is_assistant']);
         }
 
         if (! empty($params['user_name'])) {

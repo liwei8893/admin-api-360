@@ -16,9 +16,6 @@ class SmsMapper extends AbstractMapper
         $this->model = SmsLog::class;
     }
 
-    /**
-     * @param $mobile
-     */
     public function checkSmsCaptcha($mobile): Model|Builder|null
     {
         return SmsLog::query()->where('mobile', $mobile)

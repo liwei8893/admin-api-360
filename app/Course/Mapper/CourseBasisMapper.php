@@ -26,8 +26,8 @@ class CourseBasisMapper extends AbstractMapper
 
     /**
      * 批量更新.
-     * @param $ids
-     * @param $data
+     * @param mixed $ids
+     * @param mixed $data
      * @return int
      *             author:ZQ
      *             time:2022-08-21 17:54

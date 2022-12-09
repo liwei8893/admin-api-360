@@ -57,7 +57,7 @@ class VerifyInterfaceMiddleware implements MiddlewareInterface
 
     /**
      * 跨域设置.
-     * @param $request
+     * @param mixed $request
      */
     protected function crossSetting($request): void
     {

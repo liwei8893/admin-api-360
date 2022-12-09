@@ -29,7 +29,7 @@ class OrderStaMapper extends AbstractMapper
 
     /**
      * 新增统计.
-     * @param $params
+     * @param mixed $params
      */
     public function getNewVipSta($params): Collection|array
     {
@@ -59,7 +59,7 @@ class OrderStaMapper extends AbstractMapper
 
     /**
      * 续费统计
-     * @param $params
+     * @param mixed $params
      */
     public function getRenewalSta($params): Collection|array
     {
@@ -94,7 +94,7 @@ class OrderStaMapper extends AbstractMapper
 
     /**
      * 退费统计
-     * @param $params
+     * @param mixed $params
      */
     public function getRefundSta($params): Collection|array
     {

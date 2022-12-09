@@ -115,7 +115,7 @@ if (! function_exists('mine_collect')) {
 if (! function_exists('context_set')) {
     /**
      * 设置上下文数据.
-     * @param $data
+     * @param mixed $data
      */
     function context_set(string $key, $data): bool
     {

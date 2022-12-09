@@ -163,7 +163,7 @@ trait ModelMacroTrait
                         break;
                     case SystemRole::DEPT_BELOW_SCOPE:
                         // 本部门及子部门数据权限
-                        $platformCodes = array_merge($platformCodes, SystemDept::query()->where('level', 'like', '%' . ',' . $userModel->dept_id . '%')->pluck('platform')->toArray());
+                        $platformCodes = array_merge($platformCodes, SystemDept::query()->where('level', 'like', '%,' . $userModel->dept_id . '%')->pluck('platform')->toArray());
                         $platformCodes[] = $curPlatform;
                         break;
                     case SystemRole::SELF_SCOPE:

@@ -351,9 +351,6 @@ default username: superAdmin
 default password: admin123', $this->getInfo(), Mine::getVersion()), 'comment');
     }
 
-    /**
-     * @param $extension
-     */
     protected function checkExtension($extension): void
     {
         if (! extension_loaded($extension)) {
