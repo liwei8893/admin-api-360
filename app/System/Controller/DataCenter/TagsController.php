@@ -42,7 +42,7 @@ class TagsController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('index'), Permission('system:tag, system:tag:index')]
+    #[GetMapping('index')]
     public function index(): ResponseInterface
     {
         return $this->success($this->service->getPageList($this->request->all()));

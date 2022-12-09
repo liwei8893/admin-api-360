@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Question\Controller;
 
+use App\Question\Dto\QuestionHistoryDto;
 use App\Question\Request\QuestionHistoryRequest;
 use App\Question\Service\QuestionHistoryService;
 use Hyperf\Di\Annotation\Inject;
@@ -15,6 +16,8 @@ use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
 use Mine\MineController;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -33,8 +36,8 @@ class QuestionHistoryController extends MineController
 
     /**
      * 列表.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('index'), Permission('question:history:index')]
     public function index(): ResponseInterface
@@ -45,8 +48,8 @@ class QuestionHistoryController extends MineController
     /**
      * 新增.
      * @param {CREATE_REQUEST} $request
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('save'), Permission('question:history:save'), OperationLog]
     public function save(QuestionHistoryRequest $request): ResponseInterface
@@ -57,8 +60,8 @@ class QuestionHistoryController extends MineController
     /**
      * 更新.
      * @param {UPDATE_REQUEST} $request
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PutMapping('update/{id}'), Permission('question:history:update'), OperationLog]
     public function update(int $id, QuestionHistoryRequest $request): ResponseInterface
@@ -68,8 +71,8 @@ class QuestionHistoryController extends MineController
 
     /**
      * 读取数据.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('read/{id}'), Permission('question:history:read')]
     public function read(int $id): ResponseInterface
@@ -79,12 +82,12 @@ class QuestionHistoryController extends MineController
 
     /**
      * 数据导出.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('export'), Permission('question:history:export'), OperationLog]
     public function export(): ResponseInterface
     {
-        return $this->service->bigExport($this->request->all(), \App\Question\Dto\QuestionHistoryDto::class, '做题记录');
+        return $this->service->bigExport($this->request->all(), QuestionHistoryDto::class, '做题记录');
     }
 }
