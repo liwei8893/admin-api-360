@@ -59,22 +59,12 @@ class CourseChapterService extends AbstractService
      */
     public function save(array $data): int
     {
+        // 新建章
         if ($data['parent_id'] === 0) {
-            return $this->mapper->save($this->handleData($data));
+            return $this->mapper->save($data);
         }
-        $data['course_period'] = array_merge($this->handlePeriodInsetData($data), $data['course_period']);
-        return $this->mapper->saveChapter($data);
-    }
-
-    public function handlePeriodInsetData(array $data): array
-    {
-        return [
-            'course_basis_id' => $data['course_basis_id'],
-            'title' => $data['title'],
-            'start_play' => $data['start_play'] ?? 0,
-            'end_play' => $data['end_play'] ?? 0,
-            'qiniu_url' => $data['qiniu_url'] ?? '',
-        ];
+        // 新建节
+        return $this->mapper->saveChapter($this->handlePeriodData($data));
     }
 
     /**
@@ -82,49 +72,50 @@ class CourseChapterService extends AbstractService
      */
     public function update(int $id, array $data): bool
     {
-        return $this->mapper->update($id, $this->handleData($data));
+        // 更新章
+        if ($data['parent_id'] === 0) {
+            return $this->mapper->update($id, $data);
+        }
+        // 更新节
+        return $this->mapper->updateChapter($id, $this->handlePeriodData($data));
     }
 
     /**
-     * 真实删除数据，跳过存在子节点的数据.
+     * 测一测数据加上type1,练一练加上type2.
+     */
+    public function handleQuestionPeriodData(array $data): array
+    {
+        $questionPeriodData = [];
+        foreach ($data as $item) {
+            $questionPeriodData[$item] = ['type' => 1];
+        }
+        return $questionPeriodData;
+    }
+
+    /**
+     * 处理节数据.
      * @return array
      */
-    public function realDel(array $ids): ?array
+    protected function handlePeriodData(array $data)
     {
-        // 存在子节点，跳过的数据
-        $ctuIds = [];
-        if (count($ids)) {
-            foreach ($ids as $id) {
-                if (! $this->checkChildrenExists((int) $id)) {
-                    $this->mapper->realDelete([$id]);
-                } else {
-                    array_push($ctuIds, $id);
-                }
-            }
+        if (isset($data['qurstion_str']) && is_array($data['qurstion_str'])) {
+            $data['qurstion_str'] = implode(',', $data['qurstion_str']);
         }
-        return count($ctuIds) ? $this->mapper->getTreeName($ctuIds) : null;
-    }
+        $data['course_period'] = $data['course_period'] ?? [];
+        $initPeriodData = [
+            'title' => $data['title'],
+            'course_basis_id' => $data['course_basis_id'],
+            'start_play' => $data['course_period']['start_play'] ?? 0,
+            'end_play' => $data['course_period']['end_play'] ?? 0,
+            'qiniu_url' => $data['course_period']['qiniu_url'] ?? '',
+            'qurstion_str' => $data['course_period']['qurstion_str'] ?? '',
+        ];
+        $data['course_period'] = array_merge($initPeriodData, $data['course_period']);
 
-    /**
-     * 检查子节点是否存在.
-     */
-    public function checkChildrenExists(int $id): bool
-    {
-        return $this->mapper->checkChildrenExists($id);
-    }
-
-    /**
-     * 处理数据.
-     */
-    protected function handleData(array $data): array
-    {
-        if (is_array($data['parent_id']) && ! empty($data['parent_id'])) {
-            $data['parent_id'] = array_pop($data['parent_id']);
-        }
-        if (isset($data['course_period'])) {
-            // 同步chapter和period部分数据
-            $data['course_period']['title'] = $data['title'];
-        }
+        // 处理测一测数据
+        $data['question_period'] = $this->handleQuestionPeriodData($data['question_period'] ?? []);
+        // 处理标签
+        $data['tag'] = $data['tag'] ?? [];
         return $data;
     }
 }

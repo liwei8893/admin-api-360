@@ -46,14 +46,17 @@ class CourseChapterMapper extends AbstractMapper
 
     public function checkChildrenExists(int $id): bool
     {
-        return $this->model::withTrashed()->where('parent_id', $id)->exists();
+        return $this->model::query()->where('parent_id', $id)->exists();
     }
 
     #[Transaction]
-    public function update(int $id, array $data): bool
+    public function updateChapter(int $id, array $data): bool
     {
         $chapterModel = $this->model::query()->find($id);
-        $chapterModel->coursePeriod->tags()->sync($data['tag']);
+        $periodModel = $chapterModel->coursePeriod;
+        $periodModel->tags()->sync($data['tag']);
+        $periodModel->questionPeriod()->sync($data['question_period']);
+
         $this->comFilterExecuteAttributes(CoursePeriod::class, $data['course_period']);
         $chapterModel->coursePeriod()->update($data['course_period']);
 
@@ -67,6 +70,7 @@ class CourseChapterMapper extends AbstractMapper
         $chapterModel = $this->model::create($data);
         $periodModel = $chapterModel->coursePeriod()->create($data['course_period']);
         $periodModel->tags()->sync($data['tag']);
+        $periodModel->questionPeriod()->sync($data['question_period']);
         return $chapterModel->id;
     }
 
@@ -111,7 +115,7 @@ class CourseChapterMapper extends AbstractMapper
 
         if (! empty($params['withCoursePeriod'])) {
             $query->with(['coursePeriod' => function ($query) {
-                $query->with(['teacher', 'tags']);
+                $query->with(['teacher', 'tags', 'questionPeriod']);
             }]);
         }
 

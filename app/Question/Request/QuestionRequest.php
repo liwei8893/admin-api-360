@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Course\Request;
+namespace App\Question\Request;
 
 use Mine\MineFormRequest;
 
 /**
- * 课程大纲验证数据类.
+ * 题库管理验证数据类.
  */
-class CourseChapterRequest extends MineFormRequest
+class QuestionRequest extends MineFormRequest
 {
     /**
      * 公共规则.
@@ -19,6 +19,13 @@ class CourseChapterRequest extends MineFormRequest
         return [];
     }
 
+    public function getCourseQuestionRules(): array
+    {
+        return [
+            'course_basis_id' => 'required',
+        ];
+    }
+
     /**
      * 新增数据验证规则
      * return array.
@@ -26,9 +33,6 @@ class CourseChapterRequest extends MineFormRequest
     public function saveRules(): array
     {
         return [
-            'parent_id' => 'required',
-            'course_basis_id' => 'required',
-            'title' => 'required',
         ];
     }
 
@@ -39,9 +43,6 @@ class CourseChapterRequest extends MineFormRequest
     public function updateRules(): array
     {
         return [
-            'parent_id' => 'required',
-            'course_basis_id' => 'required',
-            'title' => 'required',
         ];
     }
 

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Question\Model;
 
 use App\System\Model\SystemDictData;
+use Carbon\Carbon;
+use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
 
 /**
@@ -26,9 +28,9 @@ use Mine\MineModel;
  * @property int $states 状态:0:显示 1:隐藏
  * @property int $deleted_at 删除时间
  * @property int $created_id 创建人
- * @property \Carbon\Carbon $created_at 创建时间
+ * @property Carbon $created_at 创建时间
  * @property int $updated_id 修改人
- * @property \Carbon\Carbon $updated_at 修改时间
+ * @property Carbon $updated_at 修改时间
  * @property int $form_at 日期
  * @property string $knows_text 知识点文本
  */
@@ -53,17 +55,15 @@ class Question extends MineModel
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'classify_id' => 'integer', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'integer', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'form_at' => 'integer'];
+    protected $casts = ['id' => 'integer', 'classify_id' => 'integer', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'integer', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_id' => 'integer', 'updated_at' => 'datetime:Y-m-d H:i:s', 'form_at' => 'integer'];
 
     protected $dateFormat = 'U';
 
     /**
      * 题目科目.
-     * @return \Hyperf\Database\Model\Relations\HasOne
-     *                                                 author:ZQ
-     *                                                 time:2022-09-01 15:40
+     * @return HasOne
      */
-    public function questionSubject(): \Hyperf\Database\Model\Relations\HasOne
+    public function questionSubject(): HasOne
     {
         return $this->hasOne(SystemDictData::class, 'value', 'classify_id')
             ->where('code', 'questionSubject')->where('status', MineModel::ENABLE);
@@ -71,11 +71,9 @@ class Question extends MineModel
 
     /**
      * 题目类型,单选多选填空.
-     * @return \Hyperf\Database\Model\Relations\HasOne
-     *                                                 author:ZQ
-     *                                                 time:2022-09-01 15:40
+     * @return HasOne
      */
-    public function questionType(): \Hyperf\Database\Model\Relations\HasOne
+    public function questionType(): HasOne
     {
         return $this->hasOne(SystemDictData::class, 'value', 'ques_type')
             ->where('code', 'questionType')->where('status', MineModel::ENABLE);
@@ -83,11 +81,9 @@ class Question extends MineModel
 
     /**
      * 知识点表.
-     * @return \Hyperf\Database\Model\Relations\HasOne
-     *                                                 author:ZQ
-     *                                                 time:2022-09-01 15:42
+     * @return HasOne
      */
-    public function knows(): \Hyperf\Database\Model\Relations\HasOne
+    public function knows(): HasOne
     {
         return $this->hasOne(Know::class, 'id', 'knows_id')
             ->where('deleted_at', 0)
