@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Question\Model;
 
+use Carbon\Carbon;
+use Hyperf\Database\Model\Relations\HasMany;
 use Mine\MineModel;
 
 /**
@@ -18,9 +20,9 @@ use Mine\MineModel;
  * @property int $status 0 禁用 1正常
  * @property int $deleted_at 删除时间
  * @property int $created_id 创建人
- * @property \Carbon\Carbon $created_at 创建时间
+ * @property Carbon $created_at 创建时间
  * @property int $updated_id 修改人
- * @property \Carbon\Carbon $updated_at 修改时间
+ * @property Carbon $updated_at 修改时间
  * @property int $grade_id
  * @property string $shop_id
  */
@@ -45,5 +47,10 @@ class Know extends MineModel
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'parent_id' => 'integer', 'knows_grade' => 'integer', 'states' => 'integer', 'sort' => 'integer', 'season' => 'integer', 'status' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'grade_id' => 'integer'];
+    protected $casts = ['id' => 'integer', 'parent_id' => 'integer', 'knows_grade' => 'integer', 'states' => 'integer', 'sort' => 'integer', 'season' => 'string', 'status' => 'string', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'grade_id' => 'string'];
+
+    public function question(): HasMany
+    {
+        return $this->hasMany(Question::class, 'knows_id', 'id');
+    }
 }
