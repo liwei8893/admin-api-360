@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\System\Model;
 
 use App\Course\Model\CoursePeriod;
+use App\Question\Model\Question;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\MorphToMany;
 use Hyperf\Database\Model\SoftDeletes;
@@ -48,5 +49,11 @@ class Tag extends MineModel
     public function coursePeriod(): MorphToMany
     {
         return $this->morphedByMany(CoursePeriod::class, 'taggable');
+    }
+
+    public function question(): MorphToMany
+    {
+        return $this->morphedByMany(Question::class, 'taggable');
+
     }
 }

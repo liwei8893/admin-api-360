@@ -12,7 +12,7 @@ use Mine\Abstracts\AbstractMapper;
 /**
  * 用户表Mapper类.
  */
-class UsersMapper extends AbstractMapper 
+class UsersMapper extends AbstractMapper
 {
     public function assignModel(): void
     {
@@ -23,7 +23,7 @@ class UsersMapper extends AbstractMapper
      * 用手机号检测用户是否存在.
      * @param mixed $mobile
      */
-    public function existsByMobile($mobile): bool
+    public function existsByMobile($mobile): bool 
     {
         return $this->model::query()->where('mobile', $mobile)->exists();
     }

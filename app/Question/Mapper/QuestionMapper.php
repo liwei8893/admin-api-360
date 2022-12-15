@@ -7,6 +7,7 @@ namespace App\Question\Mapper;
 use App\Question\Model\Question;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
+use Mine\Annotation\Transaction;
 
 /**
  * 题库管理Mapper类.
@@ -21,6 +22,42 @@ class QuestionMapper extends AbstractMapper
     public function assignModel(): void
     {
         $this->model = Question::class;
+    }
+
+    /**
+     * 单个或批量软删除数据.
+     */
+    public function delete(array $ids): bool
+    {
+        Question::query()->whereIn('id', $ids)->update(['deleted_at' => time(), 'states' => 1]);
+        return true;
+    }
+
+    /**
+     * 新增数据.
+     */
+    #[Transaction]
+    public function save(array $data): int
+    {
+        $model = $this->model::create($data);
+        if (isset($data['tag'])) {
+            $model->tags()->sync($data['tag']);
+        }
+        return $model->{$model->getKeyName()};
+    }
+
+    /**
+     * 更新一条数据.
+     */
+    #[Transaction]
+    public function update(int $id, array $data): bool
+    {
+        $model = $this->model::find($id);
+        if (isset($data['tag'])) {
+            $model->tags()->sync($data['tag']);
+        }
+        $this->filterExecuteAttributes($data, true);
+        return $model->update($data) > 0;
     }
 
     /**
@@ -137,6 +174,11 @@ class QuestionMapper extends AbstractMapper
         if (isset($params['form_at']) && $params['form_at'] !== '') {
             $query->where('form_at', '=', $params['form_at']);
         }
+
+        if (! empty($params['withTags'])) {
+            $query->with('tags');
+        }
+
         $query->where('deleted_at', 0);
         return $query;
     }

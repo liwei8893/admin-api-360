@@ -6,6 +6,7 @@ namespace App\Score\Listener;
 
 use App\Course\Model\CourseBasis;
 use App\Course\Model\CoursePeriod;
+use App\Question\Model\Question;
 use App\Score\Model\Avatar;
 use Hyperf\Database\Model\Relations\Relation;
 use Hyperf\Event\Annotation\Listener;
@@ -28,6 +29,7 @@ class MorphMapRelationListener implements ListenerInterface
             'avatar' => Avatar::class,
             'courseBasis' => CourseBasis::class,
             'coursePeriod' => CoursePeriod::class,
+            'question' => Question::class,
         ]);
     }
 }

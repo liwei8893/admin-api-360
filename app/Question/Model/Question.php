@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Question\Model;
 
 use App\System\Model\SystemDictData;
+use App\System\Model\Tag;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\HasOne;
+use Hyperf\Database\Model\Relations\MorphToMany;
 use Mine\MineModel;
 
 /**
@@ -55,13 +57,12 @@ class Question extends MineModel
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'classify_id' => 'integer', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'integer', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_id' => 'integer', 'updated_at' => 'datetime:Y-m-d H:i:s', 'form_at' => 'integer'];
+    protected $casts = ['id' => 'integer', 'knows_id' => 'integer', 'classify_id' => 'string', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'string', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_id' => 'integer', 'updated_at' => 'datetime:Y-m-d H:i:s', 'form_at' => 'integer'];
 
     protected $dateFormat = 'U';
 
     /**
      * 题目科目.
-     * @return HasOne
      */
     public function questionSubject(): HasOne
     {
@@ -71,7 +72,6 @@ class Question extends MineModel
 
     /**
      * 题目类型,单选多选填空.
-     * @return HasOne
      */
     public function questionType(): HasOne
     {
@@ -81,12 +81,19 @@ class Question extends MineModel
 
     /**
      * 知识点表.
-     * @return HasOne
      */
     public function knows(): HasOne
     {
         return $this->hasOne(Know::class, 'id', 'knows_id')
             ->where('deleted_at', 0)
             ->where('status', 1);
+    }
+
+    /**
+     * 多态关联标签.
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 }
