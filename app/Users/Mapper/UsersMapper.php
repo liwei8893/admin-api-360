@@ -23,7 +23,7 @@ class UsersMapper extends AbstractMapper
      * 用手机号检测用户是否存在.
      * @param mixed $mobile
      */
-    public function existsByMobile($mobile): bool 
+    public function existsByMobile($mobile): bool
     {
         return $this->model::query()->where('mobile', $mobile)->exists();
     }

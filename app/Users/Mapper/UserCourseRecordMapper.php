@@ -6,6 +6,7 @@ namespace App\Users\Mapper;
 
 use App\Users\Model\UserCourseRecord;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Model;
 use Mine\Abstracts\AbstractMapper;
 
 /**
@@ -33,5 +34,13 @@ class UserCourseRecordMapper extends AbstractMapper
             $query->with(['coursePeriod:id,course_basis_id,title,subject_name,subject_id']);
         }
         return $query;
+    }
+
+    /**
+     * 获取最后一次观看课程记录.
+     */
+    public function lastRecord(int $userId): Model|Builder|null
+    {
+        return UserCourseRecord::query()->where('user_id', $userId)->latest('updated_at')->first();
     }
 }

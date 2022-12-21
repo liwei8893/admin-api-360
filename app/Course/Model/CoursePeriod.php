@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasMany;
+use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\Relations\MorphToMany;
 use Mine\MineModel;
 
@@ -96,6 +97,11 @@ class CoursePeriod extends MineModel
     {
         return $this->belongsToMany(Question::class, 'question_period', 'period_id', 'question_id')
             ->withPivot('type');
+    }
+
+    public function courseBasis(): HasOne
+    {
+        return $this->hasOne(CourseBasis::class, 'id', 'course_basis_id');
     }
 
     /**

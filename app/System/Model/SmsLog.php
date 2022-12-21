@@ -27,6 +27,7 @@ class SmsLog extends MineModel
      * @var string
      */
     protected $table = 'sms_log';
+    protected $dateFormat = 'U';
 
     /**
      * The attributes that are mass assignable.

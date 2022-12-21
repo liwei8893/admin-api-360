@@ -43,7 +43,7 @@ class UsersAppLoginService extends AbstractService
      * @throws InvalidArgumentException
      * @throws NotFoundExceptionInterface
      */
-    public function login( array$params): array
+    public function login(array $params): array
     {
         try {
             $userinfo = $this->mapper->checkUserByMobile($params['mobile'], Users::COMMON_FIELDS);
@@ -149,5 +149,36 @@ class UsersAppLoginService extends AbstractService
     {
         $user = user('app');
         $user->getJwt()->logout();
+    }
+
+    /**
+     * 重置密码
+     * @param $params
+     * @return bool
+     */
+    public function resetPassword($params): bool
+    {
+        // 查找用户信息
+        $userinfo = $this->mapper->checkUserByMobile($params['mobile'], Users::COMMON_FIELDS);
+        // 判断账号是否禁用
+        if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
+            throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
+        }
+        // 验证短信
+        $resSmsCode = $params['sms_code'];
+        $this->smsService->checkSmsCaptcha($params['mobile'], $resSmsCode);
+        // 修改密码
+        return $this->usersService->initUserPassword($userinfo['id'], $params['user_pass']);
+    }
+
+    /**
+     * 修改密码
+     * @param $params
+     * @return bool
+     */
+    public function changePassword($params): bool
+    {
+        // 修改密码
+        return $this->usersService->initUserPassword(user()->getId(), $params['user_pass']);
     }
 }

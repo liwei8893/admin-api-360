@@ -58,4 +58,28 @@ class LoginController extends MineController
     {
         return $this->success(user('app')->getUserInfo());
     }
+
+    /**
+     * 重置密码
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('resetPassword')]
+    public function resetPassword(UsersAppLoginRequest $request): ResponseInterface
+    {
+        return $this->service->resetPassword($request->validated()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 修改密码
+     * @param UsersAppLoginRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('changePassword'),Auth('app')]
+    public function changePassword(UsersAppLoginRequest $request): ResponseInterface
+    {
+        return $this->service->changePassword($request->validated()) ? $this->success() : $this->error();
+    }
 }

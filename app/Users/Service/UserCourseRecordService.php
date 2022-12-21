@@ -22,6 +22,24 @@ class UserCourseRecordService extends AbstractService
         $this->mapper = $mapper;
     }
 
+    /**
+     * 获取最后一次观看课程记录.
+     * @return array
+     */
+    public function lastRecord(): array
+    {
+        $userId = user()->getId();
+        $recordModel = $this->mapper->lastRecord($userId);
+        if (! $recordModel) {
+            return [];
+        }
+        return $recordModel->coursePeriod()
+            ->with(['courseBasis:id,course_title'])
+            ->select(['id', 'title', 'course_basis_id', 'qiniu_url'])
+            ->first()
+            ->toArray();
+    }
+
     protected function handleExportData(array &$data): void
     {
         foreach ($data as &$item) {

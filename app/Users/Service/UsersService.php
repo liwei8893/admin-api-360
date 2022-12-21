@@ -180,10 +180,11 @@ class UsersService extends AbstractService
 
     /**
      * 初始化密码
+     * @param mixed|null $password
      */
-    public function initUserPassword(int $id): bool
+    public function initUserPassword(int $id, mixed $password = null): bool
     {
-        return $this->mapper->initUserPassword($id);
+        return $this->mapper->initUserPassword($id, $password);
     }
 
     public function getPageList(?array $params = null, bool $isScope = true): array
