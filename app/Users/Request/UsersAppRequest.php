@@ -27,6 +27,14 @@ class UsersAppRequest extends MineFormRequest
         ];
     }
 
+    public function setAvatarRules(): array
+    {
+        return [
+            'id' => 'required',
+            'type' => 'required',
+        ];
+    }
+
 
     /**
      * 字段映射名称

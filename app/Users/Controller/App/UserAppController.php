@@ -33,8 +33,7 @@ class UserAppController extends MineController
     }
 
     /**
-     * @param UsersAppRequest $request
-     * @return ResponseInterface
+     * 个人中心修改用户信息.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -43,5 +42,30 @@ class UserAppController extends MineController
     {
         $params = $request->all();
         return $this->success($this->service->updateInfo($params));
+    }
+
+    /**
+     * 设置头像.
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('setAvatar'),Auth('app')]
+    public function setAvatar(UsersAppRequest $request): ResponseInterface
+    {
+        $params = $request->validated();
+        return $this->success($this->service->setAvatar($params));
+    }
+
+    /**
+     * 获取用户已拥有头像.
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getAvatar'),Auth('app')]
+    public function getAvatar(UsersAppRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getAvatar($request->all()));
     }
 }
