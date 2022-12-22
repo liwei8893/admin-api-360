@@ -8,7 +8,6 @@ use App\Users\Request\UsersAppLoginRequest;
 use App\Users\Service\UsersAppLoginService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
-use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
 use Mine\Annotation\Auth;
 use Mine\MineController;
@@ -47,16 +46,6 @@ class LoginController extends MineController
     {
         $this->service->logout();
         return $this->success();
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    #[GetMapping('getUserInfo'),Auth('app')]
-    public function getUserInfo(): ResponseInterface
-    {
-        return $this->success(user('app')->getUserInfo());
     }
 
     /**
