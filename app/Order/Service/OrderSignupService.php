@@ -7,6 +7,7 @@ namespace App\Order\Service;
 use App\Course\Service\CourseService;
 use App\Order\Mapper\OrderSignupMapper;
 use App\Order\Model\Order;
+use Exception;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -32,9 +33,7 @@ class OrderSignupService extends AbstractService
 
     /**
      * 报名.
-     * @throws \Exception
-     *                    author:ZQ
-     *                    time:2022-08-26 16:23
+     * @throws Exception
      */
     #[Transaction]
     public function adminSave(array $collects): bool
@@ -68,9 +67,6 @@ class OrderSignupService extends AbstractService
     /**
      * 过滤已经报名的课程.
      * @param mixed $userId
-     * @return \Hyperf\Database\Model\Collection|\Hyperf\Utils\Collection
-     *                                                                    author:ZQ
-     *                                                                    time:2022-08-26 15:49
      */
     public function filterCourseIsHave($userId, Collection $courseModels): Collection|\Hyperf\Utils\Collection
     {
@@ -84,12 +80,9 @@ class OrderSignupService extends AbstractService
     /**
      * 处理插入数据.
      * @param mixed $data
-     * @param mixed $course
-     * @throws \Exception
-     *                    author:ZQ
-     *                    time:2022-08-26 16:16
+     * @throws Exception
      */
-    public function handleInsertCourseData($data, $course, string $orderNum = ''): array
+    public function handleInsertCourseData(array $data, mixed $course, string $orderNum = ''): array
     {
         $orderNumber = empty($orderNum) ? $this->getOrderSn() : $orderNum;
         return [
@@ -100,10 +93,10 @@ class OrderSignupService extends AbstractService
             'pay_number' => $orderNumber,
             'shop_type' => $data['shop_type'] ?? 1,
             'pay_type' => $data['pay_type'] ?? 6, // 支付类型，管理员赠送
-            'pay_states' => $this->loginUser->isNoAuditRole() ? Order::PAY_NO_AUDIT : Order::PAY_AUDIT,
+            'pay_states' => $data['pay_states'] ?? $this->loginUser->isNoAuditRole() ? Order::PAY_NO_AUDIT : Order::PAY_AUDIT,
             'created_id' => $this->loginUser->getId(),
             'created_name' => $this->loginUser->getUsername(),
-            'audit_status' => $this->loginUser->isNoAuditRole() ? Order::AUDIT_SUCCESS : Order::AUDIT_PENDING,
+            'audit_status' => $data['audit_status'] ?? $this->loginUser->isNoAuditRole() ? Order::AUDIT_SUCCESS : Order::AUDIT_PENDING,
             'order_price' => isset($data['money']) ? $data['money'] * 100 : $course['price'],
             'is_logistics' => 0,
             'indate' => $data['indate'] ?? 30,
@@ -116,9 +109,7 @@ class OrderSignupService extends AbstractService
 
     /**
      * 获取唯一订单号.
-     * @throws \Exception
-     *                    author:ZQ
-     *                    time:2022-08-26 16:09
+     * @throws Exception
      */
     public function getOrderSn(): string
     {

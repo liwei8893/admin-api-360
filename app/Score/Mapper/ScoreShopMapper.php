@@ -43,7 +43,15 @@ class ScoreShopMapper extends AbstractMapper
             $query->where('score', '=', $params['score']);
         }
         if (! empty($params['withShop'])) {
-            $query->with('shop');
+            $query->with('shop')->where(function ($query) use ($params) {
+                if (isset($params['shop_type'], $params['type']) && $params['shop_type'] === 'avatar') {
+                    $query->whereIn('shop_id', function ($query) use ($params) {
+                        $query->select('id')
+                            ->from('avatar')
+                            ->where('type', $params['type']);
+                    });
+                }
+            });
         }
         return $query;
     }

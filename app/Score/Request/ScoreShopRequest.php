@@ -20,6 +20,11 @@ class ScoreShopRequest extends MineFormRequest
         return [];
     }
 
+    public function exchangeRules(): array
+    {
+        return ['id' => 'required'];
+    }
+
     /**
      * 新增数据验证规则
      * return array.

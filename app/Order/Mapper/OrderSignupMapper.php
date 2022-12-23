@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Order\Mapper;
 
 use App\Order\Model\Order;
+use Exception;
 use Mine\Abstracts\AbstractMapper;
 
 /**
@@ -39,9 +40,7 @@ class OrderSignupMapper extends AbstractMapper
 
     /**
      * 获取唯一订单号.
-     * @throws \Exception
-     *                    author:ZQ
-     *                    time:2022-08-26 16:08
+     * @throws Exception
      */
     public function getOrderSn(): string
     {
