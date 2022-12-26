@@ -6,6 +6,8 @@ namespace App\Question\Mapper;
 
 use App\Question\Model\QuestionHistory;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Collection;
+use Hyperf\DbConnection\Model\Model;
 use Mine\Abstracts\AbstractMapper;
 
 /**
@@ -21,6 +23,25 @@ class QuestionHistoryMapper extends AbstractMapper
     public function assignModel(): void
     {
         $this->model = QuestionHistory::class;
+    }
+
+    public function getRanking(): Collection|array
+    {
+        return QuestionHistory::query(true)
+            ->with(['users:id,user_name,mobile'])
+            ->select(['user_id'])
+            ->selectRaw('count(user_id) as num')
+            ->groupBy(['user_id'])
+            ->orderBy('num', 'desc')
+            ->limit(10)->get();
+    }
+
+    public function getRankingMe(): int
+    {
+        $userId = user('app')->getId();
+        $userNum = QuestionHistory::query()->where('user_id', $userId)->groupBy(['user_id'])->count('user_id');
+        $subQuery = QuestionHistory::query()->selectRaw('count(user_id) num')->groupBy(['user_id']);
+        return Model::query()->fromSub($subQuery->getQuery(), 'a')->where('num', '>=', $userNum)->count();
     }
 
     /**

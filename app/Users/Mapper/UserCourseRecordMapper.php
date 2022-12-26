@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Users\Mapper;
 
 use App\Users\Model\UserCourseRecord;
+use App\Users\Model\UserCourseRecordToday;
 use Hyperf\Database\Model\Builder;
-use Hyperf\Database\Model\Model;
+use Hyperf\Database\Model\Collection;
+use Hyperf\DbConnection\Model\Model;
 use Mine\Abstracts\AbstractMapper;
 
 /**
@@ -42,5 +44,24 @@ class UserCourseRecordMapper extends AbstractMapper
     public function lastRecord(int $userId): Model|Builder|null
     {
         return UserCourseRecord::query()->where('user_id', $userId)->latest('updated_at')->first();
+    }
+
+    public function getRanking(): Collection|array
+    {
+        return UserCourseRecordToday::query(true)
+            ->with(['users:id,user_name,mobile'])
+            ->select(['user_id'])
+            ->selectRaw('sum(record_time) as num')
+            ->groupBy(['user_id'])
+            ->orderBy('num', 'desc')
+            ->limit(10)->get();
+    }
+
+    public function getRankingMe(): int
+    {
+        $userId = user('app')->getId();
+        $userNum = UserCourseRecordToday::query()->where('user_id', $userId)->groupBy(['user_id'])->sum('record_time');
+        $subQuery = UserCourseRecordToday::query()->selectRaw('sum(record_time) num')->groupBy(['user_id']);
+        return Model::query()->fromSub($subQuery->getQuery(), 'a')->where('num', '>=', $userNum)->count();
     }
 }

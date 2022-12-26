@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Users\Controller\App;
+namespace App\Question\Controller\App;
 
-use App\Users\Service\UserCourseRecordService;
+use App\Question\Service\QuestionHistoryService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
@@ -15,32 +15,22 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * 听课记录控制器
- * Class UserCourseRecordController.
+ * 题库管理控制器
+ * Class QuestionController.
  */
-#[Controller(prefix: 'users/app/courseRecord')]
-class UserCourseRecordAppController extends MineController
+#[Controller(prefix: 'question/app')]
+class QuestionAppController extends MineController
 {
     /**
      * 业务处理服务
-     * UserCourseRecordService.
+     * QuestionService.
      */
     #[Inject]
-    protected UserCourseRecordService $service;
+    protected QuestionHistoryService $service;
+
 
     /**
-     * 获取最后一次观看课程记录.
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    #[GetMapping('lastRecord'),Auth('app')]
-    public function lastRecord(): ResponseInterface
-    {
-        return $this->success($this->service->lastRecord());
-    }
-
-    /**
-     * 获取听课排行榜.
+     * 获取做题排行榜.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

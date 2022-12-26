@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Question\Model;
 
+use App\Users\Model\Users;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
 
@@ -15,8 +17,8 @@ use Mine\MineModel;
  * @property int $is_right 0错误；1正确；
  * @property int $is_mark
  * @property int $is_collect 收藏错题本1收藏,0不收藏
- * @property \Carbon\Carbon $created_at 创建时间
- * @property \Carbon\Carbon $updated_at
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at
  */
 class QuestionHistory extends MineModel
 {
@@ -47,5 +49,13 @@ class QuestionHistory extends MineModel
     {
         return $this->hasOne(Question::class, 'id', 'ques_id')
             ->where('deleted_at', 0);
+    }
+
+    /**
+     * 定义 users 关联.
+     */
+    public function users(): HasOne
+    {
+        return $this->hasOne(Users::class, 'id', 'user_id');
     }
 }
