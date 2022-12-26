@@ -91,7 +91,7 @@ class UsersAppLoginService extends AbstractService
         $request = container()->get(MineRequest::class);
         // 生成jwt token
         $console->info('获取token');
-        $token = user('app')->getToken(['id' => $userModel->id, 'mobile' => $userModel->mobile, 'user_name' => $userModel->user_name]);
+        $token = user('app')->getToken(['id' => $userModel->id]);
 
         $console->info('更新用户模型');
         // 更新最后登录时间
