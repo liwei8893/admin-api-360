@@ -22,7 +22,6 @@ class UsersAppLoginMapper extends AbstractMapper
 
     /**
      * 用手机号检测用户是否存在.
-     * @param mixed $mobile 
      */
     public function checkUserByMobile(mixed $mobile, array $select = ['*']): Model|Builder|null
     {
@@ -39,7 +38,6 @@ class UsersAppLoginMapper extends AbstractMapper
 
     /**
      * 是否初始密码
-     * @param mixed $userModel
      */
     public function hasSimplePwd(mixed $userModel): bool
     {
@@ -52,11 +50,10 @@ class UsersAppLoginMapper extends AbstractMapper
 
     /**
      * 写登录日志.
-     * @param mixed $params
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function setLoginLog(mixed $params): void
+    public function setLoginLog(array $params): void
     {
         $request = container()->get(MineRequest::class);
         UsersLog::insert([
@@ -64,7 +61,6 @@ class UsersAppLoginMapper extends AbstractMapper
             'last_login_ip' => $request->ip(),
             'last_login_time' => time(),
             'continuous_count' => 1,
-            'api_token' => $params['token'],
             'device_type' => $this->device($request->userAgent()),
         ]);
     }

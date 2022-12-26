@@ -96,7 +96,7 @@ class UsersAppLoginService extends AbstractService
             'remember_token' => $token,
         ]);
         // 插入登录日志表
-        $this->mapper->setLoginLog(['users_id' => $userModel->id, 'token' => $token]);
+        $this->mapper->setLoginLog(['users_id' => $userModel->id]);
         // 已购买的课程id列表挂载到用户信息中
         $userModel->load(['orders' => static function ($query) {
             $query->normalOrder()->isNotExpire()->select(['user_id', 'shop_id']);
@@ -153,8 +153,6 @@ class UsersAppLoginService extends AbstractService
 
     /**
      * 重置密码
-     * @param $params
-     * @return bool
      */
     public function resetPassword($params): bool
     {
@@ -173,8 +171,6 @@ class UsersAppLoginService extends AbstractService
 
     /**
      * 修改密码
-     * @param $params
-     * @return bool
      */
     public function changePassword($params): bool
     {
