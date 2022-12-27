@@ -8,7 +8,6 @@ use App\System\Service\SmsService;
 use App\Users\Mapper\UsersAppLoginMapper;
 use App\Users\Model\Users;
 use Exception;
-use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\ModelNotFoundException;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -84,7 +83,7 @@ class UsersAppLoginService extends AbstractService
      * @throws InvalidArgumentException
      * @throws NotFoundExceptionInterface
      */
-    public function loginAfter(Users|Builder $userModel): array
+    public function loginAfter(Users $userModel): array
     {
         $console = console();
         $console->info('开始loginAfter');
@@ -92,8 +91,7 @@ class UsersAppLoginService extends AbstractService
         // 生成jwt token
         $console->info('获取token');
         $token = user('app')->getToken(['id' => $userModel->id]);
-
-        $console->info('更新用户模型');
+        $console->info($token);
         // 更新最后登录时间
         $userModel->update([
             'last_login_ip' => $request->ip(),
@@ -101,15 +99,12 @@ class UsersAppLoginService extends AbstractService
             'remember_token' => $token,
         ]);
         // 插入登录日志表
-        $console->info('插入登录日志表');
         $this->mapper->setLoginLog(['users_id' => $userModel->id]);
         // 已购买的课程id列表挂载到用户信息中
-        $console->info('已购买的课程id列表挂载到用户信息中');
         $userModel->load(['orders' => static function ($query) {
             $query->normalOrder()->isNotExpire()->select(['user_id', 'shop_id']);
         }]);
         // 挂载会员类型,到期时间
-        $console->info('挂载会员类型');
         $userModel->load(['vipType']);
         // 复制用户模型
         $result = $userModel->toArray();
