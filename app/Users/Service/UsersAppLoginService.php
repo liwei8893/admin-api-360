@@ -85,14 +85,9 @@ class UsersAppLoginService extends AbstractService
      */
     public function loginAfter(Users $userModel): array
     {
-        $console = console();
-        $console->info('开始loginAfter');
         $request = container()->get(MineRequest::class);
         // 生成jwt token
-        $console->info('获取token');
         $token = user('app')->getToken(['id' => $userModel->id]);
-
-        $console->info($token);
         // 更新最后登录时间
         $userModel->update([
             'last_login_ip' => $request->ip(),
