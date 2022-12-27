@@ -91,6 +91,7 @@ class UsersAppLoginService extends AbstractService
         // 生成jwt token
         $console->info('获取token');
         $token = user('app')->getToken(['id' => $userModel->id]);
+
         $console->info($token);
         // 更新最后登录时间
         $userModel->update([
