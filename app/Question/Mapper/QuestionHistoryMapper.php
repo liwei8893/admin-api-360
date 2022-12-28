@@ -7,6 +7,7 @@ namespace App\Question\Mapper;
 use App\Question\Model\QuestionHistory;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
+use Hyperf\DbConnection\Db;
 use Hyperf\DbConnection\Model\Model;
 use Mine\Abstracts\AbstractMapper;
 
@@ -41,7 +42,33 @@ class QuestionHistoryMapper extends AbstractMapper
         $userId = user('app')->getId();
         $userNum = QuestionHistory::query()->where('user_id', $userId)->groupBy(['user_id'])->count('user_id');
         $subQuery = QuestionHistory::query()->selectRaw('count(user_id) num')->groupBy(['user_id']);
-        return Model::query()->fromSub($subQuery->getQuery(), 'a')->where('num', '>=', $userNum)->count();
+        return Model::query()->fromSub($subQuery->getQuery(), 't')->where('num', '>=', $userNum)->count();
+    }
+
+    public function getRankingRate(): float
+    {
+        $userRanking = $this->getRankingMe();
+        $subQuery = QuestionHistory::query()->selectRaw('count(user_id) num')->groupBy(['user_id']);
+        $totalRanking = Model::query()->fromSub($subQuery->getQuery(), 't')->count();
+        return round(($userRanking / $totalRanking) * 100, 2);
+    }
+
+    public function getReportByTotal(): int
+    {
+        return QuestionHistory::query()
+            ->where('user_id', user('app')->getId())
+            ->count();
+    }
+
+    public function getReportByMonth(): Collection|array
+    {
+        return QuestionHistory::query()
+            ->selectRaw("date_format(from_unixtime(created_at), '%m') month")
+            ->selectRaw('count(*) num')
+            ->where('user_id', user('app')->getId())
+            ->whereRaw('created_at > unix_timestamp(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))')
+            ->groupBy([Db::raw("date_format(from_unixtime(created_at), '%m')")])
+            ->get();
     }
 
     /**

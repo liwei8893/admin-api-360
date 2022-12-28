@@ -8,6 +8,7 @@ use App\Users\Model\UserCourseRecord;
 use App\Users\Model\UserCourseRecordToday;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
+use Hyperf\DbConnection\Db;
 use Hyperf\DbConnection\Model\Model;
 use Mine\Abstracts\AbstractMapper;
 
@@ -63,5 +64,31 @@ class UserCourseRecordMapper extends AbstractMapper
         $userNum = UserCourseRecordToday::query()->where('user_id', $userId)->groupBy(['user_id'])->sum('record_time');
         $subQuery = UserCourseRecordToday::query()->selectRaw('sum(record_time) num')->groupBy(['user_id']);
         return Model::query()->fromSub($subQuery->getQuery(), 'a')->where('num', '>=', $userNum)->count();
+    }
+
+    public function getRankingRate(): float|int
+    {
+        $userRanking = $this->getRankingMe();
+        $subQuery = UserCourseRecord::query()->selectRaw('count(user_id) num')->groupBy(['user_id']);
+        $totalRanking = Model::query()->fromSub($subQuery->getQuery(), 't')->count();
+        return round(($userRanking / $totalRanking) * 100, 2);
+    }
+
+    public function getReportByTotal(): int
+    {
+        return UserCourseRecord::query()
+            ->where('user_id', user('app')->getId())
+            ->count();
+    }
+
+    public function getReportByMonth(): Collection|array
+    {
+        return UserCourseRecord::query()
+            ->selectRaw("date_format(from_unixtime(created_at), '%m') month")
+            ->selectRaw('count(*) num')
+            ->where('user_id', user('app')->getId())
+            ->whereRaw('created_at > unix_timestamp(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))')
+            ->groupBy([Db::raw("date_format(from_unixtime(created_at), '%m')")])
+            ->get();
     }
 }

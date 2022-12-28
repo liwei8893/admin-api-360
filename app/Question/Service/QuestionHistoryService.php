@@ -43,4 +43,31 @@ class QuestionHistoryService extends AbstractService
     {
         return ['ranking' => $this->mapper->getRankingMe()];
     }
+
+    public function getReport(): array
+    {
+        $monthMap = collect([
+            'month01' => ['month' => '01', 'num' => 0],
+            'month02' => ['month' => '02', 'num' => 0],
+            'month03' => ['month' => '03', 'num' => 0],
+            'month04' => ['month' => '04', 'num' => 0],
+            'month05' => ['month' => '05', 'num' => 0],
+            'month06' => ['month' => '06', 'num' => 0],
+            'month07' => ['month' => '07', 'num' => 0],
+            'month08' => ['month' => '08', 'num' => 0],
+            'month09' => ['month' => '09', 'num' => 0],
+            'month10' => ['month' => '10', 'num' => 0],
+            'month11' => ['month' => '11', 'num' => 0],
+            'month12' => ['month' => '12', 'num' => 0],
+        ]);
+        $data = $this->mapper->getReportByMonth()
+            ->keyBy(fn ($item) => 'month' . $item['month']);
+        $total = $this->mapper->getReportByTotal();
+        $rate = $this->mapper->getRankingRate();
+        return [
+            'chart' => $monthMap->merge($data)->values()->toArray(),
+            'total' => $total,
+            'rate' => $rate,
+        ];
+    }
 }

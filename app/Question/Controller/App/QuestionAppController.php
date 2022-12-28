@@ -50,4 +50,15 @@ class QuestionAppController extends MineController
     {
         return $this->success($this->service->getRankingMe());
     }
+
+    /**
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getReport'),Auth('app')]
+    public function getReport(): ResponseInterface
+    {
+        return $this->success($this->service->getReport());
+    }
 }
