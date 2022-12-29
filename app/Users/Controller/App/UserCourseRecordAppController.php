@@ -51,7 +51,7 @@ class UserCourseRecordAppController extends MineController
     }
 
     /**
-     * @return ResponseInterface
+     * 排行榜我的排名.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -62,7 +62,7 @@ class UserCourseRecordAppController extends MineController
     }
 
     /**
-     * @return ResponseInterface
+     * 综合报告.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -70,5 +70,16 @@ class UserCourseRecordAppController extends MineController
     public function getReport(): ResponseInterface
     {
         return $this->success($this->service->getReport());
+    }
+
+    /**
+     * 听课记录.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getUserRecord'),Auth('app')]
+    public function getUserRecord(): ResponseInterface
+    {
+        return $this->success($this->service->getUserRecord());
     }
 }

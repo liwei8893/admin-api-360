@@ -91,4 +91,13 @@ class UserCourseRecordMapper extends AbstractMapper
             ->groupBy([Db::raw("date_format(from_unixtime(created_at), '%m')")])
             ->get();
     }
+
+    public function getRecordByUserId($userId): Collection|array
+    {
+        return UserCourseRecord::with([
+            'courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title',
+            'coursePeriod:id,course_basis_id,title',
+            'users:id,user_name,mobile',
+        ])->where('user_id', $userId)->get();
+    }
 }

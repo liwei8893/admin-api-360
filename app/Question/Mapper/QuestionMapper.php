@@ -79,6 +79,26 @@ class QuestionMapper extends AbstractMapper
         return $this->setPaginate($paginate);
     }
 
+    public function getUserQuestion(array $params): array
+    {
+        $params['userId'] = $params['userId'] ?? user('app')->getId();
+        $perPage = $params['pageSize'] ?? $this->model::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $model = $this->listQuerySetting($params, false);
+        $paginate = $model->rightJoin('question_history', 'question_history.ques_id', 'question.id')
+            ->with(['questionSubject:value,label', 'questionType:value,label', 'questionHistory:user_id,ques_id,user_answer,is_right,is_collect'])
+            ->select(Question::COMMON_FIELDS)
+            ->where('user_id', $params['userId'])
+            ->when(isset($params['is_right']), function ($query) use ($params) {
+                $query->where('is_right', $params['is_right']);
+            })
+            ->when(isset($params['is_collect']), function ($query) use ($params) {
+                $query->where('is_collect', $params['is_collect']);
+            })->orderBy('question_history.created_at', 'desc')
+            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        return $this->setPaginate($paginate);
+    }
+
     /**
      * 搜索处理器.
      */

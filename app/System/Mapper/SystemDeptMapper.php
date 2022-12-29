@@ -57,6 +57,10 @@ class SystemDeptMapper extends AbstractMapper
             $query->where('status', $params['status']);
         }
 
+        if (isset($params['platform'])) {
+            $query->where('platform', $params['platform']);
+        }
+
         if (isset($params['name'])) {
             $query->where('name', 'like', '%' . $params['name'] . '%');
         }

@@ -89,6 +89,19 @@ class UserCourseRecordService extends AbstractService
         ];
     }
 
+    public function getUserRecord(): Collection|array
+    {
+        $userId = user('app')->getId();
+        $recordModel = $this->mapper->getRecordByUserId($userId);
+        return $recordModel->each(static function ($item) {
+            $item['courseBasisId'] = $item['courseBasis']['course_basis_id'] ?? null;
+            $item['courseBasisTitle'] = $item['courseBasis']['title'] ?? '';
+            $item['coursePeriodTitle'] = $item['coursePeriod']['title'] ?? '';
+            $item['timeRate'] = round($item['watch_time'] / $item['video_duration'] * 100, 2);
+            return $item;
+        })->groupBy('courseBasisId');
+    }
+
     protected function handleExportData(array &$data): void
     {
         foreach ($data as &$item) {

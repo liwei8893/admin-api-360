@@ -31,33 +31,65 @@ class QuestionService extends AbstractService
         return $this->mapper->getCourseQuestion($params);
     }
 
+    public function getUserQuestion(array $params): array
+    {
+        $pageData = $this->mapper->getUserQuestion($params);
+        $pageData['items'] = $this->handleGetData($pageData['items']);
+        return $pageData;
+    }
+
+    /**
+     * 处理填空题.
+     */
+    public function handleQuestionEmptyNum(&$item): void
+    {
+        // 填空题处理
+        if ($item['ques_type'] === '6') {
+            // 填空的数量
+            try {
+                $get_empty_numb_arr = json_decode($item['ques_option'], true, 512, JSON_THROW_ON_ERROR);
+                if (! empty($get_empty_numb_arr)) {
+                    $get_empty_numb = count($get_empty_numb_arr);
+                } else {
+                    $get_empty_numb = 0;
+                }
+                $item['empty_nmb'] = $get_empty_numb;    // 填空题填空的个数
+            } catch (JsonException $e) {
+                $item['empty_nmb'] = 0;
+            }
+        }
+    }
+
+    public function handleGetData(array $data): array
+    {
+        foreach ($data as &$item) {
+            $this->handleQuestionEmptyNum($item);
+        }
+        return $data;
+    }
+
     /**
      * 新增数据.
-     * @param array $data
-     * @return int
      * @throws JsonException
      */
     public function save(array $data): int
     {
-        return $this->mapper->save($this->handleData($data));
+        return $this->mapper->save($this->handleSaveData($data));
     }
 
     /**
      * 更新一条数据.
-     * @param int $id
-     * @param array $data
-     * @return bool
      * @throws JsonException
      */
     public function update(int $id, array $data): bool
     {
-        return $this->mapper->update($id, $this->handleData($data));
+        return $this->mapper->update($id, $this->handleSaveData($data));
     }
 
     /**
      * @throws JsonException
      */
-    protected function handleData(array $data): array
+    protected function handleSaveData(array $data): array
     {
         // "title": "单选题", "key": "1"
         // "title": "多选题", "key": "2"

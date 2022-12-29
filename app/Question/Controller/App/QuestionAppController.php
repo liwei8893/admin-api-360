@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Question\Controller\App;
 
+use App\Question\Request\QuestionAppRequest;
 use App\Question\Service\QuestionHistoryService;
+use App\Question\Service\QuestionService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
@@ -26,8 +28,21 @@ class QuestionAppController extends MineController
      * QuestionService.
      */
     #[Inject]
-    protected QuestionHistoryService $service;
+    protected QuestionHistoryService $historyService;
 
+    #[Inject]
+    protected QuestionService $questionService;
+
+    /**
+     * 做题记录.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getUserQuestion'),Auth('app')]
+    public function getUserQuestion(QuestionAppRequest $request): ResponseInterface
+    {
+        return $this->success($this->questionService->getUserQuestion($request->all()));
+    }
 
     /**
      * 获取做题排行榜.
@@ -37,28 +52,26 @@ class QuestionAppController extends MineController
     #[GetMapping('getRanking')]
     public function getRanking(): ResponseInterface
     {
-        return $this->success($this->service->getRanking());
+        return $this->success($this->historyService->getRanking());
     }
 
     /**
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
     #[GetMapping('getRankingMe'),Auth('app')]
     public function getRankingMe(): ResponseInterface
     {
-        return $this->success($this->service->getRankingMe());
+        return $this->success($this->historyService->getRankingMe());
     }
 
     /**
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
     #[GetMapping('getReport'),Auth('app')]
     public function getReport(): ResponseInterface
     {
-        return $this->success($this->service->getReport());
+        return $this->success($this->historyService->getReport());
     }
 }
