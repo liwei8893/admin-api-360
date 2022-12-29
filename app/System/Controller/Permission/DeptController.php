@@ -31,8 +31,8 @@ class DeptController extends MineController
 
     /**
      * 部门树列表.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('index'), Permission('system:dept, system:dept:index')]
     public function index(): ResponseInterface
@@ -42,8 +42,8 @@ class DeptController extends MineController
 
     /**
      * 回收站部门树列表.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('recycle'), Permission('system:dept:recycle')]
     public function recycleTree(): ResponseInterface
@@ -53,8 +53,8 @@ class DeptController extends MineController
 
     /**
      * 前端选择树（不需要权限）.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('tree')]
     public function tree(): ResponseInterface
@@ -62,7 +62,7 @@ class DeptController extends MineController
         return $this->success($this->service->getSelectTree());
     }
 
-    #[GetMapping("getLeaderList"), Permission("system:dept, system:dept:index")]
+    #[GetMapping('getLeaderList'), Permission('system:dept, system:dept:index')]
     public function getLeaderList()
     {
         return $this->success($this->service->getLeaderList($this->request->all()));
@@ -70,8 +70,8 @@ class DeptController extends MineController
 
     /**
      * 新增部门.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('save'), Permission('system:dept:save'), OperationLog]
     public function save(SystemDeptRequest $request): ResponseInterface
@@ -81,12 +81,10 @@ class DeptController extends MineController
 
     /**
      * 新增部门领导
-     * @param SystemDeptRequest $request
-     * @return ResponseInterface
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    #[PostMapping("addLeader"), Permission("system:dept:update"), OperationLog("新增部门领导")]
+    #[PostMapping('addLeader'), Permission('system:dept:update'), OperationLog('新增部门领导')]
     public function addLeader(SystemDeptRequest $request): ResponseInterface
     {
         return $this->service->addLeader($request->validated()) ? $this->success() : $this->error();
@@ -95,11 +93,10 @@ class DeptController extends MineController
     /**
      * 删除部门领导
      * @param SystemDeptRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[DeleteMapping("delLeader"), Permission("system:dept:delete"), OperationLog("删除部门领导")]
+    #[DeleteMapping('delLeader'), Permission('system:dept:delete'), OperationLog('删除部门领导')]
     public function delLeader(): ResponseInterface
     {
         return $this->service->delLeader($this->request->all()) ? $this->success() : $this->error();
@@ -107,8 +104,8 @@ class DeptController extends MineController
 
     /**
      * 更新部门.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PutMapping('update/{id}'), Permission('system:dept:update'), OperationLog]
     public function update(int $id, SystemDeptRequest $request): ResponseInterface
@@ -118,8 +115,8 @@ class DeptController extends MineController
 
     /**
      * 单个或批量删除部门到回收站.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[DeleteMapping('delete'), Permission('system:dept:delete')]
     public function delete(): ResponseInterface
@@ -129,8 +126,8 @@ class DeptController extends MineController
 
     /**
      * 单个或批量真实删除部门 （清空回收站）.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[DeleteMapping('realDelete'), Permission('system:dept:realDelete'), OperationLog]
     public function realDelete(): ResponseInterface
@@ -143,8 +140,8 @@ class DeptController extends MineController
 
     /**
      * 单个或批量恢复在回收站的部门.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PutMapping('recovery'), Permission('system:dept:recovery')]
     public function recovery(): ResponseInterface
@@ -154,8 +151,8 @@ class DeptController extends MineController
 
     /**
      * 更改部门状态
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PutMapping('changeStatus'), Permission('system:dept:changeStatus'), OperationLog]
     public function changeStatus(SystemDeptRequest $request): ResponseInterface
@@ -166,8 +163,8 @@ class DeptController extends MineController
 
     /**
      * 数字运算操作.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PutMapping('numberOperation'), Permission('system:dept:update'), OperationLog]
     public function numberOperation(): ResponseInterface
@@ -181,10 +178,8 @@ class DeptController extends MineController
 
     /**
      * 获取部门平台下拉.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     *                                                   author:ZQ
-     *                                                   time:2022-05-29 15:43
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('platformSelect')]
     public function platformSelect(): ResponseInterface

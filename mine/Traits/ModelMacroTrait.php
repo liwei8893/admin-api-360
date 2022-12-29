@@ -146,10 +146,10 @@ trait ModelMacroTrait
             }
             $platformCodes = [];
 
-            $userModel = SystemUser::find($userid, ['id', 'dept_id']);
+            $userModel = SystemUser::find($userid, ['id']);
             $roles = $userModel->roles()->get(['id', 'data_scope']);
-            $deptModel = $userModel->dept;
-            $curPlatform = $deptModel->platform;
+            $deptModel = $userModel->depts;
+            $curPlatform = $deptModel->pluck('platform');
 
             foreach ($roles as $role) {
                 switch ($role->data_scope) {
@@ -160,21 +160,31 @@ trait ModelMacroTrait
                         // 自定义数据权限
                         $platformCodes = array_merge(
                             $platformCodes,
-                            $role->depts()->pluck('platform')->toArray()
+                            $role->depts()->pluck('platform')->toArray(),
+                            $curPlatform
                         );
-                        $platformCodes[] = $curPlatform;
                         break;
                     case SystemRole::SELF_DEPT_SCOPE:
                         // 本部门数据权限
-                        $platformCodes[] = $curPlatform;
+                        $platformCodes = array_merge($platformCodes, $curPlatform);
                         break;
                     case SystemRole::DEPT_BELOW_SCOPE:
                         // 本部门及子部门数据权限
-                        $platformCodes = array_merge($platformCodes, SystemDept::query()->where('level', 'like', '%,' . $userModel->dept_id . '%')->pluck('platform')->toArray());
-                        $platformCodes[] = $curPlatform;
+                        $parentDepts = Db::table('system_user_dept')->where('user_id', $userModel->id)->pluck('dept_id')->toArray();
+                        $ids = [];
+                        foreach ($parentDepts as $deptId) {
+                            $ids[] = SystemDept::query()
+                                ->where(function ($query) use ($deptId) {
+                                    $query->where('level', 'like', '%' . $deptId . '%');
+                                    $query->orWhere('id', $deptId);
+                                })
+                                ->pluck('platform')
+                                ->toArray();
+                        }
+                        $platformCodes = array_merge($platformCodes, $ids, $curPlatform);
                         break;
                     case SystemRole::SELF_SCOPE:
-                        $platformCodes[] = $curPlatform;
+                        $platformCodes = array_merge($platformCodes, $curPlatform);
                         break;
                     default:
                         break;

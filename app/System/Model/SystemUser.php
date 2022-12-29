@@ -7,7 +7,6 @@ namespace App\System\Model;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsToMany;
-use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
 
@@ -62,12 +61,14 @@ class SystemUser extends MineModel
      * @var array
      */
     protected $fillable = ['id', 'username', 'password', 'user_type', 'nickname', 'phone', 'email', 'avatar', 'signed', 'dashboard', 'status', 'login_ip', 'login_time', 'backend_setting', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at', 'remark'];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'status' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'backend_setting' => 'array'];
+
     /**
      * 通过中间表关联角色.
      */
@@ -85,10 +86,9 @@ class SystemUser extends MineModel
     }
 
     /**
-     * 通过中间表关联部门
-     * @return \Hyperf\Database\Model\Relations\BelongsToMany
+     * 通过中间表关联部门.
      */
-    public function depts() : \Hyperf\Database\Model\Relations\BelongsToMany
+    public function depts(): BelongsToMany
     {
         return $this->belongsToMany(SystemDept::class, 'system_user_dept', 'user_id', 'dept_id');
     }
