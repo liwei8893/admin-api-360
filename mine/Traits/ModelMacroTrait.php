@@ -149,7 +149,7 @@ trait ModelMacroTrait
             $userModel = SystemUser::find($userid, ['id']);
             $roles = $userModel->roles()->get(['id', 'data_scope']);
             $deptModel = $userModel->depts;
-            $curPlatform = $deptModel->pluck('platform');
+            $curPlatform = $deptModel->pluck('platform')->toArray();
 
             foreach ($roles as $role) {
                 switch ($role->data_scope) {
@@ -171,17 +171,16 @@ trait ModelMacroTrait
                     case SystemRole::DEPT_BELOW_SCOPE:
                         // 本部门及子部门数据权限
                         $parentDepts = Db::table('system_user_dept')->where('user_id', $userModel->id)->pluck('dept_id')->toArray();
-                        $ids = [];
+                        $ids = collect();
                         foreach ($parentDepts as $deptId) {
-                            $ids[] = SystemDept::query()
+                            $ids->push(SystemDept::query()
                                 ->where(function ($query) use ($deptId) {
-                                    $query->where('level', 'like', '%' . $deptId . '%');
+                                    $query->where('level', 'like', '0,' . $deptId . '%');
                                     $query->orWhere('id', $deptId);
                                 })
-                                ->pluck('platform')
-                                ->toArray();
+                                ->pluck('platform'));
                         }
-                        $platformCodes = array_merge($platformCodes, $ids, $curPlatform);
+                        $platformCodes = array_merge($platformCodes, $ids->flatten()->toArray(), $curPlatform);
                         break;
                     case SystemRole::SELF_SCOPE:
                         $platformCodes = array_merge($platformCodes, $curPlatform);
