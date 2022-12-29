@@ -28,6 +28,18 @@ class SystemDeptRequest extends MineFormRequest
     }
 
     /**
+     * 新增部门领导验证规则
+     * return array
+     */
+    public function addLeaderRules(): array
+    {
+        return [
+            'id' => 'required',
+            'users' => 'required'
+        ];
+    }
+
+    /**
      * 更新数据验证规则
      * return array.
      */
@@ -60,6 +72,7 @@ class SystemDeptRequest extends MineFormRequest
             'id' => '部门ID',
             'name' => '部门名称',
             'status' => '部门状态',
+            'users' => '用户信息',
         ];
     }
 }

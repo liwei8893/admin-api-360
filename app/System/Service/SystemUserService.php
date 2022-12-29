@@ -142,7 +142,7 @@ class SystemUserService extends AbstractService
             return [];
         }
 
-        return $this->getPageList(array_merge(['showDept' => 1, 'userIds' => $userIds], $params));
+        return $this->getPageList(array_merge(['userIds'  => $userIds ], $params));
     }
 
     /**
