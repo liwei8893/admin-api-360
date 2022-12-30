@@ -86,9 +86,12 @@ class QuestionMapper extends AbstractMapper
         $page = $params['page'] ?? 1;
         $model = $this->listQuerySetting($params, false);
         $paginate = $model->rightJoin('question_history', 'question_history.ques_id', 'question.id')
-            ->with(['questionSubject:value,label', 'questionType:value,label', 'questionHistory:user_id,ques_id,user_answer,is_right,is_collect'])
+            ->with(['questionSubject:value,label', 'questionType:value,label', 'questionHistory' => function ($query) use ($params) {
+                $query->where('user_id', $params['userId']);
+            }])
             ->select(Question::COMMON_FIELDS)
             ->where('user_id', $params['userId'])
+            ->where('ques_type', '!=', 7)
             ->when(isset($params['is_right']), function ($query) use ($params) {
                 $query->where('is_right', $params['is_right']);
             })

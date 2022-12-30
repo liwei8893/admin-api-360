@@ -83,7 +83,8 @@ class Question extends MineModel
 
     public function questionHistory(): HasOne
     {
-        return $this->hasOne(QuestionHistory::class, 'ques_id', 'id');
+        return $this->hasOne(QuestionHistory::class, 'ques_id', 'id')
+            ->select(['user_id', 'ques_id', 'user_answer', 'is_right', 'is_collect']);
     }
 
     /**
