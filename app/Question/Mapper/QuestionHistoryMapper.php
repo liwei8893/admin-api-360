@@ -26,6 +26,11 @@ class QuestionHistoryMapper extends AbstractMapper
         $this->model = QuestionHistory::class;
     }
 
+    public function firstModelByUserAndId($params): \Hyperf\Database\Model\Model|Builder|null
+    {
+        return QuestionHistory::query()->where('user_id', $params['userId'])->where('id', $params['id'])->first();
+    }
+
     public function getRanking(): Collection|array
     {
         return QuestionHistory::query(true)

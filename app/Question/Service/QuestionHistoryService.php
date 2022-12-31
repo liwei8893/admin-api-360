@@ -7,6 +7,7 @@ namespace App\Question\Service;
 use App\Question\Mapper\QuestionHistoryMapper;
 use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractService;
+use Mine\Exception\NormalStatusException;
 
 /**
  * 错题表服务类.
@@ -69,5 +70,16 @@ class QuestionHistoryService extends AbstractService
             'total' => $total,
             'rate' => $rate,
         ];
+    }
+
+    public function changeErrorCollect(array $params): bool
+    {
+        $userId = user('app')->getId();
+        $model = $this->mapper->first(['user_id' => $userId, 'id' => $params['id']]);
+        if (! $model) {
+            throw new NormalStatusException('只能收藏自己的题目!');
+        }
+        $is_collect = $model['is_collect'] === 1 ? 0 : 1;
+        return $this->update($params['id'], ['is_collect' => $is_collect]);
     }
 }

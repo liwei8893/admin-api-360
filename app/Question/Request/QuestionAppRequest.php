@@ -19,6 +19,11 @@ class QuestionAppRequest extends MineFormRequest
         return [];
     }
 
+    public function changeErrorCollectRules(): array
+    {
+        return ['id' => 'required'];
+    }
+
     /**
      * 新增数据验证规则
      * return array.

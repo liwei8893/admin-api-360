@@ -38,8 +38,8 @@ use Mine\MineModel;
  */
 class Question extends MineModel
 {
+    public const COMMON_FIELDS = ['question.id', 'knows_id', 'classify_id', 'channel', 'ques_type', 'ques_title', 'ques_stem', 'ques_stem_text', 'ques_option', 'right_answer', 'ques_analysis', 'ques_difficulty'];
 
-    public const COMMON_FIELDS = ['question.id','knows_id','classify_id','channel','ques_type','ques_title','ques_stem','ques_stem_text','ques_option','right_answer','ques_analysis','ques_difficulty'];
     /**
      * The table associated with the model.
      *
@@ -84,7 +84,7 @@ class Question extends MineModel
     public function questionHistory(): HasOne
     {
         return $this->hasOne(QuestionHistory::class, 'ques_id', 'id')
-            ->select(['user_id', 'ques_id', 'user_answer', 'is_right', 'is_collect']);
+            ->select(['id', 'user_id', 'ques_id', 'user_answer', 'is_right', 'is_collect']);
     }
 
     /**

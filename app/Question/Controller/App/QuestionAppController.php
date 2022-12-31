@@ -10,6 +10,7 @@ use App\Question\Service\QuestionService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
+use Hyperf\HttpServer\Annotation\PostMapping;
 use Mine\Annotation\Auth;
 use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
@@ -45,6 +46,19 @@ class QuestionAppController extends MineController
     }
 
     /**
+     * 交换题目收藏状态
+     * @param QuestionAppRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('changeErrorCollect'),Auth('app')]
+    public function changeErrorCollect(QuestionAppRequest $request): ResponseInterface
+    {
+        return $this->historyService->changeErrorCollect($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
      * 获取做题排行榜.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -56,6 +70,7 @@ class QuestionAppController extends MineController
     }
 
     /**
+     * 获取我的做题排名.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -66,6 +81,7 @@ class QuestionAppController extends MineController
     }
 
     /**
+     * 获取题目综合报告图表.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
