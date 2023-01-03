@@ -21,4 +21,9 @@ class DenseVolumeService extends AbstractService
     {
         $this->mapper = $mapper;
     }
+
+    public function getUrl($params)
+    {
+        return $this->mapper->first(['id' => $params['id']], ['url']);
+    }
 }
