@@ -47,6 +47,20 @@ class OrderRequest extends MineFormRequest
         ];
     }
 
+    public function changeOrderToNormalRules(): array
+    {
+        return [
+            'orderId' => 'required',
+        ];
+    }
+
+    public function changeOrderToPauseRules(): array
+    {
+        return [
+            'orderId' => 'required',
+        ];
+    }
+
     /**
      * 新增数据验证规则
      * return array.

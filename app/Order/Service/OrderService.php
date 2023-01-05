@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Order\Service;
 
 use App\Order\Mapper\OrderMapper;
+use App\Order\Model\Order;
 use Carbon\Carbon;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -104,6 +105,7 @@ class OrderService extends AbstractService
     {
         // oldUserId newUserId orderId
         // 复制模型修改备注
+        /** @var null|Order $orderModel */
         $orderModel = $this->mapper->read($data['orderId']);
         if (! $orderModel) {
             throw new NormalStatusException('订单错误!');
@@ -155,12 +157,13 @@ class OrderService extends AbstractService
     #[Transaction]
     public function changeOrderToRefund($data): bool
     {
+        /** @var null|Order $orderModel */
         $orderModel = $this->mapper->read($data['orderId']);
         if (! $orderModel) {
             throw new NormalStatusException('订单错误!');
         }
-        $orderModel->status = 2;
-        $orderModel->refund_time = time();
+        $orderModel->status = Order::STATUS_REFUND;
+        $orderModel->refund_time = Carbon::now();
         if (! $orderModel->save()) {
             throw new NormalStatusException('退费失败!');
         }
@@ -173,6 +176,46 @@ class OrderService extends AbstractService
         ];
         if (! $this->orderTransactionService->OrderToRefundRecord($logRecord)) {
             throw new NormalStatusException('日志写入错误,操作已回滚,请稍后重试!');
+        }
+        return true;
+    }
+
+    public function changeOrderToNormal($data): bool
+    {
+        /** @var null|Order $orderModel */
+        $orderModel = $this->mapper->read($data['orderId']);
+        if (! $orderModel) {
+            throw new NormalStatusException('订单错误!');
+        }
+        // 暂停恢复计算暂停时间,补上.去掉状态时间
+        if ($orderModel->status === 0) {
+            $nowDate = Carbon::now();
+            $diffDay = $orderModel->status_time->diffInDays($nowDate);
+            $orderModel->indate += $diffDay;
+            $orderModel->status_time = null;
+        }
+        // 退费恢复退费时间去掉,
+        if ($orderModel->status === 2) {
+            $orderModel->refund_time = null;
+        }
+        $orderModel->status = Order::STATUS_NORMAL;
+        if (! $orderModel->save()) {
+            throw new NormalStatusException('恢复状态失败!');
+        }
+        return true;
+    }
+
+    public function changeOrderToPause($data): bool
+    {
+        /** @var null|Order $orderModel */
+        $orderModel = $this->mapper->read($data['orderId']);
+        if (! $orderModel) {
+            throw new NormalStatusException('订单错误!');
+        }
+        $orderModel->status = Order::STATUS_PAUSE;
+        $orderModel->status_time = Carbon::now();
+        if (! $orderModel->save()) {
+            throw new NormalStatusException('恢复状态失败!');
         }
         return true;
     }

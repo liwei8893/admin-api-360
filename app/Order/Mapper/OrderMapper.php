@@ -96,6 +96,9 @@ class OrderMapper extends AbstractMapper
         if (isset($params['shop_id'])) {
             $query->where('shop_id', $params['shop_id']);
         }
+        if (isset($params['pay_type'])) {
+            $query->where('pay_type', $params['pay_type']);
+        }
 
         if (isset($params['normalOrder']) && $params['normalOrder']) {
             $query->normalOrder();

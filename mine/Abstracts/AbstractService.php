@@ -20,8 +20,6 @@ abstract class AbstractService
 {
     use ServiceTrait;
 
-    public $mapper;
-
     /**
      * 魔术方法，从类属性里获取数据.
      * @return mixed|string

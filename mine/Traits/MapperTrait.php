@@ -20,7 +20,7 @@ use Psr\Container\NotFoundExceptionInterface;
 trait MapperTrait
 {
     /**
-     * @var MineModel
+     * @var MineModel|string
      */
     public $model;
 
@@ -365,6 +365,24 @@ trait MapperTrait
     }
 
     /**
+     * 过滤新增或写入不存在的字段.
+     */
+    public function comFilterExecuteAttributes(string $modelClass, array &$data, bool $removePk = true): void
+    {
+        $model = new $modelClass();
+        $attrs = $model->getFillable();
+        foreach ($data as $name => $val) {
+            if (! in_array($name, $attrs, true)) {
+                unset($data[$name]);
+            }
+        }
+        if ($removePk && isset($data[$model->getKeyName()])) {
+            unset($data[$model->getKeyName()]);
+        }
+        $model = null;
+    }
+
+    /**
      * 过滤查询字段不存在的属性.
      */
     protected function filterQueryAttributes(array $fields, bool $removePk = false): array
@@ -394,24 +412,6 @@ trait MapperTrait
         $attrs = $model->getFillable();
         foreach ($data as $name => $val) {
             if (! in_array($name, $attrs)) {
-                unset($data[$name]);
-            }
-        }
-        if ($removePk && isset($data[$model->getKeyName()])) {
-            unset($data[$model->getKeyName()]);
-        }
-        $model = null;
-    }
-
-    /**
-     * 过滤新增或写入不存在的字段.
-     */
-    public function comFilterExecuteAttributes(string $modelClass, array &$data, bool $removePk = true): void
-    {
-        $model = new $modelClass();
-        $attrs = $model->getFillable();
-        foreach ($data as $name => $val) {
-            if (!in_array($name, $attrs, true)) {
                 unset($data[$name]);
             }
         }

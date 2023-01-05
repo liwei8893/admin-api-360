@@ -18,9 +18,6 @@ class CourseMapper extends AbstractMapper
 
     /**
      * id数组查询课程信息.
-     * @param array $select
-     *                      author:ZQ
-     *                      time:2021-08-31 14:49
      * @return array|Builder[]|Collection
      */
     public function getCourseInfoByIds(array $ids, array $select = []): Collection|array

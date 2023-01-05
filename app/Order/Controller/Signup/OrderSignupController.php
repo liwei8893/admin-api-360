@@ -6,6 +6,7 @@ namespace App\Order\Controller\Signup;
 
 use App\Order\Request\OrderSignupRequest;
 use App\Order\Service\OrderSignupService;
+use Exception;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\PostMapping;
@@ -13,6 +14,8 @@ use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
 use Mine\MineController;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 #[Controller(prefix: 'order/signup'), Auth]
@@ -23,11 +26,9 @@ class OrderSignupController extends MineController
 
     /**
      * 报名.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Exception
-     *                    author:ZQ
-     *                    time:2022-08-26 16:56
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     #[PostMapping('adminSave'), Permission('order:signup:adminSave,users:list:signup'), OperationLog('管理员报名')]
     public function adminSave(OrderSignupRequest $request): ResponseInterface

@@ -63,6 +63,7 @@ class OrderController extends MineController
     }
 
     /**
+     * 退费.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -70,5 +71,27 @@ class OrderController extends MineController
     public function changeOrderToRefund(OrderRequest $request): ResponseInterface
     {
         return $this->service->changeOrderToRefund($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 订单恢复正常状态.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('changeOrderToNormal'), Permission('order:changeOrder'), OperationLog('异动恢复订单状态')]
+    public function changeOrderToNormal(OrderRequest $request): ResponseInterface
+    {
+        return $this->service->changeOrderToNormal($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 暂停订单.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('changeOrderToPause'), Permission('order:changeOrder'), OperationLog('异动暂停')]
+    public function changeOrderToPause(OrderRequest $request): ResponseInterface
+    {
+        return $this->service->changeOrderToPause($request->all()) ? $this->success() : $this->error();
     }
 }
