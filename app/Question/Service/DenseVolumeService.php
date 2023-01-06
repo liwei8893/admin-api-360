@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Question\Service;
 
-use _PHPStan_80b5cdd3e\Nette\DI\Attributes\Inject;
 use App\Question\Mapper\DenseVolumeMapper;
+use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\MineModel;
 
