@@ -68,8 +68,8 @@ class ApiController extends MineApi
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[RequestMapping('v1/{method}')]
-    #[Middlewares(VerifyInterfaceMiddleware::class)]
+    #[RequestMapping("v1/{method}")]
+    #[Middlewares([ VerifyInterfaceMiddleware::class ])]
     public function v1(): ResponseInterface
     {
         $apiData = $this->__init();

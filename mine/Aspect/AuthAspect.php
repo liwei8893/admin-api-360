@@ -28,8 +28,9 @@ use Psr\Container\NotFoundExceptionInterface;
 #[Aspect]
 class AuthAspect extends AbstractAspect
 {
-    public $annotations = [
-        Auth::class,
+
+    public array $annotations = [
+        Auth::class
     ];
 
     /**

@@ -14,25 +14,22 @@ declare(strict_types=1);
 
 namespace Mine\Crontab;
 
-use Hyperf\Contract\StdoutLoggerInterface;
-use Hyperf\Crontab\Crontab;
-use Hyperf\Crontab\Event\CrontabDispatcherStarted;
-use Hyperf\Crontab\Strategy\StrategyInterface;
-use Hyperf\Di\Annotation\Inject;
-use Hyperf\Process\AbstractProcess;
-use Hyperf\Process\ProcessManager;
-use Psr\Container\ContainerInterface;
 use Swoole\Server;
+use Hyperf\Crontab\Crontab;
+use Hyperf\Di\Annotation\Inject;
+use Hyperf\Process\ProcessManager;
+use Hyperf\Process\AbstractProcess;
+use Psr\Container\ContainerInterface;
+use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\Crontab\Strategy\StrategyInterface;
+use Hyperf\Crontab\Event\CrontabDispatcherStarted;
 
 class MineCrontabProcess extends AbstractProcess
 {
     /**
      * @var string
      */
-    public $name = 'MineAdmin Crontab';
-
-    #[Inject]
-    protected MineCrontabManage $mineCrontabManage;
+    public string $name = 'MineAdmin Crontab';
 
     /**
      * @var Server
@@ -55,6 +52,13 @@ class MineCrontabProcess extends AbstractProcess
     private $logger;
 
     /**
+     * @var MineCrontabManage
+     */
+    #[Inject]
+    protected MineCrontabManage $mineCrontabManage;
+
+    /**
+     * @param ContainerInterface $container
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -73,12 +77,13 @@ class MineCrontabProcess extends AbstractProcess
     }
 
     /**
-     * 是否自启进程.
+     * 是否自启进程
      * @param \Swoole\Coroutine\Server|\Swoole\Server $server
+     * @return bool
      */
     public function isEnable($server): bool
     {
-        if (! file_exists(BASE_PATH . '/.env')) {
+        if (!file_exists(BASE_PATH . '/.env')) {
             return false;
         }
         return true;
@@ -87,6 +92,7 @@ class MineCrontabProcess extends AbstractProcess
     /**
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
+
      */
     public function handle(): void
     {
@@ -94,11 +100,11 @@ class MineCrontabProcess extends AbstractProcess
         while (ProcessManager::isRunning()) {
             $this->sleep();
             $crontabs = $this->scheduler->schedule();
-            while (! $crontabs->isEmpty()) {
+            while (!$crontabs->isEmpty()) {
                 /**
-                 * @var Crontab $crontab
+                 * @var MineCrontab $crontab
                  */
-                $crontab = $crontabs->dequeue();
+                $crontab =  $crontabs->dequeue();
                 $this->strategy->dispatch($crontab);
             }
         }

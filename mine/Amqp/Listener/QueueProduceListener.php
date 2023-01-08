@@ -49,7 +49,7 @@ class QueueProduceListener implements ListenerInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      * @throws \Exception
      */
-    public function process(object $event)
+    public function process(object $event): void
     {
         $this->service = container()->get(SystemQueueLogService::class);
         $class = get_class($event);

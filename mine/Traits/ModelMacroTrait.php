@@ -104,18 +104,18 @@ trait ModelMacroTrait
                             case SystemRole::DEPT_BELOW_SCOPE:
                                 // 本部门及子部门数据权限
                                 $parentDepts = Db::table('system_user_dept')->where('user_id', $userModel->id)->pluck('dept_id')->toArray();
-                                $deptIds = [];
+                                $ids = [];
                                 foreach ($parentDepts as $deptId) {
-                                    $ids = SystemDept::query()
+                                    $ids[] = SystemDept::query()
                                         ->where(function ($query) use ($deptId) {
-                                            $query->where('level', 'like', '%' . $deptId . '%');
-                                            $query->orWhere('id', $deptId);
+                                            $query->where('id', '=', $deptId)
+                                                ->orWhere('level', 'like', $deptId . ',%')
+                                                ->orWhere('level', 'like', '%,' . $deptId);
                                         })
                                         ->pluck('id')
                                         ->toArray();
-                                    $deptIds = array_merge($deptIds, $ids);
                                 }
-                                $deptIds = array_merge($deptIds, $parentDepts);
+                                $deptIds = array_merge($parentDepts, ...$ids);
                                 $this->userIds = array_merge(
                                     $this->userIds,
                                     Db::table('system_user_dept')->whereIn('dept_id', $deptIds)->pluck('user_id')->toArray()

@@ -117,7 +117,31 @@ class SystemUserService extends AbstractService
     }
 
     /**
-     * 获取在线用户.
+     * 处理提交数据
+     * @param $data
+     * @return array
+     */
+    protected function handleData($data): array
+    {
+        if (!is_array($data['role_ids'])) {
+            $data['role_ids'] = explode(',', $data['role_ids']);
+        }
+        if (($key = array_search(env('ADMIN_ROLE'), $data['role_ids'])) !== false) {
+            unset($data['role_ids'][$key]);
+        }
+        if (!empty($data['post_ids']) && !is_array($data['post_ids'])) {
+            $data['post_ids'] = explode(',', $data['post_ids']);
+        }
+        if (is_array($data['dept_id'])) {
+            $data['dept_id'] = array_pop($data['dept_id']);
+        }
+        return $data;
+    }
+
+    /**
+     * 获取在线用户
+     * @param array $params
+     * @return array
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -320,22 +344,23 @@ class SystemUserService extends AbstractService
     }
 
     /**
-     * 处理提交数据.
-     * @param mixed $data
+     * 处理提交数据
+     * @param $data
+     * @return array
      */
     protected function handleData($data): array
     {
-        if (! is_array($data['role_ids'])) {
+        if (!is_array($data['role_ids'])) {
             $data['role_ids'] = explode(',', $data['role_ids']);
         }
         if (($key = array_search(env('ADMIN_ROLE'), $data['role_ids'])) !== false) {
             unset($data['role_ids'][$key]);
         }
-        if (! empty($data['post_ids']) && ! is_array($data['post_ids'])) {
+        if (!empty($data['post_ids']) && !is_array($data['post_ids'])) {
             $data['post_ids'] = explode(',', $data['post_ids']);
         }
-        if (is_array($data['dept_id'])) {
-            $data['dept_id'] = array_pop($data['dept_id']);
+        if (!empty($data['dept_ids']) && !is_array($data['dept_ids'])) {
+            $data['dept_ids'] = explode(',', $data['dept_ids']);
         }
         return $data;
     }

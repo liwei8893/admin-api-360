@@ -32,7 +32,7 @@ class ServerController implements OnMessageInterface, OnOpenInterface, OnCloseIn
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function onOpen($server, Request $request): void
+    public function onOpen($server, $request): void
     {
         $this->uid = user()->getUserInfo(
             container()->get(ServerRequestInterface::class)->getQueryParams()['token']
@@ -50,7 +50,7 @@ class ServerController implements OnMessageInterface, OnOpenInterface, OnCloseIn
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function onMessage($server, Frame $frame): void
+    public function onMessage($server, $frame): void
     {
         $data = json_decode($frame->data, true);
         switch ($data['event']) {

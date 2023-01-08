@@ -10,7 +10,6 @@
  */
 
 declare(strict_types=1);
-
 namespace Mine\Aspect;
 
 use Hyperf\Di\Annotation\Aspect;
@@ -23,23 +22,26 @@ use Mine\MineRequest;
 use Mine\Redis\MineLockRedis;
 
 /**
- * Class ResubmitAspect.
+ * Class ResubmitAspect
+ * @package Mine\Aspect
  */
 #[Aspect]
 class ResubmitAspect extends AbstractAspect
 {
-    public $annotations = [
-        Resubmit::class,
+
+    public array $annotations = [
+        Resubmit::class
     ];
 
     /**
+     * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
      * @throws Exception
      * @throws \Throwable
      */
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        /* @var $resubmit Resubmit */
+        /** @var $resubmit Resubmit*/
         if (isset($proceedingJoinPoint->getAnnotationMetadata()->method[Resubmit::class])) {
             $resubmit = $proceedingJoinPoint->getAnnotationMetadata()->method[Resubmit::class];
         }

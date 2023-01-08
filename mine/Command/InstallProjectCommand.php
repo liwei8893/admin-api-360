@@ -16,27 +16,26 @@ namespace Mine\Command;
 
 use Hyperf\Command\Annotation\Command;
 use Hyperf\DbConnection\Db;
-use Mine\Mine;
 use Mine\MineCommand;
+use Mine\Mine;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class InstallProjectCommand.
+ * Class InstallProjectCommand
+ * @package System\Command
  */
 #[Command]
 class InstallProjectCommand extends MineCommand
 {
-    protected const CONSOLE_GREEN_BEGIN = "\033[32;5;1m";
-
-    protected const CONSOLE_RED_BEGIN = "\033[31;5;1m";
-
-    protected const CONSOLE_END = "\033[0m";
-
     /**
-     * 安装命令.
-     * @var string
+     * 安装命令
+     * @var string|null
      */
-    protected $name = 'mine:install';
+    protected ?string $name = 'mine:install';
+
+    protected const CONSOLE_GREEN_BEGIN = "\033[32;5;1m";
+    protected const CONSOLE_RED_BEGIN = "\033[31;5;1m";
+    protected const CONSOLE_END = "\033[0m";
 
     protected array $database = [];
 
@@ -58,7 +57,8 @@ class InstallProjectCommand extends MineCommand
 
         // 全新安装
         if ($option === null) {
-            if (! file_exists(BASE_PATH . '/.env')) {
+
+            if (!file_exists(BASE_PATH . '/.env')) {
                 // 欢迎
                 $this->welcome();
 
@@ -68,8 +68,9 @@ class InstallProjectCommand extends MineCommand
                 // 设置数据库
                 $this->setDataBaseInformationAndRedis();
 
-                $this->line("\n\nReset the \".env\" file. Please restart the service before running \nthe installation command to continue the installation.", 'info');
-            } elseif (file_exists(BASE_PATH . '/.env') && $this->confirm('Do you want to continue with the installation program?', true)) {
+                $this->line("\n\nReset the \".env\" file. Please restart the service before running \nthe installation command to continue the installation.", "info");
+            } else if (file_exists(BASE_PATH . '/.env') && $this->confirm('Do you want to continue with the installation program?', true)) {
+
                 // 安装本地模块
                 $this->installLocalModule();
 
@@ -79,6 +80,7 @@ class InstallProjectCommand extends MineCommand
                 // 安装完成
                 $this->finish();
             } else {
+
                 // 欢迎
                 $this->welcome();
 
@@ -118,13 +120,14 @@ class InstallProjectCommand extends MineCommand
         $answer = $this->confirm('Do you want to test the system environment now?', true);
 
         if ($answer) {
+
             $this->line(PHP_EOL . ' Checking environmenting...' . PHP_EOL, 'comment');
 
             if (version_compare(PHP_VERSION, '8.0', '<')) {
                 $this->error(sprintf(' php version should >= 8.0 >>> %sNO!%s', self::CONSOLE_RED_BEGIN, self::CONSOLE_END));
                 exit;
             }
-            $this->line(sprintf(' php version %s >>> %sOK!%s', PHP_VERSION, self::CONSOLE_GREEN_BEGIN, self::CONSOLE_END));
+            $this->line(sprintf(" php version %s >>> %sOK!%s", PHP_VERSION, self::CONSOLE_GREEN_BEGIN, self::CONSOLE_END));
 
             $extensions = ['swoole', 'mbstring', 'json', 'openssl', 'pdo', 'xml'];
 
@@ -157,20 +160,21 @@ class InstallProjectCommand extends MineCommand
                 } else {
                     $dbpass = $this->ask(sprintf('If you don\'t set the database password, please try again press "enter" %d number of times', $i));
                 }
-                if (! empty($dbpass)) {
+                if (!empty($dbpass)) {
                     break;
+                } else {
+                    $i--;
                 }
-                --$i;
             }
 
             $this->database = [
                 'charset' => $dbchar,
-                'dbname' => $dbname,
-                'dbhost' => $dbhost,
-                'dbport' => $dbport,
-                'prefix' => $prefix === 'Null' ? '' : $prefix,
-                'dbuser' => $dbuser,
-                'dbpass' => $dbpass ?: '',
+                'dbname'  => $dbname,
+                'dbhost'  => $dbhost,
+                'dbport'  => $dbport,
+                'prefix'  => $prefix === 'Null' ? '' : $prefix,
+                'dbuser'  => $dbuser,
+                'dbpass'  => $dbpass ?: '',
             ];
         }
 
@@ -181,13 +185,13 @@ class InstallProjectCommand extends MineCommand
             $redisHost = $this->ask('please input redis host, default:', '127.0.0.1');
             $redisPort = $this->ask('please input redis host port, default:', '6379');
             $redisPass = $this->ask('please input redis password, default:', 'Null');
-            $redisDb = $this->ask('please input redis db, default:', '0');
+            $redisDb   = $this->ask('please input redis db, default:', '0');
 
             $this->redis = [
                 'host' => $redisHost,
                 'port' => $redisPort,
                 'auth' => $redisPass === 'Null' ? '(NULL)' : $redisPass,
-                'db' => $redisDb,
+                'db'   => $redisDb,
             ];
         }
 
@@ -232,7 +236,7 @@ class InstallProjectCommand extends MineCommand
 
             $envContent = '';
             foreach ($env as $key => $e) {
-                if (! is_array($e)) {
+                if (!is_array($e)) {
                     $envContent .= sprintf('%s = %s', $key, $e === '1' ? 'true' : ($e === '' ? '' : $e)) . PHP_EOL . PHP_EOL;
                 } else {
                     $envContent .= sprintf('[%s]', $key) . PHP_EOL;
@@ -242,7 +246,7 @@ class InstallProjectCommand extends MineCommand
                     $envContent .= PHP_EOL;
                 }
             }
-            $dsn = sprintf('mysql:host=%s;port=%s', $this->database['dbhost'], $this->database['dbport']);
+            $dsn = sprintf("mysql:host=%s;port=%s", $this->database['dbhost'], $this->database['dbport']);
             $pdo = new \PDO($dsn, $this->database['dbuser'], $this->database['dbpass']);
             $isSuccess = $pdo->query(
                 sprintf(
@@ -268,7 +272,7 @@ class InstallProjectCommand extends MineCommand
     }
 
     /**
-     * install modules.
+     * install modules
      */
     protected function installLocalModule()
     {
@@ -281,7 +285,7 @@ class InstallProjectCommand extends MineCommand
             if ($name === 'System') {
                 $this->initUserData();
             }
-            $this->call('mine:seeder-run', ['name' => $name, '--force' => 'true']);
+            $this->call('mine:seeder-run',  ['name' => $name, '--force' => 'true']);
             $this->line($this->getGreenText(sprintf('"%s" module install successfully', $name)));
         }
     }
@@ -300,7 +304,7 @@ class InstallProjectCommand extends MineCommand
         Db::table('system_user_role')->truncate();
 
         // 创建超级管理员
-        Db::table('system_user')->insert([
+        Db::table("system_user")->insert([
             'id' => env('SUPER_ADMIN', 1),
             'username' => 'superAdmin',
             'password' => password_hash('admin123', PASSWORD_DEFAULT),
@@ -314,7 +318,7 @@ class InstallProjectCommand extends MineCommand
             'updated_by' => 0,
             'status' => 1,
             'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
         ]);
         // 创建管理员角色
         Db::table('system_role')->insert([
@@ -328,11 +332,11 @@ class InstallProjectCommand extends MineCommand
             'status' => 1,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
-            'remark' => '系统内置角色，不可删除',
+            'remark' => '系统内置角色，不可删除'
         ]);
         Db::table('system_user_role')->insert([
             'user_id' => env('SUPER_ADMIN', 1),
-            'role_id' => env('ADMIN_ROLE', 1),
+            'role_id' => env('ADMIN_ROLE', 1)
         ]);
     }
 
@@ -342,7 +346,7 @@ class InstallProjectCommand extends MineCommand
         $this->output->write(PHP_EOL . $this->getGreenText('The installation is almost complete'), false);
         while ($i > 0) {
             $this->output->write($this->getGreenText('.'), false);
-            --$i;
+            $i--;
             sleep(1);
         }
         $this->line(PHP_EOL . sprintf('%s
@@ -351,10 +355,13 @@ default username: superAdmin
 default password: admin123', $this->getInfo(), Mine::getVersion()), 'comment');
     }
 
+    /**
+     * @param $extension
+     */
     protected function checkExtension($extension): void
     {
-        if (! extension_loaded($extension)) {
-            $this->line(sprintf(' %s extension not install >>> %sNO!%s', $extension, self::CONSOLE_RED_BEGIN, self::CONSOLE_END));
+        if (!extension_loaded($extension)) {
+            $this->line(sprintf(" %s extension not install >>> %sNO!%s", $extension, self::CONSOLE_RED_BEGIN, self::CONSOLE_END));
             exit;
         }
         $this->line(sprintf(' %s extension is installed >>> %sOK!%s', $extension, self::CONSOLE_GREEN_BEGIN, self::CONSOLE_END));
