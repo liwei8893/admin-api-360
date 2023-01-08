@@ -48,6 +48,6 @@ class UserCourseRecordToday extends MineModel
      */
     public function users(): HasOne
     {
-        return $this->hasOne(Users::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }

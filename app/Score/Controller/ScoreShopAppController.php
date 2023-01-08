@@ -35,12 +35,23 @@ class ScoreShopAppController extends MineController
     }
 
     /**
+     * 获取积分商店课程列表.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getCoursePageList')]
+    public function getCoursePageList(ScoreShopRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getCoursePageList($request->all()));
+    }
+
+    /**
      * 积分兑换课程头像.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws Exception
      */
-    #[PostMapping('exchange'),Auth('app')]
+    #[PostMapping('exchange'), Auth('app')]
     public function exchange(ScoreShopRequest $request): ResponseInterface
     {
         return $this->success($this->service->exchange($request->validated()));

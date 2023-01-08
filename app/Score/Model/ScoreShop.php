@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace App\Score\Model;
 
+use Carbon\Carbon;
+use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\Relations\MorphTo;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
 
 /**
  * @property int $id
- * @property int $type 1:头像,2头像框,3课程
- * @property int $shop_id type1:avatar,type2:avatar,type3:course_basis
+ * @property string $shop_type 商品模型名称
+ * @property int $shop_id 商品ID
  * @property int $score 兑换需要的积分数
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property int $sort
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property int $deleted_at
+ * @property Model $shop
  */
 class ScoreShop extends MineModel
 {
@@ -42,7 +46,7 @@ class ScoreShop extends MineModel
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'shop_type' => 'string', 'shop_id' => 'integer', 'score' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
+    protected $casts = ['id' => 'integer', 'shop_id' => 'integer', 'score' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
     /**
      * 获得拥有此商品的模型。

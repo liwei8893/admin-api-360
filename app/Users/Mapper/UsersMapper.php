@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Users\Mapper;
 
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
 use Mine\Abstracts\AbstractMapper;
@@ -16,7 +16,7 @@ class UsersMapper extends AbstractMapper
 {
     public function assignModel(): void
     {
-        $this->model = Users::class;
+        $this->model = User::class;
     }
 
     /**
@@ -142,25 +142,25 @@ class UsersMapper extends AbstractMapper
             if ($params['vipType'] === '0') {
                 $query->whereHas(
                     'orders',
-                    fn (Builder $query) => $query->normalOrder()->whereNotIn('shop_id', Users::VIP_TYPE_NONE)
+                    fn (Builder $query) => $query->normalOrder()->whereNotIn('shop_id', User::VIP_TYPE_NONE)
                 );
             }
             if ($params['vipType'] === '1') {
                 $query->whereHas(
                     'orders',
-                    fn (Builder $query) => $query->normalOrder()->where('shop_id', Users::VIP_TYPE_ENJOY)
+                    fn (Builder $query) => $query->normalOrder()->where('shop_id', User::VIP_TYPE_ENJOY)
                 );
             }
             if ($params['vipType'] === '2') {
                 $query->whereHas(
                     'orders',
-                    fn (Builder $query) => $query->normalOrder()->where('shop_id', Users::VIP_TYPE_SUPER)
+                    fn (Builder $query) => $query->normalOrder()->where('shop_id', User::VIP_TYPE_SUPER)
                 );
             }
             if ($params['vipType'] === '3') {
                 $query->whereHas(
                     'orders',
-                    fn (Builder $query) => $query->normalOrder()->where('shop_id', Users::VIP_TYPE_SUPREME)
+                    fn (Builder $query) => $query->normalOrder()->where('shop_id', User::VIP_TYPE_SUPREME)
                 );
             }
         }

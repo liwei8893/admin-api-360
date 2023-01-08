@@ -7,7 +7,7 @@ namespace App\Users\Service;
 use App\System\Service\SystemDeptService;
 use App\System\Service\SystemDictDataService;
 use App\Users\Mapper\UsersMapper;
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Closure;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
@@ -180,7 +180,6 @@ class UsersService extends AbstractService
 
     /**
      * 初始化密码
-     * @param mixed|null $password
      */
     public function initUserPassword(int $id, mixed $password = null): bool
     {
@@ -217,7 +216,7 @@ class UsersService extends AbstractService
     {
         $grade = $this->systemDictDataService->getList(['code' => 'grade']);
         $platform = $this->systemDeptService->getPlatformSelect();
-        $closure = $closure ?? function (Users $model, $data) use ($grade, $platform) {
+        $closure = $closure ?? function (User $model, $data) use ($grade, $platform) {
             $data = collect($data);
             $platform = collect($platform);
             $grade = collect($grade);

@@ -68,6 +68,11 @@ class LoginUser
         return $this->jwt;
     }
 
+    public function getScene(): string
+    {
+        return $this->jwt->getParserData()['jwt_scene'];
+    }
+
     /**
      * 获取当前登录用户信息.
      */

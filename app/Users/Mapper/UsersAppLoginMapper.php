@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Users\Mapper;
 
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use App\Users\Model\UsersLog;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
@@ -17,7 +17,7 @@ class UsersAppLoginMapper extends AbstractMapper
 {
     public function assignModel(): void
     {
-        $this->model = Users::class;
+        $this->model = User::class;
     }
 
     /**
@@ -25,7 +25,7 @@ class UsersAppLoginMapper extends AbstractMapper
      */
     public function checkUserByMobile(mixed $mobile, array $select = ['*']): Model|Builder|null
     {
-        return Users::query()->where('mobile', $mobile)->select($select)->first();
+        return User::query()->where('mobile', $mobile)->select($select)->first();
     }
 
     /**
@@ -33,7 +33,7 @@ class UsersAppLoginMapper extends AbstractMapper
      */
     public function checkPass(string $password, string $hash): bool
     {
-        return Users::passwordVerify($password, $hash);
+        return User::passwordVerify($password, $hash);
     }
 
     /**

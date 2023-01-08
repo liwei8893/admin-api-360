@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Model;
 
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
@@ -23,7 +23,7 @@ use Mine\MineModel;
  * @property int $operator_id 操作人
  * @property int $object_id 关联ID
  * @property int $headmaster_id 退费班主任
- * @property Users $users
+ * @property User $users
  */
 class OrderTransaction extends MineModel
 {
@@ -72,6 +72,6 @@ class OrderTransaction extends MineModel
      */
     public function users(): HasOne
     {
-        return $this->hasOne(Users::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }

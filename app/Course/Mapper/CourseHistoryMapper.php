@@ -6,7 +6,7 @@ namespace App\Course\Mapper;
 
 use App\Course\Model\CourseBasis;
 use App\Order\Model\Order;
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
@@ -26,7 +26,7 @@ class CourseHistoryMapper extends AbstractMapper
         $query = Order::query()->where('status', '!=', 2)
             ->with(['users:id,user_name,old_platform,platform,mobile,remark', 'orderGrade', 'orderSubject'])
             ->whereHas('users', function (Builder $query) {
-                $query->where('user_type', Users::USER_TYPE)->platformDataScope();
+                $query->where('user_type', User::USER_TYPE)->platformDataScope();
             })
             ->where('shop_id', $data['shop_id'])
             ->orderBy('created_at', 'desc')
@@ -34,10 +34,10 @@ class CourseHistoryMapper extends AbstractMapper
         $perPage = $data['pageSize'] ?? $this->model::PAGE_SIZE;
         $page = $data['page'] ?? 1;
         $query = $query->paginate(
-            (int) $perPage,
+            (int)$perPage,
             ['*'],
             'page',
-            (int) $page
+            (int)$page
         );
         return $this->setPaginate($query);
     }

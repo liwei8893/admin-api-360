@@ -6,7 +6,7 @@ namespace App\Course\Model;
 
 use App\Question\Model\Question;
 use App\System\Model\Tag;
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\BelongsToMany;
@@ -80,7 +80,7 @@ class CoursePeriod extends MineModel
 
     public function teacher(): BelongsTo
     {
-        return $this->belongsTo(Users::class, 'teacher_id', 'id')->select(['id', 'user_name', 'mobile']);
+        return $this->belongsTo(User::class, 'teacher_id', 'id')->select(['id', 'user_name', 'mobile']);
     }
 
     public function talk(): HasMany

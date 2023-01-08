@@ -7,6 +7,7 @@ namespace App\Question\Service;
 use App\Question\Mapper\DenseVolumeMapper;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
+use Mine\Annotation\SubjectAuth;
 use Mine\MineModel;
 
 /**
@@ -20,8 +21,9 @@ class DenseVolumeService extends AbstractService
     #[Inject]
     public $mapper;
 
+    #[SubjectAuth]
     public function getUrl(array $params): MineModel
     {
-        return $this->mapper->first(['id' => $params['id']], ['url', 'subject']);
+        return $this->mapper->first(['id' => $params['id']], ['url', 'subject', 'grade']);
     }
 }

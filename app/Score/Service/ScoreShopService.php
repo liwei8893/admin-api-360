@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Score\Service;
 
+use App\Course\Model\CourseBasis;
 use App\Order\Service\OrderSignupService;
 use App\Score\Mapper\ScoreShopMapper;
+use App\Score\Model\ScoreShop;
+use App\Users\Model\User;
 use App\Users\Service\UserScoreService;
 use App\Users\Service\UsersService;
 use Exception;
@@ -43,6 +46,15 @@ class ScoreShopService extends AbstractService
         return $this->getPageList($params);
     }
 
+    public function getCoursePageList($params): array
+    {
+        $params['orderBy'] = ['score', 'sort'];
+        $params['orderType'] = ['asc', 'desc'];
+        $params['withShop'] = true;
+        $params['shop_type'] = 'courseBasis';
+        return $this->getPageList($params);
+    }
+
     /**
      * 积分兑换课程头像.
      * @throws Exception
@@ -51,11 +63,13 @@ class ScoreShopService extends AbstractService
     public function exchange(array $params): array
     {
         // 查询商品信息
+        /* @var ScoreShop $shopInfo */
         $shopInfo = $this->read($params['id']);
         if (! $shopInfo) {
             throw new NormalStatusException('兑换商品不存在!');
         }
         // 用户模型
+        /* @var User $userModel */
         $userModel = $this->usersService->read(user('app')->getId());
         if (! $userModel) {
             throw new NormalStatusException('用户不存在!');
@@ -102,10 +116,10 @@ class ScoreShopService extends AbstractService
         }
         // 兑换课程类
         if ($shopInfo['shop_type'] === 'courseBasis') {
-            // 查询课程
+            /* @var CourseBasis $courseModel 查询课程 */
             $courseModel = $shopInfo->shop;
             // 判断是否已经拥有
-            $orderModel = $userModel->order()
+            $orderModel = $userModel->orders()
                 ->where('deleted_at', 0)
                 ->where('shop_id', $courseModel->id)->first();
             $insetInfo = [
@@ -134,7 +148,8 @@ class ScoreShopService extends AbstractService
                 if (! $scoreState) {
                     throw new NormalStatusException('兑换失败请重试!');
                 }
-                return $userModel->fresh()->toArray();
+                $userModel->fresh();
+                return $userModel->toArray();
             }
             // 有订单,没完成,更新订单
             if (isset($orderModel['pay_states']) && $orderModel['pay_states'] !== 7) {
@@ -147,7 +162,8 @@ class ScoreShopService extends AbstractService
                 if (! $scoreState) {
                     throw new NormalStatusException('兑换失败请重试!');
                 }
-                return $userModel->fresh()->toArray();
+                $userModel->fresh();
+                return $userModel->toArray();
             }
             // 有订单,完成
             throw new NormalStatusException('该商品已拥有,请兑换其他商品!');

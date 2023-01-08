@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Score\Model;
 
-use App\Users\Model\Users;
+use App\Users\Model\User;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\MorphOne;
 use Hyperf\Database\Model\SoftDeletes;
@@ -14,8 +15,8 @@ use Mine\MineModel;
  * @property int $id
  * @property int $type 1头像,2头像框
  * @property string $url 头像地址
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property int $deleted_at
  */
 class Avatar extends MineModel
@@ -56,6 +57,6 @@ class Avatar extends MineModel
      */
     public function usersTable(): BelongsToMany
     {
-        return $this->belongsToMany(Users::class, 'user_avatar', 'avatar_id', 'user_id');
+        return $this->belongsToMany(User::class, 'user_avatar', 'avatar_id', 'user_id');
     }
 }

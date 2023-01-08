@@ -1,8 +1,9 @@
 <?php
 
 declare(strict_types=1);
+
 use App\System\Model\SystemUser;
-use App\Users\Model\Users;
+use App\Users\Model\User;
 
 return [
     'login_type' => env('JWT_LOGIN_TYPE', 'sso'), //  登录方式，sso为单点登录，mpop为多点登录
@@ -104,7 +105,7 @@ return [
             'ttl' => env('JWT_TTL', 86400), // token过期时间，单位为秒
             'blacklist_cache_ttl' => env('JWT_TTL', 86400), // 黑名单缓存token时间，注意：该时间一定要设置比token过期时间要大一点，默认为100秒,最好设置跟过期时间一样
             'model' => [
-                'class' => Users::class,
+                'class' => User::class,
                 'pk' => 'id',
             ],
         ],

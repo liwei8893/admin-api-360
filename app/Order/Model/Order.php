@@ -6,7 +6,7 @@ namespace App\Order\Model;
 
 use App\Course\Model\CourseBasis;
 use App\System\Model\SystemDictData;
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsTo;
@@ -72,7 +72,7 @@ use Mine\MineModel;
  * @property Collection|SystemDictData[] $orderGrade
  * @property Collection|SystemDictData[] $orderSubject
  * @property Collection|OrderPayment[] $payment
- * @property Users $users
+ * @property User $users
  * @property Collection|UsersRenew[] $usersRenew
  */
 class Order extends MineModel
@@ -152,7 +152,7 @@ class Order extends MineModel
      */
     public function users(): BelongsTo
     {
-        return $this->belongsTo(Users::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**
@@ -184,7 +184,10 @@ class Order extends MineModel
      */
     public function orderSubject(): BelongsToMany
     {
-        return $this->belongsToMany(SystemDictData::class, 'order_subject', 'order_id', 'subject_id', 'id', 'value')->select(['id', 'label as title', 'value as key'])->where('code', 'subject')->where('status', MineModel::ENABLE);
+        return $this->belongsToMany(SystemDictData::class, 'order_subject', 'order_id', 'subject_id', 'id', 'value')
+            ->select(['id', 'label as title', 'value as key'])
+            ->where('code', 'subject')
+            ->where('status', MineModel::ENABLE);
     }
 
     /**
@@ -192,7 +195,10 @@ class Order extends MineModel
      */
     public function orderGrade(): BelongsToMany
     {
-        return $this->belongsToMany(SystemDictData::class, 'order_grade', 'order_id', 'grade_id', 'id', 'value')->select(['id', 'label as title', 'value as key'])->where('code', 'grade')->where('status', MineModel::ENABLE);
+        return $this->belongsToMany(SystemDictData::class, 'order_grade', 'order_id', 'grade_id', 'id', 'value')
+            ->select(['id', 'label as title', 'value as key'])
+            ->where('code', 'grade')
+            ->where('status', MineModel::ENABLE);
     }
 
     /**

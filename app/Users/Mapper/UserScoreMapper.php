@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Users\Mapper;
 
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use App\Users\Model\UserScore;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
@@ -86,7 +86,7 @@ class UserScoreMapper extends AbstractMapper
      */
     public function incrementUserScore(int $userId, int $score = 1): int
     {
-        return Users::query()->where('id', $userId)->increment('score', $score);
+        return User::query()->where('id', $userId)->increment('score', $score);
     }
 
     /**
@@ -94,7 +94,7 @@ class UserScoreMapper extends AbstractMapper
      */
     public function decrementUserScore(int $userId, int $score): int
     {
-        return Users::query()->where('id', $userId)->decrement('score', $score);
+        return User::query()->where('id', $userId)->decrement('score', $score);
     }
 
     /**

@@ -7,7 +7,7 @@ namespace App\Order\Mapper;
 use App\Order\Model\Order;
 use App\Order\Model\OrderTransaction;
 use App\Order\Model\UsersRenew;
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractMapper;
@@ -37,9 +37,9 @@ class OrderStaMapper extends AbstractMapper
         $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
         $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
 
-        $query = Users::query()->leftJoin('order', 'users.id', 'order.user_id')
+        $query = User::query()->leftJoin('order', 'users.id', 'order.user_id')
             ->where('order.shop_id', 950)
-            ->where('users.user_type', Users::USER_TYPE)
+            ->where('users.user_type', User::USER_TYPE)
             ->whereIn('order.pay_states', [2, 7])
             ->where('order.deleted_at', 0)
             ->where('order.status', '!=', 2)
@@ -72,7 +72,7 @@ class OrderStaMapper extends AbstractMapper
             ->leftJoin('users', 'users.id', 'users_renew.user_id')
             ->whereHas('users', function (Builder $query) use ($params) {
                 $query->platformDataScope()
-                    ->where('user_type', Users::USER_TYPE)
+                    ->where('user_type', User::USER_TYPE)
                     ->when(isset($params['platform']) && is_array($params['platform']), function (Builder $query) use ($params) {
                         $query->whereIn('platform', $params['platform']);
                     });
@@ -107,7 +107,7 @@ class OrderStaMapper extends AbstractMapper
             ->leftJoin('users', 'users.id', 'order_transaction.user_id')
             ->whereHas('users', function (Builder $query) use ($params) {
                 $query->platformDataScope()
-                    ->where('user_type', Users::USER_TYPE)
+                    ->where('user_type', User::USER_TYPE)
                     ->when(isset($params['platform']) && is_array($params['platform']), function (Builder $query) use ($params) {
                         $query->whereIn('platform', $params['platform']);
                     });

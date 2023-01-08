@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Course\Model;
 
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasOne;
@@ -52,11 +52,11 @@ class Sun extends MineModel
 
     public function user(): HasOne
     {
-        return $this->hasOne(Users::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 
     public function userVote(): BelongsToMany
     {
-        return $this->belongsToMany(Users::class, 'sun_vote', 'sun_id', 'user_id');
+        return $this->belongsToMany(User::class, 'sun_vote', 'sun_id', 'user_id');
     }
 }

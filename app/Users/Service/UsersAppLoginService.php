@@ -6,7 +6,7 @@ namespace App\Users\Service;
 
 use App\System\Service\SmsService;
 use App\Users\Mapper\UsersAppLoginMapper;
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Exception;
 use Hyperf\Database\Model\ModelNotFoundException;
 use Hyperf\Di\Annotation\Inject;
@@ -45,7 +45,7 @@ class UsersAppLoginService extends AbstractService
     public function login(array $params): array
     {
         try {
-            $userinfo = $this->mapper->checkUserByMobile($params['mobile'], Users::COMMON_FIELDS);
+            $userinfo = $this->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
             // 判断账号是否禁用
             if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
                 throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
@@ -83,7 +83,7 @@ class UsersAppLoginService extends AbstractService
      * @throws InvalidArgumentException
      * @throws NotFoundExceptionInterface
      */
-    public function loginAfter(Users $userModel): array
+    public function loginAfter(User $userModel): array
     {
         $request = container()->get(MineRequest::class);
         // 生成jwt token
@@ -157,7 +157,7 @@ class UsersAppLoginService extends AbstractService
     public function resetPassword($params): bool
     {
         // 查找用户信息
-        $userinfo = $this->mapper->checkUserByMobile($params['mobile'], Users::COMMON_FIELDS);
+        $userinfo = $this->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
         // 判断账号是否禁用
         if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
             throw new NormalStatusException('账号已被禁用,请联系课程顾问!');

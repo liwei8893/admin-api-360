@@ -24,7 +24,7 @@ use Mine\MineModel;
  * @property CourseBasis $courseBasis
  * @property CoursePeriod $coursePeriod
  * @property float $time_rate
- * @property Users $users
+ * @property User $users
  */
 class UserCourseRecord extends MineModel
 {
@@ -36,7 +36,9 @@ class UserCourseRecord extends MineModel
      * @var string
      */
     protected $table = 'user_course_record';
+
     protected $dateFormat = 'U';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -71,7 +73,7 @@ class UserCourseRecord extends MineModel
      */
     public function users(): HasOne
     {
-        return $this->hasOne(Users::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 
     /**

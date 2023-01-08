@@ -68,7 +68,7 @@ trait MapperTrait
         $query = $this->handleOrder($query, $params);
 
         $isScope && $query->userDataScope();
-        $isScope && $this->model == 'App\\Users\\Model\\Users' && $query->platformDataScope();
+        $isScope && $this->model == 'App\\Users\\Model\\User' && $query->platformDataScope();
 
         return $this->handleSearch($query, $params);
     }

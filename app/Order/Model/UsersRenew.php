@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Model;
 
-use App\Users\Model\Users;
+use App\Users\Model\User;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
@@ -84,6 +84,6 @@ class UsersRenew extends MineModel
      */
     public function users(): HasOne
     {
-        return $this->hasOne(Users::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }
