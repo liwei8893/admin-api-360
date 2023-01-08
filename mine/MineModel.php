@@ -44,6 +44,8 @@ class MineModel extends Model
         $this->registerBase();
         // 注册用户数据权限方法
         $this->registerUserDataScope();
+        // 注册平台数据权限方法
+        $this->registerPlatformDataScope();
     }
 
     /**

@@ -16,7 +16,7 @@ trait ModelMacroTrait
     /**
      * 注册自定义方法.
      */
-    private function registerUserDataScope()
+    private function registerUserDataScope(): void
     {
         // 数据权限方法
         $model = $this;
@@ -137,6 +137,7 @@ trait ModelMacroTrait
             }
             $platformCodes = [];
 
+            /* @var SystemUser $userModel */
             $userModel = SystemUser::find($userid, ['id']);
             $roles = $userModel->roles()->get(['id', 'data_scope']);
             $deptModel = $userModel->depts;
