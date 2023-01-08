@@ -23,23 +23,18 @@ class SmsLog extends MineModel
 {
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'sms_log';
-    protected $dateFormat = 'U';
+    protected ?string $table = 'sms_log';
+
+    protected ?string $dateFormat = 'U';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'user_id', 'content', 'mobile', 'return_code', 'sms_code', 'sms_func', 'sms_ip', 'created_at', 'updated_at'];
+    protected array $fillable = ['id', 'user_id', 'content', 'mobile', 'return_code', 'sms_code', 'sms_func', 'sms_ip', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }

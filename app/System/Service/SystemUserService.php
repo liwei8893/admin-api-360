@@ -15,6 +15,7 @@ use Mine\Event\UserDelete;
 use Mine\Exception\MineException;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\MineCaptcha;
+use Mine\Helper\Str;
 use Mine\MineRequest;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -46,10 +47,11 @@ class SystemUserService extends AbstractService
      */
     public function __construct(
         ContainerInterface $container,
-        SystemUserMapper $mapper,
-        SystemMenuService $systemMenuService,
-        SystemRoleService $systemRoleService
-    ) {
+        SystemUserMapper   $mapper,
+        SystemMenuService  $systemMenuService,
+        SystemRoleService  $systemRoleService
+    )
+    {
         $this->mapper = $mapper;
         $this->sysMenuService = $systemMenuService;
         $this->sysRoleService = $systemRoleService;
@@ -59,36 +61,36 @@ class SystemUserService extends AbstractService
     /**
      * 获取验证码
      * @throws InvalidArgumentException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function getCaptcha(): string
     {
         $cache = container()->get(CacheInterface::class);
         $captcha = new MineCaptcha();
         $info = $captcha->getCaptchaInfo();
-        $key = $this->request->ip() . '-' . \Mine\Helper\Str::lower($info['code']);
+        $key = $this->request->ip() . '-' . Str::lower($info['code']);
         $cache->set(sprintf('captcha:%s', $key), $info['code'], 60);
         return $info['image'];
     }
 
     /**
      * 获取用户信息.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function getInfo(): array
     {
         if ($uid = user()->getId()) {
-            return $this->getCacheInfo((int) $uid);
+            return $this->getCacheInfo((int)$uid);
         }
         throw new MineException(t('system.unable_get_userinfo'), 500);
     }
 
     /**
      * 新增用户.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function save(array $data): int
     {
@@ -117,33 +119,9 @@ class SystemUserService extends AbstractService
     }
 
     /**
-     * 处理提交数据
-     * @param $data
-     * @return array
-     */
-    protected function handleData($data): array
-    {
-        if (!is_array($data['role_ids'])) {
-            $data['role_ids'] = explode(',', $data['role_ids']);
-        }
-        if (($key = array_search(env('ADMIN_ROLE'), $data['role_ids'])) !== false) {
-            unset($data['role_ids'][$key]);
-        }
-        if (!empty($data['post_ids']) && !is_array($data['post_ids'])) {
-            $data['post_ids'] = explode(',', $data['post_ids']);
-        }
-        if (is_array($data['dept_id'])) {
-            $data['dept_id'] = array_pop($data['dept_id']);
-        }
-        return $data;
-    }
-
-    /**
-     * 获取在线用户
-     * @param array $params
-     * @return array
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * 获取在线用户.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function getOnlineUserPageList(array $params = []): array
     {
@@ -166,7 +144,7 @@ class SystemUserService extends AbstractService
             return [];
         }
 
-        return $this->getPageList(array_merge(['userIds'  => $userIds ], $params));
+        return $this->getPageList(array_merge(['userIds' => $userIds], $params));
     }
 
     /**
@@ -176,7 +154,7 @@ class SystemUserService extends AbstractService
      */
     public function delete(array $ids): bool
     {
-        if (! empty($ids)) {
+        if (!empty($ids)) {
             if (($key = array_search(env('SUPER_ADMIN'), $ids)) !== false) {
                 unset($ids[$key]);
             }
@@ -195,7 +173,7 @@ class SystemUserService extends AbstractService
      */
     public function realDelete(array $ids): bool
     {
-        if (! empty($ids)) {
+        if (!empty($ids)) {
             if (($key = array_search(env('SUPER_ADMIN'), $ids)) !== false) {
                 unset($ids[$key]);
             }
@@ -210,8 +188,8 @@ class SystemUserService extends AbstractService
     /**
      * 强制下线用户.
      * @throws InvalidArgumentException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function kickUser(string $id): bool
     {
@@ -232,8 +210,8 @@ class SystemUserService extends AbstractService
 
     /**
      * 清除用户缓存.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function clearCache(string $id): bool
     {
@@ -254,27 +232,27 @@ class SystemUserService extends AbstractService
 
     /**
      * 设置用户首页.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function setHomePage(array $params): bool
     {
         $res = ($this->mapper->getModel())::query()
-            ->where('id', $params['id'])
-            ->update(['dashboard' => $params['dashboard']]) > 0;
+                ->where('id', $params['id'])
+                ->update(['dashboard' => $params['dashboard']]) > 0;
 
-        $this->clearCache((string) $params['id']);
+        $this->clearCache((string)$params['id']);
         return $res;
     }
 
     /**
      * 用户更新个人资料.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function updateInfo(array $params): bool
     {
-        if (! isset($params['id'])) {
+        if (!isset($params['id'])) {
             return false;
         }
 
@@ -284,7 +262,7 @@ class SystemUserService extends AbstractService
             $model[$key] = $param;
         }
 
-        $this->clearCache((string) $model['id']);
+        $this->clearCache((string)$model['id']);
         return $model->save();
     }
 
@@ -293,7 +271,7 @@ class SystemUserService extends AbstractService
      */
     public function modifyPassword(array $params): bool
     {
-        return $this->mapper->initUserPassword((int) user()->getId(), $params['newPassword']);
+        return $this->mapper->initUserPassword((int)user()->getId(), $params['newPassword']);
     }
 
     /**
@@ -302,6 +280,26 @@ class SystemUserService extends AbstractService
     public function getUserInfoByIds(array $ids): array
     {
         return $this->mapper->getUserInfoByIds($ids);
+    }
+
+    /**
+     * 处理提交数据.
+     */
+    protected function handleData($data): array
+    {
+        if (!is_array($data['role_ids'])) {
+            $data['role_ids'] = explode(',', $data['role_ids']);
+        }
+        if (($key = array_search(env('ADMIN_ROLE'), $data['role_ids'], true)) !== false) {
+            unset($data['role_ids'][$key]);
+        }
+        if (!empty($data['post_ids']) && !is_array($data['post_ids'])) {
+            $data['post_ids'] = explode(',', $data['post_ids']);
+        }
+        if (is_array($data['dept_id'])) {
+            $data['dept_id'] = array_pop($data['dept_id']);
+        }
+        return $data;
     }
 
     /**
@@ -341,27 +339,5 @@ class SystemUserService extends AbstractService
         }
         unset($roleData);
         return array_unique($ids);
-    }
-
-    /**
-     * 处理提交数据
-     * @param $data
-     * @return array
-     */
-    protected function handleData($data): array
-    {
-        if (!is_array($data['role_ids'])) {
-            $data['role_ids'] = explode(',', $data['role_ids']);
-        }
-        if (($key = array_search(env('ADMIN_ROLE'), $data['role_ids'])) !== false) {
-            unset($data['role_ids'][$key]);
-        }
-        if (!empty($data['post_ids']) && !is_array($data['post_ids'])) {
-            $data['post_ids'] = explode(',', $data['post_ids']);
-        }
-        if (!empty($data['dept_ids']) && !is_array($data['dept_ids'])) {
-            $data['dept_ids'] = explode(',', $data['dept_ids']);
-        }
-        return $data;
     }
 }

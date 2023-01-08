@@ -42,30 +42,26 @@ class OrderTransaction extends MineModel
      */
     public const TYPE_USER = 3;
 
-    public $timestamps = false;
+    public bool $timestamps = false;
 
     /**
      * The table associated with the model.
      * 订单变更记录表.
      * @var string
      */
-    protected $table = 'order_transaction';
+    protected ?string $table = 'order_transaction';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'type_id', 'type_name', 'order_id', 'user_id', 'money', 'new_user_id', 'new_shop_id', 'remark', 'create_at', 'operator_id', 'object_id', 'headmaster_id'];
+    protected array $fillable = ['id', 'type_id', 'type_name', 'order_id', 'user_id', 'money', 'new_user_id', 'new_shop_id', 'remark', 'create_at', 'operator_id', 'object_id', 'headmaster_id'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'type_id' => 'integer', 'order_id' => 'integer', 'user_id' => 'integer', 'money' => 'decimal:2', 'new_user_id' => 'integer', 'new_shop_id' => 'integer', 'create_at' => 'datetime', 'operator_id' => 'integer', 'object_id' => 'integer', 'headmaster_id' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'type_id' => 'integer', 'order_id' => 'integer', 'user_id' => 'integer', 'money' => 'decimal:2', 'new_user_id' => 'integer', 'new_shop_id' => 'integer', 'create_at' => 'datetime', 'operator_id' => 'integer', 'object_id' => 'integer', 'headmaster_id' => 'integer'];
 
-    protected $dates = ['create_at'];
+    protected array $dates = ['create_at'];
 
     /**
      * 关联用户表.

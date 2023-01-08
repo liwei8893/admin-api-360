@@ -1,13 +1,4 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 declare(strict_types=1);
 
@@ -200,7 +191,7 @@ trait ModelMacroTrait
      * Description:注册常用自定义方法
      * User:mike.
      */
-    private function registerBase()
+    private function registerBase(): void
     {
         // 添加andFilterWhere()方法
         Builder::macro('andFilterWhere', function ($key, $operator, $value = null) {

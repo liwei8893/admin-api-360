@@ -1,14 +1,4 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
-
 declare(strict_types=1);
 
 namespace Mine\Helper;
@@ -126,7 +116,7 @@ class LoginUser
      */
     public function getDeptId(): int
     {
-        return (int) $this->jwt->getParserData()['dept_id'];
+        return (int)$this->jwt->getParserData()['dept_id'];
     }
 
     /**
@@ -134,7 +124,7 @@ class LoginUser
      */
     public function isSuperAdmin(): bool
     {
-        return (int) env('SUPER_ADMIN') === $this->getId();
+        return (int)env('SUPER_ADMIN') === $this->getId();
     }
 
     /**

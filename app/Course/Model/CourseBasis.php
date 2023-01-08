@@ -72,26 +72,20 @@ class CourseBasis extends MineModel
 {
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'course_basis';
+    protected ?string $table = 'course_basis';
 
-    protected $dateFormat = 'U';
+    protected ?string $dateFormat = 'U';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'title', 'subtitle', 'course_type', 'course_sub_type', 'course_classify_id', 'sort', 'price', 'origin_price', 'vip_price', 'course_cover', 'cover_video', 'advance_time', 'is_free', 'is_playback', 'is_generated_class', 'is_vip_class', 'watch_num', 'validity_date', 'start_play_date', 'end_play_date', 'start_play_year', 'sales_num', 'sales_base', 'browse_base', 'states', 'browse_num', 'created_at', 'updated_at', 'indate', 'need_address', 'is_del', 'is_top', 'is_hot', 'material_name', 'note', 'class_id', 'is_group', 'grade_id', 'subject_id', 'is_deal', 'is_signup', 'course_title', 'course_second_title', 'other_img', 'is_playback_type', 'is_show_pic', 'season', 'is_show_sub_title', 'vip_type', 'is_give', 'class_type'];
+    protected array $fillable = ['id', 'title', 'subtitle', 'course_type', 'course_sub_type', 'course_classify_id', 'sort', 'price', 'origin_price', 'vip_price', 'course_cover', 'cover_video', 'advance_time', 'is_free', 'is_playback', 'is_generated_class', 'is_vip_class', 'watch_num', 'validity_date', 'start_play_date', 'end_play_date', 'start_play_year', 'sales_num', 'sales_base', 'browse_base', 'states', 'browse_num', 'created_at', 'updated_at', 'indate', 'need_address', 'is_del', 'is_top', 'is_hot', 'material_name', 'note', 'class_id', 'is_group', 'grade_id', 'subject_id', 'is_deal', 'is_signup', 'course_title', 'course_second_title', 'other_img', 'is_playback_type', 'is_show_pic', 'season', 'is_show_sub_title', 'vip_type', 'is_give', 'class_type'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'course_type' => 'string', 'course_sub_type' => 'integer', 'course_classify_id' => 'integer', 'sort' => 'integer', 'price' => 'integer', 'origin_price' => 'integer', 'vip_price' => 'integer', 'advance_time' => 'integer', 'is_free' => 'integer', 'is_playback' => 'integer', 'is_generated_class' => 'integer', 'is_vip_class' => 'integer', 'watch_num' => 'integer', 'validity_date' => 'integer', 'start_play_date' => 'integer', 'end_play_date' => 'integer', 'start_play_year' => 'integer', 'sales_num' => 'integer', 'sales_base' => 'integer', 'browse_base' => 'integer', 'states' => 'string', 'browse_num' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'need_address' => 'integer', 'is_del' => 'integer', 'is_top' => 'integer', 'is_hot' => 'integer', 'class_id' => 'integer', 'is_group' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'string', 'is_deal' => 'integer', 'is_signup' => 'string', 'course_title' => 'string', 'course_second_title' => 'integer', 'is_playback_type' => 'integer', 'is_show_pic' => 'integer', 'season' => 'integer', 'is_show_sub_title' => 'integer', 'vip_type' => 'string', 'is_give' => 'integer', 'class_type' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'course_type' => 'string', 'course_sub_type' => 'integer', 'course_classify_id' => 'integer', 'sort' => 'integer', 'price' => 'integer', 'origin_price' => 'integer', 'vip_price' => 'integer', 'advance_time' => 'integer', 'is_free' => 'integer', 'is_playback' => 'integer', 'is_generated_class' => 'integer', 'is_vip_class' => 'integer', 'watch_num' => 'integer', 'validity_date' => 'integer', 'start_play_date' => 'integer', 'end_play_date' => 'integer', 'start_play_year' => 'integer', 'sales_num' => 'integer', 'sales_base' => 'integer', 'browse_base' => 'integer', 'states' => 'string', 'browse_num' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'need_address' => 'integer', 'is_del' => 'integer', 'is_top' => 'integer', 'is_hot' => 'integer', 'class_id' => 'integer', 'is_group' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'string', 'is_deal' => 'integer', 'is_signup' => 'string', 'course_title' => 'string', 'course_second_title' => 'integer', 'is_playback_type' => 'integer', 'is_show_pic' => 'integer', 'season' => 'integer', 'is_show_sub_title' => 'integer', 'vip_type' => 'string', 'is_give' => 'integer', 'class_type' => 'integer'];
 
     public function getPriceAttribute(): float|int
     {

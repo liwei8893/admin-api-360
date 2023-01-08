@@ -24,26 +24,20 @@ class QuestionHistory extends MineModel
 {
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'question_history';
+    protected ?string $table = 'question_history';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'user_id', 'ques_id', 'user_answer', 'is_right', 'is_mark', 'is_collect', 'created_at', 'updated_at'];
+    protected array $fillable = ['id', 'user_id', 'ques_id', 'user_answer', 'is_right', 'is_mark', 'is_collect', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'ques_id' => 'integer', 'is_right' => 'integer', 'is_mark' => 'integer', 'is_collect' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'ques_id' => 'integer', 'is_right' => 'integer', 'is_mark' => 'integer', 'is_collect' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s'];
 
-    protected $dateFormat = 'U';
+    protected ?string $dateFormat = 'U';
 
     public function question(): HasOne
     {

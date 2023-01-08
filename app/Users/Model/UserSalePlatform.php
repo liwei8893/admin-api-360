@@ -13,9 +13,9 @@ use Mine\MineModel;
  */
 class UserSalePlatform extends MineModel
 {
-    public $timestamps = false;
+    public bool $timestamps = false;
 
-    protected $table = 'user_sale_platform';
+    protected ?string $table = 'user_sale_platform';
 
-    protected $fillable = ['user_platform', 'u_sale_platform'];
+    protected array $fillable = ['user_platform', 'u_sale_platform'];
 }

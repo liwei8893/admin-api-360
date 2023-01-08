@@ -25,24 +25,18 @@ class Avatar extends MineModel
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'avatar';
+    protected ?string $table = 'avatar';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['type', 'url', 'sort', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['type', 'url', 'sort', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'type' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'type' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
     /**
      * 多态一对一关联积分商品表.

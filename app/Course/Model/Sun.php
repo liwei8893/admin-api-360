@@ -29,26 +29,20 @@ class Sun extends MineModel
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'sun';
+    protected ?string $table = 'sun';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'user_id', 'course_period_id', 'status', 'html', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'user_id', 'course_period_id', 'status', 'html', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'course_period_id' => 'integer', 'status' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'course_period_id' => 'integer', 'status' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
-    protected $dateFormat = 'U';
+    protected ?string $dateFormat = 'U';
 
     public function user(): HasOne
     {

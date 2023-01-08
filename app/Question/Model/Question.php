@@ -42,26 +42,20 @@ class Question extends MineModel
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'question';
+    protected ?string $table = 'question';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'knows_id', 'classify_id', 'parent_id', 'channel', 'semester', 'ques_type', 'ques_title', 'ques_stem', 'ques_stem_text', 'ques_option', 'right_answer', 'ques_analysis', 'ques_difficulty', 'sort', 'states', 'deleted_at', 'created_id', 'created_at', 'updated_id', 'updated_at', 'form_at', 'knows_text'];
+    protected array $fillable = ['id', 'knows_id', 'classify_id', 'parent_id', 'channel', 'semester', 'ques_type', 'ques_title', 'ques_stem', 'ques_stem_text', 'ques_option', 'right_answer', 'ques_analysis', 'ques_difficulty', 'sort', 'states', 'deleted_at', 'created_id', 'created_at', 'updated_id', 'updated_at', 'form_at', 'knows_text'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'knows_id' => 'integer', 'classify_id' => 'string', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'string', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_id' => 'integer', 'updated_at' => 'datetime:Y-m-d H:i:s', 'form_at' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'knows_id' => 'integer', 'classify_id' => 'string', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'string', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_id' => 'integer', 'updated_at' => 'datetime:Y-m-d H:i:s', 'form_at' => 'integer'];
 
-    protected $dateFormat = 'U';
+    protected ?string $dateFormat = 'U';
 
     /**
      * 题目科目.

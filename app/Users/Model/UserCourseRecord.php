@@ -32,28 +32,22 @@ class UserCourseRecord extends MineModel
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'user_course_record';
+    protected ?string $table = 'user_course_record';
 
-    protected $dateFormat = 'U';
+    protected ?string $dateFormat = 'U';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'period_id', 'user_id', 'video_duration', 'watch_time', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'period_id', 'user_id', 'video_duration', 'watch_time', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'period_id' => 'integer', 'user_id' => 'integer', 'video_duration' => 'integer', 'watch_time' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'period_id' => 'integer', 'user_id' => 'integer', 'video_duration' => 'integer', 'watch_time' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
-    protected $appends = ['watch_time|video_duration' => 'timeRate'];
+    protected array $appends = ['watch_time|video_duration' => 'timeRate'];
 
     /**
      * 完课率

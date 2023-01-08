@@ -30,24 +30,18 @@ class Know extends MineModel
 {
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'knows';
+    protected ?string $table = 'knows';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'parent_id', 'knows_grade', 'knows_rule', 'name', 'states', 'sort', 'season', 'status', 'deleted_at', 'created_id', 'created_at', 'updated_id', 'updated_at', 'grade_id', 'shop_id'];
+    protected array $fillable = ['id', 'parent_id', 'knows_grade', 'knows_rule', 'name', 'states', 'sort', 'season', 'status', 'deleted_at', 'created_id', 'created_at', 'updated_id', 'updated_at', 'grade_id', 'shop_id'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'parent_id' => 'integer', 'knows_grade' => 'integer', 'states' => 'integer', 'sort' => 'integer', 'season' => 'string', 'status' => 'string', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'grade_id' => 'string'];
+    protected array $casts = ['id' => 'integer', 'parent_id' => 'integer', 'knows_grade' => 'integer', 'states' => 'integer', 'sort' => 'integer', 'season' => 'string', 'status' => 'string', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'grade_id' => 'string'];
 
     public function question(): HasMany
     {

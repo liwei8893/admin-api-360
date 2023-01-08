@@ -78,27 +78,27 @@ use Mine\MineModel;
 class Order extends MineModel
 {
     /**
-     * @description pay_states 需要审核.
+     *  pay_states 需要审核.
      */
     public const PAY_AUDIT = 8;
 
     /**
-     * @description pay_states 不需要审核.
+     *  pay_states 不需要审核.
      */
     public const PAY_NO_AUDIT = 7;
 
     /**
-     * @description audit_status 审核不通过.
+     *  audit_status 审核不通过.
      */
     public const AUDIT_REJECT = 2;
 
     /**
-     * @description audit_status 需要审核.
+     *  audit_status 需要审核.
      */
     public const AUDIT_PENDING = 1;
 
     /**
-     * @description audit_status 不需要审核.
+     *  audit_status 不需要审核.
      */
     public const AUDIT_SUCCESS = 0;
 
@@ -119,22 +119,20 @@ class Order extends MineModel
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'order';
+    protected ?string $table = 'order';
 
-    protected $dateFormat = 'U';
+    protected ?string $dateFormat = 'U';
 
-    protected $fillable = ['id', 'user_id', 'shop_id', 'course_basis_id', 'shop_name', 'course_name', 'order_number', 'pay_number', 'shop_type', 'pay_type', 'order_price', 'vip_discount', 'coupon_discount', 'other_discount', 'pay_states', 'ship_status', 'tag_type', 'is_present', 'is_logistics', 'grade', 'deleted_at', 'created_at', 'updated_at', 'indate', 'address_id', 'is_exchange', 'coupon_id', 'remark', 'spell_id', 'group_id', 'class_grade_id', 'is_offline', 'status', 'bug_subject', 'bug_subject_name', 'indate_close', 'audit_status', 'update_indate', 'is_renew', 'activities', 'actual_price', 'created_name', 'created_id', 'cause_text', 'is_over', 'renew_time', 'status_time', 'refund_time', 'renew_order_id', 'apply_type', 'is_vip', 'platform'];
+    protected array $fillable = ['id', 'user_id', 'shop_id', 'course_basis_id', 'shop_name', 'course_name', 'order_number', 'pay_number', 'shop_type', 'pay_type', 'order_price', 'vip_discount', 'coupon_discount', 'other_discount', 'pay_states', 'ship_status', 'tag_type', 'is_present', 'is_logistics', 'grade', 'deleted_at', 'created_at', 'updated_at', 'indate', 'address_id', 'is_exchange', 'coupon_id', 'remark', 'spell_id', 'group_id', 'class_grade_id', 'is_offline', 'status', 'bug_subject', 'bug_subject_name', 'indate_close', 'audit_status', 'update_indate', 'is_renew', 'activities', 'actual_price', 'created_name', 'created_id', 'cause_text', 'is_over', 'renew_time', 'status_time', 'refund_time', 'renew_order_id', 'apply_type', 'is_vip', 'platform'];
 
     // 订单需要审核
-    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'shop_id' => 'integer', 'course_basis_id' => 'integer', 'shop_type' => 'integer', 'pay_type' => 'integer', 'order_price' => 'integer', 'vip_discount' => 'integer', 'coupon_discount' => 'integer', 'other_discount' => 'integer', 'pay_states' => 'integer', 'ship_status' => 'integer', 'tag_type' => 'integer', 'is_present' => 'integer', 'is_logistics' => 'integer', 'grade' => 'integer', 'deleted_at' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'address_id' => 'integer', 'is_exchange' => 'integer', 'coupon_id' => 'integer', 'spell_id' => 'integer', 'group_id' => 'integer', 'class_grade_id' => 'integer', 'is_offline' => 'integer', 'status' => 'integer', 'indate_close' => 'integer', 'audit_status' => 'integer', 'update_indate' => 'integer', 'is_renew' => 'integer', 'actual_price' => 'decimal:2', 'created_id' => 'integer', 'is_over' => 'integer', 'renew_time' => 'datetime', 'status_time' => 'datetime', 'refund_time' => 'datetime', 'renew_order_id' => 'integer', 'apply_type' => 'integer', 'is_vip' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'shop_id' => 'integer', 'course_basis_id' => 'integer', 'shop_type' => 'integer', 'pay_type' => 'integer', 'order_price' => 'integer', 'vip_discount' => 'integer', 'coupon_discount' => 'integer', 'other_discount' => 'integer', 'pay_states' => 'integer', 'ship_status' => 'integer', 'tag_type' => 'integer', 'is_present' => 'integer', 'is_logistics' => 'integer', 'grade' => 'integer', 'deleted_at' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'address_id' => 'integer', 'is_exchange' => 'integer', 'coupon_id' => 'integer', 'spell_id' => 'integer', 'group_id' => 'integer', 'class_grade_id' => 'integer', 'is_offline' => 'integer', 'status' => 'integer', 'indate_close' => 'integer', 'audit_status' => 'integer', 'update_indate' => 'integer', 'is_renew' => 'integer', 'actual_price' => 'decimal:2', 'created_id' => 'integer', 'is_over' => 'integer', 'renew_time' => 'datetime', 'status_time' => 'datetime', 'refund_time' => 'datetime', 'renew_order_id' => 'integer', 'apply_type' => 'integer', 'is_vip' => 'integer'];
 
     // 追加字段
-    protected $appends = ['created_at|indate' => 'course_end_time'];
+    protected array $appends = ['created_at|indate' => 'course_end_time'];
 
-    protected $dates = ['created_at', 'updated_at', 'status_time', 'refund_time', 'renew_time'];
+    protected array $dates = ['created_at', 'updated_at', 'status_time', 'refund_time', 'renew_time'];
 
     /**
      * 追加字段访问器，订单结束时间.

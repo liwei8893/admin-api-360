@@ -20,7 +20,7 @@ use Psr\Container\NotFoundExceptionInterface;
 #[Aspect]
 class SubjectAuthAspect extends AbstractAspect
 {
-    public $annotations = [
+    public array $annotations = [
         SubjectAuth::class,
     ];
 
@@ -59,19 +59,19 @@ class SubjectAuthAspect extends AbstractAspect
         $gradeId = $data[$gradeField];
 
         $userId = user('app')->getId();
-        if (! $userId) {
+        if (!$userId) {
             throw new NormalStatusException('未登录,请重新登录之后再执行操作!');
         }
         $userService = $this->container->get(UsersService::class);
         /* @var User $userModel */
         $userModel = $userService->read($userId);
-        if (! $userModel) {
+        if (!$userModel) {
             throw new NormalStatusException('未查询到用户!');
         }
         $user = $userModel->vipType()->with(['orderGrade', 'orderSubject'])
             ->first();
         // 为空验证新分科权限
-        if (! $user) {
+        if (!$user) {
             // 没会员就进行新分科验证
             /** @var Collection $userSubjectOrder */
             $userSubjectOrder = $userModel->haveSubject()->with(['course:id,subject_id'])->get();
@@ -79,7 +79,7 @@ class SubjectAuthAspect extends AbstractAspect
                 $this->noPermissionTip();
             }
             // 所有科目ID
-            $allSubject = $userSubjectOrder->pluck('course.subject_id')->map(fn ($item) => ['key' => $item]);
+            $allSubject = $userSubjectOrder->pluck('course.subject_id')->map(fn($item) => ['key' => $item]);
             // 为空表示没有购买科目
             if ($allSubject->isEmpty()) {
                 $this->noPermissionTip();

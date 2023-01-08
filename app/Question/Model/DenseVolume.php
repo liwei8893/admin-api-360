@@ -33,22 +33,16 @@ class DenseVolume extends MineModel
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'dense_volume';
+    protected ?string $table = 'dense_volume';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'month', 'name', 'grade', 'subject', 'type', 'answer', 'is_vip', 'url', 'new_state', 'difficulty', 'sort', 'created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by'];
+    protected array $fillable = ['id', 'month', 'name', 'grade', 'subject', 'type', 'answer', 'is_vip', 'url', 'new_state', 'difficulty', 'sort', 'created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'month' => 'integer', 'grade' => 'integer', 'subject' => 'integer', 'type' => 'integer', 'answer' => 'integer', 'is_vip' => 'integer', 'new_state' => 'integer', 'difficulty' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'month' => 'integer', 'grade' => 'integer', 'subject' => 'integer', 'type' => 'integer', 'answer' => 'integer', 'is_vip' => 'integer', 'new_state' => 'integer', 'difficulty' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer'];
 }

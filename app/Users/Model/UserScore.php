@@ -22,24 +22,18 @@ class UserScore extends MineModel
 {
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'user_score';
+    protected ?string $table = 'user_score';
 
-    protected $dateFormat = 'U';
+    protected ?string $dateFormat = 'U';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'user_id', 'type', 'channel', 'channel_type', 'origin_id', 'score', 'created_at', 'updated_at'];
+    protected array $fillable = ['id', 'user_id', 'type', 'channel', 'channel_type', 'origin_id', 'score', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'type' => 'integer', 'channel_type' => 'integer', 'origin_id' => 'integer', 'score' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'type' => 'integer', 'channel_type' => 'integer', 'origin_id' => 'integer', 'score' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }

@@ -22,28 +22,22 @@ use Mine\MineModel;
  */
 class OrderPayment extends MineModel
 {
-    public $timestamps = false;
+    public bool $timestamps = false;
 
-    protected $primaryKey = 'payment_id';
+    protected string $primaryKey = 'payment_id';
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'order_payments';
+    protected ?string $table = 'order_payments';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['payment_id', 'payment_number', 'order_number', 'pay_price', 'pay_app_id', 'tag_type', 'subject', 'user_id', 'trade_no', 'begin_time', 'payed_time', 'status'];
+    protected array $fillable = ['payment_id', 'payment_number', 'order_number', 'pay_price', 'pay_app_id', 'tag_type', 'subject', 'user_id', 'trade_no', 'begin_time', 'payed_time', 'status'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['payment_id' => 'integer', 'pay_price' => 'decimal:2', 'tag_type' => 'integer', 'user_id' => 'integer', 'begin_time' => 'integer', 'payed_time' => 'integer', 'status' => 'integer'];
+    protected array $casts = ['payment_id' => 'integer', 'pay_price' => 'decimal:2', 'tag_type' => 'integer', 'user_id' => 'integer', 'begin_time' => 'integer', 'payed_time' => 'integer', 'status' => 'integer'];
 }

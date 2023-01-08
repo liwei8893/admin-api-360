@@ -136,28 +136,22 @@ class User extends MineModel
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
-    protected $table = 'users';
+    protected ?string $table = 'users';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
-    protected $fillable = ['id', 'user_name', 'real_name', 'user_nickname', 'user_pass', 'user_email', 'id_card', 'remember_token', 'mobile', 'status', 'sex', 'last_login_ip', 'last_login_time', 'birthday', 'signature', 'avatar', 'avatar_frame', 'created_at', 'updated_at', 'is_buy', 'wx_openid', 'qq_openid', 'integral', 'grade_id', 'province_id', 'city_id', 'area_id', 'user_type', 'dis_id', 'identity_card', 'bank_user_name', 'user_from', 'extension_from_user_id', 'qq', 'is_teacher', 'is_assistant', 'is_student', 'attribute_grade_id', 'edit_username', 't_type', 'sale_platform', 'headmaster', 'is_headmaster', 'parent_name', 'parent_wx', 'teacher_wx', 'address', 'remark', 'yw', 'sx', 'yy', 'wl', 'hx', 'ls', 'dl', 'sw', 'zz', 'platform', 'is_show', 'wxgzh_openid', 'old_platform', 'is_adviser', 'order_updated_at', 'experience', 'created_name', 'created_id', 'is_playback_type', 'contact_time', 'user_property', 'days', 'score', 'is_remind', 'first_month', 'tag', 'market_id', 'remark_case', 'is_student_type', 'mp_openid'];
+    protected array $fillable = ['id', 'user_name', 'real_name', 'user_nickname', 'user_pass', 'user_email', 'id_card', 'remember_token', 'mobile', 'status', 'sex', 'last_login_ip', 'last_login_time', 'birthday', 'signature', 'avatar', 'avatar_frame', 'created_at', 'updated_at', 'is_buy', 'wx_openid', 'qq_openid', 'integral', 'grade_id', 'province_id', 'city_id', 'area_id', 'user_type', 'dis_id', 'identity_card', 'bank_user_name', 'user_from', 'extension_from_user_id', 'qq', 'is_teacher', 'is_assistant', 'is_student', 'attribute_grade_id', 'edit_username', 't_type', 'sale_platform', 'headmaster', 'is_headmaster', 'parent_name', 'parent_wx', 'teacher_wx', 'address', 'remark', 'yw', 'sx', 'yy', 'wl', 'hx', 'ls', 'dl', 'sw', 'zz', 'platform', 'is_show', 'wxgzh_openid', 'old_platform', 'is_adviser', 'order_updated_at', 'experience', 'created_name', 'created_id', 'is_playback_type', 'contact_time', 'user_property', 'days', 'score', 'is_remind', 'first_month', 'tag', 'market_id', 'remark_case', 'is_student_type', 'mp_openid'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
-    protected $casts = ['id' => 'integer', 'status' => 'integer', 'sex' => 'integer', 'last_login_time' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_buy' => 'integer', 'integral' => 'integer', 'grade_id' => 'integer', 'province_id' => 'integer', 'city_id' => 'integer', 'area_id' => 'integer', 'user_type' => 'integer', 'dis_id' => 'integer', 'user_from' => 'integer', 'extension_from_user_id' => 'integer', 'qq' => 'integer', 'is_teacher' => 'integer', 'is_assistant' => 'integer', 'is_student' => 'integer', 'attribute_grade_id' => 'integer', 'edit_username' => 'integer', 't_type' => 'integer', 'headmaster' => 'integer', 'is_headmaster' => 'integer', 'yw' => 'integer', 'sx' => 'integer', 'yy' => 'integer', 'wl' => 'integer', 'hx' => 'integer', 'ls' => 'integer', 'dl' => 'integer', 'sw' => 'integer', 'zz' => 'integer', 'is_show' => 'integer', 'is_adviser' => 'integer', 'experience' => 'integer', 'created_id' => 'integer', 'is_playback_type' => 'integer', 'contact_time' => 'integer', 'days' => 'integer', 'score' => 'integer', 'is_remind' => 'integer', 'first_month' => 'integer', 'market_id' => 'integer', 'is_student_type' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'status' => 'integer', 'sex' => 'integer', 'last_login_time' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_buy' => 'integer', 'integral' => 'integer', 'grade_id' => 'integer', 'province_id' => 'integer', 'city_id' => 'integer', 'area_id' => 'integer', 'user_type' => 'integer', 'dis_id' => 'integer', 'user_from' => 'integer', 'extension_from_user_id' => 'integer', 'qq' => 'integer', 'is_teacher' => 'integer', 'is_assistant' => 'integer', 'is_student' => 'integer', 'attribute_grade_id' => 'integer', 'edit_username' => 'integer', 't_type' => 'integer', 'headmaster' => 'integer', 'is_headmaster' => 'integer', 'yw' => 'integer', 'sx' => 'integer', 'yy' => 'integer', 'wl' => 'integer', 'hx' => 'integer', 'ls' => 'integer', 'dl' => 'integer', 'sw' => 'integer', 'zz' => 'integer', 'is_show' => 'integer', 'is_adviser' => 'integer', 'experience' => 'integer', 'created_id' => 'integer', 'is_playback_type' => 'integer', 'contact_time' => 'integer', 'days' => 'integer', 'score' => 'integer', 'is_remind' => 'integer', 'first_month' => 'integer', 'market_id' => 'integer', 'is_student_type' => 'integer'];
 
-    protected $dateFormat = 'U';
+    protected ?string $dateFormat = 'U';
 
-    protected $hidden = ['user_pass', 'remember_token', 'wx_openid', 'wxgzh_openid', 'mp_openid'];
+    protected array $hidden = ['user_pass', 'remember_token', 'wx_openid', 'wxgzh_openid', 'mp_openid'];
 
     /**
      * 验证密码
