@@ -1,0 +1,61 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Course\Mapper;
+
+use App\Course\Model\Talk;
+use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Relations\HasOne;
+use Mine\Abstracts\AbstractMapper;
+
+/**
+ * 讲一讲审核Mapper类.
+ */
+class TalkMapper extends AbstractMapper
+{
+    /**
+     * @var Talk
+     */
+    public $model;
+
+    public function assignModel(): void
+    {
+        $this->model = Talk::class;
+    }
+
+    /**
+     * 搜索处理器.
+     */
+    public function handleSearch(Builder $query, array $params): Builder
+    {
+        if (isset($params['user_id']) && $params['user_id'] !== '') {
+            $query->where('user_id', '=', $params['user_id']);
+        }
+
+        // 关联章节表ID
+        if (isset($params['course_period_id']) && $params['course_period_id'] !== '') {
+            $query->where('course_period_id', '=', $params['course_period_id']);
+        }
+
+        // 默认2需要审核,通过为1,拒绝为0
+        if (isset($params['status']) && $params['status'] !== '') {
+            $query->where('status', '=', $params['status']);
+        }
+
+        // 视频url
+        if (isset($params['url']) && $params['url'] !== '') {
+            $query->where('url', '=', $params['url']);
+        }
+        if (! empty($params['withUser'])) {
+            $query->with('user:id,user_name,mobile,platform');
+        }
+        if (! empty($params['withCoursePeriod'])) {
+            return $query->with(['coursePeriod' => function (HasOne $query) {
+                $query->with('courseBasis:id,title')->select(['id', 'title', 'course_basis_id']);
+            }]);
+        }
+
+        return $query;
+    }
+}

@@ -190,7 +190,7 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
         $options = [];
         $options['rowSelection'] = ['showCheckedAll' => true];
         $options['searchLabelWidth'] = "'75px'";
-        $options['pk'] = "'".$this->getPk()."'";
+        $options['pk'] = "'" . $this->getPk() . "'";
         $options['operationColumn'] = false;
         $options['operationWidth'] = 160;
         $options['viewLayoutSetting'] = [
@@ -199,7 +199,9 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
             'viewType' => $this->model->component_type == 1 ? "'modal'" : "'drawer'",
             'width' => 600,
         ];
+        $options['beforeRequest'] = '(params) => {}';
         $options['api'] = $this->getBusinessEnName() . '.getList';
+        $options['afterRequest'] = '(data) => {data.forEach((item) => {})}';
         if (Str::contains($this->model->generate_menus, 'recycle')) {
             $options['recycleApi'] = $this->getBusinessEnName() . '.getRecycleList';
         }

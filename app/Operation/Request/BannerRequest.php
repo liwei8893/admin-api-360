@@ -1,0 +1,56 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Operation\Request;
+
+use Mine\MineFormRequest;
+
+/**
+ * 轮播管理验证数据类.
+ */
+class BannerRequest extends MineFormRequest
+{
+    /**
+     * 公共规则.
+     */
+    public function commonRules(): array
+    {
+        return [];
+    }
+
+    public function getBannerRules(): array
+    {
+        return ['banner_type_id' => 'required'];
+    }
+
+    /**
+     * 新增数据验证规则
+     * return array.
+     */
+    public function saveRules(): array
+    {
+        return [
+        ];
+    }
+
+    /**
+     * 更新数据验证规则
+     * return array.
+     */
+    public function updateRules(): array
+    {
+        return [
+        ];
+    }
+
+    /**
+     * 字段映射名称
+     * return array.
+     */
+    public function attributes(): array
+    {
+        return [
+        ];
+    }
+}

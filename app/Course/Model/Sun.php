@@ -49,6 +49,11 @@ class Sun extends MineModel
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
+    public function coursePeriod(): HasOne
+    {
+        return $this->hasOne(CoursePeriod::class, 'id', 'course_period_id');
+    }
+
     public function userVote(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'sun_vote', 'sun_id', 'user_id');

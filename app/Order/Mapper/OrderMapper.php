@@ -90,6 +90,14 @@ class OrderMapper extends AbstractMapper
             $query->whereIn('pay_states', $params['pay_states']);
         }
 
+        if (isset($params['audit_status']) && ! is_array($params['audit_status'])) {
+            $query->where('audit_status', $params['audit_status']);
+        }
+
+        if (isset($params['audit_status']) && is_array($params['audit_status'])) {
+            $query->whereIn('audit_status', $params['audit_status']);
+        }
+
         if (isset($params['shop_name'])) {
             $query->where('shop_name', 'like', "%{$params['shop_name']}%");
         }
@@ -121,6 +129,10 @@ class OrderMapper extends AbstractMapper
         // 关联订单科目
         if (! empty($params['withOrderSubject'])) {
             $query->with('orderSubject');
+        }
+
+        if (! empty($params['withCourse'])) {
+            $query->with('course:id,title,price,indate,created_at,subject_id,course_title,is_give');
         }
 
         // 关联付款表

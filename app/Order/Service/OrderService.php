@@ -221,6 +221,26 @@ class OrderService extends AbstractService
     }
 
     /**
+     * 获取审核列表.
+     */
+    public function getAuditList(array $data): array
+    {
+        $data['withOrderGrade'] = true;
+        $data['withOrderSubject'] = true;
+        $data['withUsers'] = true;
+        $data['withCourse'] = true;
+        $data['orderBy'] = ['id'];
+        $data['orderType'] = ['desc'];
+        // true 审核管理员,false平台
+        $auditState = user()->isNoAuditRole();
+        // 管理员只查询待审核的数据
+        if ($auditState) {
+            $data['audit_status'] = Order::AUDIT_PENDING;
+        }
+        return $this->mapper->getPageList($data);
+    }
+
+    /**
      * 处理导出数据.
      */
     protected function handleExportData(array &$data): void

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\System\Service;
 
 use App\System\Mapper\SystemUserMapper;
+use App\System\Model\SystemUser;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Cache\Annotation\CacheEvict;
 use Hyperf\Contract\ContainerInterface;
 use Hyperf\Di\Annotation\Inject;
+use JsonException;
 use Mine\Abstracts\AbstractService;
 use Mine\Event\UserAdd;
 use Mine\Event\UserDelete;
@@ -47,11 +49,10 @@ class SystemUserService extends AbstractService
      */
     public function __construct(
         ContainerInterface $container,
-        SystemUserMapper   $mapper,
-        SystemMenuService  $systemMenuService,
-        SystemRoleService  $systemRoleService
-    )
-    {
+        SystemUserMapper $mapper,
+        SystemMenuService $systemMenuService,
+        SystemRoleService $systemRoleService
+    ) {
         $this->mapper = $mapper;
         $this->sysMenuService = $systemMenuService;
         $this->sysRoleService = $systemRoleService;
@@ -82,7 +83,7 @@ class SystemUserService extends AbstractService
     public function getInfo(): array
     {
         if ($uid = user()->getId()) {
-            return $this->getCacheInfo((int)$uid);
+            return $this->getCacheInfo((int) $uid);
         }
         throw new MineException(t('system.unable_get_userinfo'), 500);
     }
@@ -154,7 +155,7 @@ class SystemUserService extends AbstractService
      */
     public function delete(array $ids): bool
     {
-        if (!empty($ids)) {
+        if (! empty($ids)) {
             if (($key = array_search(env('SUPER_ADMIN'), $ids)) !== false) {
                 unset($ids[$key]);
             }
@@ -173,7 +174,7 @@ class SystemUserService extends AbstractService
      */
     public function realDelete(array $ids): bool
     {
-        if (!empty($ids)) {
+        if (! empty($ids)) {
             if (($key = array_search(env('SUPER_ADMIN'), $ids)) !== false) {
                 unset($ids[$key]);
             }
@@ -238,10 +239,10 @@ class SystemUserService extends AbstractService
     public function setHomePage(array $params): bool
     {
         $res = ($this->mapper->getModel())::query()
-                ->where('id', $params['id'])
-                ->update(['dashboard' => $params['dashboard']]) > 0;
+            ->where('id', $params['id'])
+            ->update(['dashboard' => $params['dashboard']]) > 0;
 
-        $this->clearCache((string)$params['id']);
+        $this->clearCache((string) $params['id']);
         return $res;
     }
 
@@ -252,7 +253,7 @@ class SystemUserService extends AbstractService
      */
     public function updateInfo(array $params): bool
     {
-        if (!isset($params['id'])) {
+        if (! isset($params['id'])) {
             return false;
         }
 
@@ -262,7 +263,7 @@ class SystemUserService extends AbstractService
             $model[$key] = $param;
         }
 
-        $this->clearCache((string)$model['id']);
+        $this->clearCache((string) $model['id']);
         return $model->save();
     }
 
@@ -271,7 +272,7 @@ class SystemUserService extends AbstractService
      */
     public function modifyPassword(array $params): bool
     {
-        return $this->mapper->initUserPassword((int)user()->getId(), $params['newPassword']);
+        return $this->mapper->initUserPassword((int) user()->getId(), $params['newPassword']);
     }
 
     /**
@@ -284,16 +285,17 @@ class SystemUserService extends AbstractService
 
     /**
      * 处理提交数据.
+     * @param mixed $data
      */
     protected function handleData($data): array
     {
-        if (!is_array($data['role_ids'])) {
+        if (! is_array($data['role_ids'])) {
             $data['role_ids'] = explode(',', $data['role_ids']);
         }
         if (($key = array_search(env('ADMIN_ROLE'), $data['role_ids'], true)) !== false) {
             unset($data['role_ids'][$key]);
         }
-        if (!empty($data['post_ids']) && !is_array($data['post_ids'])) {
+        if (! empty($data['post_ids']) && ! is_array($data['post_ids'])) {
             $data['post_ids'] = explode(',', $data['post_ids']);
         }
         if (is_array($data['dept_id'])) {
@@ -304,13 +306,18 @@ class SystemUserService extends AbstractService
 
     /**
      * 获取缓存用户信息.
+     * @throws JsonException
      */
-    #[Cacheable(prefix: 'loginInfo', ttl: 0, value: 'userId_#{id}')]
+    #[Cacheable(prefix: 'loginInfo', value: 'userId_#{id}', ttl: 0)]
     protected function getCacheInfo(int $id): array
     {
+        /* @var SystemUser $user */
         $user = $this->mapper->getModel()->find($id);
         $user->addHidden('deleted_at', 'password');
         $data['user'] = $user->toArray();
+        if (! empty($data['user']['backend_setting'])) {
+            $data['user']['backend_setting'] = json_decode($data['user']['backend_setting'], false, 512, JSON_THROW_ON_ERROR);
+        }
         if (user()->isSuperAdmin()) {
             $data['roles'] = ['superAdmin'];
             $data['routers'] = $this->sysMenuService->mapper->getSuperAdminRouters();
