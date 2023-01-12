@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Order\Model;
 
+use App\Course\Model\CourseBasis;
 use App\Users\Model\User;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\HasOne;
+use Hyperf\Database\Model\Relations\HasOneThrough;
 use Mine\MineModel;
 
 /**
@@ -16,29 +18,46 @@ use Mine\MineModel;
  * @property Carbon $indate_end
  * @property Carbon $created_at
  * @property int $created_id
- * @property int $status
+ * @property int $status 0修改有效期,1续费
  * @property string $money
  * @property string $created_name
  * @property int $shop_id
  * @property int $user_id
- * @property int $audit_status
+ * @property int $audit_status 0正常,1待审核,2不通过
  * @property string $remark
  * @property string $cause_text
  * @property int $renew_experience 续费时属性
- * @property string $in_date
+ * @property CourseBasis $course
+ * @property int $renew_day
+ * @property Order $order
+ * @property User $users
  */
 class UsersRenew extends MineModel
 {
     /**
      * 续费.
-     * @description 续费
      */
     public const STATUS_RENEW = 1;
 
     /**
-     * @description 修改有效期
+     * 修改有效期
      */
     public const STATUS_CHANGE = 0;
+
+    /**
+     *  audit_status 需要审核.
+     */
+    public const AUDIT_PENDING = 1;
+
+    /**
+     *  audit_status 不需要审核.
+     */
+    public const AUDIT_SUCCESS = 0;
+
+    /**
+     *  audit_status 审核不通过.
+     */
+    public const AUDIT_REJECT = 2;
 
     public bool $timestamps = false;
 
@@ -80,5 +99,16 @@ class UsersRenew extends MineModel
     public function users(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function order(): HasOne
+    {
+        return $this->hasOne(Order::class, 'id', 'order_id');
+    }
+
+    public function course(): HasOneThrough
+    {
+        return $this->hasOneThrough(CourseBasis::class, Order::class, 'id', 'id', 'order_id', 'shop_id')
+            ->select(['id']);
     }
 }

@@ -73,7 +73,7 @@ class OrderService extends AbstractService
     /**
      * 处理指定有效期的更改.
      */
-    public function handleEndDateToTime(array $item, string $endDate, array $query = []): int
+    public function handleEndDateToTime(array $item, string $endDate, array $query = []): bool
     {
         $oldDt = Carbon::parse(Carbon::parse($item['course_end_time'])->toDateString());
         $newDt = Carbon::parse($endDate);
@@ -81,10 +81,16 @@ class OrderService extends AbstractService
         $diffDay = $oldDt->diffInDays($newDt);
         // 计算出时间是加还是减,lte小于或等于
         $hasAdd = $oldDt->lte($newDt);
-        if ($hasAdd) {
-            return $this->mapper->incrementInDate($item['id'], $diffDay, $query);
+        // 是否需要审核
+        $isAudit = user()->isNoAuditRole();
+        // 需要审核不直接修改
+        if (! $isAudit) {
+            return true;
         }
-        return $this->mapper->decrementInDate($item['id'], $diffDay, $query);
+        if ($hasAdd) {
+            return (bool) $this->mapper->incrementInDate($item['id'], $diffDay, $query);
+        }
+        return (bool) $this->mapper->decrementInDate($item['id'], $diffDay, $query);
     }
 
     /**
@@ -231,13 +237,39 @@ class OrderService extends AbstractService
         $data['withCourse'] = true;
         $data['orderBy'] = ['id'];
         $data['orderType'] = ['desc'];
-        // true 审核管理员,false平台
-        $auditState = user()->isNoAuditRole();
-        // 管理员只查询待审核的数据
-        if ($auditState) {
-            $data['audit_status'] = Order::AUDIT_PENDING;
-        }
+        $data['audit_status'] = Order::PAY_AUDIT;
         return $this->mapper->getPageList($data);
+    }
+
+    /**
+     * 审核报名信息.
+     */
+    #[Transaction]
+    public function auditOrder(array $params): bool
+    {
+        foreach ($params['ids'] as $id) {
+            /* @var Order $model */
+            $model = $this->mapper->read($id);
+            if (! $model) {
+                continue;
+            }
+            // 状态不为待审核跳过
+            if ($model->pay_states !== Order::PAY_AUDIT) {
+                continue;
+            }
+            // 审核通过
+            if ($params['pay_states'] === Order::PAY_SUCCESS) {
+                $model->pay_states = Order::PAY_SUCCESS;
+            // TODO 增加积分
+            } else {
+                // 审核不通过
+                $model->pay_states = Order::PAY_REJECT;
+                $model->deleted_at = time();
+            }
+            $model->cause_text = $params['cause_text'] ?? '';
+            $model->save();
+        }
+        return true;
     }
 
     /**

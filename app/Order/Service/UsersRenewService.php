@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Order\Service;
 
-use App\Order\Model\Order;
+use App\Order\Mapper\UsersRenewMapper;
+use App\Order\Model\UsersRenew;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
+use Mine\Annotation\Transaction;
 use Mine\Helper\LoginUser;
 
 class UsersRenewService extends AbstractService
 {
     /**
-     * @var \App\Order\Mapper\UsersRenewMapper
+     * @var UsersRenewMapper
      */
     #[inject]
     public $mapper;
@@ -26,7 +28,7 @@ class UsersRenewService extends AbstractService
      * time:2022-08-19 14:34.
      * @param mixed $data
      */
-    public function recordUserRenew($data): bool
+    public function recordUserRenew(array $data): bool
     {
         $params = [
             'order_id' => $data['id'],
@@ -39,9 +41,63 @@ class UsersRenewService extends AbstractService
             'created_id' => $this->loginUser->getId(),
             'created_name' => $this->loginUser->getUsername(),
             'money' => $data['money'] ?? 0,
-            'audit_status' => $this->loginUser->isNoAuditRole() ? Order::AUDIT_SUCCESS : Order::AUDIT_PENDING,
+            'audit_status' => $this->loginUser->isNoAuditRole() ? UsersRenew::AUDIT_SUCCESS : UsersRenew::AUDIT_PENDING,
             'remark' => $data['remark'] ?? '',
         ];
         return $this->mapper->insert($params);
+    }
+
+    /**
+     * 修改有效期待审核列表.
+     */
+    public function renewList(array $data): array
+    {
+        $data['withUsers'] = true;
+        $data['withCourse'] = true;
+        $data['orderBy'] = ['id'];
+        $data['orderType'] = ['desc'];
+//        $data['audit_status'] = UsersRenew::AUDIT_PENDING;
+        return $this->mapper->getPageList($data);
+    }
+
+    #[Transaction]
+    public function auditRenew(array $params): bool
+    {
+        foreach ($params['ids'] as $id) {
+            /* @var UsersRenew $model */
+            $model = $this->mapper->read($id);
+            if (! $model) {
+                continue;
+            }
+            // 查询订单
+            $order = $model->order;
+            if (! $order) {
+                continue;
+            }
+            // 状态不为待审核跳过
+            if ($model->audit_status !== UsersRenew::AUDIT_PENDING) {
+                continue;
+            }
+            // 审核通过
+            if ($params['audit_status'] === UsersRenew::AUDIT_SUCCESS) {
+                $model->audit_status = UsersRenew::AUDIT_SUCCESS;
+                // 同步订单状态
+                if ($model->status === 1) {
+                    // 如果为续费,叠加订单金额
+                    $order->actual_price += $model->money * 100;
+                    $order->is_renew = $model->status;
+                }
+                // 叠加有效期
+                $order->indate += $model->renew_day;
+                $order->save();
+            // TODO 增加积分
+            } else {
+                // 审核不通过
+                $model->audit_status = UsersRenew::AUDIT_REJECT;
+            }
+            $model->cause_text = $params['cause_text'] ?? '';
+            $model->save();
+        }
+        return true;
     }
 }

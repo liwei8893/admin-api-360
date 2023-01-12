@@ -77,7 +77,7 @@ class OrderStaMapper extends AbstractMapper
                         $query->whereIn('platform', $params['platform']);
                     });
             })
-            ->where('users_renew.audit_status', Order::AUDIT_SUCCESS)
+            ->where('users_renew.audit_status', UsersRenew::AUDIT_SUCCESS)
             ->where('users_renew.status', UsersRenew::STATUS_RENEW)
             ->whereBetween(
                 'users_renew.created_at',

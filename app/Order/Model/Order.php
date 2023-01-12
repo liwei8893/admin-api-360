@@ -83,37 +83,27 @@ class Order extends MineModel
     public const PAY_AUDIT = 8;
 
     /**
-     *  pay_states 不需要审核.
+     * pay_states 审核不通过.
      */
-    public const PAY_NO_AUDIT = 7;
+    public const PAY_REJECT = 9;
 
     /**
-     *  audit_status 审核不通过.
+     *  pay_states 审核通过,报名成功,完成状态.
      */
-    public const AUDIT_REJECT = 2;
+    public const PAY_SUCCESS = 7;
 
     /**
-     *  audit_status 需要审核.
-     */
-    public const AUDIT_PENDING = 1;
-
-    /**
-     *  audit_status 不需要审核.
-     */
-    public const AUDIT_SUCCESS = 0;
-
-    /**
-     *  正常.
+     *  status 正常.
      */
     public const STATUS_NORMAL = 1;
 
     /**
-     *  暂停.
+     *  status暂停.
      */
     public const STATUS_PAUSE = 0;
 
     /**
-     *  退费.
+     *  status退费.
      */
     public const STATUS_REFUND = 2;
 

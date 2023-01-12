@@ -10,6 +10,7 @@ use App\Order\Service\UsersRenewService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
+use Hyperf\HttpServer\Annotation\PostMapping;
 use Mine\Annotation\Auth;
 use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
@@ -36,18 +37,31 @@ class OrderAuditController extends MineController
         return $this->success($this->orderService->getAuditList($request->all()));
     }
 
-    public function renewList()
+    #[PostMapping('auditOrder')]
+    public function auditOrder(OrderRequest $request): ResponseInterface
     {
-        return $this->success($this->orderService->getPageList());
+        return $this->orderService->auditOrder($request->all()) ? $this->success() : $this->error();
     }
 
-    public function auditOrder()
+    /**
+     * 修改有效期审核列表.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('renewList')]
+    public function renewList(OrderRequest $request): ResponseInterface
     {
-        return $this->success($this->orderService->getPageList());
+        return $this->success($this->renewService->renewList($request->all()));
     }
 
-    public function auditRenew()
+    /**
+     * 审核修改有效期
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('auditRenew')]
+    public function auditRenew(OrderRequest $request): ResponseInterface
     {
-        return $this->success($this->orderService->getPageList());
+        return $this->renewService->auditRenew($request->all()) ? $this->success() : $this->error();
     }
 }
