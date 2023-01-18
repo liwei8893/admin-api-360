@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Course\Service;
 
 use App\Course\Mapper\CourseBasisMapper;
+use App\Course\Model\CourseBasis;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 
@@ -18,6 +19,24 @@ class CourseBasisService extends AbstractService
      */
     #[Inject]
     public $mapper;
+
+    public function getAppPageList(array $params): array
+    {
+        if (empty($params['select'])) {
+            $params['select'] = CourseBasis::COMMON_FIELDS;
+        } else {
+            $params['select'] = explode(',', $params['select']);
+        }
+        $params['states'] = CourseBasis::STATUS_NORMAL;
+        $params['is_del'] = 0;
+        if (! isset($params['orderBy'])) {
+            $params['orderBy'] = ['sort', 'id'];
+        }
+        if (! isset($params['orderType'])) {
+            $params['orderType'] = ['desc', 'asc'];
+        }
+        return $this->mapper->getPageList($params, false);
+    }
 
     public function getPageListByRecycle(?array $params = null, bool $isScope = true): array
     {

@@ -24,24 +24,20 @@ class UserCourseRecordToday extends MineModel
 
     /**
      * The table associated with the model.
-     *
-     * @var string
      */
     protected ?string $table = 'user_course_record_today';
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array
      */
     protected array $fillable = ['id', 'user_id', 'record_time', 'record_date', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
-     *
-     * @var array
      */
     protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'record_time' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
+
+    protected ?string $dateFormat = 'U';
 
     /**
      * 定义 users 关联.

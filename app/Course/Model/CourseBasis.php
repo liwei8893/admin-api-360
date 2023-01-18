@@ -8,6 +8,7 @@ use App\Order\Model\Order;
 use App\Score\Model\ScoreShop;
 use App\System\Model\SystemDictData;
 use Carbon\Carbon;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
@@ -22,7 +23,6 @@ use Mine\MineModel;
  * @property int $course_sub_type 课程为公开课的时候选择子分类 1最强大脑，2思维导图，3作文
  * @property int $course_classify_id 课程分类
  * @property int $sort
- * @property int $price 课程价格
  * @property int $origin_price 原价
  * @property int $vip_price vip_price
  * @property string $course_cover 封面图片
@@ -67,9 +67,19 @@ use Mine\MineModel;
  * @property int $vip_type 1:优享会员,2:超级会员,3:至尊会员
  * @property int $is_give 1:表示是活动赠送的课程,如果学员购买了这个课添加到素养课里面
  * @property int $class_type 0:小学中学高中都能查,1小学,2中学,3高中
+ * @property Collection|SystemDictData[] $basisGrade
+ * @property CourseBasisType $basisType
+ * @property Collection|CourseChapter[] $chapter
+ * @property mixed $price 课程价格
+ * @property Collection|Order[] $order
+ * @property ScoreShop $scoreShop
  */
 class CourseBasis extends MineModel
 {
+    public const COMMON_FIELDS = ['id', 'title', 'subtitle', 'course_cover', 'price', 'is_give', 'is_show_sub_title', 'season', 'is_show_pic', 'course_title', 'is_signup', 'subject_id'];
+
+    public const STATUS_NORMAL = 3;
+
     /**
      * The table associated with the model.
      */

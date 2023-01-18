@@ -8,6 +8,7 @@ use App\Question\Model\Question;
 use App\System\Model\Tag;
 use App\Users\Model\User;
 use Carbon\Carbon;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasMany;
@@ -52,9 +53,17 @@ use Mine\MineModel;
  * @property string $filePath
  * @property int $is_group_live
  * @property string $qurstion_str
+ * @property CourseBasis $courseBasis
+ * @property Collection|Question[] $questionPeriod
+ * @property Collection|Sun[] $sun
+ * @property Collection|Tag[] $tags
+ * @property Collection|Talk[] $talk
+ * @property User $teacher
  */
 class CoursePeriod extends MineModel
 {
+    public const COMMON_FIELDS = ['course_periods.id', 'course_periods.title', 'course_basis_id', 'course_chapter_id', 'is_free', 'teacher_id', 'assistant_id', 'subject_id', 'subject_name', 'qurstion_str'];
+
     /**
      * The table associated with the model.
      */
@@ -71,6 +80,8 @@ class CoursePeriod extends MineModel
     protected array $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'course_chapter_id' => 'integer', 'is_playback' => 'integer', 'is_free' => 'integer', 'is_vip_class' => 'integer', 'is_try_see' => 'integer', 'is_download' => 'integer', 'try_see_time' => 'integer', 'start_play' => 'integer', 'end_play' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_push' => 'integer', 'is_getroominfo' => 'integer', 'cloud_type' => 'integer', 'is_login' => 'integer', 'is_group_live' => 'integer'];
 
     protected ?string $dateFormat = 'U';
+
+    protected array $hidden = ['qiniu_url'];
 
     public function teacher(): BelongsTo
     {

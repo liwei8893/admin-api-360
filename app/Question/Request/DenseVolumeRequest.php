@@ -19,13 +19,6 @@ class DenseVolumeRequest extends MineFormRequest
         return [];
     }
 
-    public function getUrlRules(): array
-    {
-        return [
-            'id' => 'required',
-        ];
-    }
-
     /**
      * 新增数据验证规则
      * return array.

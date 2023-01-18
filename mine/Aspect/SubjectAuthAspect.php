@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mine\Aspect;
 
+use App\Course\Service\CourseService;
 use App\Users\Model\User;
 use App\Users\Service\UsersService;
 use Hyperf\Database\Model\Collection;
@@ -53,25 +54,44 @@ class SubjectAuthAspect extends AbstractAspect
         // 科目字段名称
         $subjectField = $auth->subjectField;
         $subjectId = $data[$subjectField];
-
         // 年级字段名称
         $gradeField = $auth->gradeField;
         $gradeId = $data[$gradeField];
 
+        $courseField = $auth->courseField;
+        $courseId = $data[$courseField];
+
         $userId = user('app')->getId();
-        if (!$userId) {
+        if (! $userId) {
             throw new NormalStatusException('未登录,请重新登录之后再执行操作!');
         }
         $userService = $this->container->get(UsersService::class);
         /* @var User $userModel */
         $userModel = $userService->read($userId);
-        if (!$userModel) {
+        if (! $userModel) {
             throw new NormalStatusException('未查询到用户!');
+        }
+        // 如果有课程ID先验证课程是否单独购买
+        if ($courseId) {
+            $courseService = $this->container->get(CourseService::class);
+            $courseModel = $courseService->read($courseId);
+            if (! $courseModel) {
+                throw new NormalStatusException('课程不存在!');
+            }
+            $orderModel = $userModel->orders()->normalOrder()->isNotExpire()->where('shop_id', $courseId)->first();
+            // 已经购买,直接通过
+            if ($orderModel) {
+                return $data;
+            }
+            // 课程需要购买,没购买
+            if ($courseModel['is_give']) {
+                throw new NormalStatusException('未购买当前课程,请联系课程顾问购买!');
+            }
         }
         $user = $userModel->vipType()->with(['orderGrade', 'orderSubject'])
             ->first();
         // 为空验证新分科权限
-        if (!$user) {
+        if (! $user) {
             // 没会员就进行新分科验证
             /** @var Collection $userSubjectOrder */
             $userSubjectOrder = $userModel->haveSubject()->with(['course:id,subject_id'])->get();
@@ -79,7 +99,7 @@ class SubjectAuthAspect extends AbstractAspect
                 $this->noPermissionTip();
             }
             // 所有科目ID
-            $allSubject = $userSubjectOrder->pluck('course.subject_id')->map(fn($item) => ['key' => $item]);
+            $allSubject = $userSubjectOrder->pluck('course.subject_id')->map(fn ($item) => ['key' => $item]);
             // 为空表示没有购买科目
             if ($allSubject->isEmpty()) {
                 $this->noPermissionTip();

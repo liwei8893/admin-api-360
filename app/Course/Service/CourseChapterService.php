@@ -92,11 +92,19 @@ class CourseChapterService extends AbstractService
         return $questionPeriodData;
     }
 
+    public function getChapter(int $id): array
+    {
+        $params['course_basis_id'] = $id;
+        $params['withAppCoursePeriod'] = true;
+        $params['orderBy'] = ['serial_num', 'id'];
+        $params['orderType'] = ['asc', 'asc'];
+        return $this->getTreeList($params);
+    }
+
     /**
      * 处理节数据.
-     * @return array
      */
-    protected function handlePeriodData(array $data)
+    protected function handlePeriodData(array $data): array
     {
         if (isset($data['qurstion_str']) && is_array($data['qurstion_str'])) {
             $data['qurstion_str'] = implode(',', $data['qurstion_str']);

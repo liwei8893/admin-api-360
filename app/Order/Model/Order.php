@@ -29,7 +29,7 @@ use Mine\MineModel;
  * @property int $vip_discount 会员折扣金额
  * @property int $coupon_discount 优惠券折扣金额
  * @property int $other_discount 其他折扣金额 拼团
- * @property int $pay_states 支付状态:1:未支付 2:已支付 3:已取消 4:已删除 5:退款中 6:已退款 7:已完成
+ * @property int $pay_states 支付状态:1:未支付 2:已支付 3:已取消 4:已删除 5:退款中 6:已退款 7:已完成 8:待审核 9:审核拒绝
  * @property int $ship_status 发货状态 0无需发货 1待发货 2部分发货 3已发货 4已收货
  * @property int $tag_type 支付终端: 1:PC,2:安卓,3:IOS,4:H5,5:小程序,6:微信内置H5
  * @property int $is_present 是否赠送:0:不是 1:是
@@ -195,7 +195,7 @@ class Order extends MineModel
      */
     public function scopeNormalOrder($query)
     {
-        return $query->where('deleted_at', 0)->where('status', 1)->whereIn('pay_states', [2, 7]);
+        return $query->where('deleted_at', 0)->where('status', 1)->where('pay_states', 7);
     }
 
     /**

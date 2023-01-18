@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Users\Controller\App;
 
+use App\Users\Request\UserCourseRecordRequest;
 use App\Users\Service\UserCourseRecordService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
+use Hyperf\HttpServer\Annotation\PostMapping;
 use Mine\Annotation\Auth;
 use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
@@ -33,7 +35,7 @@ class UserCourseRecordAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('lastRecord'),Auth('app')]
+    #[GetMapping('lastRecord'), Auth('app')]
     public function lastRecord(): ResponseInterface
     {
         return $this->success($this->service->lastRecord());
@@ -55,7 +57,7 @@ class UserCourseRecordAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getRankingMe'),Auth('app')]
+    #[GetMapping('getRankingMe'), Auth('app')]
     public function getRankingMe(): ResponseInterface
     {
         return $this->success($this->service->getRankingMe());
@@ -66,7 +68,7 @@ class UserCourseRecordAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getReport'),Auth('app')]
+    #[GetMapping('getReport'), Auth('app')]
     public function getReport(): ResponseInterface
     {
         return $this->success($this->service->getReport());
@@ -77,9 +79,20 @@ class UserCourseRecordAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getUserRecord'),Auth('app')]
+    #[GetMapping('getUserRecord'), Auth('app')]
     public function getUserRecord(): ResponseInterface
     {
         return $this->success($this->service->getUserRecord());
+    }
+
+    /**
+     * 记录课程观看时间.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('setWatchTime'), Auth('app')]
+    public function setWatchTime(UserCourseRecordRequest $request): ResponseInterface
+    {
+        return $this->service->setWatchTime($request->all()) ? $this->success() : $this->error();
     }
 }

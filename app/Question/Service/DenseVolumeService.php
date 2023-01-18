@@ -22,8 +22,8 @@ class DenseVolumeService extends AbstractService
     public $mapper;
 
     #[SubjectAuth]
-    public function getUrl(array $params): MineModel
+    public function getUrl(int $id): MineModel
     {
-        return $this->mapper->first(['id' => $params['id']], ['url', 'subject', 'grade']);
+        return $this->mapper->first(['id' => $id], ['url', 'subject', 'grade']);
     }
 }

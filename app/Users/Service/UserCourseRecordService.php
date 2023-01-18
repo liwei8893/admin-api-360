@@ -7,6 +7,8 @@ namespace App\Users\Service;
 use App\Users\Mapper\UserCourseRecordMapper;
 use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractService;
+use Mine\Annotation\Transaction;
+use Mine\Exception\NormalStatusException;
 
 /**
  * 听课记录服务类.
@@ -100,6 +102,26 @@ class UserCourseRecordService extends AbstractService
             $item['timeRate'] = round($item['watch_time'] / $item['video_duration'] * 100, 2);
             return $item;
         })->groupBy('courseBasisId');
+    }
+
+    /**
+     * 记录听课时间.
+     */
+    #[Transaction]
+    public function setWatchTime(array $params): bool
+    {
+        // 视频总时间
+        $params['videoDuration'] = $params['videoDuration'] ?? 0;
+        // 听课时间
+        $params['watchTime'] = $params['watchTime'] ?? 120;
+        $params['userId'] = user('app')->getId();
+        $setRecordState = $this->mapper->setWatchTime($params);
+        $setRecordTodayState = $this->mapper->setWatchTimeToday($params);
+        if (! $setRecordState || ! $setRecordTodayState) {
+            throw new NormalStatusException('保存播放记录失败!');
+        }
+        // Todo 添加听课积分事件
+        return true;
     }
 
     protected function handleExportData(array &$data): void

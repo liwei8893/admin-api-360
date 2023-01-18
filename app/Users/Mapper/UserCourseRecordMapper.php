@@ -6,6 +6,7 @@ namespace App\Users\Mapper;
 
 use App\Users\Model\UserCourseRecord;
 use App\Users\Model\UserCourseRecordToday;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\DbConnection\Db;
@@ -99,5 +100,31 @@ class UserCourseRecordMapper extends AbstractMapper
             'coursePeriod:id,course_basis_id,title',
             'users:id,user_name,mobile',
         ])->where('user_id', $userId)->get();
+    }
+
+    /**
+     * 设置课程观看时间.
+     */
+    public function setWatchTime(array $params): bool
+    {
+        $recordModel = UserCourseRecord::query()
+            ->firstOrNew(
+                ['user_id' => $params['userId'], 'period_id' => $params['periodId']],
+                ['video_duration' => $params['videoDuration']]
+            );
+        $recordModel->watch_time += $params['watchTime'];
+        return $recordModel->save();
+    }
+
+    /**
+     * 设置课程每天观看时间.
+     */
+    public function setWatchTimeToday(array $params): bool
+    {
+        $today = Carbon::today()->toDateString();
+        $recordModel = UserCourseRecordToday::query()
+            ->firstOrNew(['user_id' => $params['userId'], 'record_date' => $today]);
+        $recordModel->record_time += $params['watchTime'];
+        return $recordModel->save();
     }
 }

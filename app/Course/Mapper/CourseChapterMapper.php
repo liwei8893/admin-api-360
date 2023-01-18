@@ -8,6 +8,7 @@ use App\Course\Model\CourseChapter;
 use App\Course\Model\CoursePeriod;
 use Exception;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Relations\HasOne;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 
@@ -114,8 +115,15 @@ class CourseChapterMapper extends AbstractMapper
         }
 
         if (! empty($params['withCoursePeriod'])) {
-            $query->with(['coursePeriod' => function ($query) {
-                $query->with(['teacher', 'tags', 'questionPeriod']);
+            $query->with(['coursePeriod' => function (HasOne $query) {
+                $query->with(['teacher', 'tags', 'questionPeriod'])
+                    ->select(CoursePeriod::COMMON_FIELDS);
+            }]);
+        }
+        if (! empty($params['withAppCoursePeriod'])) {
+            $query->with(['coursePeriod' => function (HasOne $query) {
+                $query->with(['teacher'])
+                    ->select(CoursePeriod::COMMON_FIELDS);
             }]);
         }
 

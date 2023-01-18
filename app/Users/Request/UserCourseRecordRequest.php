@@ -19,6 +19,11 @@ class UserCourseRecordRequest extends MineFormRequest
         return [];
     }
 
+    public function setWatchTimeRules(): array
+    {
+        return ['periodId' => 'required'];
+    }
+
     /**
      * 新增数据验证规则
      * return array.

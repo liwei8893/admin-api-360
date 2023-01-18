@@ -38,11 +38,9 @@ class DenseVolumeAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getUrl'), Auth('app')]
-    public function getUrl(DenseVolumeRequest $request): ResponseInterface
+    #[GetMapping('getUrl/{id}'), Auth('app')]
+    public function getUrl(int $id): ResponseInterface
     {
-        // TODO 分科权限验证
-        $params = $request->validated();
-        return $this->success($this->service->getUrl($params));
+        return $this->success($this->service->getUrl($id));
     }
 }

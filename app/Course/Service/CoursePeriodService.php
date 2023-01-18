@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Course\Service;
 
 use App\Course\Mapper\CoursePeriodMapper;
+use App\Course\Model\CoursePeriod;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
+use Mine\Annotation\SubjectAuth;
+use Mine\Exception\NormalStatusException;
 
 class CoursePeriodService extends AbstractService
 {
@@ -16,6 +19,24 @@ class CoursePeriodService extends AbstractService
      */
     #[Inject]
     public $mapper;
+
+    #[SubjectAuth]
+    public function getUrl(int $id): array
+    {
+        /* @var CoursePeriod $model */
+        $model = $this->mapper->read($id);
+        $userId = user('app')->getId();
+        if (! $model) {
+            throw new NormalStatusException('章节不存在!');
+        }
+        $model->makeVisible(['qiniu_url']);
+        $courseModel = $model->courseBasis;
+        if (! $courseModel) {
+            throw new NormalStatusException('课程不存在!');
+        }
+        $grade = $courseModel->basisGrade->pluck('key')->toArray();
+        return ['url' => $model['qiniu_url'], 'subject' => $courseModel['subject_id'], 'grade' => $grade, 'courseId' => $courseModel['id']];
+    }
 
     public function getPlanMonth($params): Collection|array
     {
