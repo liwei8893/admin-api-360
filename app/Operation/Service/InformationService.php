@@ -21,4 +21,19 @@ class InformationService extends AbstractService
     {
         $this->mapper = $mapper;
     }
+
+    /**
+     * 新增数据.
+     */
+    public function save(array $data): int
+    {
+        $data = $this->handleData($data);
+        return $this->mapper->save($data);
+    }
+
+    protected function handleData(array $data): array
+    {
+        $data['created_id'] = user()->getId();
+        return $data;
+    }
 }
