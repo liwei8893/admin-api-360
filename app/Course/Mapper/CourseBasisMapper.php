@@ -117,9 +117,15 @@ class CourseBasisMapper extends AbstractMapper
         if (isset($params['is_signup'])) {
             $query->where('is_signup', '=', $params['is_signup']);
         }
+        // 季节
+        if (isset($params['season'])) {
+            $query->where('season', $params['season']);
+        }
         // 年级
-        if (isset($params['grade_id']) && $params['grade_id'] !== '') {
-            $query->where('grade_id', '=', $params['grade_id']);
+        if (isset($params['grade']) && ! is_array($params['grade'])) {
+            $query->whereHas('basisGrade', function (Builder $query) use ($params) {
+                $query->where('grade_id', $params['grade']);
+            });
         }
         if (isset($params['grade']) && is_array($params['grade'])) {
             $query->whereHas('basisGrade', function (Builder $query) use ($params) {

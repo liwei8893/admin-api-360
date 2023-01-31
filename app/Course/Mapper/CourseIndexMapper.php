@@ -74,8 +74,11 @@ class CourseIndexMapper extends AbstractMapper
         }
 
         // 年级
-        if (isset($params['grade']) && $params['grade'] !== '') {
+        if (! empty($params['grade']) && ! is_array($params['grade'])) {
             $query->where('grade', '=', $params['grade']);
+        }
+        if (! empty($params['grade']) && is_array($params['grade'])) {
+            $query->whereIn('grade', $params['grade']);
         }
 
         // 科目
