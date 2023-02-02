@@ -7,6 +7,7 @@ namespace App\Question\Model;
 use App\System\Model\SystemDictData;
 use App\System\Model\Tag;
 use Carbon\Carbon;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\Relations\MorphToMany;
 use Mine\MineModel;
@@ -35,6 +36,11 @@ use Mine\MineModel;
  * @property Carbon $updated_at 修改时间
  * @property int $form_at 日期
  * @property string $knows_text 知识点文本
+ * @property Know $knows
+ * @property QuestionHistory $questionHistory
+ * @property SystemDictData $questionSubject
+ * @property SystemDictData $questionType
+ * @property Collection|Tag[] $tags
  */
 class Question extends MineModel
 {
@@ -53,7 +59,7 @@ class Question extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'knows_id' => 'integer', 'classify_id' => 'string', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'string', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_id' => 'integer', 'updated_at' => 'datetime:Y-m-d H:i:s', 'form_at' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'classify_id' => 'integer', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'integer', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'form_at' => 'integer'];
 
     protected ?string $dateFormat = 'U';
 

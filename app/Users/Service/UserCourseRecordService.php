@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Users\Service;
 
 use App\Users\Mapper\UserCourseRecordMapper;
+use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
@@ -43,8 +44,9 @@ class UserCourseRecordService extends AbstractService
     }
 
     /**
-     * 获取听课排行榜.
+     * 获取听课排行榜,缓存1小时.
      */
+    #[Cacheable(prefix: 'ranking', value: 'course', ttl: 3600)]
     public function getRanking(): Collection|array
     {
         return $this->mapper->getRanking()->map(function ($item) {
@@ -58,12 +60,20 @@ class UserCourseRecordService extends AbstractService
         });
     }
 
-    public function getRankingMe(): array
+    /**
+     * 获取用户听课排名,缓存1小时.
+     */
+    #[Cacheable(prefix: 'ranking', value: 'courseMe_#{userId}', ttl: 3600)]
+    public function getRankingMe(int $userId): array
     {
-        return ['ranking' => $this->mapper->getRankingMe()];
+        return ['ranking' => $this->mapper->getRankingMe($userId)];
     }
 
-    public function getReport(): array
+    /**
+     * 获取听课节数报告,缓存24小时.
+     */
+    #[Cacheable(prefix: 'report', value: 'course_#{userId}', ttl: 86400)]
+    public function getReport(int $userId): array
     {
         $monthMap = collect([
             'month01' => ['month' => '01', 'num' => 0],
@@ -82,8 +92,8 @@ class UserCourseRecordService extends AbstractService
         $data = $this->mapper->getReportByMonth()
             ->makeHidden(['timeRate'])
             ->keyBy(fn ($item) => 'month' . $item['month']);
-        $total = $this->mapper->getReportByTotal();
-        $rate = $this->mapper->getRankingRate();
+        $total = $this->mapper->getReportByTotal($userId);
+        $rate = $this->mapper->getRankingRate($userId);
         return [
             'chart' => $monthMap->merge($data)->values()->toArray(),
             'total' => $total,

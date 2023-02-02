@@ -118,11 +118,6 @@ trait MapperTrait
         return $this->listQuerySetting($params, $isScope)->chunkById(1000, $callback, $column, $alias);
     }
 
-    /**
-     * @return array|Collection
-     *                          author:ZQ
-     *                          time:2022-08-26 15:31
-     */
     public function getListCollect(?array $params, bool $isScope = true): Collection|array
     {
         return $this->listQuerySetting($params, $isScope)->get();

@@ -7,6 +7,7 @@ namespace App\Course\Model;
 use App\Question\Model\Question;
 use App\System\Model\Tag;
 use App\Users\Model\User;
+use App\Users\Model\UserCourseRecord;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsTo;
@@ -107,6 +108,11 @@ class CoursePeriod extends MineModel
     public function courseBasis(): HasOne
     {
         return $this->hasOne(CourseBasis::class, 'id', 'course_basis_id');
+    }
+
+    public function courseRecord(): HasOne
+    {
+        return $this->hasOne(UserCourseRecord::class, 'period_id', 'id');
     }
 
     /**

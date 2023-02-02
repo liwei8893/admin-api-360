@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mine\Helper;
@@ -6,6 +7,7 @@ namespace Mine\Helper;
 use App\System\Model\SystemRole;
 use App\System\Model\SystemUser;
 use App\System\Service\SystemUserService;
+use Exception;
 use Mine\Exception\TokenException;
 use Mine\MineRequest;
 use Psr\Container\ContainerExceptionInterface;
@@ -95,6 +97,15 @@ class LoginUser
         return $this->jwt->getParserData()['id'];
     }
 
+    public function hasLogin(): bool
+    {
+        try {
+            return (bool) $this->getId();
+        } catch (Exception $e) {
+        }
+        return false;
+    }
+
     /**
      * 获取当前登录用户岗位.
      */
@@ -116,7 +127,7 @@ class LoginUser
      */
     public function getDeptId(): int
     {
-        return (int)$this->jwt->getParserData()['dept_id'];
+        return (int) $this->jwt->getParserData()['dept_id'];
     }
 
     /**
@@ -124,7 +135,7 @@ class LoginUser
      */
     public function isSuperAdmin(): bool
     {
-        return (int)env('SUPER_ADMIN') === $this->getId();
+        return (int) env('SUPER_ADMIN') === $this->getId();
     }
 
     /**

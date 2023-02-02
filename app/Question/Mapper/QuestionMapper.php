@@ -70,12 +70,17 @@ class QuestionMapper extends AbstractMapper
         $perPage = $params['pageSize'] ?? $this->model::PAGE_SIZE;
         $page = $params['page'] ?? 1;
         $model = $this->listQuerySetting($params, false);
-        $paginate = $model->whereHas('knows', function (Builder $query) use ($courseBasisId, $channel) {
-            $query->whereRaw('FIND_IN_SET(?,shop_id)', [$courseBasisId])
-                ->when(! empty($channel), function ($query) use ($channel) {
-                    $query->where('channel', $channel);
-                });
-        })->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        // 如果有ID还是数组,直接查询ID
+        if (isset($params['id']) && is_array($params['id'])) {
+            $paginate = $model->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        } else {
+            $paginate = $model->whereHas('knows', function (Builder $query) use ($courseBasisId, $channel) {
+                $query->whereRaw('FIND_IN_SET(?,shop_id)', [$courseBasisId])
+                    ->when(! empty($channel), function ($query) use ($channel) {
+                        $query->where('channel', $channel);
+                    });
+            })->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        }
         return $this->setPaginate($paginate);
     }
 

@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Question\Controller;
+namespace App\Question\Controller\App;
 
 use App\Question\Dto\QuestionHistoryDto;
+use App\Question\Request\QuestionHistoryRequest;
 use App\Question\Service\QuestionHistoryService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
+use JsonException;
 use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
@@ -22,8 +24,8 @@ use Psr\Http\Message\ResponseInterface;
  * 错题表控制器
  * Class QuestionHistoryController.
  */
-#[Controller(prefix: 'question/history'), Auth]
-class QuestionHistoryController extends MineController
+#[Controller(prefix: 'question/app/history'), Auth]
+class QuestionHistoryAppController extends MineController
 {
     /**
      * 业务处理服务
@@ -41,6 +43,17 @@ class QuestionHistoryController extends MineController
     public function index(): ResponseInterface
     {
         return $this->success($this->service->getPageList($this->request->all(), false));
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws JsonException
+     */
+    #[PostMapping('submit')]
+    public function submit(QuestionHistoryRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->submit($request->all()));
     }
 
     /**

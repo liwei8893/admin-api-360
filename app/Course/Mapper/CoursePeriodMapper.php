@@ -7,7 +7,10 @@ namespace App\Course\Mapper;
 use App\Course\Model\CoursePeriod;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
+use Hyperf\Database\Model\Relations\HasOne;
 use Mine\Abstracts\AbstractMapper;
+use Psr\SimpleCache\InvalidArgumentException;
+use Throwable;
 
 class CoursePeriodMapper extends AbstractMapper
 {
@@ -16,10 +19,19 @@ class CoursePeriodMapper extends AbstractMapper
         $this->model = CoursePeriod::class;
     }
 
-    public function getPlanMonth($params): Collection|array
+    /**
+     * @throws InvalidArgumentException
+     * @throws Throwable
+     */
+    public function getPlanMonth(array $params): Collection|array
     {
+        $isLogin = user('app')->hasLogin();
+        $userId = $isLogin ? user('app')->getId() : null;
         return CoursePeriod::query()
-            ->with(['tags:id,name'])
+            ->with(['tags:id,name', 'courseRecord' => function (HasOne $query) use ($userId) {
+                $query->where('user_id', $userId)
+                    ->select(['id', 'period_id', 'video_duration', 'watch_time']);
+            }])
             ->select(['id', 'title', 'subject_id', 'subject_name', 'course_basis_id'])
             ->whereHas('courseBasis', function (Builder $query) use ($params) {
                 $query->whereHas('basisGrade', function (Builder $query) use ($params) {

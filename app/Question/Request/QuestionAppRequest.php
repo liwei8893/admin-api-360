@@ -24,6 +24,15 @@ class QuestionAppRequest extends MineFormRequest
         return ['id' => 'required'];
     }
 
+    public function getCourseQuestionRules(): array
+    {
+        return [
+            'period_id' => 'required',
+            // 1练一练,2测一测
+            'channel' => 'required',
+        ];
+    }
+
     /**
      * 新增数据验证规则
      * return array.

@@ -19,6 +19,14 @@ class QuestionHistoryRequest extends MineFormRequest
         return [];
     }
 
+    public function submitRules(): array
+    {
+        return [
+            'ques_id' => 'required',
+            'user_answer' => 'required',
+        ];
+    }
+
     /**
      * 新增数据验证规则
      * return array.

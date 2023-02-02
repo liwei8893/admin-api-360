@@ -42,26 +42,25 @@ class QuestionHistoryMapper extends AbstractMapper
             ->limit(10)->get();
     }
 
-    public function getRankingMe(): int
+    public function getRankingMe(int $userId): int
     {
-        $userId = user('app')->getId();
         $userNum = QuestionHistory::query()->where('user_id', $userId)->groupBy(['user_id'])->count('user_id');
         $subQuery = QuestionHistory::query()->selectRaw('count(user_id) num')->groupBy(['user_id']);
         return Model::query()->fromSub($subQuery->getQuery(), 't')->where('num', '>=', $userNum)->count();
     }
 
-    public function getRankingRate(): float
+    public function getRankingRate(int $userId): float
     {
-        $userRanking = $this->getRankingMe();
+        $userRanking = $this->getRankingMe($userId);
         $subQuery = QuestionHistory::query()->selectRaw('count(user_id) num')->groupBy(['user_id']);
         $totalRanking = Model::query()->fromSub($subQuery->getQuery(), 't')->count();
         return round(($userRanking / $totalRanking) * 100, 2);
     }
 
-    public function getReportByTotal(): int
+    public function getReportByTotal(int $userId): int
     {
         return QuestionHistory::query()
-            ->where('user_id', user('app')->getId())
+            ->where('user_id', $userId)
             ->count();
     }
 

@@ -39,7 +39,7 @@ class QuestionAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getUserQuestion'),Auth('app')]
+    #[GetMapping('getUserQuestion'), Auth('app')]
     public function getUserQuestion(QuestionAppRequest $request): ResponseInterface
     {
         return $this->success($this->questionService->getUserQuestion($request->all()));
@@ -47,12 +47,10 @@ class QuestionAppController extends MineController
 
     /**
      * 交换题目收藏状态
-     * @param QuestionAppRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('changeErrorCollect'),Auth('app')]
+    #[PostMapping('changeErrorCollect'), Auth('app')]
     public function changeErrorCollect(QuestionAppRequest $request): ResponseInterface
     {
         return $this->historyService->changeErrorCollect($request->all()) ? $this->success() : $this->error();
@@ -74,10 +72,10 @@ class QuestionAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getRankingMe'),Auth('app')]
+    #[GetMapping('getRankingMe'), Auth('app')]
     public function getRankingMe(): ResponseInterface
     {
-        return $this->success($this->historyService->getRankingMe());
+        return $this->success($this->historyService->getRankingMe(user('app')->getId()));
     }
 
     /**
@@ -85,9 +83,20 @@ class QuestionAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getReport'),Auth('app')]
+    #[GetMapping('getReport'), Auth('app')]
     public function getReport(): ResponseInterface
     {
-        return $this->success($this->historyService->getReport());
+        return $this->success($this->historyService->getReport(user('app')->getId()));
+    }
+
+    /**
+     * 获取课程对应题目.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getCourseQuestion'), Auth('app')]
+    public function getCourseQuestion(QuestionAppRequest $request): ResponseInterface
+    {
+        return $this->success($this->questionService->getAppCourseQuestion($request->all()));
     }
 }

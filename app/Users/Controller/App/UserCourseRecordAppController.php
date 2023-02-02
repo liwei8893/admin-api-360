@@ -60,7 +60,7 @@ class UserCourseRecordAppController extends MineController
     #[GetMapping('getRankingMe'), Auth('app')]
     public function getRankingMe(): ResponseInterface
     {
-        return $this->success($this->service->getRankingMe());
+        return $this->success($this->service->getRankingMe(user('app')->getId()));
     }
 
     /**
@@ -71,7 +71,7 @@ class UserCourseRecordAppController extends MineController
     #[GetMapping('getReport'), Auth('app')]
     public function getReport(): ResponseInterface
     {
-        return $this->success($this->service->getReport());
+        return $this->success($this->service->getReport(user('app')->getId()));
     }
 
     /**

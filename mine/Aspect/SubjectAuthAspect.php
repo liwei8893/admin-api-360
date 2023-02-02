@@ -59,7 +59,7 @@ class SubjectAuthAspect extends AbstractAspect
         $gradeId = $data[$gradeField];
 
         $courseField = $auth->courseField;
-        $courseId = $data[$courseField];
+        $courseId = $data[$courseField] ?? null;
 
         $userId = user('app')->getId();
         if (! $userId) {

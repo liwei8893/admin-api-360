@@ -19,6 +19,8 @@ use Mine\MineModel;
  * @property int $is_collect 收藏错题本1收藏,0不收藏
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at
+ * @property Question $question
+ * @property User $users
  */
 class QuestionHistory extends MineModel
 {
@@ -35,7 +37,7 @@ class QuestionHistory extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'ques_id' => 'integer', 'is_right' => 'integer', 'is_mark' => 'integer', 'is_collect' => 'integer', 'created_at' => 'datetime:Y-m-d H:i:s', 'updated_at' => 'datetime:Y-m-d H:i:s'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'ques_id' => 'integer', 'is_right' => 'integer', 'is_mark' => 'integer', 'is_collect' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     protected ?string $dateFormat = 'U';
 

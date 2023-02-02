@@ -19,12 +19,6 @@ class QuestionRequest extends MineFormRequest
         return [];
     }
 
-    public function getCourseQuestionRules(): array
-    {
-        return [
-            'course_basis_id' => 'required',
-        ];
-    }
 
     /**
      * 新增数据验证规则

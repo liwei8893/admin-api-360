@@ -59,26 +59,25 @@ class UserCourseRecordMapper extends AbstractMapper
             ->limit(10)->get();
     }
 
-    public function getRankingMe(): int
+    public function getRankingMe(int $userId): int
     {
-        $userId = user('app')->getId();
         $userNum = UserCourseRecordToday::query()->where('user_id', $userId)->groupBy(['user_id'])->sum('record_time');
         $subQuery = UserCourseRecordToday::query()->selectRaw('sum(record_time) num')->groupBy(['user_id']);
         return Model::query()->fromSub($subQuery->getQuery(), 'a')->where('num', '>=', $userNum)->count();
     }
 
-    public function getRankingRate(): float|int
+    public function getRankingRate(int $userId): float|int
     {
-        $userRanking = $this->getRankingMe();
+        $userRanking = $this->getRankingMe($userId);
         $subQuery = UserCourseRecord::query()->selectRaw('count(user_id) num')->groupBy(['user_id']);
         $totalRanking = Model::query()->fromSub($subQuery->getQuery(), 't')->count();
         return round(($userRanking / $totalRanking) * 100, 2);
     }
 
-    public function getReportByTotal(): int
+    public function getReportByTotal(int $userId): int
     {
         return UserCourseRecord::query()
-            ->where('user_id', user('app')->getId())
+            ->where('user_id', $userId)
             ->count();
     }
 
