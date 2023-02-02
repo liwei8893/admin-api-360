@@ -23,7 +23,7 @@ class OrderStaService extends AbstractService
      * 会员新增统计
      * @param mixed $data
      */
-    public function getNewVipSta($data): array
+    public function getNewVipSta(array $data): array
     {
         $data = $this->mapper->getNewVipSta($data);
         if ($data->isEmpty()) {

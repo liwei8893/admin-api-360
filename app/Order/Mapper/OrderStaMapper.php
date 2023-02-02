@@ -31,9 +31,9 @@ class OrderStaMapper extends AbstractMapper
      * 新增统计.
      * @param mixed $params
      */
-    public function getNewVipSta($params): Collection|array
+    public function getNewVipSta(array $params): Collection|array
     {
-        $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
+        $params['dateMonth'] = $params['dateMonth'] ?: date('Y-m');
         $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
         $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
 
