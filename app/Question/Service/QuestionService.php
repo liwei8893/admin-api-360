@@ -141,7 +141,7 @@ class QuestionService extends AbstractService
         // "title": "单选题", "key": "1"
         // "title": "多选题", "key": "2"
         // "title": "判断题", "key": "4"
-        if (in_array($data['ques_type'], [1, 2, 4], true)) {
+        if (in_array((int) $data['ques_type'], [1, 2, 4])) {
             // 处理答案内容
             foreach ($data['ques_option'] as &$option) {
                 $option['content'] = htmlspecialchars_decode($option['content']);
