@@ -47,13 +47,10 @@ class SystemUploadFileService extends AbstractService
     }
 
     /**
-     * @param mixed $params
      * @throws ContainerExceptionInterface
      * @throws JsonException|NotFoundExceptionInterface
-     *                                                  author:ZQ
-     *                                                  time:2022-09-07 18:00
      */
-    public function getUploadToken($params): array
+    public function getUploadToken(array $params): array
     {
         if (! isset($params['fileExt'])) {
             throw new NormalStatusException('fileExt is null');
@@ -106,7 +103,6 @@ class SystemUploadFileService extends AbstractService
     /**
      * 组装保存数据.
      * @param mixed $params
-     * @return array
      */
     public function getUploadFileInfo(array $params): array
     {
@@ -137,7 +133,7 @@ class SystemUploadFileService extends AbstractService
             if ($model = $this->mapper->getFileInfoByHash($hash)) {
                 return $model->toArray();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new NormalStatusException('获取文件Hash失败', 500);
         }
         $data = $this->mineUpload->upload($uploadedFile, $config);

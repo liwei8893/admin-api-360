@@ -19,14 +19,20 @@ class CourseHistoryMapper extends AbstractMapper
 
     /**
      * 课程购买记录.
-     * @param mixed $data
      */
-    public function getHistoryList($data): array
+    public function getHistoryList(array $data): array
     {
-        $query = Order::query()->where('status', '!=', 2)
+        $query = Order::query()->where('status', '!=', Order::STATUS_REFUND)
             ->with(['users:id,user_name,old_platform,platform,mobile,remark', 'orderGrade', 'orderSubject'])
-            ->whereHas('users', function (Builder $query) {
-                $query->where('user_type', User::USER_TYPE)->platformDataScope();
+            ->whereHas('users', function (Builder $query) use ($data) {
+                $query->where('user_type', User::USER_TYPE)
+                    ->when(! empty($data['users_mobile'] && is_array($data['users_mobile'])), function (Builder $query) use ($data) {
+                        $query->whereIn('mobile', $data['users_mobile']);
+                    })
+                    ->when(! empty($data['users_mobile'] && ! is_array($data['users_mobile'])), function (Builder $query) use ($data) {
+                        $query->where('mobile', $data['users_mobile']);
+                    })
+                    ->platformDataScope();
             })
             ->where('shop_id', $data['shop_id'])
             ->orderBy('created_at', 'desc')
@@ -34,10 +40,10 @@ class CourseHistoryMapper extends AbstractMapper
         $perPage = $data['pageSize'] ?? $this->model::PAGE_SIZE;
         $page = $data['page'] ?? 1;
         $query = $query->paginate(
-            (int)$perPage,
+            (int) $perPage,
             ['*'],
             'page',
-            (int)$page
+            (int) $page
         );
         return $this->setPaginate($query);
     }

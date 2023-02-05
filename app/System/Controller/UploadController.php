@@ -6,11 +6,15 @@ namespace App\System\Controller;
 
 use App\System\Request\UploadRequest;
 use App\System\Service\SystemUploadFileService;
+use Exception;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
+use JsonException;
+use League\Flysystem\FileExistsException;
 use Mine\Annotation\Auth;
+use Mine\Exception\MineException;
 use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -27,14 +31,24 @@ class UploadController extends MineController
 
     /**
      * 获取七牛云认证
-     * @throws \JsonException
+     * @throws JsonException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     *                                    author:ZQ
-     *                                    time:2022-09-08 10:52
      */
     #[GetMapping('getUploadToken'), Auth]
     public function getUploadToken(UploadRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getUploadToken($request->all()));
+    }
+
+    /**
+     * 获取七牛云认证
+     * @throws JsonException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('app/getAppUploadToken'), Auth('app')]
+    public function getAppUploadToken(UploadRequest $request): ResponseInterface
     {
         return $this->success($this->service->getUploadToken($request->all()));
     }
@@ -50,10 +64,20 @@ class UploadController extends MineController
     }
 
     /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('app/saveAppUploadInfo'), Auth('app')]
+    public function saveAppUploadInfo(UploadRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->saveUploadInfo($request->all()));
+    }
+
+    /**
      * 上传文件.
-     * @throws \League\Flysystem\FileExistsException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws FileExistsException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('uploadFile'), Auth]
     public function uploadFile(UploadRequest $request): ResponseInterface
@@ -70,9 +94,9 @@ class UploadController extends MineController
 
     /**
      * 上传图片.
-     * @throws \League\Flysystem\FileExistsException
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws FileExistsException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('uploadImage'), Auth]
     public function uploadImage(UploadRequest $request): ResponseInterface
@@ -90,8 +114,8 @@ class UploadController extends MineController
 
     /**
      * 分块上传.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('chunkUpload'), Auth]
     public function chunkUpload(UploadRequest $request): ResponseInterface
@@ -101,9 +125,9 @@ class UploadController extends MineController
 
     /**
      * 保存网络图片.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Exception
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Exception
      */
     #[PostMapping('saveNetworkImage'), Auth]
     public function saveNetworkImage(UploadRequest $request): ResponseInterface
@@ -113,8 +137,8 @@ class UploadController extends MineController
 
     /**
      * 获取当前目录所有文件和目录.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('getAllFiles'), Auth]
     public function getAllFile(): ResponseInterface
@@ -126,8 +150,8 @@ class UploadController extends MineController
 
     /**
      * 通过ID获取文件信息.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('getFileInfoById')]
     public function getFileInfoByid(): ResponseInterface
@@ -137,8 +161,8 @@ class UploadController extends MineController
 
     /**
      * 通过HASH获取文件信息.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('getFileInfoByHash')]
     public function getFileInfoByHash(): ResponseInterface
@@ -148,8 +172,8 @@ class UploadController extends MineController
 
     /**
      * 根据id下载文件.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('downloadById')]
     public function downloadById(): ResponseInterface
@@ -160,15 +184,15 @@ class UploadController extends MineController
         }
         $model = $this->service->read((int) $id);
         if (! $model) {
-            throw new \Mine\Exception\MineException('附件不存在', 500);
+            throw new MineException('附件不存在', 500);
         }
         return $this->_download(BASE_PATH . '/public' . $model->url, $model->origin_name);
     }
 
     /**
      * 根据hash下载文件.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('downloadByHash')]
     public function downloadByHash(): ResponseInterface
@@ -179,7 +203,7 @@ class UploadController extends MineController
         }
         $model = $this->service->readByHash($hash);
         if (! $model) {
-            throw new \Mine\Exception\MineException('附件不存在', 500);
+            throw new MineException('附件不存在', 500);
         }
         return $this->_download(BASE_PATH . '/public' . $model->url, $model->origin_name);
     }

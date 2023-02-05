@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Request;
 
+use Hyperf\Validation\Rule;
 use Mine\MineFormRequest;
 
 /**
@@ -23,6 +24,15 @@ class OrderHistoryRequest extends MineFormRequest
     {
         return [
             'shop_id' => 'required',
+        ];
+    }
+
+    public function batchChangeGrade(): array
+    {
+        return [
+            'ids' => 'required|array',
+            'type' => ['required', 'integer', Rule::in([0, 1, 2])],
+            'grade' => 'required|array',
         ];
     }
 

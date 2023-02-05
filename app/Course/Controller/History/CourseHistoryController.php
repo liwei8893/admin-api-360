@@ -9,7 +9,9 @@ use App\Order\Request\OrderHistoryRequest;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
+use Hyperf\HttpServer\Annotation\PostMapping;
 use Mine\Annotation\Auth;
+use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
 use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
@@ -31,5 +33,15 @@ class CourseHistoryController extends MineController
     public function index(OrderHistoryRequest $request): ResponseInterface
     {
         return $this->success($this->service->getHistoryList($request->all()));
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('batchChangeGrade'), Permission('course:history:batchChangeGrade'), OperationLog('批量修改购买年级')]
+    public function batchChangeGrade(OrderHistoryRequest $request): ResponseInterface
+    {
+        return $this->service->batchChangeGrade($request->all()) ? $this->success() : $this->error();
     }
 }

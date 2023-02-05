@@ -42,7 +42,7 @@ class OrderSignupService extends AbstractService
             // 查报名的课程 是否已经报过
             $courseModels = $this->courseService->getCourseInfoByIds($collect['course_signup'], ['id', 'title', 'price']);
             // 筛选出没报过的
-            $diffCourse = $this->filterCourseIsHave($collect['userId'], $courseModels);
+            $diffCourse = $this->filterCourseIsHave((int) $collect['userId'], $courseModels);
             if ($diffCourse->isEmpty()) {
                 continue;
             }
@@ -56,6 +56,7 @@ class OrderSignupService extends AbstractService
             // 插入
             foreach ($diffCourse as $course) {
                 $insertData = $this->handleInsertCourseData($comParam, $course);
+                /* @var Order $orderModel */
                 $orderModel = $this->mapper->saveModel($insertData);
                 ! empty($collect['subject']) && $orderModel->orderSubject()->sync($collect['subject']);
                 ! empty($collect['grade']) && $orderModel->orderGrade()->sync($collect['grade']);
@@ -66,9 +67,8 @@ class OrderSignupService extends AbstractService
 
     /**
      * 过滤已经报名的课程.
-     * @param mixed $userId
      */
-    public function filterCourseIsHave($userId, Collection $courseModels): Collection|\Hyperf\Utils\Collection
+    public function filterCourseIsHave(int $userId, Collection $courseModels): Collection|\Hyperf\Utils\Collection
     {
         $courseIds = $courseModels->pluck('id');
         $orderModel = $this->mapper->getUserCourseInfo($userId, $courseIds);

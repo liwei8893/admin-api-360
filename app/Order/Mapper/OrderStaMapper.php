@@ -29,7 +29,6 @@ class OrderStaMapper extends AbstractMapper
 
     /**
      * 新增统计.
-     * @param mixed $params
      */
     public function getNewVipSta(array $params): Collection|array
     {
@@ -59,9 +58,8 @@ class OrderStaMapper extends AbstractMapper
 
     /**
      * 续费统计
-     * @param mixed $params
      */
-    public function getRenewalSta($params): Collection|array
+    public function getRenewalSta(array $params): Collection|array
     {
         $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
         $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
@@ -94,9 +92,8 @@ class OrderStaMapper extends AbstractMapper
 
     /**
      * 退费统计
-     * @param mixed $params
      */
-    public function getRefundSta($params): Collection|array
+    public function getRefundSta(array $params): Collection|array
     {
         $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
         $firstDay = date('Y-m-01', strtotime($params['dateMonth']));

@@ -19,6 +19,24 @@ class SunRequest extends MineFormRequest
         return [];
     }
 
+    public function sunSaveRules(): array
+    {
+        return [
+            'html' => 'required',
+            'course_period_id' => 'required',
+        ];
+    }
+
+    public function sunDeleteRules(): array
+    {
+        return ['id' => 'required'];
+    }
+
+    public function sunVoteRules(): array
+    {
+        return ['id' => 'required'];
+    }
+
     /**
      * 新增数据验证规则
      * return array.

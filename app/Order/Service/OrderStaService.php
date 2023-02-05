@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Order\Service;
 
 use App\Order\Mapper\OrderStaMapper;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 
@@ -21,11 +22,10 @@ class OrderStaService extends AbstractService
 
     /**
      * 会员新增统计
-     * @param mixed $data
      */
-    public function getNewVipSta(array $data): array
+    public function getNewVipSta(array $params): array
     {
-        $data = $this->mapper->getNewVipSta($data);
+        $data = $this->mapper->getNewVipSta($params);
         if ($data->isEmpty()) {
             return $data->toArray();
         }
@@ -37,11 +37,10 @@ class OrderStaService extends AbstractService
 
     /**
      * 续费统计
-     * @param mixed $data
      */
-    public function getRenewalSta($data): array
+    public function getRenewalSta(array $params): array
     {
-        $data = $this->mapper->getRenewalSta($data);
+        $data = $this->mapper->getRenewalSta($params);
         if ($data->isEmpty()) {
             return $data->toArray();
         }
@@ -53,11 +52,10 @@ class OrderStaService extends AbstractService
 
     /**
      * 退费统计.
-     * @param mixed $data
      */
-    public function getRefundSta($data): array
+    public function getRefundSta(array $params): array
     {
-        $data = $this->mapper->getRefundSta($data);
+        $data = $this->mapper->getRefundSta($params);
         if ($data->isEmpty()) {
             return $data->toArray();
         }
@@ -72,9 +70,8 @@ class OrderStaService extends AbstractService
 
     /**
      * 处理时间,created_at->Y-m-d.
-     * @param mixed $data
      */
-    protected function handleStaDate($data, string $dayField = 'indate'): array
+    protected function handleStaDate(array|Collection $data, string $dayField = 'indate'): array
     {
         return $data->reduce(function ($carry, $item) use ($dayField) {
             $item['date'] = $item->created_at->toDateString();
@@ -99,10 +96,8 @@ class OrderStaService extends AbstractService
 
     /**
      * 处理合计行列.
-     * @param mixed $data
-     * @param mixed $allPlatform
      */
-    protected function handleStaDataSum(&$data, $allPlatform): void
+    protected function handleStaDataSum(array &$data, array $allPlatform): void
     {
         // 计算合计
         $colSum = ['date' => '合计', 'sum' => 0];

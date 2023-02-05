@@ -12,6 +12,7 @@ use Hyperf\HttpServer\Annotation\DeleteMapping;
 use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
 use Hyperf\HttpServer\Annotation\PutMapping;
+use JsonException;
 use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
@@ -48,7 +49,7 @@ class QuestionController extends MineController
     /**
      * 新增.
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws JsonException|NotFoundExceptionInterface
      */
     #[PostMapping('save'), Permission('question:list:save'), OperationLog]
     public function save(QuestionRequest $request): ResponseInterface
@@ -59,7 +60,7 @@ class QuestionController extends MineController
     /**
      * 更新.
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws JsonException|NotFoundExceptionInterface
      */
     #[PutMapping('update/{id}'), Permission('question:list:update'), OperationLog]
     public function update(int $id, QuestionRequest $request): ResponseInterface
@@ -90,8 +91,6 @@ class QuestionController extends MineController
     }
 
     /**
-     * @param QuestionRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

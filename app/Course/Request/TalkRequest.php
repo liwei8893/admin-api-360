@@ -19,6 +19,24 @@ class TalkRequest extends MineFormRequest
         return [];
     }
 
+    public function talkSaveRules(): array
+    {
+        return [
+            'url' => 'required',
+            'course_period_id' => 'required',
+        ];
+    }
+
+    public function talkDeleteRules(): array
+    {
+        return ['id' => 'required'];
+    }
+
+    public function talkVoteRules(): array
+    {
+        return ['id' => 'required'];
+    }
+
     /**
      * 新增数据验证规则
      * return array.
