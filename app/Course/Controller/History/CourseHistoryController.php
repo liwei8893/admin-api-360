@@ -39,7 +39,7 @@ class CourseHistoryController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('batchChangeGrade'), Permission('course:history:batchChangeGrade'), OperationLog('批量修改购买年级')]
+    #[PostMapping('batchChangeGrade'), Permission('course:history:batchChangeGrade,order:changeOrder'), OperationLog('批量修改购买年级')]
     public function batchChangeGrade(OrderHistoryRequest $request): ResponseInterface
     {
         return $this->service->batchChangeGrade($request->all()) ? $this->success() : $this->error();
