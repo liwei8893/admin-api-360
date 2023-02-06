@@ -152,11 +152,11 @@ class QuestionService extends AbstractService
         }
         // "title": "问答题", "key": "5"
         // 问答题处理,答案选项为空
-        if ($data['ques_type'] === 5) {
+        if ((int) $data['ques_type'] === 5) {
             $data['ques_option'] = null;
         }
         // "title": "填空题", "key": "6"
-        if ($data['ques_type'] === 6) {
+        if ((int) $data['ques_type'] === 6) {
             // 处理答案内容
             foreach ($data['ques_option'] as &$option) {
                 $option['content'] = strip_tags(htmlspecialchars_decode($option['content']), '<img><strong><em><span><br><sup><sub>');
