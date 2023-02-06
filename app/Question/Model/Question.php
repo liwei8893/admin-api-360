@@ -54,7 +54,7 @@ class Question extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'knows_id', 'classify_id', 'parent_id', 'channel', 'semester', 'ques_type', 'ques_title', 'ques_stem', 'ques_stem_text', 'ques_option', 'right_answer', 'ques_analysis', 'ques_difficulty', 'sort', 'states', 'deleted_at', 'created_id', 'created_at', 'updated_id', 'updated_at', 'form_at', 'knows_text'];
+    protected array $fillable = ['id', 'knows_id', 'classify_id', 'parent_id', 'channel', 'semester', 'ques_type', 'ques_title', 'ques_stem', 'ques_stem_text', 'ques_option', 'right_answer', 'ques_analysis', 'ques_difficulty', 'sort', 'states', 'deleted_at', 'created_id', 'updated_id', 'form_at', 'knows_text'];
 
     /**
      * The attributes that should be cast to native types.
