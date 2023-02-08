@@ -74,7 +74,7 @@ class CourseCommentAppController extends MineController
     public function talkDelete(TalkRequest $request): ResponseInterface
     {
         $ids = $request->input('id');
-        return $this->talkService->delete((array)$ids) ? $this->success() : $this->error();
+        return $this->talkService->delete((array) $ids) ? $this->success() : $this->error();
     }
 
     /**
@@ -101,7 +101,7 @@ class CourseCommentAppController extends MineController
         $params['user_id'] = $userId;
         $params['created_by'] = $userId;
         $params['updated_by'] = $userId;
-        return $this->talkService->save($params) ? $this->success() : $this->error();
+        return $this->sunService->save($params) ? $this->success() : $this->error();
     }
 
     /**
@@ -124,6 +124,6 @@ class CourseCommentAppController extends MineController
     public function sunDelete(SunRequest $request): ResponseInterface
     {
         $ids = $request->input('id');
-        return $this->talkService->delete((array)$ids) ? $this->success() : $this->error();
+        return $this->sunService->delete((array) $ids) ? $this->success() : $this->error();
     }
 }
