@@ -6,6 +6,8 @@ namespace App\Question\Mapper;
 
 use App\Question\Model\Question;
 use Hyperf\Database\Model\Builder;
+use Hyperf\DbConnection\Db;
+use Hyperf\Utils\Collection;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 
@@ -105,6 +107,53 @@ class QuestionMapper extends AbstractMapper
             })->orderBy('question_history.created_at', 'desc')
             ->paginate((int) $perPage, ['*'], 'page', (int) $page);
         return $this->setPaginate($paginate);
+    }
+
+    /**
+     * 每课一题列表.
+     */
+    public function getQuestionHomeList(array $params): array
+    {
+        $query = $this->model::query()
+            ->with(['questionSubject:value,label', 'questionType:value,label'])
+            ->whereHas('knows', function ($query) use ($params) {
+                $query->where('grade_id', $params['grade'])
+                    ->where('status', $params['status'])
+                    ->when(! empty($params['season']), function ($query) use ($params) {
+                        $query->where('season', $params['season']);
+                    });
+            })
+            ->where('channel', 1);
+        if ($params['select'] ?? false) {
+            $params['select'] = explode(',', $params['select']);
+            $query->select($this->filterQueryAttributes($params['select']));
+        }
+        $perPage = $params['pageSize'] ?? $this->model::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $query = $this->handleOrder($query, $params);
+        $query = $this->handleSearch($query, $params)
+            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        return $this->setPaginate($query);
+    }
+
+    /**
+     * 查出题目分类的所有课程章节
+     */
+    public function getToCourseList(array $knowsId): Collection
+    {
+        $data = DB::select("SELECT id, course_basis_id, title, SUBSTRING_INDEX(SUBSTRING_INDEX(C.COL, ',', help_topic_id + 1), ',', -1) AS question_id
+FROM (SELECT id, course_basis_id, qurstion_str AS COL, title,qiniu_url AS url
+      FROM course_periods
+      WHERE course_basis_id IN
+            (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(A.COL, ',', help_topic_id + 1), ',', -1) AS num
+             FROM (SELECT shop_id COL FROM knows WHERE id IN (?)) A
+                      JOIN
+                  mysql.help_topic b
+             WHERE b.help_topic_id < LENGTH(A.COL) - LENGTH(REPLACE(A.COL, ',', '')) + 1)) C
+         JOIN
+     mysql.help_topic D
+WHERE D.help_topic_id < LENGTH(C.COL) - LENGTH(REPLACE(C.COL, ',', '')) + 1", $knowsId);
+        return collect($data);
     }
 
     /**

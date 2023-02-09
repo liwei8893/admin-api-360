@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace App\Question\Service;
 
-use App\Course\Model\CoursePeriod;
-use App\Course\Service\CoursePeriodService;
 use App\Question\Mapper\QuestionMapper;
 use Hyperf\Di\Annotation\Inject;
 use JsonException;
 use Mine\Abstracts\AbstractService;
-use Mine\Annotation\SubjectAuth;
-use Mine\Exception\NormalStatusException;
 
 /**
  * 题库管理服务类.
@@ -21,15 +17,8 @@ class QuestionService extends AbstractService
     /**
      * @var QuestionMapper
      */
-    public $mapper;
-
     #[Inject]
-    protected CoursePeriodService $coursePeriodService;
-
-    public function __construct(QuestionMapper $mapper)
-    {
-        $this->mapper = $mapper;
-    }
+    public $mapper;
 
     /**
      * 获取课程对应的题目.
@@ -39,59 +28,13 @@ class QuestionService extends AbstractService
         return $this->mapper->getCourseQuestion($params);
     }
 
-    #[SubjectAuth]
-    public function getAppCourseQuestion(array $params): array
-    {
-        $userId = user('app')->getId();
-        /* @var CoursePeriod $periodModel 用章节ID查询章节信息,获取题目ID,测一测ID */
-        $periodModel = $this->coursePeriodService->read((int) $params['period_id']);
-        if (! $periodModel) {
-            throw new NormalStatusException('章节不存在!');
-        }
-        // 用课程ID查询课程信息,获取年级,科目认证
-        $courseModel = $periodModel->courseBasis;
-        if (! $courseModel) {
-            throw new NormalStatusException('课程不存在!');
-        }
-        $grade = $courseModel->basisGrade->pluck('key')->toArray();
-        // 1练一练,2测一测
-        $data = [];
-        if ($params['channel'] === '1') {
-            $params['id'] = explode(',', $periodModel->qurstion_str);
-            $params['orderBy'] = ['sort', 'id'];
-            $params['orderType'] = ['desc', 'desc'];
-            $data = $this->mapper->getListCollect($params);
-        } elseif ($params['channel'] === '2') {
-            $data = $periodModel->questionPeriod()
-                ->orderBy('sort', 'desc')->orderBy('id', 'desc')->get();
-        }
-        if ($data) {
-            $data = $data->load([
-                'questionSubject:value,label',
-                'questionType:value,label',
-                'questionHistory' => function ($query) use ($userId) {
-                    $query->where('user_id', $userId);
-                }]);
-            $data = $this->handleGetData($data->toArray());
-        }
-        // 用题目ID,测一测ID查询题目信息
-        return ['data' => $data, 'grade' => $grade, 'subject' => $courseModel->subject_id];
-    }
-
-    public function getUserQuestion(array $params): array
-    {
-        $pageData = $this->mapper->getUserQuestion($params);
-        $pageData['items'] = $this->handleGetData($pageData['items']);
-        return $pageData;
-    }
-
     /**
      * 处理填空题.
      */
     public function handleQuestionEmptyNum(array &$item): void
     {
         // 填空题处理
-        if ($item['ques_type'] === 6) {
+        if ((int) $item['ques_type'] === 6) {
             // 填空的数量
             try {
                 $get_empty_numb_arr = json_decode($item['ques_option'], true, 512, JSON_THROW_ON_ERROR);
@@ -105,14 +48,6 @@ class QuestionService extends AbstractService
                 $item['empty_nmb'] = 0;
             }
         }
-    }
-
-    public function handleGetData(array $data): array
-    {
-        foreach ($data as &$item) {
-            $this->handleQuestionEmptyNum($item);
-        }
-        return $data;
     }
 
     /**

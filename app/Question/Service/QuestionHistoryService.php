@@ -170,7 +170,7 @@ class QuestionHistoryService extends AbstractService
             $saveData['right_answer'] = $handleRightAnswer;
         }
         // 保存到数据库
-//        $this->save($saveData);
+        $this->save($saveData);
         // TODO 添加积分事件
         return $saveData;
     }

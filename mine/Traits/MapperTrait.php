@@ -108,8 +108,6 @@ trait MapperTrait
      * chunk.
      * @param null $column
      * @param null $alias
-     *                    author:ZQ
-     *                    time:2022-08-30 16:51
      */
     public function getListChunk(?array $params, Closure $callback, bool $isScope = true, $column = null, $alias = null): bool
     {

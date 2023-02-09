@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Question\Controller\App;
 
 use App\Question\Request\QuestionAppRequest;
+use App\Question\Service\QuestionAppService;
 use App\Question\Service\QuestionHistoryService;
-use App\Question\Service\QuestionService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
@@ -32,7 +32,17 @@ class QuestionAppController extends MineController
     protected QuestionHistoryService $historyService;
 
     #[Inject]
-    protected QuestionService $questionService;
+    protected QuestionAppService $questionService;
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getQuestionHomeList')]
+    public function getQuestionHomeList(QuestionAppRequest $request): ResponseInterface
+    {
+        return $this->success($this->questionService->getQuestionHomeList($request->all()));
+    }
 
     /**
      * 做题记录.
@@ -98,5 +108,16 @@ class QuestionAppController extends MineController
     public function getCourseQuestion(QuestionAppRequest $request): ResponseInterface
     {
         return $this->success($this->questionService->getAppCourseQuestion($request->all()));
+    }
+
+    /**
+     * 获取单个题目.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('read/{id}'), Auth('app')]
+    public function read(int $id): ResponseInterface
+    {
+        return $this->success($this->questionService->readQuestion($id)['data'] ?? []);
     }
 }

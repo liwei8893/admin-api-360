@@ -19,6 +19,21 @@ class QuestionAppRequest extends MineFormRequest
         return [];
     }
 
+    public function readQuestionRules(): array
+    {
+        return [
+            'id' => 'required',
+        ];
+    }
+
+    public function getQuestionHomeListRules(): array
+    {
+        return [
+            'type' => 'required',
+            'subject' => 'required',
+        ];
+    }
+
     public function changeErrorCollectRules(): array
     {
         return ['id' => 'required'];
