@@ -62,7 +62,11 @@ class QuestionAppService extends AbstractService
     public function getUserQuestion(array $params): array
     {
         $pageData = $this->mapper->getUserQuestion($params);
-        $pageData['items'] = $this->handleGetData($pageData['items']);
+        $items = [];
+        foreach ($pageData['items'] as $item) {
+            $items[] = $item->toArray();
+        }
+        $pageData['items'] = $this->handleGetData($items);
         return $pageData;
     }
 
