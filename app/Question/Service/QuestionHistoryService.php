@@ -7,12 +7,15 @@ namespace App\Question\Service;
 use App\Question\Mapper\QuestionHistoryMapper;
 use App\Question\Model\Question;
 use App\Question\Model\QuestionHistory;
+use App\Score\Event\ScoreAddEvent;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use JsonException;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 错题表服务类.
@@ -104,7 +107,10 @@ class QuestionHistoryService extends AbstractService
     }
 
     /**
+     * 前端提交题目.
      * @throws JsonException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function submit(array $params): array
     {
@@ -170,8 +176,9 @@ class QuestionHistoryService extends AbstractService
             $saveData['right_answer'] = $handleRightAnswer;
         }
         // 保存到数据库
-        $this->save($saveData);
-        // TODO 添加积分事件
+        $historyId = $this->save($saveData);
+        // TODO 添加积分事件做题
+        event(new ScoreAddEvent('question', $userId, $historyId));
         return $saveData;
     }
 

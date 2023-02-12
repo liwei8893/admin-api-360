@@ -126,4 +126,13 @@ class UserCourseRecordMapper extends AbstractMapper
         $recordModel->record_time += $params['watchTime'];
         return $recordModel->save();
     }
+
+    /**
+     * 查询用户当天听课时长
+     */
+    public function getTodayDataByUserId($userId): \Hyperf\Database\Model\Model|UserCourseRecordToday|Builder|null
+    {
+        return UserCourseRecordToday::query()->where('user_id', $userId)
+            ->where('record_date', Carbon::today()->toDateString())->first();
+    }
 }

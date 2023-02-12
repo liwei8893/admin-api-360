@@ -7,12 +7,15 @@ namespace App\Order\Service;
 use App\Course\Service\CourseService;
 use App\Order\Mapper\OrderSignupMapper;
 use App\Order\Model\Order;
+use App\Score\Event\ScoreAddEvent;
 use Exception;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Helper\LoginUser;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 订单管理服务类.
@@ -33,6 +36,8 @@ class OrderSignupService extends AbstractService
 
     /**
      * 报名.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      * @throws Exception
      */
     #[Transaction]
@@ -60,6 +65,10 @@ class OrderSignupService extends AbstractService
                 $orderModel = $this->mapper->saveModel($insertData);
                 ! empty($collect['subject']) && $orderModel->orderSubject()->sync($collect['subject']);
                 ! empty($collect['grade']) && $orderModel->orderGrade()->sync($collect['grade']);
+                // TODO 新增会员时增加积分,只有报超级会员时才加积分,$insertData['pay_states]===7时增加,===8时在审核时增加
+                if ($insertData['pay_states'] === Order::PAY_SUCCESS && $course['id'] === 950) {
+                    event(new ScoreAddEvent('init', (int) $collect['userId'], $orderModel->id));
+                }
             }
         }
         return true;
@@ -79,7 +88,6 @@ class OrderSignupService extends AbstractService
 
     /**
      * 处理插入数据.
-     * @param mixed $data
      * @throws Exception
      */
     public function handleInsertCourseData(array $data, mixed $course, string $orderNum = ''): array

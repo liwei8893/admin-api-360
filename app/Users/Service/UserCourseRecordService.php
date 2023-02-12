@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Users\Service;
 
+use App\Score\Event\ScoreAddEvent;
 use App\Users\Mapper\UserCourseRecordMapper;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 听课记录服务类.
@@ -116,6 +119,8 @@ class UserCourseRecordService extends AbstractService
 
     /**
      * 记录听课时间.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[Transaction]
     public function setWatchTime(array $params): bool
@@ -131,6 +136,7 @@ class UserCourseRecordService extends AbstractService
             throw new NormalStatusException('保存播放记录失败!');
         }
         // Todo 添加听课积分事件
+        event(new ScoreAddEvent('course', $params['userId'], 0));
         return true;
     }
 

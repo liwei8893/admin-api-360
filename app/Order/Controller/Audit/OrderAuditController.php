@@ -34,9 +34,13 @@ class OrderAuditController extends MineController
     #[GetMapping('orderList')]
     public function orderList(OrderRequest $request): ResponseInterface
     {
-        return $this->success($this->orderService->getAuditList($request->all()));
+        return $this->success($this->orderService->orderList($request->all()));
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     #[PostMapping('auditOrder')]
     public function auditOrder(OrderRequest $request): ResponseInterface
     {

@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Course\Mapper;
 
 use App\Course\Model\Talk;
+use App\Score\Event\ScoreAddEvent;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Relations\HasOne;
 use Mine\Abstracts\AbstractMapper;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 讲一讲审核Mapper类.
@@ -27,10 +30,27 @@ class TalkMapper extends AbstractMapper
     public function voteToggle($id, $userId): array
     {
         $talkModel = $this->model::query()->find($id);
-        if (! $talkModel) {
+        if (!$talkModel) {
             return [];
         }
         return $talkModel->userVote()->toggle($userId);
+    }
+
+    /**
+     * 更新一条数据.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function update(int $id, array $data): bool
+    {
+        $this->filterExecuteAttributes($data, true);
+        $model = $this->model::find($id);
+        // TODO 添加积分事件
+        if (isset($data['status']) && $data['status']) {
+            // status 0 表示审核拒绝,1通过,通过时加积分
+            event(new ScoreAddEvent('share', $model->user_id, $id));
+        }
+        return $model->update($data) > 0;
     }
 
     /**
@@ -56,7 +76,7 @@ class TalkMapper extends AbstractMapper
         if (isset($params['url']) && $params['url'] !== '') {
             $query->where('url', '=', $params['url']);
         }
-        if (! empty($params['withUser'])) {
+        if (!empty($params['withUser'])) {
             $query->with('user:id,user_name,mobile,platform,avatar,avatar_frame');
         }
         if (isset($params['withUserVoteCount']) && $params['withUserVoteCount']) {
@@ -64,15 +84,15 @@ class TalkMapper extends AbstractMapper
                 $query->where('user_id', user('app')->hasLogin() ? user('app')->getId() : 0);
             }]);
         }
-        if (! empty($params['withUserNoAudit']) && user('app')->hasLogin()) {
+        if (!empty($params['withUserNoAudit']) && user('app')->hasLogin()) {
             $query->orWhere(function (Builder $query) use ($params) {
                 $query->where('user_id', user('app')->getId())
-                    ->when(! empty($params['course_period_id']), function ($query) use ($params) {
+                    ->when(!empty($params['course_period_id']), function ($query) use ($params) {
                         $query->where('course_period_id', $params['course_period_id']);
                     });
             });
         }
-        if (! empty($params['withCoursePeriod'])) {
+        if (!empty($params['withCoursePeriod'])) {
             return $query->with(['coursePeriod' => function (HasOne $query) {
                 $query->with('courseBasis:id,title')->select(['id', 'title', 'course_basis_id']);
             }]);

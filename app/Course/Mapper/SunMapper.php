@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Course\Mapper;
 
 use App\Course\Model\Sun;
+use App\Score\Event\ScoreAddEvent;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Relations\HasOne;
 use Mine\Abstracts\AbstractMapper;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 晒一晒Mapper类.
@@ -31,6 +34,23 @@ class SunMapper extends AbstractMapper
             return [];
         }
         return $talkModel->userVote()->toggle($userId);
+    }
+
+    /**
+     * 更新一条数据.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function update(int $id, array $data): bool
+    {
+        $this->filterExecuteAttributes($data, true);
+        $model = $this->model::find($id);
+        // TODO 添加积分事件
+        if (isset($data['status']) && $data['status']) {
+            // status 0 表示审核拒绝,1通过,通过时加积分
+            event(new ScoreAddEvent('share', $model->user_id, $id));
+        }
+        return $model->update($data) > 0;
     }
 
     /**

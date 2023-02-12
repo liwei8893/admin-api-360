@@ -18,9 +18,9 @@ class UsersRenewMapper extends AbstractMapper
     /**
      * 续费表插入数据.
      */
-    public function insert(array $value): bool
+    public function insert(array $value): int
     {
-        return UsersRenew::query()->insert($value);
+        return UsersRenew::query()->insertGetId($value);
     }
 
     /**

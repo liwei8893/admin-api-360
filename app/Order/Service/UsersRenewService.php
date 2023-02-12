@@ -6,10 +6,13 @@ namespace App\Order\Service;
 
 use App\Order\Mapper\UsersRenewMapper;
 use App\Order\Model\UsersRenew;
+use App\Score\Event\ScoreAddEvent;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Helper\LoginUser;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class UsersRenewService extends AbstractService
 {
@@ -28,7 +31,7 @@ class UsersRenewService extends AbstractService
      * time:2022-08-19 14:34.
      * @param mixed $data
      */
-    public function recordUserRenew(array $data): bool
+    public function recordUserRenew(array $data): int
     {
         $params = [
             'order_id' => $data['id'],
@@ -56,10 +59,15 @@ class UsersRenewService extends AbstractService
         $data['withCourse'] = true;
         $data['orderBy'] = ['id'];
         $data['orderType'] = ['desc'];
-//        $data['audit_status'] = UsersRenew::AUDIT_PENDING;
+        $data['audit_status'] = $data['audit_status'] ?? UsersRenew::AUDIT_PENDING;
         return $this->mapper->getPageList($data);
     }
 
+    /**
+     * 续费审核.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     #[Transaction]
     public function auditRenew(array $params): bool
     {
@@ -90,13 +98,16 @@ class UsersRenewService extends AbstractService
                 // 叠加有效期
                 $order->indate += $model->renew_day;
                 $order->save();
-            // TODO 增加积分
             } else {
                 // 审核不通过
                 $model->audit_status = UsersRenew::AUDIT_REJECT;
             }
             $model->cause_text = $params['cause_text'] ?? '';
             $model->save();
+            // TODO 增加积分 renew 续费会员时,续费会员&是续费不是修改有效期&审核通过
+            if ($order->shop_id === 950 && $model->status === 1 && $params['audit_status'] === UsersRenew::AUDIT_SUCCESS) {
+                event(new ScoreAddEvent('renew', $order->user_id, $model->id));
+            }
         }
         return true;
     }

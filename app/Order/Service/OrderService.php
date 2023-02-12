@@ -6,11 +6,14 @@ namespace App\Order\Service;
 
 use App\Order\Mapper\OrderMapper;
 use App\Order\Model\Order;
+use App\Score\Event\ScoreAddEvent;
 use Carbon\Carbon;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 订单管理服务类.
@@ -31,9 +34,8 @@ class OrderService extends AbstractService
 
     /**
      * 批量修改有效期
-     * @param $params
-     * author:ZQ
-     * time:2022-08-18 15:35
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[Transaction]
     public function changeEndDate($params): bool
@@ -62,9 +64,14 @@ class OrderService extends AbstractService
             // 修改到指定有效期
             $update = $this->handleEndDateToTime($item->toArray(), $params['date'], $query);
             // 插入续费记录
-            $insert = $this->handleRenewData($item->toArray(), $params);
-            if (! $update || ! $insert) {
+            $insertId = $this->handleRenewData($item->toArray(), $params);
+            if (! $update || ! $insertId) {
                 throw new NormalStatusException('更新失败,请稍后重试!');
+            }
+            // TODO 续费时增加积分,不需要审核
+            $isNoAudit = user()->isNoAuditRole();
+            if ($isNoAudit && $item->shop_id === 950) {
+                event(new ScoreAddEvent('renew', $item->user_id, $insertId));
             }
         }
         return true;
@@ -96,7 +103,7 @@ class OrderService extends AbstractService
     /**
      * 组装数据,保存续费记录表.
      */
-    public function handleRenewData(array $item, array $params): bool
+    public function handleRenewData(array $item, array $params): int
     {
         $data = [
             'status' => $params['renew'] ? 1 : 0,
@@ -159,6 +166,8 @@ class OrderService extends AbstractService
 
     /**
      * 退费.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[Transaction]
     public function changeOrderToRefund($data): bool
@@ -182,6 +191,10 @@ class OrderService extends AbstractService
         ];
         if (! $this->orderTransactionService->OrderToRefundRecord($logRecord)) {
             throw new NormalStatusException('日志写入错误,操作已回滚,请稍后重试!');
+        }
+        // TODO 退费扣除积分
+        if ($orderModel->shop_id === 950) {
+            event(new ScoreAddEvent('courseRefund', $orderModel->user_id, $orderModel->id));
         }
         return true;
     }
@@ -229,7 +242,7 @@ class OrderService extends AbstractService
     /**
      * 获取审核列表.
      */
-    public function getAuditList(array $data): array
+    public function orderList(array $data): array
     {
         $data['withOrderGrade'] = true;
         $data['withOrderSubject'] = true;
@@ -237,12 +250,14 @@ class OrderService extends AbstractService
         $data['withCourse'] = true;
         $data['orderBy'] = ['id'];
         $data['orderType'] = ['desc'];
-        $data['audit_status'] = Order::PAY_AUDIT;
+        $data['pay_states'] = Order::PAY_AUDIT;
         return $this->mapper->getPageList($data);
     }
 
     /**
      * 审核报名信息.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[Transaction]
     public function auditOrder(array $params): bool
@@ -260,7 +275,6 @@ class OrderService extends AbstractService
             // 审核通过
             if ($params['pay_states'] === Order::PAY_SUCCESS) {
                 $model->pay_states = Order::PAY_SUCCESS;
-            // TODO 增加积分
             } else {
                 // 审核不通过
                 $model->pay_states = Order::PAY_REJECT;
@@ -268,6 +282,10 @@ class OrderService extends AbstractService
             }
             $model->cause_text = $params['cause_text'] ?? '';
             $model->save();
+            // TODO 增加积分 init 新增会员审核完毕时
+            if ($model->shop_id === 950 && $model->pay_states === Order::PAY_SUCCESS) {
+                event(new ScoreAddEvent('init', $model->user_id, $model->id));
+            }
         }
         return true;
     }

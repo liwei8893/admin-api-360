@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Question\Mapper;
 
 use App\Question\Model\QuestionHistory;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\DbConnection\Db;
@@ -73,6 +74,19 @@ class QuestionHistoryMapper extends AbstractMapper
             ->whereRaw('created_at > unix_timestamp(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))')
             ->groupBy([Db::raw("date_format(from_unixtime(created_at), '%m')")])
             ->get();
+    }
+
+    /**
+     * 获取当天做题数.
+     */
+    public function getCurQuestionCount(int $userId): int
+    {
+        $startTime = Carbon::today()->timestamp;
+        $endTime = Carbon::tomorrow()->timestamp;
+        return QuestionHistory::query()
+            ->where('user_id', $userId)
+            ->whereBetween('created_at', [$startTime, $endTime])
+            ->count();
     }
 
     /**
