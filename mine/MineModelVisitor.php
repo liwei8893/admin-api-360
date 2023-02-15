@@ -28,6 +28,7 @@ class MineModelVisitor extends Visitor
             'decimal' => 'decimal:2',
             'float', 'double', 'real' => 'float',
             'bool', 'boolean' => 'boolean',
+            'json' => 'array',
             default => null,
         };
     }
@@ -44,8 +45,6 @@ class MineModelVisitor extends Visitor
             case 'date':
             case 'datetime':
                 return '\Carbon\Carbon';
-            case 'array':
-                return 'json';
             case 'json':
                 return 'array';
         }

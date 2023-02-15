@@ -78,4 +78,9 @@ class ExcelProperty extends AbstractAnnotation
      * 字典名称.
      */
     public string $dictName;
+    /**
+     * 数据路径 用法: object.value
+     * @var string
+     */
+    public string $path;
 }

@@ -20,39 +20,6 @@ class DataMaintainService extends AbstractService
     }
 
     /**
-     * 获取表字段.
-     */
-    public function getColumnList(string $table): array
-    {
-        if ($table) {
-            return Schema::getColumnTypeListing(str_replace(env('DB_PREFIX'), '', $table));
-        }
-        return [];
-    }
-
-    /**
-     * 优化表.
-     */
-    public function optimize(array $tables): bool
-    {
-        foreach ($tables as $table) {
-            Db::select('optimize table `?`', [$table]);
-        }
-        return true;
-    }
-
-    /**
-     * 清理表碎片.
-     */
-    public function fragment(array $tables): bool
-    {
-        foreach ($tables as $table) {
-            Db::select('analyze table `?`', [$table]);
-        }
-        return true;
-    }
-
-    /**
      * 数组数据搜索器.
      * @return Collection
      */
@@ -88,4 +55,63 @@ class DataMaintainService extends AbstractService
     {
         return Db::select(Db::raw("SHOW TABLE STATUS WHERE name NOT LIKE '%migrations'")->getValue());
     }
+
+    /**
+     * 获取表字段
+     * @param string $table
+     * @return array
+     */
+    public function getColumnList(string $table): array
+    {
+        if ($table) {
+            //从数据库中获取表字段信息
+            $sql = "SELECT * FROM `information_schema`.`columns` "
+                . "WHERE TABLE_SCHEMA = ? AND table_name = ? "
+                . "ORDER BY ORDINAL_POSITION";
+            //加载主表的列
+            $columnList = [];
+            foreach (Db::select($sql, [env('DB_DATABASE'), $table]) as $column) {
+                $columnList[] = [
+                    'column_key' => $column->COLUMN_KEY,
+                    'column_name'=> $column->COLUMN_NAME,
+                    'data_type' => $column->DATA_TYPE,
+                    'column_comment' => $column->COLUMN_COMMENT,
+                    'extra' => $column->EXTRA,
+                    'column_type' => $column->COLUMN_TYPE,
+                    'is_nullable' => $column->IS_NULLABLE,
+                ];
+            }
+            return $columnList;
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * 优化表
+     * @param array $tables
+     * @return bool
+     */
+    public function optimize(array $tables): bool
+    {
+        foreach ($tables as $table) {
+            Db::select('optimize table `?`', [$table]);
+        }
+        return true;
+    }
+
+    /**
+     * 清理表碎片
+     * @param array $tables
+     * @return bool
+     */
+    public function fragment(array $tables): bool
+    {
+        foreach ($tables as $table) {
+            Db::select('analyze table `?`', [$table]);
+        }
+        return true;
+    }
+
+
 }

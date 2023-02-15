@@ -13,8 +13,12 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 
 class PhpOffice extends MineExcel implements ExcelPropertyInterface
 {
+
     /**
-     * 导入.
+     * 导入
+     * @param \Mine\MineModel $model
+     * @param \Closure|null $closure
+     * @return bool
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
@@ -25,8 +29,8 @@ class PhpOffice extends MineExcel implements ExcelPropertyInterface
         $data = [];
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $tempFileName = 'import_' . time() . '.' . $file->getExtension();
-            $tempFilePath = BASE_PATH . '/runtime/' . $tempFileName;
+            $tempFileName = 'import_'.time().'.'.$file->getExtension();
+            $tempFilePath = BASE_PATH . '/runtime/'. $tempFileName;
             file_put_contents($tempFilePath, $file->getStream()->getContents());
             $reader = IOFactory::createReader(IOFactory::identify($tempFilePath));
             $reader->setReadDataOnly(true);
@@ -64,15 +68,18 @@ class PhpOffice extends MineExcel implements ExcelPropertyInterface
     }
 
     /**
-     * 导出.
+     * 导出
+     * @param string $filename
+     * @param array|\Closure $closure
+     * @return \Psr\Http\Message\ResponseInterface
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function export(string $filename, array|\Closure $closure): \Psr\Http\Message\ResponseInterface
+    public function export(string $filename, array|\Closure $closure, \Closure $callbackData = null): \Psr\Http\Message\ResponseInterface
     {
         $spread = new Spreadsheet();
-        $sheet = $spread->getActiveSheet();
+        $sheet  = $spread->getActiveSheet();
         $filename .= '.xlsx';
 
         is_array($closure) ? $data = &$closure : $data = $closure();
@@ -91,12 +98,12 @@ class PhpOffice extends MineExcel implements ExcelPropertyInterface
 
             empty($item['headColor']) || $style->setColor(new Color(str_replace('#', '', $item['headColor'])));
 
-            if (! empty($item['headBgColor'])) {
+            if (!empty($item['headBgColor'])) {
                 $sheet->getStyle($headerColumn)->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB(str_replace('#', '', $item['headBgColor']));
             }
-            ++$titleStart;
+            $titleStart++;
         }
 
         $generate = $this->yieldExcelData($data);
@@ -106,7 +113,8 @@ class PhpOffice extends MineExcel implements ExcelPropertyInterface
             $row = 2;
             while ($generate->valid()) {
                 $column = 'A';
-                foreach ($generate->current() as $name => $value) {
+                $items = $generate->current();
+                foreach ($items as $name => $value) {
                     $columnRow = $column . $row;
                     $annotation = '';
                     foreach ($this->property as $item) {
@@ -116,10 +124,14 @@ class PhpOffice extends MineExcel implements ExcelPropertyInterface
                         }
                     }
 
-                    if (! empty($annotation['dictName'])) {
+                    if (!empty($annotation['dictName'])) {
                         $sheet->setCellValue($columnRow, $annotation['dictName'][$value]);
-                    } elseif (! empty($annotation['dictData'])) {
+                    } else if (!empty($annotation['path'])){
+                        $sheet->setCellValue($columnRow, data_get($items, $annotation['path']));
+                    } else if (!empty($annotation['dictData'])) {
                         $sheet->setCellValue($columnRow, $annotation['dictData'][$value]);
+                    } else if(!empty($this->dictData[$name])){
+                        $sheet->setCellValue($columnRow, $this->dictData[$name][$value] ?? '');
                     } else {
                         $sheet->setCellValue($columnRow, $value . "\t");
                     }
@@ -134,13 +146,12 @@ class PhpOffice extends MineExcel implements ExcelPropertyInterface
                             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                             ->getStartColor()->setARGB(str_replace('#', '', $annotation['bgColor']));
                     }
-                    ++$column;
+                    $column++;
                 }
                 $generate->next();
-                ++$row;
+                $row++;
             }
-        } catch (\RuntimeException $e) {
-        }
+        } catch (\RuntimeException $e) {}
 
         $writer = IOFactory::createWriter($spread, 'Xlsx');
         ob_start();
@@ -157,7 +168,7 @@ class PhpOffice extends MineExcel implements ExcelPropertyInterface
         foreach ($data as $dat) {
             $yield = [];
             foreach ($this->property as $item) {
-                $yield[$item['name']] = $dat[$item['name']] ?? '';
+                $yield[ $item['name'] ] = $dat[$item['name']] ?? '';
             }
             yield $yield;
         }

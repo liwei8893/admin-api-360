@@ -13,6 +13,7 @@ use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
 use Hyperf\HttpServer\Annotation\PutMapping;
 use Mine\Annotation\Auth;
+use Mine\Annotation\DeleteCache;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
 use Mine\MineController;
@@ -91,7 +92,7 @@ class DictDataController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('save'), Auth, Permission('system:dict:save'), OperationLog]
+    #[PostMapping("save"),Auth, Permission("system:dict:save"), OperationLog, DeleteCache('Dict:*')]
     public function save(SystemDictDataRequest $request): ResponseInterface
     {
         return $this->success(['id' => $this->service->save($request->all())]);
@@ -113,7 +114,7 @@ class DictDataController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PutMapping('update/{id}'), Auth, Permission('system:dict:update'), OperationLog]
+    #[PutMapping("update/{id}"),Auth, Permission("system:dict:update"), OperationLog, DeleteCache('Dict:*')]
     public function update(int $id, SystemDictDataRequest $request): ResponseInterface
     {
         return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
@@ -124,7 +125,7 @@ class DictDataController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[DeleteMapping('delete'), Auth, Permission('system:dict:delete')]
+    #[DeleteMapping("delete"),Auth, Permission("system:dict:delete"), DeleteCache('Dict:*')]
     public function delete(): ResponseInterface
     {
         return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
@@ -135,7 +136,7 @@ class DictDataController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[DeleteMapping('realDelete'), Auth, Permission('system:dict:realDelete'), OperationLog]
+    #[DeleteMapping("realDelete"),Auth, Permission("system:dict:realDelete"), OperationLog, DeleteCache('Dict:*')]
     public function realDelete(): ResponseInterface
     {
         return $this->service->realDelete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
@@ -146,7 +147,7 @@ class DictDataController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PutMapping('recovery'), Auth, Permission('system:dict:recovery')]
+    #[PutMapping("recovery"),Auth, Permission("system:dict:recovery"), DeleteCache('Dict:*')]
     public function recovery(): ResponseInterface
     {
         return $this->service->recovery((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
@@ -157,7 +158,7 @@ class DictDataController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PutMapping('changeStatus'), Auth, Permission('system:dict:update'), OperationLog]
+    #[PutMapping("changeStatus"),Auth, Permission("system:dict:update"), OperationLog, DeleteCache('Dict:*')]
     public function changeStatus(SystemDictDataRequest $request): ResponseInterface
     {
         return $this->service->changeStatus((int) $request->input('id'), (string) $request->input('status'))

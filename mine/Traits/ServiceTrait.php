@@ -230,7 +230,7 @@ trait ServiceTrait
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function export(array $params, ?string $dto, string $filename = null): ResponseInterface
+    public function export(array $params, ?string $dto, string $filename = null, \Closure $callbackData = null): ResponseInterface
     {
         if (empty($dto)) {
             return container()->get(MineResponse::class)->error('导出未指定DTO');
@@ -239,9 +239,8 @@ trait ServiceTrait
         if (empty($filename)) {
             $filename = $this->mapper->getModel()->getTable();
         }
-        $data = $this->mapper->getList($params);
-        $this->handleExportData($data);
-        return (new MineCollection())->export($dto, $filename, $data);
+
+        return (new MineCollection())->export($dto, $filename, $this->mapper->getList($params), $callbackData);
     }
 
     /**
@@ -280,6 +279,7 @@ trait ServiceTrait
         };
         return (new MineCollection())->bigExport($dto, $filename, $closure);
     }
+
 
     /**
      * 数据导入.

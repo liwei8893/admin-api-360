@@ -13,6 +13,8 @@ use Hyperf\Utils\HigherOrderTapProxy;
 use Mine\Annotation\Transaction;
 use Mine\MineCollection;
 use Mine\MineModel;
+use Hyperf\ModelCache\Manager;
+use Hyperf\Utils\ApplicationContext;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -33,25 +35,58 @@ trait MapperTrait
     }
 
     /**
-     * 闭包通用方式查询数据集合.
-     * @param array|string[] $column
+     * 获取列表数据（带分页）
+     * @param array|null $params
+     * @param bool $isScope
+     * @param string $pageName
+     * @return array
      */
-    public function get(?Closure $closure = null, array $column = ['*']): array
+    public function getPageList(?array $params, bool $isScope = true, string $pageName = 'page'): array
     {
-        return $this->settingClosure($closure)->get($column)->toArray();
+        $paginate = $this->listQuerySetting($params, $isScope)->paginate(
+            $params['pageSize'] ?? $this->model::PAGE_SIZE, ['*'], $pageName, $params[$pageName] ?? 1
+        );
+        return $this->setPaginate($paginate);
     }
 
     /**
-     * 闭包通用查询设置.
-     * @param null|Closure $closure 传入的闭包查询
+     * 设置数据库分页
+     * @param LengthAwarePaginatorInterface $paginate
+     * @return array
      */
-    public function settingClosure(?Closure $closure = null): Builder
+    public function setPaginate(LengthAwarePaginatorInterface $paginate): array
     {
-        return $this->model::where(function ($query) use ($closure) {
-            if ($closure instanceof Closure) {
-                $closure($query);
-            }
-        });
+        return [
+            'items' => $paginate->items(),
+            'pageInfo' => [
+                'total' => $paginate->total(),
+                'currentPage' => $paginate->currentPage(),
+                'totalPage' => $paginate->lastPage()
+            ]
+        ];
+    }
+
+    /**
+     * 获取树列表
+     * @param array|null $params
+     * @param bool $isScope
+     * @param string $id
+     * @param string $parentField
+     * @param string $children
+     * @return array
+     */
+    public function getTreeList(
+        ?array $params = null,
+        bool $isScope = true,
+        string $id = 'id',
+        string $parentField = 'parent_id',
+        string $children='children'
+    ): array
+    {
+        $params['_mineadmin_tree'] = true;
+        $params['_mineadmin_tree_pid'] = $parentField;
+        $data = $this->listQuerySetting($params, $isScope)->get();
+        return $data->toTree([], $data[0]->{$parentField} ?? 0, $id, $parentField, $children);
     }
 
     /**
@@ -105,67 +140,47 @@ trait MapperTrait
     }
 
     /**
-     * chunk.
-     * @param null $column
-     * @param null $alias
+     * 过滤查询字段不存在的属性
+     * @param array $fields
+     * @param bool $removePk
+     * @return array
      */
-    public function getListChunk(?array $params, Closure $callback, bool $isScope = true, $column = null, $alias = null): bool
+    protected function filterQueryAttributes(array $fields, bool $removePk = false): array
     {
-        // chunkById 不能跟排序一起用
-        unset($params['orderBy'], $params['orderType']);
-        return $this->listQuerySetting($params, $isScope)->chunkById(1000, $callback, $column, $alias);
-    }
-
-    public function getListCollect(?array $params, bool $isScope = true): Collection|array
-    {
-        return $this->listQuerySetting($params, $isScope)->get();
-    }
-
-    /**
-     * 获取列表数据（带分页）.
-     */
-    public function getPageList(?array $params, bool $isScope = true, string $pageName = 'page'): array
-    {
-        $perPage = $params['pageSize'] ?? $this->model::PAGE_SIZE;
-        $page = $params[$pageName] ?? 1;
-        $paginate = $this->listQuerySetting($params, $isScope)->paginate(
-            (int) $perPage,
-            ['*'],
-            $pageName,
-            (int) $page
-        );
-        return $this->setPaginate($paginate);
+        $model = new $this->model;
+        $attrs = $model->getFillable();
+        foreach ($fields as $key => $field) {
+            if (!in_array(trim($field), $attrs) && mb_strpos(str_replace('AS', 'as', $field), 'as') === false) {
+                unset($fields[$key]);
+            } else {
+                $fields[$key] = trim($field);
+            }
+        }
+        if ($removePk && in_array($model->getKeyName(), $fields)) {
+            unset($fields[array_search($model->getKeyName(), $fields)]);
+        }
+        $model = null;
+        return ( count($fields) < 1 ) ? ['*'] : $fields;
     }
 
     /**
-     * 设置数据库分页.
+     * 过滤新增或写入不存在的字段
+     * @param array $data
+     * @param bool $removePk
      */
-    public function setPaginate(LengthAwarePaginatorInterface $paginate): array
+    protected function filterExecuteAttributes(array &$data, bool $removePk = false): void
     {
-        return [
-            'items' => $paginate->items(),
-            'pageInfo' => [
-                'total' => $paginate->total(),
-                'currentPage' => $paginate->currentPage(),
-                'totalPage' => $paginate->lastPage(),
-            ],
-        ];
-    }
-
-    /**
-     * 获取树列表.
-     */
-    public function getTreeList(
-        ?array $params = null,
-        bool $isScope = true,
-        string $id = 'id',
-        string $parentField = 'parent_id',
-        string $children = 'children'
-    ): array {
-        $params['_mineadmin_tree'] = true;
-        $params['_mineadmin_tree_pid'] = $parentField;
-        $data = $this->listQuerySetting($params, $isScope)->get();
-        return $data->toTree([], $data[0]->{$parentField} ?? 0, $id, $parentField, $children);
+        $model = new $this->model;
+        $attrs = $model->getFillable();
+        foreach ($data as $name => $val) {
+            if (!in_array($name, $attrs)) {
+                unset($data[$name]);
+            }
+        }
+        if ($removePk && isset($data[$model->getKeyName()])) {
+            unset($data[$model->getKeyName()]);
+        }
+        $model = null;
     }
 
     /**
@@ -178,11 +193,6 @@ trait MapperTrait
         return $model->{$model->getKeyName()};
     }
 
-    public function getModel(): MineModel
-    {
-        return new $this->model();
-    }
-
     /**
      * 新增数据.
      */
@@ -193,7 +203,9 @@ trait MapperTrait
     }
 
     /**
-     * 读取一条数据.
+     * 读取一条数据
+     * @param int $id
+     * @return MineModel|null
      */
     public function read(int $id): ?MineModel
     {
@@ -201,8 +213,21 @@ trait MapperTrait
     }
 
     /**
+     * 按条件读取一行数据
+     * @param array $condition
+     * @param array $column
+     * @return mixed
+     */
+    public function first(array $condition, array $column = ['*']): ?MineModel
+    {
+        return ($model = $this->model::where($condition)->first($column)) ? $model : null;
+    }
+
+    /**
      * 获取单个值
-     * @return null|HigherOrderTapProxy|mixed|void
+     * @param array $condition
+     * @param string $columns
+     * @return \Hyperf\Utils\HigherOrderTapProxy|mixed|void|null
      */
     public function value(array $condition, string $columns = 'id')
     {
@@ -232,6 +257,10 @@ trait MapperTrait
     public function delete(array $ids): bool
     {
         $this->model::destroy($ids);
+
+        $manager = ApplicationContext::getContainer()->get(Manager::class);
+        $manager->destroy($ids,$this->model);
+
         return true;
     }
 
@@ -293,10 +322,21 @@ trait MapperTrait
     }
 
     /**
-     * 数据导入.
-     * @throws Exception
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @return MineModel
+     */
+    public function getModel(): MineModel
+    {
+        return new $this->model;
+    }
+
+    /**
+     * 数据导入
+     * @param string $dto
+     * @param \Closure|null $closure
+     * @return bool
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     #[Transaction]
     public function import(string $dto, ?Closure $closure = null): bool
@@ -305,22 +345,39 @@ trait MapperTrait
     }
 
     /**
-     * 闭包通用方式查询一条数据.
-     * @param array|string[] $column
-     * @return null|Builder|Model
+     * 闭包通用查询设置
+     * @param \Closure|null $closure 传入的闭包查询
+     * @return Builder
      */
-    public function one(?Closure $closure = null, array $column = ['*'])
+    public function settingClosure(?\Closure $closure = null): Builder
+    {
+        return $this->model::where(function($query) use($closure) {
+            if ($closure instanceof \Closure) {
+                $closure($query);
+            }
+        });
+    }
+
+    /**
+     * 闭包通用方式查询一条数据
+     * @param \Closure|null $closure
+     * @param array|string[] $column
+     * @return Builder|Model|null
+     */
+    public function one(?\Closure $closure = null, array $column = ['*'])
     {
         return $this->settingClosure($closure)->select($column)->first();
     }
 
     /**
-     * 按条件读取一行数据.
-     * @return mixed
+     * 闭包通用方式查询数据集合
+     * @param \Closure|null $closure
+     * @param array|string[] $column
+     * @return array
      */
-    public function first(array $condition, array $column = ['*']): ?MineModel
+    public function get(?\Closure $closure = null, array $column = ['*']): array
     {
-        return ($model = $this->model::where($condition)->first($column)) ? $model : null;
+        return $this->settingClosure($closure)->get($column)->toArray();
     }
 
     /**
@@ -355,62 +412,5 @@ trait MapperTrait
     public function numberOperation(int $id, string $field, int $value): bool
     {
         return $this->update($id, [$field => $value]);
-    }
-
-    /**
-     * 过滤新增或写入不存在的字段.
-     */
-    public function comFilterExecuteAttributes(string $modelClass, array &$data, bool $removePk = true): void
-    {
-        $model = new $modelClass();
-        $attrs = $model->getFillable();
-        foreach ($data as $name => $val) {
-            if (! in_array($name, $attrs, true)) {
-                unset($data[$name]);
-            }
-        }
-        if ($removePk && isset($data[$model->getKeyName()])) {
-            unset($data[$model->getKeyName()]);
-        }
-        $model = null;
-    }
-
-    /**
-     * 过滤查询字段不存在的属性.
-     */
-    protected function filterQueryAttributes(array $fields, bool $removePk = false): array
-    {
-        $model = new $this->model();
-        $attrs = $model->getFillable();
-        foreach ($fields as $key => $field) {
-            if (! in_array(trim($field), $attrs) && mb_strpos(str_replace('AS', 'as', $field), 'as') === false) {
-                unset($fields[$key]);
-            } else {
-                $fields[$key] = trim($field);
-            }
-        }
-        if ($removePk && in_array($model->getKeyName(), $fields)) {
-            unset($fields[array_search($model->getKeyName(), $fields)]);
-        }
-        $model = null;
-        return (count($fields) < 1) ? ['*'] : $fields;
-    }
-
-    /**
-     * 过滤新增或写入不存在的字段.
-     */
-    protected function filterExecuteAttributes(array &$data, bool $removePk = false): void
-    {
-        $model = new $this->model();
-        $attrs = $model->getFillable();
-        foreach ($data as $name => $val) {
-            if (! in_array($name, $attrs)) {
-                unset($data[$name]);
-            }
-        }
-        if ($removePk && isset($data[$model->getKeyName()])) {
-            unset($data[$model->getKeyName()]);
-        }
-        $model = null;
     }
 }

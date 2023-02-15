@@ -8,8 +8,7 @@ use App\System\Service\SystemQueueMessageService;
 use Hyperf\Contract\OnCloseInterface;
 use Hyperf\Contract\OnMessageInterface;
 use Hyperf\Contract\OnOpenInterface;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use Hyperf\WebSocketServer\Context;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -21,61 +20,62 @@ use Swoole\WebSocket\Server;
  */
 class ServerController implements OnMessageInterface, OnOpenInterface, OnCloseInterface
 {
-    /**
-     * @var int
-     */
-    protected $uid;
 
     /**
      * 成功连接到 ws 回调.
      * @param Response|Server $server
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @param Request $request
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function onOpen($server, $request): void
     {
-        $this->uid = user()->getUserInfo(
+        $uid = user()->getUserInfo(
             container()->get(ServerRequestInterface::class)->getQueryParams()['token']
         )['id'];
+        Context::set('uid',$uid);
 
         console()->info(
-            "WebSocket [ user connection to message server: id > {$this->uid}, " .
-            "fd > {$request->fd}, time > " . date('Y-m-d H:i:s') . ' ]'
+            "WebSocket [ user connection to message server: id > $uid, ".
+            "fd > {$request->fd}, time > ". date('Y-m-d H:i:s') .' ]'
         );
     }
 
     /**
      * 消息回调.
      * @param Response|Server $server
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @param Frame $frame
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function onMessage($server, $frame): void
     {
         $data = json_decode($frame->data, true);
-        switch ($data['event']) {
+        switch($data['event']) {
             case 'get_unread_message':
                 $service = container()->get(SystemQueueMessageService::class);
                 $server->push($frame->fd, json_encode([
                     'event' => 'ev_new_message',
                     'message' => 'success',
-                    'data' => $service->getUnreadMessage($this->uid)['items'],
+                    'data' => $service->getUnreadMessage(Context::get('uid'))['items']
                 ]));
                 break;
         }
     }
 
     /**
-     * 关闭 ws 连接回调.
+     * 关闭 ws 连接回调
      * @param Response|\Swoole\Server $server
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @param int $fd
+     * @param int $reactorId
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function onClose($server, int $fd, int $reactorId): void
     {
         console()->info(
-            "WebSocket [ user close connect for message server: id > {$this->uid}, " .
-            "fd > {$fd}, time > " . date('Y-m-d H:i:s') . ' ]'
+            "WebSocket [ user close connect for message server: id > ".Context::get('uid').", ".
+            "fd > {$fd}, time > ". date('Y-m-d H:i:s') .' ]'
         );
     }
 }

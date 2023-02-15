@@ -7,6 +7,8 @@ namespace Mine\Office\Excel;
 use Closure;
 use Exception;
 use Hyperf\Utils\Arr;
+use Hyperf\HttpMessage\Stream\SwooleStream;
+use MathPHP\Probability\Distribution\Continuous\F;
 use Mine\Exception\MineException;
 use Mine\MineModel;
 use Mine\MineRequest;
@@ -22,6 +24,16 @@ use Vtiful\Kernel\Format;
 
 class XlsWriter extends MineExcel implements ExcelPropertyInterface
 {
+    public static function getSheetData(mixed $request)
+    {
+        $file = $request->file('file');
+        $tempFileName = 'import_' . time() . '.' . $file->getExtension();
+        $tempFilePath = BASE_PATH . '/runtime/' . $tempFileName;
+        file_put_contents($tempFilePath, $file->getStream()->getContents());
+        $xlsxObject = new \Vtiful\Kernel\Excel(['path' => BASE_PATH . '/runtime/']);
+        return $xlsxObject->openFile($tempFileName)->openSheet()->getSheetData();
+    }
+
     /**
      * 导入数据.
      * @throws ContainerExceptionInterface
@@ -73,7 +85,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function export(string $filename, array|Closure $closure): ResponseInterface
+    public function export(string $filename, array|\Closure $closure, \Closure $callbackData = null): \Psr\Http\Message\ResponseInterface
     {
         $filename .= '.xlsx';
         is_array($closure) ? $data = &$closure : $data = $closure();
@@ -86,6 +98,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
 
         $columnName = [];
         $columnField = [];
+
         foreach ($this->property as $item) {
             $columnName[] = $item['value'];
             $columnField[] = $item['name'];
@@ -121,13 +134,17 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
 //                ->border(Format::BORDER_THIN)
                 ->toResource()
         );
-
         $exportData = [];
         foreach ($data as $item) {
             $yield = [];
+            if ($callbackData) {
+                $item = $callbackData($item);
+            }
             foreach ($this->property as $property) {
                 if (! empty($property['customField'])) {
                     $value = Arr::get($item, $property['customField']);
+                }else if (!empty($property['path'])){
+                    $yield[] = data_get($item, $property['path']);
                 } else {
                     $value = Arr::get($item, $property['name']);
                 }
