@@ -7,6 +7,7 @@ namespace Mine\Traits;
 use Closure;
 use Hyperf\Contract\LengthAwarePaginatorInterface;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
 use Hyperf\ModelCache\Manager;
 use Hyperf\Utils\ApplicationContext;
@@ -41,10 +42,10 @@ trait MapperTrait
         $page = $params[$pageName] ?? 1;
         $pageSize = $params['pageSize'] ?? $this->model::PAGE_SIZE;
         $paginate = $this->listQuerySetting($params, $isScope)->paginate(
-            (int)$pageSize,
+            (int) $pageSize,
             ['*'],
             $pageName,
-            (int)$page
+            (int) $page
         );
         return $this->setPaginate($paginate);
     }
@@ -69,12 +70,11 @@ trait MapperTrait
      */
     public function getTreeList(
         ?array $params = null,
-        bool   $isScope = true,
+        bool $isScope = true,
         string $id = 'id',
         string $parentField = 'parent_id',
         string $children = 'children'
-    ): array
-    {
+    ): array {
         $params['_mineadmin_tree'] = true;
         $params['_mineadmin_tree_pid'] = $parentField;
         $data = $this->listQuerySetting($params, $isScope)->get();
@@ -354,7 +354,7 @@ trait MapperTrait
         $model = new $modelClass();
         $attrs = $model->getFillable();
         foreach ($data as $name => $val) {
-            if (!in_array($name, $attrs, true)) {
+            if (! in_array($name, $attrs, true)) {
                 unset($data[$name]);
             }
         }
@@ -376,6 +376,11 @@ trait MapperTrait
         return $this->listQuerySetting($params, $isScope)->chunkById(1000, $callback, $column, $alias);
     }
 
+    public function getListCollect(?array $params, bool $isScope = true): Collection|array
+    {
+        return $this->listQuerySetting($params, $isScope)->get();
+    }
+
     /**
      * 过滤查询字段不存在的属性.
      */
@@ -384,7 +389,7 @@ trait MapperTrait
         $model = new $this->model();
         $attrs = $model->getFillable();
         foreach ($fields as $key => $field) {
-            if (!in_array(trim($field), $attrs) && mb_strpos(str_replace('AS', 'as', $field), 'as') === false) {
+            if (! in_array(trim($field), $attrs) && mb_strpos(str_replace('AS', 'as', $field), 'as') === false) {
                 unset($fields[$key]);
             } else {
                 $fields[$key] = trim($field);
@@ -405,7 +410,7 @@ trait MapperTrait
         $model = new $this->model();
         $attrs = $model->getFillable();
         foreach ($data as $name => $val) {
-            if (!in_array($name, $attrs)) {
+            if (! in_array($name, $attrs)) {
                 unset($data[$name]);
             }
         }
