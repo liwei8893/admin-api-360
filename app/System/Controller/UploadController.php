@@ -6,19 +6,20 @@ namespace App\System\Controller;
 
 use App\System\Request\UploadRequest;
 use App\System\Service\SystemUploadFileService;
+use App\System\Service\SystemUploadQiniuService;
 use Exception;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
 use JsonException;
-use League\Flysystem\FileExistsException;
 use Mine\Annotation\Auth;
 use Mine\Exception\MineException;
 use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
+use RedisException;
 
 /**
  * Class UploadController.
@@ -29,53 +30,57 @@ class UploadController extends MineController
     #[Inject]
     protected SystemUploadFileService $service;
 
+    #[Inject]
+    protected SystemUploadQiniuService $qiniuService;
+
     /**
      * 获取七牛云认证
      * @throws JsonException
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface|RedisException
      */
     #[GetMapping('getUploadToken'), Auth]
     public function getUploadToken(UploadRequest $request): ResponseInterface
     {
-        return $this->success($this->service->getUploadToken($request->all()));
+        return $this->success($this->qiniuService->getUploadToken($request->all()));
     }
 
     /**
      * 获取七牛云认证
      * @throws JsonException
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface|RedisException
      */
     #[GetMapping('app/getAppUploadToken'), Auth('app')]
     public function getAppUploadToken(UploadRequest $request): ResponseInterface
     {
-        return $this->success($this->service->getUploadToken($request->all()));
+        return $this->success($this->qiniuService->getUploadToken($request->all()));
     }
 
     /**
+     * 保存七牛上传文件信息到数据库.
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface|RedisException
      */
     #[PostMapping('saveUploadInfo'), Auth]
     public function saveUploadInfo(UploadRequest $request): ResponseInterface
     {
-        return $this->success($this->service->saveUploadInfo($request->all()));
+        return $this->success($this->qiniuService->saveUploadInfo($request->all()));
     }
 
     /**
+     * 保存七牛上传文件信息到数据库.
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface|RedisException
      */
     #[PostMapping('app/saveAppUploadInfo'), Auth('app')]
     public function saveAppUploadInfo(UploadRequest $request): ResponseInterface
     {
-        return $this->success($this->service->saveUploadInfo($request->all()));
+        return $this->success($this->qiniuService->saveUploadInfo($request->all()));
     }
 
     /**
      * 上传文件.
-     * @throws FileExistsException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -94,7 +99,6 @@ class UploadController extends MineController
 
     /**
      * 上传图片.
-     * @throws FileExistsException
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

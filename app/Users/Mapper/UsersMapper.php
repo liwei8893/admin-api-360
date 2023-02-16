@@ -14,6 +14,11 @@ use Mine\Abstracts\AbstractMapper;
  */
 class UsersMapper extends AbstractMapper
 {
+    /**
+     * @var User
+     */
+    public $model;
+
     public function assignModel(): void
     {
         $this->model = User::class;

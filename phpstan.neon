@@ -3,8 +3,6 @@
 #
 
 parameters:
-  bootstrapFiles:
-    - "bootstrap.php"
   inferPrivatePropertyTypeFromConstructor: true
   treatPhpDocTypesAsCertain: true
   reportUnmatchedIgnoredErrors: false

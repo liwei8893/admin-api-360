@@ -47,15 +47,15 @@ class UsersService extends AbstractService
 
     /**
      * 更换手机号.
-     * @param mixed $params
      */
-    public function changeMobile($params): bool
+    public function changeMobile(array $params): bool
     {
         $newUserModel = $this->mapper->readByMobile($params['mobile']);
         if ($newUserModel) {
             throw new NormalStatusException('新手机号已存在,请手动操作!');
         }
         // 更换手机号
+        /* @var User $userModel */
         $userModel = $this->mapper->read($params['userId']);
         if (! $userModel) {
             throw new NormalStatusException('用户不存在!');
@@ -67,14 +67,14 @@ class UsersService extends AbstractService
 
     /**
      * 批量更换平台.
-     * @param mixed $params
      */
-    public function batchChangePlatform($params): array
+    public function batchChangePlatform(array $params): array
     {
         $logInfo = [];
         $mobilesArr = array_unique($params['mobiles']);
         foreach ($mobilesArr as $mobile) {
             // 查询用户
+            /* @var User $userModel */
             $userModel = $this->mapper->readByMobile($mobile);
             if (! $userModel) {
                 $logInfo[] = ['mobile' => $mobile, 'info' => '未查询到用户'];
@@ -101,9 +101,8 @@ class UsersService extends AbstractService
 
     /**
      * 创建用户.
-     * @param mixed $data
      */
-    public function save($data): int
+    public function save(array $data): int
     {
         if ($this->existsByMobile($data['mobile'])) {
             throw new NormalStatusException('手机号已存在');
@@ -129,6 +128,7 @@ class UsersService extends AbstractService
         if (! empty($data['mobile'])) {
             unset($data['mobile']);
         }
+        /* @var User $userModel */
         $userModel = $this->mapper->read($id);
         if (! $userModel) {
             throw new NormalStatusException('用户不存在!');
@@ -258,9 +258,8 @@ class UsersService extends AbstractService
 
     /**
      * 处理提交数据.
-     * @param mixed $params
      */
-    protected function handleData($params): array
+    protected function handleData(array $params): array
     {
         if (! isset($params['orderBy'])) {
             $params['orderBy'] = ['id'];
@@ -269,5 +268,15 @@ class UsersService extends AbstractService
             $params['orderType'] = ['desc'];
         }
         return $params;
+    }
+
+    /**
+     * 需要处理导出数据时,重写函数.
+     */
+    protected function handleExportData(array &$data): void
+    {
+        if (! empty($data['created_at'])) {
+            $data['created_at'] = date('Y-m-d H:i:s', (int) $data['created_at']);
+        }
     }
 }

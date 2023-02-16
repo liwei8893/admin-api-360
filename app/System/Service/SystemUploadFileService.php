@@ -12,7 +12,6 @@ use Hyperf\Database\Model\Model;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Upload\UploadedFile;
 use Hyperf\Utils\Collection;
-use JsonException;
 use League\Flysystem\FileExistsException;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
@@ -44,80 +43,6 @@ class SystemUploadFileService extends AbstractService
     {
         $this->mapper = $mapper;
         $this->mineUpload = $mineUpload;
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws JsonException|NotFoundExceptionInterface
-     */
-    public function getUploadToken(array $params): array
-    {
-        if (! isset($params['fileExt'])) {
-            throw new NormalStatusException('fileExt is null');
-        }
-
-        $fileExt = Str::lower($params['fileExt']);
-        $filename = $this->mineUpload->getNewName() . '.' . $fileExt;
-        $storagePath = 'uploadfile/' . date('Ymd');
-        if ($this->mineUpload->getStorageMode() !== '3') {
-            throw new NormalStatusException('请更改上传模式为七牛云');
-        }
-        $key = $storagePath . '/' . $filename;
-        $config = [
-            'returnBody' => json_encode([
-                'key' => '$(key)',
-                'hash' => '$(etag)',
-                'storage_path' => '/' . $storagePath,
-                'suffix' => $fileExt,
-                'object_name' => $filename,
-                'url' => config('file.storage.qiniu.domain') . '/' . $key,
-            ], JSON_THROW_ON_ERROR),
-        ];
-        $token = $this->mineUpload->getFileSystem()->getAdapter()->getUploadToken($key, 3600, $config);
-        return ['token' => $token, 'key' => $key];
-    }
-
-    /**
-     * 存入七牛云前端上传文件.
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public function saveUploadInfo(array $params): array
-    {
-        if ($this->mineUpload->getStorageMode() !== '3') {
-            throw new NormalStatusException('请更改上传模式为七牛云');
-        }
-
-        if ($model = $this->mapper->getFileInfoByHash($params['hash'])) {
-            return $model->toArray();
-        }
-
-        $params['storage_mode'] = 3;
-        $data = $this->getUploadFileInfo($params);
-        if ($this->save($data)) {
-            return $data;
-        }
-        return [];
-    }
-
-    /**
-     * 组装保存数据.
-     * @param mixed $params
-     */
-    public function getUploadFileInfo(array $params): array
-    {
-        return [
-            'storage_mode' => $params['storage_mode'],
-            'origin_name' => $params['origin_name'],
-            'object_name' => $params['object_name'],
-            'mime_type' => $params['fileType'],
-            'storage_path' => $params['storage_path'],
-            'hash' => $params['hash'],
-            'suffix' => Str::lower($params['suffix']),
-            'size_byte' => $params['fileSize'],
-            'size_info' => format_size($params['fileSize'] * 1024),
-            'url' => $this->mineUpload->assembleUrl($params['storage_path'], $params['object_name'], false),
-        ];
     }
 
     /**
@@ -173,7 +98,7 @@ class SystemUploadFileService extends AbstractService
     public function saveNetworkImage(array $data): array
     {
         $data = $this->mineUpload->handleSaveNetworkImage($data);
-        if (! isset($data['id']) && $this->save($data)) {
+        if (!isset($data['id']) && $this->save($data)) {
             return $data;
         }
         return $data;

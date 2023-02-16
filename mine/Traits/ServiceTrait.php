@@ -230,7 +230,7 @@ trait ServiceTrait
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function export(array $params, ?string $dto, string $filename = null, \Closure $callbackData = null): ResponseInterface
+    public function export(array $params, ?string $dto, string $filename = null, Closure $callbackData = null): ResponseInterface
     {
         if (empty($dto)) {
             return container()->get(MineResponse::class)->error('导出未指定DTO');
@@ -246,8 +246,6 @@ trait ServiceTrait
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     *                                    author:ZQ
-     *                                    time:2022-08-30 17:45
      */
     public function bigExport(array $params, ?string $dto, string $filename = null): ResponseInterface
     {
@@ -270,6 +268,11 @@ trait ServiceTrait
                         } else {
                             $value = Arr::get($item, $property['name']);
                         }
+                        if (! empty($property['dictName'])) {
+                            $value = $property['dictName'][$value];
+                        } elseif (! empty($property['dictData'])) {
+                            $value = $property['dictData'][$value];
+                        }
                         $fileObject->insertText($rowIndex, $columnIndex, $value);
                         ++$columnIndex;
                     }
@@ -279,7 +282,6 @@ trait ServiceTrait
         };
         return (new MineCollection())->bigExport($dto, $filename, $closure);
     }
-
 
     /**
      * 数据导入.

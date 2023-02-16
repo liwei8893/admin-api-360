@@ -12,6 +12,7 @@ use Mine\Interfaces\MineModelExcel;
 use Mine\MineResponse;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use RedisException;
 
 abstract class MineExcel
 {
@@ -20,16 +21,12 @@ abstract class MineExcel
     protected ?array $annotationMate;
 
     protected array $property = [];
+
     protected array $dictData = [];
 
-
-    /**
-     * @param String $dto
-     * @param MineModel $model
-     */
     public function __construct(string $dto)
     {
-        if (!(new $dto) instanceof MineModelExcel) {
+        if (! (new $dto()) instanceof MineModelExcel) {
             throw new MineException('dto does not implement an interface of the MineModelExcel', 500);
         }
         $dtoObject = new $dto();
@@ -53,7 +50,7 @@ abstract class MineExcel
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \RedisException
+     * @throws RedisException
      */
     protected function parseProperty(): void
     {
@@ -102,7 +99,7 @@ abstract class MineExcel
      * 获取字典数据.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \RedisException
+     * @throws RedisException
      */
     protected function getDictData(string $dictName): array
     {

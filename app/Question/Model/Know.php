@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Question\Model;
 
 use Carbon\Carbon;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\HasMany;
 use Mine\MineModel;
 
@@ -18,6 +19,7 @@ use Mine\MineModel;
  * @property int $sort 排序
  * @property int $season 全科班季节分类用 1春,2夏,3秋,4寒
  * @property int $status 0 禁用 1正常
+ * @property string $img 题库封面url
  * @property int $deleted_at 删除时间
  * @property int $created_id 创建人
  * @property Carbon $created_at 创建时间
@@ -25,6 +27,7 @@ use Mine\MineModel;
  * @property Carbon $updated_at 修改时间
  * @property int $grade_id
  * @property string $shop_id
+ * @property Collection|Question[] $question
  */
 class Know extends MineModel
 {
@@ -36,12 +39,12 @@ class Know extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'parent_id', 'knows_grade', 'knows_rule', 'name', 'states', 'sort', 'season', 'status', 'deleted_at', 'created_id', 'created_at', 'updated_id', 'updated_at', 'grade_id', 'shop_id'];
+    protected array $fillable = ['id', 'parent_id', 'knows_grade', 'knows_rule', 'name', 'states', 'sort', 'season', 'status', 'img', 'deleted_at', 'created_id', 'created_at', 'updated_id', 'updated_at', 'grade_id', 'shop_id'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'parent_id' => 'integer', 'knows_grade' => 'integer', 'states' => 'integer', 'sort' => 'integer', 'season' => 'string', 'status' => 'string', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'grade_id' => 'string'];
+    protected array $casts = ['id' => 'integer', 'parent_id' => 'integer', 'knows_grade' => 'integer', 'states' => 'integer', 'sort' => 'integer', 'season' => 'integer', 'status' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'grade_id' => 'integer'];
 
     public function question(): HasMany
     {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\System\Mapper;
 
-use App\System\Model\SystemLoginLog;
 use App\System\Model\SystemUploadfile;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
@@ -21,7 +20,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 class SystemUploadFileMapper extends AbstractMapper
 {
     /**
-     * @var SystemLoginLog
+     * @var SystemUploadfile
      */
     public $model;
 
@@ -38,9 +37,8 @@ class SystemUploadFileMapper extends AbstractMapper
 
     /**
      * 通过hash获取上传文件的信息.
-     * @return null|Builder|Model|object
      */
-    public function getFileInfoByHash(string $hash)
+    public function getFileInfoByHash(string $hash): Model|Builder|null
     {
         return $this->model::query()->where('hash', $hash)->first();
     }
@@ -60,7 +58,7 @@ class SystemUploadFileMapper extends AbstractMapper
             $query->where('storage_path', 'like', $params['storage_path'] . '%');
         }
         if (! empty($params['mime_type'])) {
-            $query->where('mime_type', 'like', $params['mime_type'] . '/%');
+            $query->where('mime_type', 'like', $params['mime_type'] . '%');
         }
         if (isset($params['minDate'], $params['maxDate'])) {
             $query->whereBetween(
@@ -77,11 +75,10 @@ class SystemUploadFileMapper extends AbstractMapper
             $model = $this->model::withTrashed()->find($id);
             if ($model) {
                 $storageMode = match ($model->storage_mode) {
-                    1 => 'local' ,
-                    2 => 'oss'   ,
-                    3 => 'qiniu' ,
-                    4 => 'cos'   ,
-                    default => 'local' ,
+                    2 => 'oss',
+                    3 => 'qiniu',
+                    4 => 'cos',
+                    default => 'local',
                 };
                 $event = new RealDeleteUploadFile(
                     $model,

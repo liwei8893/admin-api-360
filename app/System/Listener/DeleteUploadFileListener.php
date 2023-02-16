@@ -7,7 +7,7 @@ namespace App\System\Listener;
 use App\System\Model\SystemUploadfile;
 use Hyperf\Event\Annotation\Listener;
 use Hyperf\Event\Contract\ListenerInterface;
-use League\Flysystem\FileNotFoundException;
+use League\Flysystem\UnableToDeleteFile;
 use Mine\Event\RealDeleteUploadFile;
 
 /**
@@ -31,7 +31,7 @@ class DeleteUploadFileListener implements ListenerInterface
         $filePath = $this->getFilePath($event->getModel());
         try {
             $event->getFilesystem()->delete($filePath);
-        } catch (FileNotFoundException $e) {
+        } catch (UnableToDeleteFile) {
             // 文件删除失败，跳过删除数据
             $event->setConfirm(false);
         }

@@ -149,7 +149,7 @@ class OrderMapper extends AbstractMapper
 
         // 关联用户表
         if (! empty($params['withUsers'])) {
-            $query->with('users:id,user_name,mobile,platform,old_platform,user_type,status');
+            $query->with('users:id,user_name,mobile,platform,old_platform,user_type,status,grade_id');
         }
         $query->whereHas('users', function ($query) use ($params) {
             $query->platformDataScope()

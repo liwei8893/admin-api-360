@@ -7,8 +7,6 @@ namespace Mine\Office\Excel;
 use Closure;
 use Exception;
 use Hyperf\Utils\Arr;
-use Hyperf\HttpMessage\Stream\SwooleStream;
-use MathPHP\Probability\Distribution\Continuous\F;
 use Mine\Exception\MineException;
 use Mine\MineModel;
 use Mine\MineRequest;
@@ -85,7 +83,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function export(string $filename, array|\Closure $closure, \Closure $callbackData = null): \Psr\Http\Message\ResponseInterface
+    public function export(string $filename, array|Closure $closure, Closure $callbackData = null): ResponseInterface
     {
         $filename .= '.xlsx';
         is_array($closure) ? $data = &$closure : $data = $closure();
@@ -143,15 +141,15 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             foreach ($this->property as $property) {
                 if (! empty($property['customField'])) {
                     $value = Arr::get($item, $property['customField']);
-                }else if (!empty($property['path'])){
-                    $yield[] = data_get($item, $property['path']);
+                } elseif (! empty($property['path'])) {
+                    $value = data_get($item, $property['path']);
                 } else {
                     $value = Arr::get($item, $property['name']);
                 }
                 if (! empty($property['dictName'])) {
-                    $yield[] = $property['dictName'][$value];
+                    $value = $property['dictName'][$value];
                 } elseif (! empty($property['dictData'])) {
-                    $yield[] = $property['dictData'][$value];
+                    $value = $property['dictData'][$value];
                 }
                 $yield[] = $value;
             }
