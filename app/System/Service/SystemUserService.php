@@ -249,7 +249,7 @@ class SystemUserService extends AbstractService
     /**
      * 用户更新个人资料.
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws JsonException|NotFoundExceptionInterface
      */
     public function updateInfo(array $params): bool
     {
@@ -260,7 +260,11 @@ class SystemUserService extends AbstractService
         $model = $this->mapper->getModel()::find($params['id']);
         unset($params['id'], $params['password']);
         foreach ($params as $key => $param) {
-            $model[$key] = $param;
+            if ($key === 'backend_setting') {
+                $model[$key] = json_encode($param, JSON_THROW_ON_ERROR);
+            } else {
+                $model[$key] = $param;
+            }
         }
 
         $this->clearCache((string) $model['id']);
