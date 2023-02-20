@@ -122,7 +122,7 @@ class CourseChapterMapper extends AbstractMapper
         }
         if (! empty($params['withAppCoursePeriod'])) {
             $query->with(['coursePeriod' => function (HasOne $query) {
-                $query->with(['teacher'])
+                $query->with(['teacher', 'tags:id,name'])
                     ->select(CoursePeriod::COMMON_FIELDS);
             }]);
         }
