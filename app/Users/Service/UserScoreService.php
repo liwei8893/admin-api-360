@@ -56,4 +56,14 @@ class UserScoreService extends AbstractService
         }
         return true;
     }
+
+    /**
+     * 获取用户积分详情分页.
+     */
+    public function getUserScorePage(array $params): array
+    {
+        $params['orderBy'] = ['id'];
+        $params['orderType'] = ['desc'];
+        return $this->getPageList($params);
+    }
 }

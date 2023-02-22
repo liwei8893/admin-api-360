@@ -56,6 +56,15 @@ class ScoreShopService extends AbstractService
     }
 
     /**
+     * 获取用户积分详情分页.
+     */
+    public function getUserScorePage(array $params): array
+    {
+        $params['user_id'] = user('app')->getId();
+        return $this->userScoreService->getUserScorePage($params);
+    }
+
+    /**
      * 积分兑换课程头像.
      * @throws Exception
      */

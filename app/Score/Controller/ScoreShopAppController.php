@@ -56,4 +56,15 @@ class ScoreShopAppController extends MineController
     {
         return $this->success($this->service->exchange($request->validated()));
     }
+
+    /**
+     * 获取用户积分详情分页.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getUserScorePage'), Auth('app')]
+    public function getUserScorePage(ScoreShopRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getUserScorePage($request->all()));
+    }
 }
