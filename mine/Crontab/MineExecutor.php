@@ -31,12 +31,13 @@ use Psr\Container\ContainerInterface;
 use Swoole\Timer;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Throwable;
 
 class MineExecutor
 {
     protected ContainerInterface $container;
 
-    protected Object $logger;
+    protected object $logger;
 
     protected TaskMutex $taskMutex;
 
@@ -86,7 +87,7 @@ class MineExecutor
                                 } else {
                                     $res = $instance->{$method}();
                                 }
-                            } catch (\Throwable $throwable) {
+                            } catch (Throwable $throwable) {
                                 $result = false;
                             } finally {
                                 $this->logResult($crontab, $result, isset($throwable) ? $throwable->getMessage() : $res);
@@ -120,7 +121,7 @@ class MineExecutor
                         try {
                             $response = $client->get($crontab->getCallback());
                             $result = $response->getStatusCode() === 200;
-                        } catch (\Throwable $throwable) {
+                        } catch (Throwable $throwable) {
                             $result = false;
                         }
                         $this->logResult(
@@ -138,7 +139,7 @@ class MineExecutor
                         $result = true;
                         try {
                             eval($crontab->getCallback());
-                        } catch (\Throwable $throwable) {
+                        } catch (Throwable $throwable) {
                             $result = false;
                         }
                         $this->logResult($crontab, $result, isset($throwable) ? $throwable->getMessage() : '');

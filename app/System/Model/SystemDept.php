@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\System\Model;
 
+use App\Users\Model\UserSalePlatform;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsToMany;
+use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
 
@@ -26,6 +28,7 @@ use Mine\MineModel;
  * @property string $deleted_at 删除时间
  * @property string $remark 备注
  * @property Collection|SystemUser[] $leader 负责人
+ * @property Collection|UserSalePlatform[] $platformCode
  * @property Collection|SystemRole[] $roles
  * @property Collection|SystemUser[] $users
  */
@@ -70,5 +73,10 @@ class SystemDept extends MineModel
     public function leader(): BelongsToMany
     {
         return $this->belongsToMany(SystemUser::class, 'system_dept_leader', 'dept_id', 'user_id');
+    }
+
+    public function platformCode(): HasMany
+    {
+        return $this->hasMany(UserSalePlatform::class, 'user_platform', 'platform');
     }
 }

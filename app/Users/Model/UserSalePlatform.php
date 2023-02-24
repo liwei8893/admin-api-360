@@ -17,5 +17,5 @@ class UserSalePlatform extends MineModel
 
     protected ?string $table = 'user_sale_platform';
 
-    protected array $fillable = ['user_platform', 'u_sale_platform'];
+    protected array $fillable = ['id', 'user_platform', 'u_sale_platform'];
 }
