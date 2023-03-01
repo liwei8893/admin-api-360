@@ -82,8 +82,6 @@ class CoursePeriod extends MineModel
 
     protected ?string $dateFormat = 'U';
 
-    protected array $hidden = ['qiniu_url'];
-
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'teacher_id', 'id')->select(['id', 'user_name', 'mobile']);
