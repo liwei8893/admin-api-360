@@ -16,7 +16,7 @@ require BASE_PATH . '/vendor/autoload.php';
 
 // 载入公共函数库文件
 foreach (glob(BASE_PATH . '/common/*') as $file) {
-    include_once($file);
+    include_once $file;
 }
 
 // Self-called anonymous function that creates its own scope and keep the global namespace clean.
