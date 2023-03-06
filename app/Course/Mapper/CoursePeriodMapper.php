@@ -48,4 +48,22 @@ class CoursePeriodMapper extends AbstractMapper
                     });
             })->limit($params['limit'])->offset($params['offset'])->get();
     }
+
+    /**
+     * 搜索处理器.
+     */
+    public function handleSearch(Builder $query, array $params): Builder
+    {
+        if (isset($params['tagId']) && ! is_array($params['tagId'])) {
+            $query->whereHas('tags', function (Builder $query) use ($params) {
+                $query->where('id', $params['tagId']);
+            });
+        }
+        if (isset($params['tagId']) && is_array($params['tagId'])) {
+            $query->whereHas('tags', function (Builder $query) use ($params) {
+                $query->whereIn('id', $params['tagId']);
+            });
+        }
+        return $query;
+    }
 }

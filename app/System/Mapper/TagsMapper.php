@@ -28,6 +28,12 @@ class TagsMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
+        if (isset($params['id']) && ! is_array($params['id'])) {
+            $query->where('id', $params['id']);
+        }
+        if (isset($params['id']) && is_array($params['id'])) {
+            $query->whereIn('id', $params['id']);
+        }
         // 标签名称
         if (isset($params['name']) && $params['name'] !== '') {
             $query->where('name', 'like', "%{$params['name']}%");

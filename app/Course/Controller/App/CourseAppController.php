@@ -87,4 +87,16 @@ class CourseAppController extends MineController
     {
         return $this->success($this->chapterService->getChapter($id));
     }
+
+    /**
+     * 标签查询课程.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getSearch')]
+    public function getSearch(CourseAppRequest $request): ResponseInterface
+    {
+        $ids = $request->input('ids');
+        return $this->success($this->periodService->getSearch($ids));
+    }
 }

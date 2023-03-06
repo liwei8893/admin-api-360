@@ -6,11 +6,14 @@ namespace App\Course\Service;
 
 use App\Course\Mapper\CoursePeriodMapper;
 use App\Course\Model\CoursePeriod;
+use App\System\Mapper\TagsMapper;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\SubjectAuth;
 use Mine\Exception\NormalStatusException;
+use Psr\SimpleCache\InvalidArgumentException;
+use Throwable;
 
 class CoursePeriodService extends AbstractService
 {
@@ -19,6 +22,9 @@ class CoursePeriodService extends AbstractService
      */
     #[Inject]
     public $mapper;
+
+    #[Inject]
+    protected TagsMapper $tagsMapper;
 
     #[SubjectAuth]
     public function getUrl(int $id): array
@@ -38,6 +44,11 @@ class CoursePeriodService extends AbstractService
         return ['url' => $model['qiniu_url'], 'subject' => $courseModel['subject_id'], 'grade' => $grade, 'courseId' => $courseModel['id']];
     }
 
+    /**
+     * @param mixed $params
+     * @throws InvalidArgumentException
+     * @throws Throwable
+     */
     public function getPlanMonth($params): Collection|array
     {
         // 处理季节 1,2月对应寒假2节课 3,4,5,6月对应春季4节课 7,8月对应暑假4节课， 9,10,11,12月对应秋季4节课
@@ -51,5 +62,12 @@ class CoursePeriodService extends AbstractService
         // 科目默认语文
         $params['subject_id'] = $params['subject_id'] ?? 3;
         return $this->mapper->getPlanMonth($params);
+    }
+
+    public function getSearch(array $ids): Collection|array
+    {
+        $course = $this->mapper->getListCollect(['tagId' => $ids, 'select' => ['id', 'title', 'course_basis_id']]);
+        $course->load(['courseBasis:id,title,course_title', 'tags:id,name']);
+        return $course;
     }
 }

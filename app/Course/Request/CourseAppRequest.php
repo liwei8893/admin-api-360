@@ -19,6 +19,11 @@ class CourseAppRequest extends MineFormRequest
         return [];
     }
 
+    public function getSearchRules(): array
+    {
+        return ['ids' => 'required|array'];
+    }
+
     public function getPlanMonthRules(): array
     {
         return [

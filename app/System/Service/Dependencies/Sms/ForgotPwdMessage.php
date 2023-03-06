@@ -13,8 +13,6 @@ use Overtrue\EasySms\Message;
 class ForgotPwdMessage extends Message
 {
     /**
-     * @param array $attributes
-     * @param string $type
      * @throws Exception
      */
     public function __construct(array $attributes = [], string $type = MessageInterface::TEXT_MESSAGE)
