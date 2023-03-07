@@ -7,6 +7,7 @@ namespace App\System\Mapper;
 use App\System\Model\Tag;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
+use Mine\Annotation\Transaction;
 
 /**
  * 标签管理Mapper类.
@@ -45,5 +46,32 @@ class TagsMapper extends AbstractMapper
         }
 
         return $query;
+    }
+
+    /**
+     * 单个或批量真实删除数据.
+     */
+    #[Transaction]
+    public function realDelete(array $ids): bool
+    {
+        foreach ($ids as $id) {
+            $model = $this->model::withTrashed()->find($id);
+            if ($model) {
+                $model->coursePeriod()->detach();
+                $model->question()->detach();
+                $model->forceDelete();
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 新增数据.
+     */
+    public function save(array $data): int
+    {
+        $this->filterExecuteAttributes($data, $this->getModel()->incrementing);
+        $model = $this->model::firstOrCreate(['name' => $data['name']], $data);
+        return $model->{$model->getKeyName()};
     }
 }
