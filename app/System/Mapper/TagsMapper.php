@@ -36,7 +36,7 @@ class TagsMapper extends AbstractMapper
         }
         // 标签名称
         if (isset($params['name']) && $params['name'] !== '') {
-            $query->where('name', 'like', "%{$params['name']}%");
+            $query->where('name', $params['name']);
         }
 
         // 标签状态 0:禁用 1:正常
