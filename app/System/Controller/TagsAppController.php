@@ -21,7 +21,7 @@ class TagsAppController extends MineController
     protected TagsService $service;
 
     /**
-     * 获取所以tag.
+     * 获取所有tag.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -31,6 +31,6 @@ class TagsAppController extends MineController
         $params = $request->all();
         $params['select'] = 'id,name';
         $params['status'] = 1;
-        return $this->success($this->service->getList($params, false));
+        return $this->success($this->service->getTagList($params, false));
     }
 }

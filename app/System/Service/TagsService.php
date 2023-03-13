@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\System\Service;
 
 use App\System\Mapper\TagsMapper;
+use Hyperf\Cache\Annotation\Cacheable;
 use Mine\Abstracts\AbstractService;
 
 /**
@@ -20,5 +21,11 @@ class TagsService extends AbstractService
     public function __construct(TagsMapper $mapper)
     {
         $this->mapper = $mapper;
+    }
+
+    #[Cacheable(prefix: 'Tags', value: 'AppTagList', ttl: 86400)]
+    public function getTagList(array $params): array
+    {
+        return $this->getList($params, false);
     }
 }

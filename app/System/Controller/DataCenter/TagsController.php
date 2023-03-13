@@ -7,6 +7,7 @@ namespace App\System\Controller\DataCenter;
 use App\System\Dto\TagsDto;
 use App\System\Request\TagsRequest;
 use App\System\Service\TagsService;
+use Hyperf\Cache\Annotation\CacheEvict;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\DeleteMapping;
@@ -64,7 +65,7 @@ class TagsController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[DeleteMapping('realDelete'), Permission('system:tag:realDelete'), OperationLog]
+    #[DeleteMapping('realDelete'), Permission('system:tag:realDelete'), OperationLog, CacheEvict(prefix: 'Tags', value: 'AppTagList')]
     public function realDelete(): ResponseInterface
     {
         return $this->service->realDelete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
@@ -75,7 +76,7 @@ class TagsController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PutMapping('recovery'), Permission('system:tag:recovery'), OperationLog]
+    #[PutMapping('recovery'), Permission('system:tag:recovery'), OperationLog, CacheEvict(prefix: 'Tags', value: 'AppTagList')]
     public function recovery(): ResponseInterface
     {
         return $this->service->recovery((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
@@ -86,7 +87,7 @@ class TagsController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('save'), Permission('system:tag:save'), OperationLog]
+    #[PostMapping('save'), Permission('system:tag:save'), OperationLog, CacheEvict(prefix: 'Tags', value: 'AppTagList')]
     public function save(TagsRequest $request): ResponseInterface
     {
         return $this->success(['id' => $this->service->save($request->all())]);
@@ -97,7 +98,7 @@ class TagsController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PutMapping('update/{id}'), Permission('system:tag:update'), OperationLog]
+    #[PutMapping('update/{id}'), Permission('system:tag:update'), OperationLog, CacheEvict(prefix: 'Tags', value: 'AppTagList')]
     public function update(int $id, TagsRequest $request): ResponseInterface
     {
         return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
@@ -119,7 +120,7 @@ class TagsController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[DeleteMapping('delete'), Permission('system:tag:delete'), OperationLog]
+    #[DeleteMapping('delete'), Permission('system:tag:delete'), OperationLog, CacheEvict(prefix: 'Tags', value: 'AppTagList')]
     public function delete(): ResponseInterface
     {
         return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
@@ -130,7 +131,7 @@ class TagsController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PutMapping('changeStatus'), Permission('system:tag:update'), OperationLog]
+    #[PutMapping('changeStatus'), Permission('system:tag:update'), OperationLog, CacheEvict(prefix: 'Tags', value: 'AppTagList')]
     public function changeStatus(): ResponseInterface
     {
         return $this->service->changeStatus(
@@ -143,7 +144,7 @@ class TagsController extends MineController
     /**
      * 数据导入.
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws NotFoundExceptionInterface|\PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     #[PostMapping('import'), Permission('system:tag:import')]
     public function import(): ResponseInterface

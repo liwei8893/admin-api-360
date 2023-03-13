@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Aspect;
 
 use Hyperf\Config\Annotation\Value;
@@ -19,30 +20,30 @@ use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\Di\Exception\Exception;
 use Mine\Annotation\DeleteCache;
 use Mine\Helper\Str;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
- * Class DeleteCacheAspect
- * @package Mine\Aspect
+ * Class DeleteCacheAspect.
  */
 #[Aspect]
 class DeleteCacheAspect extends AbstractAspect
 {
     public array $annotations = [
-        DeleteCache::class
+        DeleteCache::class,
     ];
 
     /**
      * 缓存前缀
      */
-    #[Value("cache.default.prefix")]
+    #[Value('cache.default.prefix')]
     protected string $prefix;
 
     /**
-     * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
      * @throws Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
@@ -53,7 +54,7 @@ class DeleteCacheAspect extends AbstractAspect
 
         $result = $proceedingJoinPoint->process();
 
-        if ( !empty($deleteCache->keys)) {
+        if (! empty($deleteCache->keys)) {
             $keys = explode(',', $deleteCache->keys);
             $iterator = null;
             $n = [];
