@@ -91,7 +91,7 @@ class QuestionAppService extends AbstractService
         // 1练一练,2测一测
         $data = [];
         if ((int) $params['channel'] === 1) {
-            $params['id'] = explode(',', $periodModel->qurstion_str);
+            $params['id'] = explode(',', $periodModel->qurstion_str ?? '');
             $params['orderBy'] = ['sort', 'id'];
             $params['orderType'] = ['desc', 'desc'];
             $data = $this->mapper->getListCollect($params);

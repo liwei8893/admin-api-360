@@ -46,6 +46,8 @@ class Know extends MineModel
      */
     protected array $casts = ['id' => 'integer', 'parent_id' => 'integer', 'knows_grade' => 'integer', 'states' => 'integer', 'sort' => 'integer', 'season' => 'integer', 'status' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'grade_id' => 'integer'];
 
+    protected ?string $dateFormat = 'U';
+
     public function question(): HasMany
     {
         return $this->hasMany(Question::class, 'knows_id', 'id');

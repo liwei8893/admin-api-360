@@ -116,10 +116,9 @@ class CourseChapterService extends AbstractService
             'start_play' => $data['course_period']['start_play'] ?? 0,
             'end_play' => $data['course_period']['end_play'] ?? 0,
             'qiniu_url' => $data['course_period']['qiniu_url'] ?? '',
-            'qurstion_str' => $data['course_period']['qurstion_str'] ?? '',
+            'qurstion_str' => $data['qurstion_str'] ?? '',
         ];
-        $data['course_period'] = array_merge($initPeriodData, $data['course_period']);
-
+        $data['course_period'] = array_merge($data['course_period'], $initPeriodData);
         // 处理测一测数据
         $data['question_period'] = $this->handleQuestionPeriodData($data['question_period'] ?? []);
         // 处理标签
