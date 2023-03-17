@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "528410bcc3cb89f198c2f132694aedeb",
+    "content-hash": "92017a758b710944e4d99166856a14c9",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1993,16 +1993,16 @@
         },
         {
             "name": "hyperf/database",
-            "version": "v3.0.8",
+            "version": "v3.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hyperf/database.git",
-                "reference": "0c601cb6f8c22f6a9c2573c1606c0afddf038d83"
+                "reference": "bd62309c2aa4e87285c47aea1a5a133ccdf03144"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hyperf/database/zipball/0c601cb6f8c22f6a9c2573c1606c0afddf038d83",
-                "reference": "0c601cb6f8c22f6a9c2573c1606c0afddf038d83",
+                "url": "https://api.github.com/repos/hyperf/database/zipball/bd62309c2aa4e87285c47aea1a5a133ccdf03144",
+                "reference": "bd62309c2aa4e87285c47aea1a5a133ccdf03144",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -2052,7 +2052,7 @@
                 "pull-request": "https://github.com/hyperf/hyperf/pulls",
                 "source": "https://github.com/hyperf/hyperf"
             },
-            "time": "2023-02-22T22:53:11+00:00"
+            "time": "2023-03-10T04:55:15+00:00"
         },
         {
             "name": "hyperf/db-connection",
@@ -8895,16 +8895,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.15.0",
+            "version": "v3.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "7306744c63e9cc1337894252b4eec4920c38b053"
+                "reference": "d48755372a113bddb99f749e34805d83f3acfe04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/7306744c63e9cc1337894252b4eec4920c38b053",
-                "reference": "7306744c63e9cc1337894252b4eec4920c38b053",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/d48755372a113bddb99f749e34805d83f3acfe04",
+                "reference": "d48755372a113bddb99f749e34805d83f3acfe04",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -8985,7 +8985,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.15.0"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.15.1"
             },
             "funding": [
                 {
@@ -8993,7 +8993,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-03-12T22:44:55+00:00"
+            "time": "2023-03-13T23:26:30+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -11724,7 +11724,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-gd": "*",
         "ext-json": "*",
         "ext-openssl": "*",

@@ -124,6 +124,11 @@ class CourseBasis extends MineModel
         return $this->hasMany(CourseChapter::class, 'course_basis_id', 'id');
     }
 
+    public function period(): HasMany
+    {
+        return $this->hasMany(CoursePeriod::class, 'course_basis_id', 'id');
+    }
+
     /**
      * 多态一对一关联积分商品表.
      */

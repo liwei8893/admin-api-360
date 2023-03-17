@@ -16,6 +16,8 @@ use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\SimpleCache\InvalidArgumentException;
+use Throwable;
 
 #[Controller(prefix: 'course/app')]
 class CourseAppController extends MineController
@@ -55,6 +57,8 @@ class CourseAppController extends MineController
      * 学习中心根据年级月份提供学习计划.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws Throwable
      */
     #[GetMapping('getPlanMonth')]
     public function getPlanMonth(CourseAppRequest $request): ResponseInterface

@@ -63,7 +63,7 @@ use Mine\MineModel;
  */
 class CoursePeriod extends MineModel
 {
-    public const COMMON_FIELDS = ['course_periods.id', 'course_periods.title', 'course_basis_id', 'course_chapter_id', 'is_free', 'teacher_id', 'assistant_id', 'subject_id', 'subject_name', 'qurstion_str'];
+    public const COMMON_FIELDS = ['course_periods.id', 'course_periods.title', 'course_basis_id', 'course_chapter_id', 'is_free', 'teacher_id', 'assistant_id', 'subject_id', 'subject_name', 'qurstion_str', 'updated_at'];
 
     /**
      * The table associated with the model.

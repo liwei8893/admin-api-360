@@ -27,8 +27,11 @@ class CourseBasisService extends AbstractService
         } else {
             $params['select'] = explode(',', $params['select']);
         }
+        $params = [...$params, 'period_count'];
         $params['states'] = CourseBasis::STATUS_NORMAL;
         $params['is_del'] = 0;
+        // 获取一个月内更新章节数量
+        $params['periodUpdateCount'] = true;
         if (! isset($params['orderBy'])) {
             $params['orderBy'] = ['sort', 'id'];
         }

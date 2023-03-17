@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Course\Mapper;
 
 use App\Course\Model\CourseBasis;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
@@ -26,13 +27,8 @@ class CourseBasisMapper extends AbstractMapper
 
     /**
      * 批量更新.
-     * @param mixed $ids
-     * @param mixed $data
-     * @return int
-     *             author:ZQ
-     *             time:2022-08-21 17:54
      */
-    public function batchUpdate($ids, $data): int
+    public function batchUpdate(array $ids, array $data): int
     {
         return $this->model::query()->whereIn('id', $ids)->update($data);
     }
@@ -159,7 +155,12 @@ class CourseBasisMapper extends AbstractMapper
         if (! empty($params['excludeShop'])) {
             $query->has('scoreShop', '<');
         }
-
+        // 章节一个月内是否有更新
+        if (! empty($params['periodUpdateCount'])) {
+            $query->withCount(['period as period_update_count' => function (Builder $query) {
+                $query->where('updated_at', '>=', Carbon::now()->subDays(30)->timestamp);
+            }]);
+        }
         return $query;
     }
 }
