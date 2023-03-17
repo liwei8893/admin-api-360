@@ -39,7 +39,7 @@ class QuestionAppService extends AbstractService
         // 每课优题
         if ((int) $params['type'] === 0) {
             $params = $this->handleData($params);
-            $params['select'] = 'id,knows_id,classify_id,ques_type,ques_title';
+            $params['select'] = 'id,knows_id,classify_id,ques_type,ques_title,updated_at';
             $data = $this->mapper->getQuestionHomeList($params);
             // 添加封面 img
             $this->handleQuestionListImg($data, $params['subject'] ? (int) $params['subject'] : 0);
@@ -47,7 +47,7 @@ class QuestionAppService extends AbstractService
             return $data;
         }
         // 试卷
-        $params['select'] = 'id,name';
+        $params['select'] = 'id,name,updated_at';
         $params['orderBy'] = ['new_state', 'sort', 'name'];
         $params['orderType'] = ['desc', 'desc', 'desc'];
         $data = $this->volumeService->getPageList($params);
