@@ -46,6 +46,10 @@ class Question extends MineModel
 {
     public const COMMON_FIELDS = ['question.id', 'knows_id', 'classify_id', 'channel', 'ques_type', 'ques_title', 'ques_stem', 'ques_stem_text', 'ques_option', 'right_answer', 'ques_analysis', 'ques_difficulty'];
 
+    public const STATUS_ENABLE = 0;
+
+    public const STATUS_DELETE = 1;
+
     /**
      * The table associated with the model.
      */

@@ -90,13 +90,14 @@ class QuestionAppService extends AbstractService
         $grade = $courseModel->basisGrade->pluck('key')->toArray();
         // 1练一练,2测一测
         $data = [];
+        $params['states'] = Question::STATUS_ENABLE;
         if ((int) $params['channel'] === 1) {
             $params['id'] = explode(',', $periodModel->qurstion_str ?? '');
             $params['orderBy'] = ['sort', 'id'];
             $params['orderType'] = ['desc', 'desc'];
             $data = $this->mapper->getListCollect($params);
         } elseif ((int) $params['channel'] === 2) {
-            $data = $periodModel->questionPeriod()
+            $data = $periodModel->questionPeriod()->where('states', $params['states'])
                 ->orderBy('sort', 'desc')->orderBy('id', 'desc')->get();
         }
         if ($data) {
