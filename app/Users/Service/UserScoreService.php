@@ -22,7 +22,7 @@ class UserScoreService extends AbstractService
      * 变更积分.
      */
     #[Transaction]
-    public function changeScore($data): bool
+    public function changeScore(array $data): bool
     {
         $userId = $data['user_id'];
         $originId = $data['origin_id'];
@@ -43,12 +43,12 @@ class UserScoreService extends AbstractService
             // 保存增加积分详情
             $this->mapper->saveInUserScore($data);
             // 增加用户积分
-            $states = $this->mapper->incrementUserScore($userId, $score);
+            $states = $this->mapper->incrementUserScore((int) $userId, (int) $score);
         } else {
             // 保存减少积分详情
             $this->mapper->saveUnUserScore($data);
             // 减少用户积分
-            $states = $this->mapper->decrementUserScore($userId, $score);
+            $states = $this->mapper->decrementUserScore((int) $userId, (int) $score);
         }
 
         if (! $states) {

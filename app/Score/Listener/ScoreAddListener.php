@@ -80,7 +80,7 @@ class ScoreAddListener implements ListenerInterface
         $userModel = User::query()->find($userId);
         // 检测当天做题数,3 6 9获取积分
         $questionCount = container()->get(QuestionHistoryMapper::class)->getCurQuestionCount($userModel->id);
-        if (!in_array($questionCount, [3, 6, 9])) {
+        if (! in_array($questionCount, [3, 6, 9])) {
             return;
         }
         // 检测当天是否获取过积分
@@ -118,13 +118,13 @@ class ScoreAddListener implements ListenerInterface
         $courseRecordTodayTask = container()->get(UserCourseRecordMapper::class);
         // 查询用户当天听课时长
         $todayModel = $courseRecordTodayTask->getTodayDataByUserId($userModel->id);
-        if (!$todayModel) {
+        if (! $todayModel) {
             return;
         }
         // 计算达成30分钟次数
         $timeCount = floor($todayModel['record_time'] / (30 * 60));
         // 如果相等表示当前区间的积分已经领取
-        if ((int)$timeCount === $scoreCount) {
+        if ((int) $timeCount === $scoreCount) {
             return;
         }
 
@@ -178,7 +178,7 @@ class ScoreAddListener implements ListenerInterface
         // 查询订单
         $orderModel = Order::query()->find($originId);
         // 查询不到订单,或者实际付款金额为0,或者订单状态不为完成 结束
-        if (!$orderModel || (int)$orderModel->shop_id !== 950 || !$orderModel->actual_price || (int)$orderModel->pay_states !== 7) {
+        if (! $orderModel || (int) $orderModel->shop_id !== 950 || ! $orderModel->actual_price || (int) $orderModel->pay_states !== 7) {
             return;
         }
         $this->changeScore([
@@ -203,7 +203,7 @@ class ScoreAddListener implements ListenerInterface
         // 查询订单
         $renewModel = UsersRenew::query()->find($originId);
         // 查询不到续费单,续费金额为0,续费状态不为成功
-        if (!$renewModel || !$renewModel->money || (int)$renewModel->status !== 1 || (int)$renewModel->audit_status !== 0) {
+        if (! $renewModel || ! $renewModel->money || (int) $renewModel->status !== 1 || (int) $renewModel->audit_status !== 0) {
             return;
         }
         $this->changeScore([
@@ -228,7 +228,7 @@ class ScoreAddListener implements ListenerInterface
         // 查询订单
         $orderModel = Order::query()->find($originId);
         // 查询不到订单,或者订单状态不为完成 结束
-        if (!$orderModel || (int)$orderModel->status !== Order::STATUS_REFUND) {
+        if (! $orderModel || (int) $orderModel->status !== Order::STATUS_REFUND) {
             return;
         }
         // 扣除的积分=订单金额+续费金额
@@ -267,19 +267,19 @@ class ScoreAddListener implements ListenerInterface
             'channel_type' => $channelType,
             'score' => $score,
         ];
-        if ((int)$type === 1) {
+        if ((int) $type === 1) {
             // 保存增加积分详情
             $this->mapper->saveInUserScore($data);
             // 增加用户积分
-            $states = $this->mapper->incrementUserScore($userId, (int)$score);
+            $states = $this->mapper->incrementUserScore($userId, (int) $score);
         } else {
             // 保存减少积分详情
             $this->mapper->saveUnUserScore($data);
             // 减少用户积分
-            $states = $this->mapper->decrementUserScore($userId, (int)$score);
+            $states = $this->mapper->decrementUserScore($userId, (int) $score);
         }
 
-        if (!$states) {
+        if (! $states) {
             throw new NormalStatusException('系统错误');
         }
         return true;
