@@ -8,6 +8,7 @@ use App\Course\Model\CourseBasis;
 use App\System\Model\SystemDictData;
 use App\Users\Model\User;
 use Carbon\Carbon;
+use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\BelongsToMany;
@@ -47,7 +48,7 @@ use Mine\MineModel;
  * @property int $group_id 团ID
  * @property int $class_grade_id 班级id,未分班的id为0
  * @property int $is_offline 是否为线下支付 0:否1:是
- * @property int $status 0=无效 1=有效 0暂停 1正常 2退费
+ * @property int $status 0暂停 1正常 2退费
  * @property string $bug_subject
  * @property string $bug_subject_name
  * @property int $indate_close 有效期类型：0：只能看有效期范围内，1：未知，2：默认，3：有效期到期直播回放都不能看
@@ -67,13 +68,14 @@ use Mine\MineModel;
  * @property int $apply_type 1首月  2正价
  * @property int $is_vip 1:普通会员，2:超级会员，3:至尊会员
  * @property string $platform 用户平台
- * @property CourseBasis $course
+ * @property int $real_year 真实报名年数
  * @property string $course_end_time
- * @property Collection|SystemDictData[] $orderGrade
- * @property Collection|SystemDictData[] $orderSubject
- * @property Collection|OrderPayment[] $payment
  * @property User $users
+ * @property CourseBasis $course
+ * @property Collection|OrderPayment[] $payment
  * @property Collection|UsersRenew[] $usersRenew
+ * @property Collection|SystemDictData[] $orderSubject
+ * @property Collection|SystemDictData[] $orderGrade
  */
 class Order extends MineModel
 {
@@ -114,10 +116,10 @@ class Order extends MineModel
 
     protected ?string $dateFormat = 'U';
 
-    protected array $fillable = ['id', 'user_id', 'shop_id', 'course_basis_id', 'shop_name', 'course_name', 'order_number', 'pay_number', 'shop_type', 'pay_type', 'order_price', 'vip_discount', 'coupon_discount', 'other_discount', 'pay_states', 'ship_status', 'tag_type', 'is_present', 'is_logistics', 'grade', 'deleted_at', 'created_at', 'updated_at', 'indate', 'address_id', 'is_exchange', 'coupon_id', 'remark', 'spell_id', 'group_id', 'class_grade_id', 'is_offline', 'status', 'bug_subject', 'bug_subject_name', 'indate_close', 'audit_status', 'update_indate', 'is_renew', 'activities', 'actual_price', 'created_name', 'created_id', 'cause_text', 'is_over', 'renew_time', 'status_time', 'refund_time', 'renew_order_id', 'apply_type', 'is_vip', 'platform'];
+    protected array $fillable = ['id', 'user_id', 'shop_id', 'course_basis_id', 'shop_name', 'course_name', 'order_number', 'pay_number', 'shop_type', 'pay_type', 'order_price', 'vip_discount', 'coupon_discount', 'other_discount', 'pay_states', 'ship_status', 'tag_type', 'is_present', 'is_logistics', 'grade', 'deleted_at', 'created_at', 'updated_at', 'indate', 'address_id', 'is_exchange', 'coupon_id', 'remark', 'spell_id', 'group_id', 'class_grade_id', 'is_offline', 'status', 'bug_subject', 'bug_subject_name', 'indate_close', 'audit_status', 'update_indate', 'is_renew', 'activities', 'actual_price', 'created_name', 'created_id', 'cause_text', 'is_over', 'renew_time', 'status_time', 'refund_time', 'renew_order_id', 'apply_type', 'is_vip', 'platform', 'real_year'];
 
     // 订单需要审核
-    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'shop_id' => 'integer', 'course_basis_id' => 'integer', 'shop_type' => 'integer', 'pay_type' => 'integer', 'order_price' => 'integer', 'vip_discount' => 'integer', 'coupon_discount' => 'integer', 'other_discount' => 'integer', 'pay_states' => 'integer', 'ship_status' => 'integer', 'tag_type' => 'integer', 'is_present' => 'integer', 'is_logistics' => 'integer', 'grade' => 'integer', 'deleted_at' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'address_id' => 'integer', 'is_exchange' => 'integer', 'coupon_id' => 'integer', 'spell_id' => 'integer', 'group_id' => 'integer', 'class_grade_id' => 'integer', 'is_offline' => 'integer', 'status' => 'integer', 'indate_close' => 'integer', 'audit_status' => 'integer', 'update_indate' => 'integer', 'is_renew' => 'integer', 'actual_price' => 'decimal:2', 'created_id' => 'integer', 'is_over' => 'integer', 'renew_time' => 'datetime', 'status_time' => 'datetime', 'refund_time' => 'datetime', 'renew_order_id' => 'integer', 'apply_type' => 'integer', 'is_vip' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'shop_id' => 'integer', 'course_basis_id' => 'integer', 'shop_type' => 'integer', 'pay_type' => 'integer', 'order_price' => 'integer', 'vip_discount' => 'integer', 'coupon_discount' => 'integer', 'other_discount' => 'integer', 'pay_states' => 'integer', 'ship_status' => 'integer', 'tag_type' => 'integer', 'is_present' => 'integer', 'is_logistics' => 'integer', 'grade' => 'integer', 'deleted_at' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'address_id' => 'integer', 'is_exchange' => 'integer', 'coupon_id' => 'integer', 'spell_id' => 'integer', 'group_id' => 'integer', 'class_grade_id' => 'integer', 'is_offline' => 'integer', 'status' => 'integer', 'indate_close' => 'integer', 'audit_status' => 'integer', 'update_indate' => 'integer', 'is_renew' => 'integer', 'actual_price' => 'decimal:2', 'created_id' => 'integer', 'is_over' => 'integer', 'renew_time' => 'datetime', 'status_time' => 'datetime', 'refund_time' => 'datetime', 'renew_order_id' => 'integer', 'apply_type' => 'integer', 'is_vip' => 'integer', 'real_year' => 'integer'];
 
     // 追加字段
     protected array $appends = ['created_at|indate' => 'course_end_time'];
@@ -191,27 +193,24 @@ class Order extends MineModel
 
     /**
      * 局部作用域,查询订单状态正常的订单.
-     * @param mixed $query
      */
-    public function scopeNormalOrder($query)
+    public function scopeNormalOrder(Builder $query): Builder
     {
         return $query->where('deleted_at', 0)->where('status', 1)->where('pay_states', 7);
     }
 
     /**
      * 局部作用域,查询所有状态的未删除的订单.
-     * @param mixed $query
      */
-    public function scopeNoDeleteOrder($query)
+    public function scopeNoDeleteOrder(Builder $query): Builder
     {
         return $query->where('deleted_at', 0)->where('pay_states', 7);
     }
 
     /**
      * 查询没过期的订单.
-     * @param mixed $query
      */
-    public function scopeIsNotExpire($query)
+    public function scopeIsNotExpire(Builder $query): Builder
     {
         return $query->whereRaw('(created_at + (indate * 86400)) > unix_timestamp(now())');
     }

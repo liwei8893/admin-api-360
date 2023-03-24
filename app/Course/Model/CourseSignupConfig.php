@@ -14,12 +14,16 @@ use Mine\MineModel;
  * @property string $title 课程名称
  * @property int $price 金额
  * @property int $day 天数
+ * @property int $real_year 真实报名年数
+ * @property int $sort 排序
  * @property string $remark 备注
  * @property int $created_by 创建者
  * @property int $updated_by 更新者
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * @property string $deleted_at
+ * @property CourseBasis[]|\Hyperf\Database\Model\Collection $courseSignup
+ * @property \Hyperf\Database\Model\Collection|SystemDictData[] $gradeSignup
  */
 class CourseSignupConfig extends MineModel
 {
@@ -33,12 +37,12 @@ class CourseSignupConfig extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'title', 'price', 'day', 'sort', 'remark', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'title', 'price', 'day', 'real_year', 'sort', 'remark', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'price' => 'integer', 'day' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'price' => 'integer', 'day' => 'integer', 'real_year' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function courseSignup(): BelongsToMany
     {

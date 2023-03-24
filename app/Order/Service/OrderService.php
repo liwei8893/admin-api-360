@@ -109,6 +109,7 @@ class OrderService extends AbstractService
             'status' => $params['renew'] ? 1 : 0,
             'startDate' => $item['course_end_time'],
             'endDate' => $params['date'],
+            'real_year' => $params['real_year'],
         ];
         return $this->usersRenewService->recordUserRenew(array_merge($item, $params, $data));
     }
@@ -235,6 +236,23 @@ class OrderService extends AbstractService
         $orderModel->status_time = Carbon::now();
         if (! $orderModel->save()) {
             throw new NormalStatusException('恢复状态失败!');
+        }
+        return true;
+    }
+
+    /**
+     * 删除订单.
+     */
+    public function changeOrderToDelete(array $data): bool
+    {
+        /** @var null|Order $orderModel */
+        $orderModel = $this->mapper->read($data['orderId']);
+        if (! $orderModel) {
+            throw new NormalStatusException('订单错误!');
+        }
+        $orderModel->deleted_at = time();
+        if (! $orderModel->save()) {
+            throw new NormalStatusException('订单删除失败!');
         }
         return true;
     }

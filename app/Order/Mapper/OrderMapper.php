@@ -27,9 +27,6 @@ class OrderMapper extends AbstractMapper
     /**
      * 有效期增加.
      * @param array $update 可选,更新order表其他字段
-     * @return int
-     *             author:ZQ
-     *             time:2022-08-18 15:26
      */
     public function incrementInDate(int $id, int $day, array $update = []): int
     {
@@ -39,9 +36,6 @@ class OrderMapper extends AbstractMapper
     /**
      * 有效期减少.
      * @param array $update 可选,更新order表其他字段
-     * @return int
-     *             author:ZQ
-     *             time:2022-08-18 15:27
      */
     public function decrementInDate(int $id, int $day, array $update = []): int
     {

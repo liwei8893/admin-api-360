@@ -46,6 +46,7 @@ class UsersRenewService extends AbstractService
             'money' => $data['money'] ?? 0,
             'audit_status' => $this->loginUser->isNoAuditRole() ? UsersRenew::AUDIT_SUCCESS : UsersRenew::AUDIT_PENDING,
             'remark' => $data['remark'] ?? '',
+            'real_year' => $data['real_year'] ?? '',
         ];
         return $this->mapper->insert($params);
     }

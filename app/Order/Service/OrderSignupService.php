@@ -54,6 +54,7 @@ class OrderSignupService extends AbstractService
             // 组装数据
             $comParam = [
                 'user_id' => $collect['userId'],
+                'real_year' => $collect['real_year'],
                 'indate' => $collect['day'],
                 'money' => $collect['price'],
                 'remark' => '后台报名',
@@ -111,6 +112,7 @@ class OrderSignupService extends AbstractService
             'activities' => $data['activities'] ?? '',
             'remark' => $data['remark'] ?? '',
             'is_vip' => $data['is_vip'] ?? 0,
+            'real_year' => $data['real_year'] ?? '',
         ];
     }
 
