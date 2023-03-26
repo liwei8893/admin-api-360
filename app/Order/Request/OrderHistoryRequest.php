@@ -33,6 +33,7 @@ class OrderHistoryRequest extends MineFormRequest
             'ids' => 'required|array',
             'type' => ['required', 'integer', Rule::in([0, 1, 2])],
             'grade' => 'required|array',
+            'subject' => 'required|array',
         ];
     }
 

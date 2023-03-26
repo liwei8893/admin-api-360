@@ -40,12 +40,15 @@ class CourseHistoryService extends AbstractService
             if ($params['type'] === 1) {
                 // 增加对应年级
                 $orderModel->orderGrade()->attach($params['grade']);
+                $orderModel->orderSubject()->attach($params['subject']);
             } elseif ($params['type'] === 2) {
                 // 去掉对应年级
                 $orderModel->orderGrade()->detach($params['grade']);
+                $orderModel->orderSubject()->detach($params['subject']);
             } elseif ($params['type'] === 0) {
                 // 同步年级
                 $orderModel->orderGrade()->sync($params['grade']);
+                $orderModel->orderSubject()->sync($params['subject']);
             }
         }
         return true;
