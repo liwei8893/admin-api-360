@@ -39,7 +39,7 @@ class AreaController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getArea'),Auth('app')]
+    #[GetMapping('getArea'), Auth('app')]
     public function getArea(AreaRequest $request): ResponseInterface
     {
         $params = $request->validated();
@@ -52,7 +52,7 @@ class AreaController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('index'),Auth, Permission('system:area, system:area:index')]
+    #[GetMapping('index'), Auth, Permission('system:area, system:area:index')]
     public function index(): ResponseInterface
     {
         return $this->success($this->service->getPageList($this->request->all()));
@@ -63,7 +63,7 @@ class AreaController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('save'),Auth, Permission('system:area:save'), OperationLog]
+    #[PostMapping('save'), Auth, Permission('system:area:save'), OperationLog]
     public function save(AreaRequest $request): ResponseInterface
     {
         return $this->success(['id' => $this->service->save($request->all())]);
@@ -74,7 +74,7 @@ class AreaController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PutMapping('update/{id}'),Auth, Permission('system:area:update'), OperationLog]
+    #[PutMapping('update/{id}'), Auth, Permission('system:area:update'), OperationLog]
     public function update(int $id, AreaRequest $request): ResponseInterface
     {
         return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
@@ -85,7 +85,7 @@ class AreaController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('read/{id}'),Auth, Permission('system:area:read')]
+    #[GetMapping('read/{id}'), Auth, Permission('system:area:read')]
     public function read(int $id): ResponseInterface
     {
         return $this->success($this->service->read($id));
@@ -96,7 +96,7 @@ class AreaController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[DeleteMapping('delete'),Auth, Permission('system:area:delete'), OperationLog]
+    #[DeleteMapping('delete'), Auth, Permission('system:area:delete'), OperationLog]
     public function delete(): ResponseInterface
     {
         return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();

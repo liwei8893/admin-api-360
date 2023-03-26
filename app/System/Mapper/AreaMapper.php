@@ -6,6 +6,7 @@ namespace App\System\Mapper;
 
 use App\System\Model\Area;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Model;
 use Mine\Abstracts\AbstractMapper;
 
 /**
@@ -21,6 +22,12 @@ class AreaMapper extends AbstractMapper
     public function assignModel(): void
     {
         $this->model = Area::class;
+    }
+
+    public function getAreaByAreaName($areaName): Area|Model|Builder|null
+    {
+        return $this->model::query()->where('area_name', 'like', "%{$areaName}%")
+            ->first();
     }
 
     /**
