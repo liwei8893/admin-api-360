@@ -81,7 +81,7 @@ class UsersService extends AbstractService
                 continue;
             }
             // 查询平台是否一致
-            if (Str::upper($params['platform']) === Str::upper($userModel['platform'])) {
+            if (! empty($userModel['platform']) && Str::upper($params['platform']) === Str::upper($userModel['platform'])) {
                 $logInfo[] = ['mobile' => $mobile, 'info' => '平台一致不需要变更'];
                 continue;
             }

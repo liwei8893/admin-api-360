@@ -68,6 +68,29 @@ class OrderStaService extends AbstractService
         return array_values($data);
     }
 
+    protected function handleStaDataV2(array|Collection $data, string $dayField = 'real_year'): array
+    {
+        return $data->reduce(function ($carry, $item) use ($dayField) {
+            $item['date'] = $item->created_at->toDateString();
+            $item['tag'] = 'other';
+            if ((int) $item[$dayField] === 1) {
+                $item['tag'] = 'd1';
+            } elseif ((int) $item[$dayField] === 2) {
+                $item['tag'] = 'd2';
+            } elseif ((int) $item[$dayField] === 3) {
+                $item['tag'] = 'd3';
+            } elseif ((int) $item[$dayField] > 3) {
+                $item['tag'] = 'd4';
+            }
+            if (! isset($carry[$item['date']][$item['platform']][$item['tag']])) {
+                $carry[$item['date']][$item['platform']][$item['tag']] = 1;
+            } else {
+                ++$carry[$item['date']][$item['platform']][$item['tag']];
+            }
+            return $carry;
+        }, []);
+    }
+
     /**
      * 处理时间,created_at->Y-m-d.
      */

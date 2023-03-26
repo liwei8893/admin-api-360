@@ -39,14 +39,14 @@ class OrderStaMapper extends AbstractMapper
         $query = User::query()->leftJoin('order', 'users.id', 'order.user_id')
             ->where('order.shop_id', 950)
             ->where('users.user_type', User::USER_TYPE)
-            ->whereIn('order.pay_states', [2, 7])
+            ->where('order.pay_states', 7)
             ->where('order.deleted_at', 0)
             ->where('order.status', '!=', 2)
             ->whereBetween(
                 'order.created_at',
                 [strtotime($firstDay . ' 00:00:00'), strtotime($lastDay . ' 23:59:59')]
             )
-            ->select(['users.id', 'users.platform', 'users.mobile', 'order.created_at', 'order.shop_id', 'order.shop_name', 'order.indate'])
+            ->select(['users.id', 'users.platform', 'users.mobile', 'order.created_at', 'order.shop_id', 'order.shop_name', 'order.indate', 'order.real_year'])
             ->orderBy('order.created_at')
             ->platformDataScope('users.platform')
             ->when(isset($params['platform']) && is_array($params['platform']), function ($query) use ($params) {
@@ -117,7 +117,7 @@ class OrderStaMapper extends AbstractMapper
             ->where('order.shop_id', 950)
             ->where('order.pay_states', 7)
             ->where('order.deleted_at', 0)
-            ->select(['order_transaction.*', 'users.platform', 'users.mobile', 'order.shop_id', 'order.shop_name', 'order.indate'])
+            ->select(['order_transaction.*', 'users.platform', 'users.mobile', 'order.shop_id', 'order.shop_name', 'order.indate', 'order.real_year'])
             ->orderBy('order_transaction.create_at');
         return $this->handleSearch($query, $params)->get();
     }
