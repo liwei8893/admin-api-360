@@ -104,7 +104,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
 
         $tempFileName = 'export_' . time() . '.xlsx';
         $xlsxObject = new Excel(['path' => BASE_PATH . '/runtime/']);
-        $fileObject = $xlsxObject->constMemory($tempFileName)->header($columnName);
+        $fileObject = $xlsxObject->constMemory($tempFileName, 'Sheet1', false)->header($columnName);
         $columnFormat = new Format($fileObject->getHandle());
         $rowFormat = new Format($fileObject->getHandle());
 
