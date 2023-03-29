@@ -8,6 +8,7 @@ use App\Users\Request\UsersRequest;
 use App\Users\Service\UsersService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\GetMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
 use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
@@ -46,5 +47,16 @@ class UsersController extends MineController
     public function changeMobile(UsersRequest $request): ResponseInterface
     {
         return $this->service->changeMobile($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 检测手机号是否存在.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('hasMobile/{mobile}')]
+    public function hasMobile(string $mobile): ResponseInterface
+    {
+        return $this->success(['status' => $this->service->hasMobile($mobile)]);
     }
 }

@@ -206,6 +206,14 @@ class UsersService extends AbstractService
     }
 
     /**
+     * 检测手机号是否存在.
+     */
+    public function hasMobile(string $mobile): bool
+    {
+        return $this->mapper->getModel()->query()->where('mobile', $mobile)->exists();
+    }
+
+    /**
      * 用户导入.
      * @throws Exception
      * @throws ContainerExceptionInterface
