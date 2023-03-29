@@ -88,7 +88,8 @@ class UsersRenew extends MineModel
     public function getRenewDayAttribute(): int
     {
         if (isset($this->attributes['indate_start'], $this->attributes['indate_end'])) {
-            return $this->indate_end->diffInDays($this->indate_start);
+            $day = $this->indate_start->diffInDays($this->indate_end, false);
+            return $day < 0 ? $day : $day + 1;
         }
         return 0;
     }
