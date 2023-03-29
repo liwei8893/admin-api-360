@@ -177,4 +177,17 @@ class LoginUser
             return false;
         }
     }
+
+    public function isNoSignUpRole(): bool
+    {
+        try {
+            $roles = container()->get(SystemUserService::class)->getInfo()['roles'];
+            $codes = SystemRole::query()->whereIn('id', [6, 9])->select(['code'])->get()->pluck('code');
+            return collect($roles)->contains(function ($value) use ($codes) {
+                return in_array($value, $codes->toArray(), true);
+            });
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            return false;
+        }
+    }
 }

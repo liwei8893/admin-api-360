@@ -102,7 +102,7 @@ class OrderSignupService extends AbstractService
             'pay_number' => $orderNumber,
             'shop_type' => $data['shop_type'] ?? 1,
             'pay_type' => $data['pay_type'] ?? 6, // 支付类型，管理员赠送
-            'pay_states' => $data['pay_states'] ?? $this->loginUser->isNoAuditRole() ? Order::PAY_SUCCESS : Order::PAY_AUDIT,
+            'pay_states' => $data['pay_states'] ?? $this->loginUser->isNoSignUpRole() ? Order::PAY_SUCCESS : Order::PAY_AUDIT,
             'created_id' => $this->loginUser->getId(),
             'created_name' => $this->loginUser->getScene() === 'app' ? '' : $this->loginUser->getUsername(),
             'order_price' => isset($data['money']) ? $data['money'] * 100 : $course['price'],
