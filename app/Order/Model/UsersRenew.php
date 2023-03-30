@@ -12,25 +12,26 @@ use Hyperf\Database\Model\Relations\HasOneThrough;
 use Mine\MineModel;
 
 /**
- * @property int $id
- * @property int $order_id
- * @property Carbon $indate_start
- * @property Carbon $indate_end
- * @property Carbon $created_at
- * @property int $created_id
+ * @property int $id 
+ * @property int $order_id 
+ * @property \Carbon\Carbon $indate_start 
+ * @property \Carbon\Carbon $indate_end 
+ * @property \Carbon\Carbon $created_at 
+ * @property int $created_id 
  * @property int $status 0修改有效期,1续费
- * @property string $money
- * @property string $created_name
- * @property int $shop_id
- * @property int $user_id
+ * @property string $money 
+ * @property string $created_name 
+ * @property int $shop_id 
+ * @property int $user_id 
  * @property int $audit_status 0正常,1待审核,2不通过
- * @property string $remark
- * @property string $cause_text
+ * @property string $remark 
+ * @property string $cause_text 
  * @property int $renew_experience 续费时属性
- * @property CourseBasis $course
- * @property int $renew_day
- * @property Order $order
- * @property User $users
+ * @property int $real_year 续费真实年数
+ * @property-read Order $order 
+ * @property-read CourseBasis $course 
+ * @property-read int $renew_day 
+ * @property-read User $users 
  */
 class UsersRenew extends MineModel
 {
@@ -70,12 +71,12 @@ class UsersRenew extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'order_id', 'indate_start', 'indate_end', 'created_at', 'created_id', 'status', 'money', 'created_name', 'shop_id', 'user_id', 'audit_status', 'remark', 'cause_text', 'renew_experience'];
+    protected array $fillable = ['id', 'order_id', 'indate_start', 'indate_end', 'created_at', 'created_id', 'status', 'money', 'created_name', 'shop_id', 'user_id', 'audit_status', 'remark', 'cause_text', 'renew_experience', 'real_year'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'order_id' => 'integer', 'indate_start' => 'datetime', 'indate_end' => 'datetime', 'created_at' => 'datetime', 'created_id' => 'integer', 'status' => 'integer', 'money' => 'decimal:2', 'shop_id' => 'integer', 'user_id' => 'integer', 'audit_status' => 'integer', 'renew_experience' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'order_id' => 'integer', 'indate_start' => 'datetime', 'indate_end' => 'datetime', 'created_at' => 'datetime', 'created_id' => 'integer', 'status' => 'integer', 'money' => 'decimal:2', 'shop_id' => 'integer', 'user_id' => 'integer', 'audit_status' => 'integer', 'renew_experience' => 'integer', 'real_year' => 'integer'];
 
     protected array $dates = ['indate_start', 'indate_end', 'created_at'];
 

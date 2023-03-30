@@ -136,7 +136,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         foreach ($data as $item) {
             $yield = [];
             if ($callbackData) {
-                $callbackData($item);
+                $item = $callbackData($item);
             }
             foreach ($this->property as $property) {
                 if (! empty($property['customField'])) {

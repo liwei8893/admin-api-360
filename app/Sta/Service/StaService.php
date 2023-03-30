@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Sta\Service;
 
 use App\Order\Model\Order;
+use App\Order\Model\UsersRenew;
 use App\Sta\Mapper\StaMapper;
 use App\Users\Model\User;
 use App\Users\Model\UserCourseRecord;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -40,6 +42,7 @@ class StaService extends AbstractService
             'users:id,user_name,mobile,users.platform'])
             ->leftJoin('order', 'order.user_id', 'user_course_record.user_id')
             ->where('order.shop_id', User::VIP_TYPE_SUPER)
+            ->where('order.status', '!=', Order::STATUS_REFUND)
             ->where('order.pay_states', Order::PAY_SUCCESS)
             ->where('order.deleted_at', 0)
             ->where('order.created_at', '>=', $params['start_time'])
@@ -91,6 +94,7 @@ class StaService extends AbstractService
             ->leftJoin('attribute_detail as ad', 'ad.id', '=', 'u.grade_id')
             ->leftJoin(DB::raw('(SELECT users_id FROM users_log GROUP BY users_id) AS ul'), 'ul.users_id', '=', 'u.id')
             ->where('order.shop_id', User::VIP_TYPE_SUPER)
+            ->where('order.status', '!=', Order::STATUS_REFUND)
             ->where('order.pay_states', Order::PAY_SUCCESS)
             ->where('order.deleted_at', 0)
             ->where('order.created_at', '>=', $params['start_time'])
@@ -136,10 +140,11 @@ class StaService extends AbstractService
     {
         $params['pageSize'] = 10000;
         $data = $this->getHasCourseRecord($params);
-        $cb = function (&$item) {
+        $cb = function ($item) {
             $item['has_record'] = ! empty($item['has_record']) ? '是' : '否';
             $item['has_login'] = ! empty($item['has_login']) ? '是' : '否';
             $item['watch_time_sum'] = round($item['watch_time_sum'] / 60);
+            return $item;
         };
         return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
     }
@@ -183,6 +188,7 @@ class StaService extends AbstractService
                     ->platformDataScope();
             })
             ->where('order.pay_states', Order::PAY_SUCCESS)
+            ->where('order.status', '!=', Order::STATUS_REFUND)
             ->where('order.deleted_at', 0)
             ->select([
                 'order.id',
@@ -195,6 +201,7 @@ class StaService extends AbstractService
                 'u.user_name', 'u.mobile', 'u.status as userStatus',
                 'u.remark as uRemark',
                 'actual_price',
+                'real_year',
             ])
             ->selectRaw("from_unixtime(order.created_at,'%Y-%m-%d %h:%m:%s') as order_created_at")
             ->orderBy('order.created_at', 'DESC')
@@ -211,9 +218,97 @@ class StaService extends AbstractService
     {
         $params['pageSize'] = 10000;
         $data = $this->getOrderAdd($params);
-        $cb = function (&$item) {
+        $cb = function ($item) {
             $item['order_grade'] = $item['orderGrade']->implode('title', ',');
             $item['order_subject'] = $item['orderSubject']->implode('title', ',');
+            return $item;
+        };
+        return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
+    }
+
+    public function getOrderRenew(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
+        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
+        $paginate = UsersRenew::query()
+            ->with([
+                'users:id,user_name,mobile,platform,remark',
+                'order' => function (HasOne $query) {
+                    $query->with(['orderGrade', 'orderSubject'])
+                        ->select(['id', 'shop_name', 'remark', 'created_at', 'indate', 'shop_id']);
+                },
+            ])
+            ->where('created_at', '>=', $params['start_time'])
+            ->where('created_at', '<=', $params['end_time'])
+            ->where('users_renew.audit_status', UsersRenew::AUDIT_SUCCESS)
+            ->when(isset($params['status']), function (Builder $query) use ($params) {
+                $query->where('status', $params['status']);
+            })
+            ->when(isset($params['money']), function (Builder $query) use ($params) {
+                // 是否付款筛选
+                if ($params['money'] === '0') {
+                    $query->where('users_renew.money', 0);
+                }
+                if (! empty($params['money']) && $params['money'] === '1') {
+                    $query->where('users_renew.money', '!=', 0);
+                }
+            })
+            // 用户表筛选
+            ->whereHas('users', function (Builder $query) use ($params) {
+                $query->when(! empty($params['mobile']), function (Builder $query) use ($params) {
+                    $query->where('mobile', $params['mobile']);
+                })
+                    ->when(! empty($params['platform']), function (Builder $query) use ($params) {
+                        $query->where('platform', $params['platform']);
+                    })
+                    ->where('user_type', User::USER_TYPE)
+                    ->platformDataScope();
+            })
+            // 订单表筛选
+            ->whereHas('order', function (Builder $query) use ($params) {
+                $query->when(! empty($params['vip_type']), static function (Builder $query) use ($params) {
+                    // 会员类型筛选,1优享会员,2超级会员,3至尊会员
+                    if ($params['vip_type'] === '2') {
+                        $query->where('shop_id', User::VIP_TYPE_SUPER);
+                    }
+                })
+                    ->where('pay_states', Order::PAY_SUCCESS)
+                    ->where('status', '!=', Order::STATUS_REFUND)
+                    ->where('deleted_at', 0);
+            })
+            ->select([
+                'user_id',
+                'order_id',
+                'indate_start',
+                'indate_end',
+                'created_at',
+                'real_year',
+                'money',
+                'remark',
+                'status',
+            ])
+            ->orderBy('users_renew.created_at', 'DESC')
+            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        return $this->mapper->setPaginate($paginate);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    public function getOrderRenewExport(array $params, string $dto, string $filename): ResponseInterface
+    {
+        $params['pageSize'] = 10000;
+        $data = $this->getOrderRenew($params);
+        $cb = function ($item) {
+            $item['order_grade'] = $item['order']['orderGrade']->implode('title', ',');
+            $item['order_subject'] = $item['order']['orderSubject']->implode('title', ',');
+            $item = $item->toArray();
+            $item['status'] = $item['status'] === 1 ? '续费' : '修改有效期';
+            return $item;
         };
         return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
     }

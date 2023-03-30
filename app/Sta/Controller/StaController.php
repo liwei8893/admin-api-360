@@ -7,6 +7,7 @@ namespace App\Sta\Controller;
 use App\Sta\Dto\CourseRecordDto;
 use App\Sta\Dto\HasCourseRecordDto;
 use App\Sta\Dto\OrderAddDto;
+use App\Sta\Dto\OrderRenewDto;
 use App\Sta\Service\StaService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -103,7 +104,19 @@ class StaController extends MineController
     #[GetMapping('orderRenew'), Permission('sta:orderRenew')]
     public function orderRenew(): ResponseInterface
     {
-        return $this->success($this->service->getHasCourseRecord($this->request->all()));
+        return $this->success($this->service->getOrderRenew($this->request->all()));
+    }
+
+    /**
+     * 续费统计导出.
+     * @throws ContainerExceptionInterface
+     * @throws Exception|NotFoundExceptionInterface
+     */
+    #[PostMapping('orderRenew/export'), Permission('sta:orderRenew')]
+    public function orderRenewExport(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->service->getOrderRenewExport($params, OrderRenewDto::class, '续费统计导出');
     }
 
     /**
@@ -115,5 +128,17 @@ class StaController extends MineController
     public function orderRefund(): ResponseInterface
     {
         return $this->success($this->service->getHasCourseRecord($this->request->all()));
+    }
+
+    /**
+     * 续费统计导出.
+     * @throws ContainerExceptionInterface
+     * @throws Exception|NotFoundExceptionInterface
+     */
+    #[PostMapping('orderRefund/export'), Permission('sta:orderRefund')]
+    public function orderRefundExport(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->service->getOrderAddExport($params, OrderAddDto::class, '报名统计导出');
     }
 }
