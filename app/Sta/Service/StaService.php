@@ -41,7 +41,7 @@ class StaService extends AbstractService
             ->leftJoin('order', 'order.user_id', 'user_course_record.user_id')
             ->where('order.shop_id', User::VIP_TYPE_SUPER)
             ->where('order.pay_states', Order::PAY_SUCCESS)
-            ->where('order.deleted_at', '')
+            ->where('order.deleted_at', 0)
             ->where('order.created_at', '>=', $params['start_time'])
             ->where('order.created_at', '<=', $params['end_time'])
             // 用户表筛选
@@ -92,7 +92,7 @@ class StaService extends AbstractService
             ->leftJoin(DB::raw('(SELECT users_id FROM users_log GROUP BY users_id) AS ul'), 'ul.users_id', '=', 'u.id')
             ->where('order.shop_id', User::VIP_TYPE_SUPER)
             ->where('order.pay_states', Order::PAY_SUCCESS)
-            ->where('order.deleted_at', '')
+            ->where('order.deleted_at', 0)
             ->where('order.created_at', '>=', $params['start_time'])
             ->where('order.created_at', '<=', $params['end_time'])
             // 用户表筛选
@@ -140,6 +140,80 @@ class StaService extends AbstractService
             $item['has_record'] = ! empty($item['has_record']) ? '是' : '否';
             $item['has_login'] = ! empty($item['has_login']) ? '是' : '否';
             $item['watch_time_sum'] = round($item['watch_time_sum'] / 60);
+        };
+        return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
+    }
+
+    public function getOrderAdd(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
+        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
+        $paginate = Order::query()
+            ->with(['orderGrade', 'orderSubject'])
+            ->leftJoin('users as u', 'order.user_id', 'u.id')
+            ->leftJoin('course_basis as b', 'b.id', 'order.shop_id')
+            ->where('order.created_at', '>=', $params['start_time'])
+            ->where('order.created_at', '<=', $params['end_time'])
+            ->when(isset($params['actual_price']), static function (Builder $query) use ($params) {
+                // 是否付款筛选
+                if ($params['actual_price'] === '0') {
+                    $query->where('order.actual_price', 0);
+                }
+                if (! empty($params['actual_price']) && $params['actual_price'] === '1') {
+                    $query->where('order.actual_price', '!=', 0);
+                }
+            })
+            ->when(! empty($params['vip_type']), static function (Builder $query) use ($params) {
+                // 会员类型筛选,1优享会员,2超级会员,3至尊会员
+                if ($params['vip_type'] === '2') {
+                    $query->where('order.shop_id', User::VIP_TYPE_SUPER);
+                }
+            })
+            // 用户表筛选
+            ->whereHas('users', function (Builder $query) use ($params) {
+                $query->when(! empty($params['mobile']), function (Builder $query) use ($params) {
+                    $query->where('mobile', $params['mobile']);
+                })
+                    ->when(! empty($params['platform']), function (Builder $query) use ($params) {
+                        $query->where('platform', $params['platform']);
+                    })
+                    ->where('user_type', User::USER_TYPE)
+                    ->platformDataScope();
+            })
+            ->where('order.pay_states', Order::PAY_SUCCESS)
+            ->where('order.deleted_at', 0)
+            ->select([
+                'order.id',
+                'order.indate',
+                'order.created_at',
+                'order.shop_name',
+                'order.remark as oRemark',
+                'sale_platform',
+                'u.platform',
+                'u.user_name', 'u.mobile', 'u.status as userStatus',
+                'u.remark as uRemark',
+                'actual_price',
+            ])
+            ->selectRaw("from_unixtime(order.created_at,'%Y-%m-%d %h:%m:%s') as order_created_at")
+            ->orderBy('order.created_at', 'DESC')
+            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        return $this->mapper->setPaginate($paginate);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    public function getOrderAddExport(array $params, string $dto, string $filename): ResponseInterface
+    {
+        $params['pageSize'] = 10000;
+        $data = $this->getOrderAdd($params);
+        $cb = function (&$item) {
+            $item['order_grade'] = $item['orderGrade']->implode('title', ',');
+            $item['order_subject'] = $item['orderSubject']->implode('title', ',');
         };
         return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
     }

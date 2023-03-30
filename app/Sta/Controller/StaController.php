@@ -6,6 +6,7 @@ namespace App\Sta\Controller;
 
 use App\Sta\Dto\CourseRecordDto;
 use App\Sta\Dto\HasCourseRecordDto;
+use App\Sta\Dto\OrderAddDto;
 use App\Sta\Service\StaService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -79,7 +80,19 @@ class StaController extends MineController
     #[GetMapping('orderAdd'), Permission('sta:orderAdd')]
     public function orderAdd(): ResponseInterface
     {
-        return $this->success($this->service->getHasCourseRecord($this->request->all()));
+        return $this->success($this->service->getOrderAdd($this->request->all()));
+    }
+
+    /**
+     * 报名统计导出.
+     * @throws ContainerExceptionInterface
+     * @throws Exception|NotFoundExceptionInterface
+     */
+    #[PostMapping('orderAdd/export'), Permission('sta:orderAdd')]
+    public function orderAddExport(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->service->getOrderAddExport($params, OrderAddDto::class, '报名统计导出');
     }
 
     /**
