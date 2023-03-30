@@ -39,8 +39,8 @@ class CourseHistoryService extends AbstractService
             }
             if ($params['type'] === 1) {
                 // 增加对应年级
-                $orderModel->orderGrade()->attach($params['grade']);
-                $orderModel->orderSubject()->attach($params['subject']);
+                $orderModel->orderGrade()->syncWithoutDetaching($params['grade']);
+                $orderModel->orderSubject()->syncWithoutDetaching($params['subject']);
             } elseif ($params['type'] === 2) {
                 // 去掉对应年级
                 $orderModel->orderGrade()->detach($params['grade']);
