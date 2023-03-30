@@ -53,9 +53,14 @@ class OrderService extends AbstractService
         }
         $orderData = $this->mapper->getCollectByIds($params['ids'], ['id', 'created_at', 'indate', 'user_id', 'shop_id']);
         foreach ($orderData as $item) {
-            // 增加有效期
+            // 增加有效期,判断到期时间是否大于当前日期,如果已经过期从当前日期计算
             if ($params['type'] === 1) {
-                $params['date'] = Carbon::parse($item->course_end_time)->addDays($params['day'])->toDateString();
+                $endDate = Carbon::parse($item->course_end_time);
+                if ($endDate->isPast()) {
+                    $params['date'] = Carbon::now()->addDays($params['day'])->toDateString();
+                } else {
+                    $params['date'] = $endDate->addDays($params['day'])->toDateString();
+                }
             }
             // 减少有效期
             if ($params['type'] === 2) {
