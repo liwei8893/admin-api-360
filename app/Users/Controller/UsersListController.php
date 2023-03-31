@@ -50,6 +50,17 @@ class UsersListController extends MineController
     }
 
     /**
+     * 课程顾问用户列表.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('platformUser'), Permission('users:list:platformUser')]
+    public function platformUser(): ResponseInterface
+    {
+        return $this->success($this->service->getPlatformUser($this->request->all()));
+    }
+
+    /**
      * 回收站列表.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface

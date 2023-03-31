@@ -264,6 +264,14 @@ class UsersService extends AbstractService
         return parent::import($dto, $closure);
     }
 
+    public function getPlatformUser(array $params): array
+    {
+        if (! empty($params['mobile']) || ! empty($params['user_name']) || ! empty($params['old_platform'])) {
+            return $this->getPageList($params);
+        }
+        return $this->mapper->getNullPaginate();
+    }
+
     /**
      * 处理提交数据.
      */

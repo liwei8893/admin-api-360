@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSTORM_META{
+namespace PHPSTORM_META {
     // Reflect
     override(\Psr\Container\ContainerInterface::get(0), map('@'));
     override(\Hyperf\Utils\Context::get(0), map('@'));
@@ -8,13 +8,19 @@ namespace PHPSTORM_META{
     override(\di(0), map('@'));
 }
 
-namespace Hyperf\Database\Model{
-    class Builder{
+namespace Hyperf\Database\Model {
+    class Builder
+    {
         /**
          * @param int|null $userid
          * @return Builder
          */
         public function userDataScope(?int $userid = null)
+        {
+
+        }
+
+        public function platformDataScope(?string $platformField = 'platform'): Builder
         {
 
         }

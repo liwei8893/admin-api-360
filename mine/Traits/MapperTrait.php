@@ -382,6 +382,21 @@ trait MapperTrait
     }
 
     /**
+     * 设置数据库分页.
+     */
+    public function getNullPaginate(): array
+    {
+        return [
+            'items' => [],
+            'pageInfo' => [
+                'total' => 0,
+                'currentPage' => 1,
+                'totalPage' => 0,
+            ],
+        ];
+    }
+
+    /**
      * 过滤查询字段不存在的属性.
      */
     protected function filterQueryAttributes(array $fields, bool $removePk = false): array
