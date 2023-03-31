@@ -7,6 +7,7 @@ namespace App\Sta\Controller;
 use App\Sta\Dto\CourseRecordDto;
 use App\Sta\Dto\HasCourseRecordDto;
 use App\Sta\Dto\OrderAddDto;
+use App\Sta\Dto\OrderRefundDto;
 use App\Sta\Dto\OrderRenewDto;
 use App\Sta\Service\StaService;
 use Hyperf\Di\Annotation\Inject;
@@ -127,7 +128,7 @@ class StaController extends MineController
     #[GetMapping('orderRefund'), Permission('sta:orderRefund')]
     public function orderRefund(): ResponseInterface
     {
-        return $this->success($this->service->getHasCourseRecord($this->request->all()));
+        return $this->success($this->service->getOrderRefund($this->request->all()));
     }
 
     /**
@@ -139,6 +140,6 @@ class StaController extends MineController
     public function orderRefundExport(): ResponseInterface
     {
         $params = $this->request->all();
-        return $this->service->getOrderAddExport($params, OrderAddDto::class, '报名统计导出');
+        return $this->service->getOrderRefundExport($params, OrderRefundDto::class, '退费统计导出');
     }
 }

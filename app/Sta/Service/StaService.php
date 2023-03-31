@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Sta\Service;
 
 use App\Order\Model\Order;
+use App\Order\Model\OrderTransaction;
 use App\Order\Model\UsersRenew;
 use App\Sta\Mapper\StaMapper;
 use App\Users\Model\User;
@@ -153,8 +154,8 @@ class StaService extends AbstractService
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
         $page = $params['page'] ?? 1;
-        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
-        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
+        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfMonth()->timestamp;
+        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfMonth()->timestamp;
         $paginate = Order::query()
             ->with(['orderGrade', 'orderSubject'])
             ->leftJoin('users as u', 'order.user_id', 'u.id')
@@ -230,8 +231,8 @@ class StaService extends AbstractService
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
         $page = $params['page'] ?? 1;
-        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
-        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
+        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfMonth()->timestamp;
+        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfMonth()->timestamp;
         $paginate = UsersRenew::query()
             ->with([
                 'users:id,user_name,mobile,platform,remark',
@@ -309,6 +310,87 @@ class StaService extends AbstractService
             $item = $item->toArray();
             $item['status'] = $item['status'] === 1 ? '续费' : '修改有效期';
             return $item;
+        };
+        return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
+    }
+
+    public function getOrderRefund(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $params['start_time'] = ! empty($params['created_at'][0]) ? $params['created_at'][0] : Carbon::now()->startOfMonth()->toDateTimeString();
+        $params['end_time'] = ! empty($params['created_at'][1]) ? Carbon::parse($params['created_at'][1])->endOfDay() : Carbon::now()->endOfMonth()->toDateTimeString();
+        $paginate = OrderTransaction::query()
+            ->with([
+                'users:id,user_name,mobile,platform,remark',
+                'order' => function (HasOne $query) {
+                    $query->with(['orderGrade', 'orderSubject'])
+                        ->select(['id', 'shop_name', 'remark', 'created_at', 'indate', 'shop_id', 'real_year', 'actual_price']);
+                },
+            ])
+            ->where('create_at', '>=', $params['start_time'])
+            ->where('create_at', '<=', $params['end_time'])
+            ->where('type_id', 1)
+            ->when(isset($params['money']), function (Builder $query) use ($params) {
+                // 是否付款筛选
+                if ($params['money'] === '0') {
+                    $query->where('money', 0);
+                }
+                if (! empty($params['money']) && $params['money'] === '1') {
+                    $query->where('money', '!=', 0);
+                }
+            })
+            // 用户表筛选
+            ->whereHas('users', function (Builder $query) use ($params) {
+                $query->when(! empty($params['mobile']), function (Builder $query) use ($params) {
+                    $query->where('mobile', $params['mobile']);
+                })
+                    ->when(! empty($params['platform']), function (Builder $query) use ($params) {
+                        $query->where('platform', $params['platform']);
+                    })
+                    ->where('user_type', User::USER_TYPE)
+                    ->platformDataScope();
+            })
+            // 订单表筛选
+            ->whereHas('order', function (Builder $query) use ($params) {
+                $query->when(! empty($params['vip_type']), static function (Builder $query) use ($params) {
+                    // 会员类型筛选,1优享会员,2超级会员,3至尊会员
+                    if ($params['vip_type'] === '2') {
+                        $query->where('shop_id', User::VIP_TYPE_SUPER);
+                    }
+                })
+                    ->when(isset($params['actual_price']), static function (Builder $query) use ($params) {
+                        // 是否付款筛选
+                        if ($params['actual_price'] === '0') {
+                            $query->where('order.actual_price', 0);
+                        }
+                        if (! empty($params['actual_price']) && $params['actual_price'] === '1') {
+                            $query->where('order.actual_price', '!=', 0);
+                        }
+                    })
+                    ->where('pay_states', Order::PAY_SUCCESS)
+                    ->where('status', Order::STATUS_REFUND)
+                    ->where('deleted_at', 0);
+            })
+            ->orderBy('create_at', 'DESC')
+            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        return $this->mapper->setPaginate($paginate);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    public function getOrderRefundExport(array $params, string $dto, string $filename): ResponseInterface
+    {
+        $params['pageSize'] = 10000;
+        $data = $this->getOrderRefund($params);
+        $cb = function ($item) {
+            $item['order_grade'] = $item['order']['orderGrade']->implode('title', ',');
+            $item['order_subject'] = $item['order']['orderSubject']->implode('title', ',');
+            $item['created_at'] = $item['order']['created_at']->toDateTimeString();
+            return $item->toArray();
         };
         return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
     }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Order\Model;
 
 use App\Users\Model\User;
-use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
 
@@ -19,10 +18,11 @@ use Mine\MineModel;
  * @property int $new_user_id 转人后的新学员
  * @property int $new_shop_id 转班后的新课程ID
  * @property string $remark 备注
- * @property Carbon $create_at 创建时间
+ * @property \Carbon\Carbon $create_at 创建时间
  * @property int $operator_id 操作人
  * @property int $object_id 关联ID
  * @property int $headmaster_id 退费班主任
+ * @property Order $order
  * @property User $users
  */
 class OrderTransaction extends MineModel
@@ -69,5 +69,10 @@ class OrderTransaction extends MineModel
     public function users(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function order(): HasOne
+    {
+        return $this->hasOne(Order::class, 'id', 'order_id');
     }
 }
