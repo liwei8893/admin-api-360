@@ -30,7 +30,7 @@ class OrderStaService extends AbstractService
             return $data->toArray();
         }
         $allPlatform = $data->pluck('platform')->unique()->values()->toArray();
-        $data = $this->handleStaDate($data);
+        $data = $this->handleStaDataV2($data);
         $this->handleStaDataSum($data, $allPlatform);
         return array_values($data);
     }
@@ -45,7 +45,7 @@ class OrderStaService extends AbstractService
             return $data->toArray();
         }
         $allPlatform = $data->pluck('platform')->unique()->values()->toArray();
-        $data = $this->handleStaDate($data, 'renew_day');
+        $data = $this->handleStaDataV2($data);
         $this->handleStaDataSum($data, $allPlatform);
         return array_values($data);
     }
@@ -63,7 +63,7 @@ class OrderStaService extends AbstractService
             $item->created_at = $item->create_at;
         });
         $allPlatform = $data->pluck('platform')->unique()->values()->toArray();
-        $data = $this->handleStaDate($data);
+        $data = $this->handleStaDataV2($data);
         $this->handleStaDataSum($data, $allPlatform);
         return array_values($data);
     }
