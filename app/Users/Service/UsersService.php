@@ -48,11 +48,21 @@ class UsersService extends AbstractService
     /**
      * 更换手机号.
      */
+    #[Transaction]
     public function changeMobile(array $params): bool
     {
+        /* @var User $newUserModel */
         $newUserModel = $this->mapper->readByMobile($params['mobile']);
         if ($newUserModel) {
-            throw new NormalStatusException('新手机号已存在,请手动操作!');
+            $order = $newUserModel->orders()->noDeleteOrder()->exists();
+            // $order=false表目标手机号没有课程,可以直接删除,更换手机号
+            if ($order) {
+                throw new NormalStatusException('新手机号已存在,且有课程,请手动操作!');
+            }
+            $newUserModel->mobile = '';
+            if (! $newUserModel->save()) {
+                throw new NormalStatusException('删除新手机号时失败!');
+            }
         }
         // 更换手机号
         /* @var User $userModel */
@@ -62,7 +72,10 @@ class UsersService extends AbstractService
         }
         $userModel->mobile = $params['mobile'];
         $userModel->user_pass = $this->mapper->getInitPassword($params['mobile']);
-        return $userModel->save();
+        if (! $userModel->save()) {
+            throw new NormalStatusException('修改手机号时失败!');
+        }
+        return true;
     }
 
     /**
