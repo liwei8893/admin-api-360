@@ -6,6 +6,7 @@ namespace App\Order\Service;
 
 use App\Order\Mapper\OrderMapper;
 use App\Order\Model\Order;
+use App\Order\Model\UsersRenew;
 use App\Score\Event\ScoreAddEvent;
 use Carbon\Carbon;
 use Hyperf\Di\Annotation\Inject;
@@ -52,7 +53,13 @@ class OrderService extends AbstractService
             $query = ['is_renew' => 1, 'renew_time' => time()];
         }
         $orderData = $this->mapper->getCollectByIds($params['ids'], ['id', 'created_at', 'indate', 'user_id', 'shop_id']);
+        /** @var Order $item */
         foreach ($orderData as $item) {
+            // 判断是否有待审核订单,有的话不能进行新的操作
+            $hasRenew = $item->usersRenew()->where('audit_status', UsersRenew::AUDIT_PENDING)->exists();
+            if ($hasRenew) {
+                throw new NormalStatusException('有订单在审核中,请先处理!');
+            }
             // 增加有效期,判断到期时间是否大于当前日期,如果已经过期从当前日期计算
             if ($params['type'] === 1) {
                 $endDate = Carbon::parse($item->course_end_time);
