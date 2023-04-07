@@ -48,6 +48,12 @@ class StaService extends AbstractService
             ->where('order.deleted_at', 0)
             ->where('order.created_at', '>=', $params['start_time'])
             ->where('order.created_at', '<=', $params['end_time'])
+            // 课程筛选
+            ->whereHas('courseBasis', function (Builder $query) use ($params) {
+                $query->when(! empty($params['course_basis_title']), function (Builder $query) use ($params) {
+                    $query->where('course_basis.title', 'like', "%{$params['course_basis_title']}%");
+                });
+            })
             // 用户表筛选
             ->whereHas('users', function (Builder $query) use ($params) {
                 $query->when(! empty($params['mobile']), function (Builder $query) use ($params) {
