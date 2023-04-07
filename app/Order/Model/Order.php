@@ -132,7 +132,7 @@ class Order extends MineModel
     public function getCourseEndTimeAttribute(): string
     {
         if (isset($this->attributes['indate'], $this->attributes['created_at'])) {
-            return date('Y-m-d H:i:s', strtotime("+{$this->attributes['indate']} day", $this->attributes['created_at']));
+            return date('Y-m-d H:i:s', strtotime("+{$this->attributes['indate']} day", (int) $this->attributes['created_at']));
         }
         return '';
     }

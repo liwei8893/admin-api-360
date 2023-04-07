@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Course\Controller\History;
 
+use App\Course\Dto\CourseHistoryDto;
 use App\Course\Service\CourseHistoryService;
 use App\Order\Request\OrderHistoryRequest;
 use Hyperf\Di\Annotation\Inject;
@@ -14,6 +15,7 @@ use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
 use Mine\MineController;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -43,5 +45,16 @@ class CourseHistoryController extends MineController
     public function batchChangeGrade(OrderHistoryRequest $request): ResponseInterface
     {
         return $this->service->batchChangeGrade($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 课程购买记录导出.
+     * @throws ContainerExceptionInterface
+     * @throws Exception|NotFoundExceptionInterface
+     */
+    #[PostMapping('export'), Permission('course:history:export'), OperationLog('课程购买记录导出')]
+    public function export(): ResponseInterface
+    {
+        return $this->service->courseHistoryExport($this->request->all(), CourseHistoryDto::class, '课程购买记录导出');
     }
 }

@@ -9,6 +9,11 @@ use App\Order\Model\Order;
 use App\Order\Service\OrderService;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
+use Mine\MineCollection;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class CourseHistoryService extends AbstractService
 {
@@ -52,5 +57,23 @@ class CourseHistoryService extends AbstractService
             }
         }
         return true;
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    public function courseHistoryExport(array $params, string $dto, string $filename): ResponseInterface
+    {
+        $params['pageSize'] = 10000;
+        $data = $this->getHistoryList($params);
+        $cb = function ($item) {
+            $item['orderGrade'] = $item['orderGrade']->implode('title', ',');
+            $item['orderSubject'] = $item['orderSubject']->implode('title', ',');
+            $item['createdAt'] = $item['created_at']->toDateTimeString();
+            return $item->toArray();
+        };
+        return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
     }
 }
