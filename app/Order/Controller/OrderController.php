@@ -6,6 +6,7 @@ namespace App\Order\Controller;
 
 use App\Order\Request\OrderRequest;
 use App\Order\Service\OrderService;
+use App\Order\Service\UsersRenewService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\PostMapping;
@@ -30,6 +31,9 @@ class OrderController extends MineController
      */
     #[Inject]
     protected OrderService $service;
+
+    #[Inject]
+    protected UsersRenewService $usersRenewService;
 
     /**
      * 修改有效期
@@ -115,5 +119,17 @@ class OrderController extends MineController
     public function editOrder(OrderRequest $request): ResponseInterface
     {
         return $this->service->editOrder($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * @param OrderRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('editRenew'), Permission('order:editRenew'), OperationLog('异动编辑续费')]
+    public function editRenew(OrderRequest $request): ResponseInterface
+    {
+        return $this->usersRenewService->editRenew($request->all()) ? $this->success() : $this->error();
     }
 }

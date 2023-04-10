@@ -7,9 +7,11 @@ namespace App\Order\Service;
 use App\Order\Mapper\UsersRenewMapper;
 use App\Order\Model\UsersRenew;
 use App\Score\Event\ScoreAddEvent;
+use App\Users\Service\UserScoreService;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
+use Mine\Exception\NormalStatusException;
 use Mine\Helper\LoginUser;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -24,6 +26,9 @@ class UsersRenewService extends AbstractService
 
     #[Inject]
     protected LoginUser $loginUser;
+
+    #[Inject]
+    protected UserScoreService $userScoreService;
 
     /**
      * 写入续费表
@@ -111,5 +116,41 @@ class UsersRenewService extends AbstractService
             }
         }
         return true;
+    }
+
+    /**
+     * 编辑续费订单价格,实际年数.
+     */
+    #[Transaction]
+    public function editRenew(array $params): bool
+    {
+        /** @var UsersRenew $renewModel */
+        $renewModel = $this->mapper->read($params['id']);
+        if (! $renewModel) {
+            throw new NormalStatusException('订单不存在');
+        }
+        // 不是续费单直接跳过
+        if ($renewModel->status === UsersRenew::STATUS_CHANGE) {
+            return true;
+        }
+        $renewMoney = (int) $renewModel->money;
+        $newMoney = (int) $params['money'];
+        // 修改续费金额
+        if ($newMoney !== $renewMoney) {
+            // 要变更的积分
+            $diffScore = $newMoney - $renewMoney;
+            $this->userScoreService->changeScore([
+                'user_id' => $renewModel->user_id,
+                'origin_id' => $renewModel->id,
+                'channel' => '管理员操作',
+                'channel_type' => 0,
+                'score' => abs($diffScore),
+                'type' => $diffScore > 0 ? 1 : 0,
+            ]);
+            // 修改金额
+            $renewModel->money = $newMoney;
+        }
+        $renewModel->real_year = $params['real_year'];
+        return $renewModel->save();
     }
 }
