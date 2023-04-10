@@ -31,6 +31,9 @@ class UserScoreMapper extends AbstractMapper
         if (isset($params['channel_type'])) {
             $query->where('channel_type', $params['channel_type']);
         }
+        if (isset($params['not_channel_type'])) {
+            $query->where('channel_type', '!=', $params['not_channel_type']);
+        }
         if (isset($params['start_date'], $params['end_date'])) {
             $query->whereBetween('created_at', [$params['start_date'], $params['end_date']]);
         }

@@ -104,4 +104,16 @@ class OrderController extends MineController
     {
         return $this->service->changeOrderToDelete($request->all()) ? $this->success() : $this->error();
     }
+
+    /**
+     * @param OrderRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('editOrder'), Permission('order:editOrder'), OperationLog('异动编辑')]
+    public function editOrder(OrderRequest $request): ResponseInterface
+    {
+        return $this->service->editOrder($request->all()) ? $this->success() : $this->error();
+    }
 }

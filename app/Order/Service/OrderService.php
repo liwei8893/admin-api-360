@@ -8,6 +8,7 @@ use App\Order\Mapper\OrderMapper;
 use App\Order\Model\Order;
 use App\Order\Model\UsersRenew;
 use App\Score\Event\ScoreAddEvent;
+use App\Users\Service\UserScoreService;
 use Carbon\Carbon;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -32,6 +33,9 @@ class OrderService extends AbstractService
 
     #[inject]
     public OrderTransactionService $orderTransactionService;
+
+    #[Inject]
+    protected UserScoreService $userScoreService;
 
     /**
      * 批量修改有效期
@@ -318,6 +322,38 @@ class OrderService extends AbstractService
             }
         }
         return true;
+    }
+
+    /**
+     * 编辑订单价格,实际年数.
+     */
+    #[Transaction]
+    public function editOrder(array $params): bool
+    {
+        /** @var Order $orderModel */
+        $orderModel = $this->mapper->read($params['orderId']);
+        if (! $orderModel) {
+            throw new NormalStatusException('订单不存在');
+        }
+        $orderPrice = (int) $orderModel->actual_price;
+        $newPrice = (int) $params['actual_price'];
+        // 修改报名金额
+        if ($newPrice !== $orderPrice) {
+            // 要变更的积分
+            $diffScore = $newPrice - $orderPrice;
+            $this->userScoreService->changeScore([
+                'user_id' => $orderModel->user_id,
+                'origin_id' => $orderModel->id,
+                'channel' => '管理员操作',
+                'channel_type' => 0,
+                'score' => abs($diffScore),
+                'type' => $diffScore > 0 ? 1 : 0,
+            ]);
+            // 修改金额
+            $orderModel->actual_price = $newPrice;
+        }
+        $orderModel->real_year = $params['real_year'];
+        return $orderModel->save();
     }
 
     /**

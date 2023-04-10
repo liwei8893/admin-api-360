@@ -19,6 +19,11 @@ class OrderRequest extends MineFormRequest
         return [];
     }
 
+    public function editOrderRules(): array
+    {
+        return ['orderId' => 'required|integer', 'actual_price' => 'required|integer', 'real_year' => 'required|integer'];
+    }
+
     public function auditOrderRules(): array
     {
         return ['ids' => 'required|array', 'pay_states' => 'required|integer'];

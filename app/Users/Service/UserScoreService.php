@@ -64,6 +64,7 @@ class UserScoreService extends AbstractService
     {
         $params['orderBy'] = ['id'];
         $params['orderType'] = ['desc'];
+        $params['not_channel_type'] = 0;
         return $this->getPageList($params);
     }
 }
