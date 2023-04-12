@@ -110,7 +110,7 @@ class QuestionAppService extends AbstractService
             $data = $this->handleGetData($data->toArray());
         }
         // 用题目ID,测一测ID查询题目信息
-        return ['data' => $data, 'grade' => $grade, 'subject' => $courseModel->subject_id];
+        return ['data' => $data, 'grade' => $grade, 'subject' => $courseModel->subject_id, 'courseId' => $courseModel->id];
     }
 
     /**
