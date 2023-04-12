@@ -76,7 +76,7 @@ class QuestionMapper extends AbstractMapper
         if (isset($params['id']) && is_array($params['id'])) {
             $paginate = $model->paginate((int) $perPage, ['*'], 'page', (int) $page);
         } else {
-            $paginate = $model->whereHas('knows', function (Builder $query) use ($courseBasisId, $channel) {
+            $paginate = $model->with(['knows'])->whereHas('knows', function (Builder $query) use ($courseBasisId, $channel) {
                 $query->whereRaw('FIND_IN_SET(?,shop_id)', [$courseBasisId])
                     ->when(! empty($channel), function ($query) use ($channel) {
                         $query->where('channel', $channel);
