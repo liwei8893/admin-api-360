@@ -64,6 +64,11 @@ class CoursePeriodMapper extends AbstractMapper
                 $query->whereIn('id', $params['tagId']);
             });
         }
+        if (isset($params['courseStatus'])) {
+            $query->whereHas('courseBasis', function (Builder $query) use ($params) {
+                $query->where('states', $params['courseStatus']);
+            });
+        }
         return $query;
     }
 }

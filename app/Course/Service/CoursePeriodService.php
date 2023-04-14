@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Course\Service;
 
 use App\Course\Mapper\CoursePeriodMapper;
+use App\Course\Model\CourseBasis;
 use App\Course\Model\CoursePeriod;
 use App\System\Mapper\TagsMapper;
 use Hyperf\Database\Model\Collection;
@@ -66,7 +67,11 @@ class CoursePeriodService extends AbstractService
 
     public function getSearch(array $ids): Collection|array
     {
-        $course = $this->mapper->getListCollect(['tagId' => $ids, 'select' => ['id', 'title', 'course_basis_id']]);
+        $course = $this->mapper->getListCollect([
+            'tagId' => $ids,
+            'select' => ['id', 'title', 'course_basis_id'],
+            'courseStatus' => CourseBasis::STATUS_NORMAL,
+        ]);
         $course->load(['courseBasis:id,title,course_title', 'tags:id,name']);
         return $course;
     }
