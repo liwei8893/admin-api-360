@@ -6,12 +6,12 @@ namespace App\System\Service;
 
 use App\System\Mapper\SystemUploadFileMapper;
 use Exception;
+use Hyperf\Collection\Collection;
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpMessage\Upload\UploadedFile;
-use Hyperf\Utils\Collection;
 use League\Flysystem\FileExistsException;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;

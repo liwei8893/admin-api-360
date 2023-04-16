@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Question\Mapper;
 
 use App\Question\Model\Question;
+use Hyperf\Collection\Collection;
 use Hyperf\Database\Model\Builder;
 use Hyperf\DbConnection\Db;
-use Hyperf\Utils\Collection;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 
@@ -152,8 +152,10 @@ FROM (SELECT id, course_basis_id, qurstion_str AS COL, title,qiniu_url AS url
              WHERE b.help_topic_id < LENGTH(A.COL) - LENGTH(REPLACE(A.COL, ',', '')) + 1)) C
          JOIN
      mysql.help_topic D
-WHERE D.help_topic_id < LENGTH(C.COL) - LENGTH(REPLACE(C.COL, ',', '')) + 1", $knowsId);
-        return collect($data);
+WHERE D.help_topic_id < LENGTH(C.COL) - LENGTH(REPLACE(C.COL, ',', '')) + 1 and course_basis_id not in (
+    select id from course_basis b2 where b2.is_give=1
+)", $knowsId);
+        return new Collection($data);
     }
 
     /**

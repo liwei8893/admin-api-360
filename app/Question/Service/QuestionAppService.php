@@ -8,8 +8,8 @@ use App\Course\Model\CoursePeriod;
 use App\Course\Service\CoursePeriodService;
 use App\Question\Mapper\QuestionMapper;
 use App\Question\Model\Question;
+use Hyperf\Collection\Collection;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Utils\Collection;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\SubjectAuth;
 use Mine\Exception\NormalStatusException;
@@ -143,7 +143,7 @@ class QuestionAppService extends AbstractService
      */
     public function questionWithCourse(array $data): Collection
     {
-        $dataItem = collect($data);
+        $dataItem = new Collection($data);
         $knowsId = $dataItem->pluck('knows_id')->unique()->toArray();
         $questionId = $dataItem->pluck('id')->unique()->toArray();
         $toCourse = $this->mapper->getToCourseList($knowsId)->whereIn('question_id', $questionId);

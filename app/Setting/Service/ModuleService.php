@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Setting\Service;
 
+use Hyperf\Collection\Collection;
 use Hyperf\Config\Annotation\Value;
-use Hyperf\Utils\Collection;
 use Hyperf\Utils\Filesystem\Filesystem;
 use Mine\Abstracts\AbstractService;
 use Mine\Generator\ModuleGenerator;
 use Mine\Mine;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Throwable;
 
 class ModuleService extends AbstractService
 {
@@ -63,7 +64,7 @@ class ModuleService extends AbstractService
             $application->run(new ArrayInput($seedCommand), new NullOutput());
             $this->setModuleCache();
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             console()->error($e->getMessage());
             return false;
         }
@@ -73,7 +74,7 @@ class ModuleService extends AbstractService
      * 卸载模块.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function uninstallModule(string $name): bool
     {
@@ -85,7 +86,7 @@ class ModuleService extends AbstractService
             $this->deleteModule($name);
             $this->setModuleCache();
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             console()->error($e->getMessage());
             return false;
         }

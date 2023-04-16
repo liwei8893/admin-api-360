@@ -78,7 +78,7 @@ class OrderSignupService extends AbstractService
     /**
      * 过滤已经报名的课程.
      */
-    public function filterCourseIsHave(int $userId, Collection $courseModels): Collection|\Hyperf\Utils\Collection
+    public function filterCourseIsHave(int $userId, Collection $courseModels): Collection|\Hyperf\Collection\Collection
     {
         $courseIds = $courseModels->pluck('id');
         $orderModel = $this->mapper->getUserCourseInfo($userId, $courseIds);

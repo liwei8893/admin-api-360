@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Mine\Traits;
 
 use Closure;
+use Hyperf\Collection\Arr;
 use Hyperf\Database\Model\Collection;
-use Hyperf\Utils\Arr;
-use Hyperf\Utils\HigherOrderTapProxy;
+use Hyperf\Tappable\HigherOrderTapProxy;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
 use Mine\MineCollection;
@@ -336,7 +336,7 @@ trait ServiceTrait
      * 数组数据搜索器.
      * @return Collection
      */
-    protected function handleArraySearch(\Hyperf\Utils\Collection $collect, array $params): \Hyperf\Utils\Collection
+    protected function handleArraySearch(\Hyperf\Collection\Collection $collect, array $params): \Hyperf\Collection\Collection
     {
         return $collect;
     }
