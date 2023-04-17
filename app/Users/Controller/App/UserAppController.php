@@ -46,6 +46,7 @@ class UserAppController extends MineController
 
     /**
      * 设置头像.
+     * @param UsersAppRequest $request
      * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -59,6 +60,7 @@ class UserAppController extends MineController
 
     /**
      * 获取用户已拥有头像.
+     * @param UsersAppRequest $request
      * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface

@@ -38,6 +38,7 @@ class QuestionHistoryMapper extends AbstractMapper
             ->with(['users:id,user_name,mobile'])
             ->select(['user_id'])
             ->selectRaw('count(user_id) as num')
+            ->whereBetween('created_at', [Carbon::now()->startOfMonth()->timestamp, Carbon::now()->endOfMonth()->timestamp])
             ->groupBy(['user_id'])
             ->orderBy('num', 'desc')
             ->limit(10)->get();
@@ -45,8 +46,15 @@ class QuestionHistoryMapper extends AbstractMapper
 
     public function getRankingMe(int $userId): int
     {
-        $userNum = QuestionHistory::query()->where('user_id', $userId)->groupBy(['user_id'])->count('user_id');
-        $subQuery = QuestionHistory::query()->selectRaw('count(user_id) num')->groupBy(['user_id']);
+        $userNum = QuestionHistory::query()
+            ->where('user_id', $userId)
+            ->whereBetween('created_at', [Carbon::now()->startOfMonth()->timestamp, Carbon::now()->endOfMonth()->timestamp])
+            ->groupBy(['user_id'])
+            ->count('user_id');
+        $subQuery = QuestionHistory::query()
+            ->selectRaw('count(user_id) num')
+            ->whereBetween('created_at', [Carbon::now()->startOfMonth()->timestamp, Carbon::now()->endOfMonth()->timestamp])
+            ->groupBy(['user_id']);
         return Model::query()->fromSub($subQuery->getQuery(), 't')->where('num', '>=', $userNum)->count();
     }
 

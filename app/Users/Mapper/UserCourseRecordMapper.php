@@ -54,6 +54,7 @@ class UserCourseRecordMapper extends AbstractMapper
             ->with(['users:id,user_name,mobile'])
             ->select(['user_id'])
             ->selectRaw('sum(record_time) as num')
+            ->whereBetween('record_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
             ->groupBy(['user_id'])
             ->orderBy('num', 'desc')
             ->limit(10)->get();
@@ -61,8 +62,14 @@ class UserCourseRecordMapper extends AbstractMapper
 
     public function getRankingMe(int $userId): int
     {
-        $userNum = UserCourseRecordToday::query()->where('user_id', $userId)->groupBy(['user_id'])->sum('record_time');
-        $subQuery = UserCourseRecordToday::query()->selectRaw('sum(record_time) num')->groupBy(['user_id']);
+        $userNum = UserCourseRecordToday::query()
+            ->where('user_id', $userId)->groupBy(['user_id'])
+            ->whereBetween('record_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+            ->sum('record_time');
+        $subQuery = UserCourseRecordToday::query()
+            ->selectRaw('sum(record_time) num')
+            ->whereBetween('record_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+            ->groupBy(['user_id']);
         return Model::query()->fromSub($subQuery->getQuery(), 'a')->where('num', '>=', $userNum)->count();
     }
 
@@ -129,6 +136,7 @@ class UserCourseRecordMapper extends AbstractMapper
 
     /**
      * 查询用户当天听课时长
+     * @param mixed $userId
      */
     public function getTodayDataByUserId($userId): \Hyperf\Database\Model\Model|UserCourseRecordToday|Builder|null
     {

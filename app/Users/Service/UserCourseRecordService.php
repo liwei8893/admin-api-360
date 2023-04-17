@@ -78,7 +78,7 @@ class UserCourseRecordService extends AbstractService
     #[Cacheable(prefix: 'report', value: 'course_#{userId}', ttl: 86400)]
     public function getReport(int $userId): array
     {
-        $monthMap = collect([
+        $monthMap = \Hyperf\Collection\collect([
             'month01' => ['month' => '01', 'num' => 0],
             'month02' => ['month' => '02', 'num' => 0],
             'month03' => ['month' => '03', 'num' => 0],
