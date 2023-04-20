@@ -196,7 +196,7 @@ WHERE D.help_topic_id < LENGTH(C.COL) - LENGTH(REPLACE(C.COL, ',', '')) + 1 and 
         }
 
         if (isset($params['ques_title']) && $params['ques_title'] !== '') {
-            $query->where('ques_title', '=', $params['ques_title']);
+            $query->where('ques_title', 'like', $params['ques_title'] . '%');
         }
 
         // 试题题干
@@ -206,7 +206,7 @@ WHERE D.help_topic_id < LENGTH(C.COL) - LENGTH(REPLACE(C.COL, ',', '')) + 1 and 
 
         // 文本题干
         if (isset($params['ques_stem_text']) && $params['ques_stem_text'] !== '') {
-            $query->where('ques_stem_text', '=', $params['ques_stem_text']);
+            $query->where('ques_stem_text', 'like', $params['ques_stem_text'] . '%');
         }
 
         // 选项/问题参考答案/填空题：参考答案
