@@ -34,6 +34,9 @@ class SystemOperLogMapper extends AbstractMapper
         if (isset($params['username'])) {
             $query->where('username', 'like', '%' . $params['username'] . '%');
         }
+        if (isset($params['router'])) {
+            $query->where('router', 'like', '%' . $params['router'] . '%');
+        }
         if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
             $query->whereBetween(
                 'created_at',
