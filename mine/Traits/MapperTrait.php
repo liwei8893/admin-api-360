@@ -376,7 +376,7 @@ trait MapperTrait
         return $this->listQuerySetting($params, $isScope)->chunkById(1000, $callback, $column, $alias);
     }
 
-    public function getListCollect(?array $params, bool $isScope = true): Collection|array
+    public function getListCollect(?array $params, bool $isScope = true): Collection
     {
         return $this->listQuerySetting($params, $isScope)->get();
     }

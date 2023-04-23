@@ -326,6 +326,18 @@ trait ServiceTrait
     }
 
     /**
+     * 获取列表数据.
+     */
+    public function getListCollect(?array $params = null, bool $isScope = true): Collection
+    {
+        if ($params['select'] ?? null) {
+            $params['select'] = explode(',', $params['select']);
+        }
+        $params['recycle'] = false;
+        return $this->mapper->getListCollect($params, $isScope);
+    }
+
+    /**
      * 需要处理导出数据时,重写函数.
      */
     protected function handleExportData(array &$data): void
