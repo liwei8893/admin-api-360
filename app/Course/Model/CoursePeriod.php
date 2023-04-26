@@ -108,9 +108,12 @@ class CoursePeriod extends MineModel
         return $this->hasOne(CourseBasis::class, 'id', 'course_basis_id');
     }
 
-    public function courseRecord(): HasOne
+    public function videoDuration(): HasOne
     {
-        return $this->hasOne(UserCourseRecord::class, 'period_id', 'id');
+        return $this->hasOne(UserCourseRecord::class, 'period_id', 'id')
+            ->whereNotNull('video_duration')
+            ->select(['period_id'])->selectRaw('min(video_duration) as video_duration')
+            ->groupBy(['period_id']);
     }
 
     /**

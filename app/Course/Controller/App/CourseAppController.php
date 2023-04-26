@@ -93,6 +93,17 @@ class CourseAppController extends MineController
     }
 
     /**
+     * 获取课程章节信息.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getPeriod/{id}')]
+    public function getPeriod(int $id): ResponseInterface
+    {
+        return $this->success($this->periodService->getPeriod($id));
+    }
+
+    /**
      * 标签查询课程.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface

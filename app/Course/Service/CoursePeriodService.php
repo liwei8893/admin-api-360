@@ -75,4 +75,14 @@ class CoursePeriodService extends AbstractService
         $course->load(['courseBasis:id,title,course_title', 'tags:id,name']);
         return $course;
     }
+
+    public function getPeriod(int $id): array
+    {
+        $period = $this->mapper->first(['id' => $id], CoursePeriod::COMMON_FIELDS);
+        if (! $period) {
+            return [];
+        }
+        $period->load(['tags']);
+        return $period->toArray();
+    }
 }
