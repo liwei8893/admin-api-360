@@ -50,7 +50,7 @@ class CoursePeriodService extends AbstractService
      * @throws InvalidArgumentException
      * @throws Throwable
      */
-    public function getPlanMonth($params): Collection|array
+    public function getPlanMonth(array $params): Collection|array
     {
         // 处理季节 1,2月对应寒假2节课 3,4,5,6月对应春季4节课 7,8月对应暑假4节课， 9,10,11,12月对应秋季4节课
         $seasonMap = ['', 4, 4, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3];

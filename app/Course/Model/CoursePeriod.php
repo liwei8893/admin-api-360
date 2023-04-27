@@ -108,6 +108,11 @@ class CoursePeriod extends MineModel
         return $this->hasOne(CourseBasis::class, 'id', 'course_basis_id');
     }
 
+    public function courseRecord(): HasOne
+    {
+        return $this->hasOne(UserCourseRecord::class, 'period_id', 'id');
+    }
+
     public function videoDuration(): HasOne
     {
         return $this->hasOne(UserCourseRecord::class, 'period_id', 'id')
