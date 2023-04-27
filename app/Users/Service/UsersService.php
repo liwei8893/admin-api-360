@@ -238,9 +238,9 @@ class UsersService extends AbstractService
         $grade = $this->systemDictDataService->getList(['code' => 'grade']);
         $platform = $this->systemDeptService->getPlatformSelect();
         $closure = $closure ?? function (User $model, $data) use ($grade, $platform) {
-            $data = collect($data);
-            $platform = collect($platform);
-            $grade = collect($grade);
+            $data = \Hyperf\Collection\collect($data);
+            $platform = \Hyperf\Collection\collect($platform);
+            $grade = \Hyperf\Collection\collect($grade);
             $errMessage = [];
             // 数据验证
             foreach ($data as $key => $value) {

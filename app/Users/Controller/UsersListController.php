@@ -23,6 +23,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
+use RedisException;
 
 /**
  * 用户表控制器
@@ -197,7 +198,7 @@ class UsersListController extends MineController
     /**
      * 数据导入.
      * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface|\PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws NotFoundExceptionInterface|\PhpOffice\PhpSpreadsheet\Reader\Exception|RedisException
      */
     #[PostMapping('import'), Permission('users:list:import')]
     public function import(): ResponseInterface
