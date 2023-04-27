@@ -47,7 +47,6 @@ class CourseShopService extends AbstractService
             $userId = user('app')->getId();
             /** @var Collection $orderIds */
             $orderIds = Order::query()->where('user_id', $userId)->normalOrder()->isNotExpire()->pluck('shop_id');
-            $orderIds = $orderIds->push(1143);
         }
         return $data->filter(function (CourseShop $item) use ($isLogin, $orderIds) {
             // show_rule: 0:购买之后才显示,1:总是显示
