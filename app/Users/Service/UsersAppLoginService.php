@@ -53,7 +53,7 @@ class UsersAppLoginService extends AbstractService
             // 判断登录方式 验证码
             if (! empty($params['sms_code'])) {
                 $resSmsCode = $params['sms_code'];
-                $this->smsService->checkSmsCaptcha($params['mobile'], $resSmsCode);
+                $this->smsService->checkSmsCaptcha((string) $params['mobile'], (string) $resSmsCode);
                 // 验证码通过 判断是否有用户,没有就注册为新用户
                 if (! $userinfo && $userModel = $this->register($params)) {
                     return $this->loginAfter($userModel);
@@ -152,9 +152,10 @@ class UsersAppLoginService extends AbstractService
 
     /**
      * 重置密码
-     * @param mixed $params
+     * @param array $params
+     * @return bool
      */
-    public function resetPassword($params): bool
+    public function resetPassword(array $params): bool
     {
         // 查找用户信息
         $userinfo = $this->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
@@ -164,7 +165,7 @@ class UsersAppLoginService extends AbstractService
         }
         // 验证短信
         $resSmsCode = $params['sms_code'];
-        $this->smsService->checkSmsCaptcha($params['mobile'], $resSmsCode);
+        $this->smsService->checkSmsCaptcha((string) $params['mobile'], (string) $resSmsCode);
         // 修改密码
         return $this->usersService->initUserPassword($userinfo['id'], $params['user_pass']);
     }

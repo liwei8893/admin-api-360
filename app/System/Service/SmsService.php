@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\System\Service;
 
 use App\System\Mapper\SmsMapper;
+use App\System\Model\SmsLog;
 use App\System\Service\Dependencies\EasySmsService;
+use App\System\Service\Dependencies\Sms\AuthMessage;
 use App\System\Service\Dependencies\Sms\ForgotPwdMessage;
+use App\System\Service\Dependencies\Sms\LoginMessage;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
@@ -26,16 +29,15 @@ class SmsService extends AbstractService
 
     /**
      * 检测短信验证码
-     * @param mixed $mobile
-     * @param mixed $smsCode
      */
-    public function checkSmsCaptcha(mixed $mobile, mixed $smsCode): bool
+    public function checkSmsCaptcha(string $mobile, string $smsCode): bool
     {
+        /** @var SmsLog $smsModel */
         $smsModel = $this->mapper->checkSmsCaptcha($mobile);
-        if ($smsModel && isset($smsModel['created_at']) && (time() - strtotime($smsModel['created_at'])) >= 180) {
+        if ($smsModel && (time() - $smsModel->created_at->timestamp) >= 300) {
             throw new NormalStatusException('短信验证码已过期');
         }
-        if ($smsCode !== $smsModel['sms_code']) {
+        if ($smsCode !== $smsModel->sms_code) {
             throw new NormalStatusException('短信验证码不正确!');
         }
         return true;
@@ -51,6 +53,37 @@ class SmsService extends AbstractService
     public function getForgotPwdSms(array $params): bool
     {
         $message = new ForgotPwdMessage();
+        $easySms = new EasySmsService();
+        $this->handleSmsSendBefore($params['mobile']);
+        $res = $easySms->send($params['mobile'], $message);
+        return $this->handleSmsSendAfter($params['mobile'], $message, $res);
+    }
+
+    /**
+     * 登录验证码
+     * @throws ContainerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws NoGatewayAvailableException
+     * @throws NotFoundExceptionInterface
+     */
+    public function getLoginSms(array $params): bool
+    {
+        $message = new LoginMessage();
+        $easySms = new EasySmsService();
+        $this->handleSmsSendBefore($params['mobile']);
+        $res = $easySms->send($params['mobile'], $message);
+        return $this->handleSmsSendAfter($params['mobile'], $message, $res);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws NoGatewayAvailableException
+     * @throws NotFoundExceptionInterface
+     */
+    public function getAuthSms(array $params): bool
+    {
+        $message = new AuthMessage();
         $easySms = new EasySmsService();
         $this->handleSmsSendBefore($params['mobile']);
         $res = $easySms->send($params['mobile'], $message);
@@ -100,7 +133,7 @@ class SmsService extends AbstractService
     protected function handleSmsSendAfter(string $mobile, mixed $message, mixed $res): bool
     {
         $name = explode('\\', $message::class);
-        $smsFunc = array_pop($name);
+        $smsFunc = str_replace('Message', '', array_pop($name));
         if (isset($res['aliyun']['status']) && $res['aliyun']['status'] === 'success') {
             $this->mapper->setSmsLog([
                 'mobile' => $mobile,

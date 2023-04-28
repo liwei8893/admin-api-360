@@ -34,4 +34,32 @@ class SmsController extends MineController
     {
         return $this->service->getForgotPwdSms($request->all()) ? $this->success() : $this->error();
     }
+
+    /**
+     * @param SmsRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws NoGatewayAvailableException
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getLoginSms')]
+    public function getLoginSms(SmsRequest $request): ResponseInterface
+    {
+        return $this->service->getLoginSms($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * @param SmsRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws NoGatewayAvailableException
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getAuthSms')]
+    public function getAuthSms(SmsRequest $request): ResponseInterface
+    {
+        return $this->service->getAuthSms($request->all()) ? $this->success() : $this->error();
+    }
 }

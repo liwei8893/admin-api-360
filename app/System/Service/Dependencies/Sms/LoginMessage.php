@@ -10,7 +10,7 @@ use Overtrue\EasySms\Contracts\GatewayInterface;
 use Overtrue\EasySms\Contracts\MessageInterface;
 use Overtrue\EasySms\Message;
 
-class ForgotPwdMessage extends Message
+class LoginMessage extends Message
 {
     /**
      * @throws Exception
@@ -25,10 +25,10 @@ class ForgotPwdMessage extends Message
 
     /**
      * 定义使用模板发送方式平台所需要的模板 ID
-     * 验证码${code}，您正在尝试修改登录密码，请妥善保管账户信息。
+     * 验证码${code}，您正在登录，若非本人操作，请勿泄露。
      */
     public function getTemplate(GatewayInterface $gateway = null): string
     {
-        return 'SMS_179670041';
+        return 'SMS_179670044';
     }
 }
