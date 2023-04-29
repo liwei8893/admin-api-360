@@ -7,6 +7,7 @@ namespace App\Users\Service;
 use App\System\Service\SmsService;
 use App\Users\Mapper\UsersAppLoginMapper;
 use App\Users\Model\User;
+use EasyWeChat\OfficialAccount\Application;
 use Exception;
 use Hyperf\Database\Model\ModelNotFoundException;
 use Hyperf\Di\Annotation\Inject;
@@ -74,6 +75,17 @@ class UsersAppLoginService extends AbstractService
             }
             throw new NormalStatusException($e->getMessage());
         }
+    }
+
+    /**
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     */
+    public function wxLogin(array $params)
+    {
+        $config = config('wechat.official_account.default');
+        $app = new Application($config);
+        $oauth = $app->getOauth();
+        return $oauth->redirect($params['redirectUrl']);
     }
 
     /**
@@ -152,8 +164,6 @@ class UsersAppLoginService extends AbstractService
 
     /**
      * 重置密码
-     * @param array $params
-     * @return bool
      */
     public function resetPassword(array $params): bool
     {

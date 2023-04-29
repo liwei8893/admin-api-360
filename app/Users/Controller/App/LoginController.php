@@ -35,6 +35,13 @@ class LoginController extends MineController
         return $this->success($this->service->login($params));
     }
 
+    #[PostMapping('wxLogin')]
+    public function wxLogin(UsersAppLoginRequest $request): ResponseInterface
+    {
+        $params = $request->validated();
+        return $this->redirect($this->service->wxLogin($params));
+    }
+
     /**
      * 登出.
      * @throws ContainerExceptionInterface
@@ -61,8 +68,6 @@ class LoginController extends MineController
 
     /**
      * 修改密码
-     * @param UsersAppLoginRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

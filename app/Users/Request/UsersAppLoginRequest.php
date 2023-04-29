@@ -28,6 +28,13 @@ class UsersAppLoginRequest extends MineFormRequest
         ];
     }
 
+    public function wxLoginRules(): array
+    {
+        return [
+            'redirectUrl' => 'required',
+        ];
+    }
+
     public function resetPasswordRules(): array
     {
         return [
