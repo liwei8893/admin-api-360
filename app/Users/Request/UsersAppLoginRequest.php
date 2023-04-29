@@ -31,7 +31,16 @@ class UsersAppLoginRequest extends MineFormRequest
     public function wxLoginRules(): array
     {
         return [
-            'redirectUrl' => 'required',
+            'code' => 'required|string',
+        ];
+    }
+
+    public function wxLoginBindPhoneRules(): array
+    {
+        return [
+            'mobile' => 'required|regex:/^1\d{10}$/',
+            'sms_code' => 'required|integer|digits:6',
+            'openId' => 'required|string',
         ];
     }
 

@@ -396,6 +396,12 @@ trait MapperTrait
         ];
     }
 
+    public function create(array $data): Model|MineModel
+    {
+        $this->filterExecuteAttributes($data, $this->getModel()->incrementing);
+        return $this->model::create($data);
+    }
+
     /**
      * 过滤查询字段不存在的属性.
      */

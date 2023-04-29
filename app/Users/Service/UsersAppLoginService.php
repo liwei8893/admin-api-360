@@ -9,6 +9,7 @@ use App\Users\Mapper\UsersAppLoginMapper;
 use App\Users\Model\User;
 use EasyWeChat\OfficialAccount\Application;
 use Exception;
+use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\ModelNotFoundException;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -16,8 +17,10 @@ use Mine\Exception\NormalStatusException;
 use Mine\Helper\MineCode;
 use Mine\MineModel;
 use Mine\MineRequest;
+use Mine\MineResponse;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 
 class UsersAppLoginService extends AbstractService
@@ -36,6 +39,9 @@ class UsersAppLoginService extends AbstractService
 
     #[Inject]
     protected UserSalePlatformService $userSalePlatformService;
+
+    #[Inject]
+    protected MineResponse $response;
 
     /**
      * @param mixed $params
@@ -78,14 +84,63 @@ class UsersAppLoginService extends AbstractService
     }
 
     /**
+     * @param array $params
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws NotFoundExceptionInterface
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
-    public function wxLogin(array $params)
+    public function wxLogin(array $params): ResponseInterface
     {
+        // 有mobile绑定手机号
         $config = config('wechat.official_account.default');
+        $code = $params['code'];
         $app = new Application($config);
         $oauth = $app->getOauth();
-        return $oauth->redirect($params['redirectUrl']);
+        $user = $oauth->userFromCode($code);
+        $userinfo = $this->mapper->getUserInfoByOpenId($user->getId(), User::COMMON_FIELDS);
+        // 判断账号是否禁用
+        if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
+            throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
+        }
+        // 未绑定手机号
+        if (! $userinfo) {
+            return $this->response->error('未绑定手机号', 210, ['openId' => $user->getId()]);
+        }
+        return $this->response->success($this->loginAfter($userinfo));
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws NotFoundExceptionInterface
+     */
+    public function wxLoginBindPhone(array $params): array
+    {
+        try {
+            $mobile = $params['mobile'];
+            $smsCode = $params['sms_code'];
+            $openId = $params['openId'];
+            $this->smsService->checkSmsCaptcha((string) $mobile, (string) $smsCode);
+            $userinfo = $this->mapper->checkUserByMobile($mobile, User::COMMON_FIELDS);
+            // 判断账号是否禁用
+            if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
+                throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
+            }
+            // 验证码通过 判断是否有用户,没有就注册为新用户
+            if (! $userinfo) {
+                /** @var User $userinfo */
+                $userinfo = $this->register($params);
+            }
+            // 验证成功
+            $userinfo->wxgzh_openid = $openId;
+            $userinfo->wx_openid = $openId;
+            $userinfo->save();
+            return $this->loginAfter($userinfo);
+        } catch (Exception $e) {
+            throw new NormalStatusException($e->getMessage());
+        }
     }
 
     /**
@@ -128,7 +183,7 @@ class UsersAppLoginService extends AbstractService
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function register(array $data): int
+    public function register(array $data): Model|MineModel
     {
         if ($this->usersService->existsByMobile($data['mobile'])) {
             throw new NormalStatusException('手机号已存在');
@@ -149,7 +204,7 @@ class UsersAppLoginService extends AbstractService
             'last_login_ip' => container()->get(MineRequest::class)->ip(),
             'last_login_time' => time(),
         ], $data);
-        return $this->mapper->save($data);
+        return $this->mapper->create($data);
     }
 
     /**

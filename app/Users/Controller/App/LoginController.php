@@ -35,11 +35,29 @@ class LoginController extends MineController
         return $this->success($this->service->login($params));
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws NotFoundExceptionInterface
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     */
     #[PostMapping('wxLogin')]
     public function wxLogin(UsersAppLoginRequest $request): ResponseInterface
     {
         $params = $request->validated();
-        return $this->redirect($this->service->wxLogin($params));
+        return $this->service->wxLogin($params);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('wxLoginBindPhone')]
+    public function wxLoginBindPhone(UsersAppLoginRequest $request): ResponseInterface
+    {
+        $params = $request->validated();
+        return $this->success($this->service->wxLoginBindPhone($params));
     }
 
     /**

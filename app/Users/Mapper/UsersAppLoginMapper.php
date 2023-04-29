@@ -28,6 +28,11 @@ class UsersAppLoginMapper extends AbstractMapper
         return User::query()->where('mobile', $mobile)->select($select)->first();
     }
 
+    public function getUserInfoByOpenId(string $openId, array $select = ['*']): Model|Builder|null
+    {
+        return $this->model::query()->where('wx_openid', $openId)->select($select)->first();
+    }
+
     /**
      * 检查用户密码
      */
