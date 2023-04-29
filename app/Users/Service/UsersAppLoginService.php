@@ -84,8 +84,6 @@ class UsersAppLoginService extends AbstractService
     }
 
     /**
-     * @param array $params
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws InvalidArgumentException
      * @throws NotFoundExceptionInterface
@@ -106,9 +104,9 @@ class UsersAppLoginService extends AbstractService
         }
         // 未绑定手机号
         if (! $userinfo) {
-            return $this->response->error('未绑定手机号', 210, ['openId' => $user->getId()]);
+            return $this->response->error('请绑定手机号!', 210, ['openId' => $user->getId()]);
         }
-        return $this->response->success($this->loginAfter($userinfo));
+        return $this->response->success(null, $this->loginAfter($userinfo));
     }
 
     /**
