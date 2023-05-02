@@ -99,17 +99,25 @@ class UsersService extends AbstractService
                 continue;
             }
             // 更换平台编号
-            $platformData = $this->userSalePlatformService->getPlatformNum($params['platform']);
-            $userModel->platform = $platformData['platform'];
-            $userModel->sale_platform = $platformData['sale_platform'];
-            $userModel->old_platform = $platformData['old_platform'];
-            $status = $userModel->save();
+            $status = $this->changePlatformByModel($userModel, $params['platform']);
             if (! $status) {
                 $logInfo[] = ['mobile' => $mobile, 'info' => '失败'];
             }
             $logInfo[] = ['mobile' => $mobile, 'info' => '成功'];
         }
         return $logInfo;
+    }
+
+    /**
+     * 更换平台.
+     */
+    public function changePlatformByModel(User $userModel, string $platform): bool
+    {
+        $platformData = $this->userSalePlatformService->getPlatformNum($platform);
+        $userModel->platform = $platformData['platform'];
+        $userModel->sale_platform = $platformData['sale_platform'];
+        $userModel->old_platform = $platformData['old_platform'];
+        return $userModel->save();
     }
 
     /**
@@ -261,9 +269,18 @@ class UsersService extends AbstractService
             if (! empty($errMessage)) {
                 throw new NormalStatusException(implode(';', $errMessage));
             }
-            // 数据处理
+            // 所有要报名的手机号
             $mobiles = $data->pluck('mobile');
+            // 系统已存在的用户
             $userModel = $model->whereIn('mobile', $mobiles)->get();
+            // 已存在的用户修改平台
+            foreach ($userModel as $user) {
+                $userData = $data->where('mobile', $user->mobile)->first();
+                if ($userData && ! $user->platform) {
+                    $this->changePlatformByModel($user, $userData['platform']);
+                }
+            }
+            // 未报名的手机号
             $diffMobiles = $mobiles->diff($userModel->pluck('mobile'));
             $newCollection = $data->whereIn('mobile', $diffMobiles);
             foreach ($newCollection as $item) {
