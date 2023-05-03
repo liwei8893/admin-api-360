@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Score\Service;
 
 use App\Course\Model\CourseBasis;
+use App\Order\Model\Order;
 use App\Order\Service\OrderSignupService;
 use App\Score\Mapper\ScoreShopMapper;
 use App\Score\Model\ScoreShop;
@@ -151,7 +152,9 @@ class ScoreShopService extends AbstractService
             ];
             // 没有订单,创建订单
             if (! $orderModel) {
-                $this->orderSignupService->handleInsertCourseData($insetInfo, $courseModel);
+                $insertData = $this->orderSignupService->handleInsertCourseData($insetInfo, $courseModel);
+                $insertData['pay_states'] = Order::PAY_SUCCESS;
+                Order::create($insertData);
                 // 扣除积分
                 $scoreState = $this->userScoreService->changeScore($scoreRecordInfo);
                 if (! $scoreState) {
