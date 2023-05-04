@@ -38,7 +38,7 @@ class QuestionHistoryService extends AbstractService
     /**
      * 获取做题排行榜,缓存一个小时.
      */
-    #[Cacheable(prefix: 'ranking', value: 'question', ttl: 3600)]
+    #[Cacheable(prefix: 'ranking', value: 'question', ttl: 86400)]
     public function getRanking(): Collection|array
     {
         return $this->mapper->getRanking()->map(function ($item) {
@@ -55,7 +55,7 @@ class QuestionHistoryService extends AbstractService
     /**
      * 获取用户排行榜名次,缓存1小时.
      */
-    #[Cacheable(prefix: 'ranking', value: 'questionMe_#{userId}', ttl: 3600)]
+    #[Cacheable(prefix: 'ranking', value: 'questionMe_#{userId}', ttl: 86400)]
     public function getRankingMe(int $userId): array
     {
         return ['ranking' => $this->mapper->getRankingMe($userId)];

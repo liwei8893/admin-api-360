@@ -49,7 +49,7 @@ class UserCourseRecordService extends AbstractService
     /**
      * 获取听课排行榜,缓存1小时.
      */
-    #[Cacheable(prefix: 'ranking', value: 'course', ttl: 3600)]
+    #[Cacheable(prefix: 'ranking', value: 'course', ttl: 86400)]
     public function getRanking(): Collection|array
     {
         return $this->mapper->getRanking()->map(function ($item) {
@@ -66,7 +66,7 @@ class UserCourseRecordService extends AbstractService
     /**
      * 获取用户听课排名,缓存1小时.
      */
-    #[Cacheable(prefix: 'ranking', value: 'courseMe_#{userId}', ttl: 3600)]
+    #[Cacheable(prefix: 'ranking', value: 'courseMe_#{userId}', ttl: 86400)]
     public function getRankingMe(int $userId): array
     {
         return ['ranking' => $this->mapper->getRankingMe($userId)];
