@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Question\Service;
 
+use App\Course\Model\CourseBasis;
 use App\Course\Model\CoursePeriod;
 use App\Course\Service\CoursePeriodService;
 use App\Question\Mapper\QuestionMapper;
@@ -146,7 +147,10 @@ class QuestionAppService extends AbstractService
         $dataItem = new Collection($data);
         $knowsId = $dataItem->pluck('knows_id')->unique()->toArray();
         $questionId = $dataItem->pluck('id')->unique()->toArray();
-        $toCourse = $this->mapper->getToCourseList($knowsId)->whereIn('question_id', $questionId);
+        // 查询单独收费课程ID,去掉收费课程题目
+        $removeId = CourseBasis::query()->where('is_give', 1)->pluck('id');
+        $toCourse = $this->mapper->getToCourseList($knowsId)->whereIn('question_id', $questionId)
+            ->whereNotIn('course_basis_id', $removeId->toArray());
         $keyByToCourse = $toCourse->keyBy('question_id');
         foreach ($dataItem as $item) {
             $item['toCourse'] = $keyByToCourse[$item['id']] ?? null;
