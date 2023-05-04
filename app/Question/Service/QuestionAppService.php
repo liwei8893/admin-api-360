@@ -6,6 +6,7 @@ namespace App\Question\Service;
 
 use App\Course\Model\CourseBasis;
 use App\Course\Model\CoursePeriod;
+use App\Course\Service\CourseBasisService;
 use App\Course\Service\CoursePeriodService;
 use App\Question\Mapper\QuestionMapper;
 use App\Question\Model\Question;
@@ -32,6 +33,9 @@ class QuestionAppService extends AbstractService
     #[Inject]
     protected DenseVolumeService $volumeService;
 
+    #[Inject]
+    protected CourseBasisService $courseBasisService;
+
     /**
      * 题库中心列表.
      */
@@ -39,13 +43,14 @@ class QuestionAppService extends AbstractService
     {
         // 每课优题
         if ((int) $params['type'] === 0) {
-            $params = $this->handleData($params);
-            $params['select'] = 'id,knows_id,classify_id,ques_type,ques_title,updated_at';
-            $data = $this->mapper->getQuestionHomeList($params);
-            // 添加封面 img
-            $this->handleQuestionListImg($data, $params['subject'] ? (int) $params['subject'] : 0);
-            $data['items'] = $this->questionWithCourse($data['items']);
-            return $data;
+            //            $params = $this->handleData($params);
+            //            $params['select'] = 'id,knows_id,classify_id,ques_type,ques_title,updated_at';
+            //            $data = $this->mapper->getQuestionHomeList($params);
+            //            // 添加封面 img
+            //            $this->handleQuestionListImg($data, $params['subject'] ? (int) $params['subject'] : 0);
+            //            $data['items'] = $this->questionWithCourse($data['items']);
+            //            return $data;
+            return $this->courseBasisService->getAppPageList($params);
         }
         // 试卷
         $params['select'] = 'id,name,updated_at';
