@@ -1,0 +1,9 @@
+{
+    "name": "Pay",
+    "label": "支付管理",
+    "description": "支付管理",
+    "installed": true,
+    "enabled": true,
+    "version": "1.0.0",
+    "order": 0
+}

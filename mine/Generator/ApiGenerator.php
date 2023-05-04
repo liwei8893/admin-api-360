@@ -20,6 +20,8 @@ use App\Setting\Model\SettingGenerateTables;
 use Hyperf\Utils\Filesystem\Filesystem;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\Str;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * JS API文件生成
@@ -35,8 +37,8 @@ class ApiGenerator extends MineGenerator implements CodeGenerator
 
     /**
      * 设置生成信息.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function setGenInfo(SettingGenerateTables $model): ApiGenerator
     {
@@ -56,7 +58,7 @@ class ApiGenerator extends MineGenerator implements CodeGenerator
         $filename = Str::camel(str_replace(env('DB_PREFIX'), '', $this->model->table_name));
         $module = Str::lower($this->model->module_name);
         $this->filesystem->makeDirectory(BASE_PATH . "/runtime/generate/vue/src/api/{$module}", 0755, true, true);
-        $path = BASE_PATH . "/runtime/generate/vue/src/api/{$module}/{$filename}.js";
+        $path = BASE_PATH . "/runtime/generate/vue/src/api/{$module}/{$filename}.ts";
         $this->filesystem->put($path, $this->replace()->getCodeContent());
     }
 
