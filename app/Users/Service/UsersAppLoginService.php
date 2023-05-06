@@ -165,10 +165,12 @@ class UsersAppLoginService extends AbstractService
         $userModel->load(['orders' => static function ($query) {
             $query->normalOrder()->isNotExpire()->select(['user_id', 'shop_id']);
         }]);
+        $orderIds = $userModel->orders->pluck('shop_id');
         // 挂载会员类型,到期时间
         $userModel->load(['vipType']);
         // 复制用户模型
         $result = $userModel->toArray();
+        $result['orders'] = $orderIds->toArray();
         // 添加是否初始密码
         $result['isSimplePwd'] = $this->mapper->hasSimplePwd($userModel);
         // 添加token
