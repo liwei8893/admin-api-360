@@ -56,7 +56,7 @@ class UserCourseRecord extends MineModel
      */
     public function getTimeRateAttribute(): float
     {
-        if (isset($this->attributes['watch_time'], $this->attributes['video_duration'])) {
+        if (isset($this->attributes['watch_time'], $this->attributes['video_duration']) && $this->attributes['video_duration'] * 100 !== 0) {
             return round($this->attributes['watch_time'] / $this->attributes['video_duration'] * 100, 2);
         }
         return 0.0;

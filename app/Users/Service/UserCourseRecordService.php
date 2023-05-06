@@ -112,7 +112,7 @@ class UserCourseRecordService extends AbstractService
             $item['courseBasisId'] = $item['courseBasis']['course_basis_id'] ?? null;
             $item['courseBasisTitle'] = $item['courseBasis']['title'] ?? '';
             $item['coursePeriodTitle'] = $item['coursePeriod']['title'] ?? '';
-            $item['timeRate'] = round($item['watch_time'] / $item['video_duration'] * 100, 2);
+            $item['timeRate'] = $item['video_duration'] * 100 !== 0 ? round($item['watch_time'] / $item['video_duration'] * 100, 2) : 0.0;
             return $item;
         })->groupBy('courseBasisId');
     }
