@@ -99,15 +99,16 @@ class CourseChapterService extends AbstractService
         $params['orderBy'] = ['serial_num', 'id'];
         $params['orderType'] = ['asc', 'asc'];
         $data = $this->getTreeList($params);
-        // 练一练,测一测题目相加计算总和
+        // 测一测题目总和
         foreach ($data as &$subject) {
             foreach ($subject['children'] as &$chapter) {
                 // 如果测一测是空的,跳出不用相加
+                $chapter['course_period']['question_practice_count'] = 0;
                 if (empty($chapter['course_period']['qurstion_str'])) {
                     continue;
                 }
-                $oldQuesCount = explode(',', $chapter['course_period']['qurstion_str']);
-                $chapter['course_period']['question_period_count'] += count($oldQuesCount);
+                $testQuesCount = explode(',', $chapter['course_period']['qurstion_str']);
+                $chapter['course_period']['question_practice_count'] = count($testQuesCount);
             }
         }
         return $data;

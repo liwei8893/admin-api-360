@@ -125,7 +125,7 @@ class CourseChapterMapper extends AbstractMapper
                 $query->with(['teacher', 'tags:id,name', 'videoDuration'])
                     ->select(CoursePeriod::COMMON_FIELDS)
                     // withCount要在select后面
-                    ->withCount(['questionPeriod']);
+                    ->withCount(['questionPeriod as questionTest']);
             }]);
         }
 
