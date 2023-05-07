@@ -29,13 +29,13 @@ class PayLinkRequest extends MineFormRequest
             // 备注 验证
             'remark' => 'required',
             // 平台编号 验证
-            'platform_code' => 'required',
-            // 平台名称 验证
-            'platform_name' => 'required',
+            'platform' => 'required',
             // pay_config表ID 验证
             'config_id' => 'required',
             // pay_auth表ID 验证
             'auth_id' => 'required',
+            'course_id' => 'required',
+            'image' => 'required',
         ];
     }
 
@@ -46,16 +46,6 @@ class PayLinkRequest extends MineFormRequest
     public function updateRules(): array
     {
         return [
-            // 备注 验证
-            'remark' => 'required',
-            // 平台编号 验证
-            'platform_code' => 'required',
-            // 平台名称 验证
-            'platform_name' => 'required',
-            // pay_config表ID 验证
-            'config_id' => 'required',
-            // pay_auth表ID 验证
-            'auth_id' => 'required',
         ];
     }
 

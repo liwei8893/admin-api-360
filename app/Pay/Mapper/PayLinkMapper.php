@@ -24,6 +24,31 @@ class PayLinkMapper extends AbstractMapper
     }
 
     /**
+     * 新增数据.
+     */
+    public function save(array $data): int
+    {
+        $courseIds = $data['course_id'];
+        $this->filterExecuteAttributes($data, $this->getModel()->incrementing);
+        $model = $this->model::create($data);
+        $model->payCourse()->attach($courseIds);
+        return $model->{$model->getKeyName()};
+    }
+
+    /**
+     * 更新一条数据.
+     */
+    public function update(int $id, array $data): bool
+    {
+        $model = $this->model::find($id);
+        if (isset($data['course_id'])) {
+            $model->payCourse()->sync($data['course_id']);
+        }
+        $this->filterExecuteAttributes($data, true);
+        return $model->update($data) > 0;
+    }
+
+    /**
      * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
@@ -38,13 +63,8 @@ class PayLinkMapper extends AbstractMapper
         }
 
         // 平台编号
-        if (isset($params['platform_code']) && $params['platform_code'] !== '') {
-            $query->where('platform_code', 'like', '%' . $params['platform_code'] . '%');
-        }
-
-        // 平台名称
-        if (isset($params['platform_name']) && $params['platform_name'] !== '') {
-            $query->where('platform_name', 'like', '%' . $params['platform_name'] . '%');
+        if (isset($params['platform']) && $params['platform'] !== '') {
+            $query->where('platform', 'like', '%' . $params['platform_code'] . '%');
         }
 
         // pay_config表ID
@@ -55,6 +75,10 @@ class PayLinkMapper extends AbstractMapper
         // pay_auth表ID
         if (isset($params['auth_id']) && $params['auth_id'] !== '') {
             $query->where('auth_id', '=', $params['auth_id']);
+        }
+
+        if (! empty($params['withCourse'])) {
+            $query->with(['payCourse:id,title']);
         }
 
         return $query;

@@ -16,6 +16,8 @@ use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
 use Mine\MineController;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -34,8 +36,8 @@ class PayAuthController extends MineController
 
     /**
      * 列表.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('index'), Permission('pay:auth, pay:auth:index')]
     public function index(): ResponseInterface
@@ -44,9 +46,20 @@ class PayAuthController extends MineController
     }
 
     /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getSelect'), Permission('pay:auth, pay:auth:index')]
+    public function getSelect(): ResponseInterface
+    {
+        $params['select'] = 'remark,id';
+        return $this->success($this->service->getList($params));
+    }
+
+    /**
      * 回收站列表.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('recycle'), Permission('pay:auth:recycle')]
     public function recycle(): ResponseInterface
@@ -56,8 +69,8 @@ class PayAuthController extends MineController
 
     /**
      * 单个或批量真实删除数据 （清空回收站）.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[DeleteMapping('realDelete'), Permission('pay:auth:realDelete'), OperationLog]
     public function realDelete(): ResponseInterface
@@ -67,8 +80,8 @@ class PayAuthController extends MineController
 
     /**
      * 单个或批量恢复在回收站的数据.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PutMapping('recovery'), Permission('pay:auth:recovery'), OperationLog]
     public function recovery(): ResponseInterface
@@ -78,8 +91,8 @@ class PayAuthController extends MineController
 
     /**
      * 新增.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('save'), Permission('pay:auth:save'), OperationLog]
     public function save(PayAuthRequest $request): ResponseInterface
@@ -89,8 +102,8 @@ class PayAuthController extends MineController
 
     /**
      * 更新.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PutMapping('update/{id}'), Permission('pay:auth:update'), OperationLog]
     public function update(int $id, PayAuthRequest $request): ResponseInterface
@@ -100,8 +113,8 @@ class PayAuthController extends MineController
 
     /**
      * 读取数据.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('read/{id}'), Permission('pay:auth:read')]
     public function read(int $id): ResponseInterface
@@ -111,8 +124,8 @@ class PayAuthController extends MineController
 
     /**
      * 单个或批量删除数据到回收站.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[DeleteMapping('delete'), Permission('pay:auth:delete'), OperationLog]
     public function delete(): ResponseInterface
