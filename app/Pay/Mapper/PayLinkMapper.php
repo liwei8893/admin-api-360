@@ -24,31 +24,6 @@ class PayLinkMapper extends AbstractMapper
     }
 
     /**
-     * 新增数据.
-     */
-    public function save(array $data): int
-    {
-        $courseIds = $data['course_id'];
-        $this->filterExecuteAttributes($data, $this->getModel()->incrementing);
-        $model = $this->model::create($data);
-        $model->payCourse()->attach($courseIds);
-        return $model->{$model->getKeyName()};
-    }
-
-    /**
-     * 更新一条数据.
-     */
-    public function update(int $id, array $data): bool
-    {
-        $model = $this->model::find($id);
-        if (isset($data['course_id'])) {
-            $model->payCourse()->sync($data['course_id']);
-        }
-        $this->filterExecuteAttributes($data, true);
-        return $model->update($data) > 0;
-    }
-
-    /**
      * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
@@ -78,7 +53,7 @@ class PayLinkMapper extends AbstractMapper
         }
 
         if (! empty($params['withCourse'])) {
-            $query->with(['payCourse:id,title']);
+            $query->with(['course:id,title']);
         }
 
         return $query;

@@ -79,6 +79,78 @@ class UsersService extends AbstractService
     }
 
     /**
+     * 用手机号查询一条数据.
+     * @param mixed $mobile
+     */
+    public function readByMobile(string $mobile): Model|Builder
+    {
+        $model = $this->mapper->readByMobile($mobile);
+        if (! $model) {
+            throw new NormalStatusException('此手机号用户不存在!');
+        }
+        return $model;
+    }
+
+    /**
+     * 创建用户.
+     */
+    public function save(array $data): int
+    {
+        if ($this->existsByMobile($data['mobile'])) {
+            throw new NormalStatusException('手机号已存在');
+        }
+        $data = $this->handleSaveData($data);
+        return $this->mapper->save($data);
+    }
+
+    /**
+     * 用手机号检测用户是否存在.
+     * @param mixed $mobile
+     */
+    public function existsByMobile($mobile): bool
+    {
+        return $this->mapper->existsByMobile($mobile);
+    }
+
+    public function handleSaveData(array $data): array
+    {
+        // 获取平台编号,挂载到数组
+        $data = $this->userSalePlatformService->withPlatformNum($data);
+        // 合并初始化参数
+        return array_merge([
+            'mobile' => $data['mobile'],
+            'user_name' => $this->getInitUserName($data['mobile']),
+            'user_nickname' => $this->getInitUserName($data['mobile']),
+            'real_name' => $this->getInitUserName($data['mobile']),
+            'user_pass' => $this->getInitPassword($data['mobile']),
+            'avatar' => config('hxt-app.defaultAvatar'),
+            'user_type' => 1,
+            'status' => 1,
+            'sex' => 3,
+            'created_id' => $this->loginUser->getId(),
+            'created_name' => $this->loginUser->getUsername(),
+        ], $data);
+    }
+
+    /**
+     * 获取初始用户名.
+     * @param mixed $mobile
+     */
+    public function getInitUserName($mobile): string
+    {
+        return $this->mapper->getInitUserName($mobile);
+    }
+
+    /**
+     * 获取初始密码
+     * @param mixed $mobile
+     */
+    public function getInitPassword($mobile): string
+    {
+        return $this->mapper->getInitPassword($mobile);
+    }
+
+    /**
      * 批量更换平台.
      */
     public function batchChangePlatform(array $params): array
@@ -121,27 +193,6 @@ class UsersService extends AbstractService
     }
 
     /**
-     * 创建用户.
-     */
-    public function save(array $data): int
-    {
-        if ($this->existsByMobile($data['mobile'])) {
-            throw new NormalStatusException('手机号已存在');
-        }
-        $data = $this->handleSaveData($data);
-        return $this->mapper->save($data);
-    }
-
-    /**
-     * 用手机号检测用户是否存在.
-     * @param mixed $mobile
-     */
-    public function existsByMobile($mobile): bool
-    {
-        return $this->mapper->existsByMobile($mobile);
-    }
-
-    /**
      * 更新用户信息.
      */
     public function update(int $id, array $data): bool
@@ -161,69 +212,12 @@ class UsersService extends AbstractService
         return $this->mapper->update($id, $data);
     }
 
-    public function handleSaveData(array $data): array
-    {
-        // 获取平台编号,挂载到数组
-        $data = $this->userSalePlatformService->withPlatformNum($data);
-        // 合并初始化参数
-        return array_merge([
-            'mobile' => $data['mobile'],
-            'user_name' => $this->getInitUserName($data['mobile']),
-            'user_nickname' => $this->getInitUserName($data['mobile']),
-            'real_name' => $this->getInitUserName($data['mobile']),
-            'user_pass' => $this->getInitPassword($data['mobile']),
-            'avatar' => config('hxt-app.defaultAvatar'),
-            'user_type' => 1,
-            'status' => 1,
-            'sex' => 3,
-            'created_id' => $this->loginUser->getId(),
-            'created_name' => $this->loginUser->getUsername(),
-        ], $data);
-    }
-
-    /**
-     * 获取初始用户名.
-     * @param mixed $mobile
-     */
-    public function getInitUserName($mobile): string
-    {
-        return $this->mapper->getInitUserName($mobile);
-    }
-
-    /**
-     * 获取初始密码
-     * @param mixed $mobile
-     */
-    public function getInitPassword($mobile): string
-    {
-        return $this->mapper->getInitPassword($mobile);
-    }
-
     /**
      * 初始化密码
      */
     public function initUserPassword(int $id, mixed $password = null): bool
     {
         return $this->mapper->initUserPassword($id, $password);
-    }
-
-    public function getPageList(?array $params = null, bool $isScope = true): array
-    {
-        $params = $this->handleData($params);
-        return parent::getPageList($params, $isScope);
-    }
-
-    /**
-     * 用手机号查询一条数据.
-     * @param mixed $mobile
-     */
-    public function readByMobile($mobile): Model|Builder
-    {
-        $model = $this->mapper->readByMobile($mobile);
-        if (! $model) {
-            throw new NormalStatusException('此手机号用户不存在!');
-        }
-        return $model;
     }
 
     /**
@@ -300,6 +294,12 @@ class UsersService extends AbstractService
             return $this->getPageList($params);
         }
         return $this->mapper->getNullPaginate();
+    }
+
+    public function getPageList(?array $params = null, bool $isScope = true): array
+    {
+        $params = $this->handleData($params);
+        return parent::getPageList($params, $isScope);
     }
 
     /**

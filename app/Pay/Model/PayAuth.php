@@ -34,4 +34,6 @@ class PayAuth extends MineModel
      * The attributes that should be cast to native types.
      */
     protected array $casts = ['id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
+
+    protected ?string $dateFormat = 'U';
 }
