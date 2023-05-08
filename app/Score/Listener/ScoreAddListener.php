@@ -273,9 +273,13 @@ class ScoreAddListener implements ListenerInterface
             // 增加用户积分
             $states = $this->mapper->incrementUserScore($userId, (int) $score);
         } else {
+            $userModel = User::query()->find($userId);
             // 保存减少积分详情
             $this->mapper->saveUnUserScore($data);
             // 减少用户积分
+            if ($userModel->score - (int) $score < 0) {
+                $score = $userModel->score;
+            }
             $states = $this->mapper->decrementUserScore($userId, (int) $score);
         }
 
