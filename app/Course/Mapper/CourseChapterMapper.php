@@ -45,11 +45,6 @@ class CourseChapterMapper extends AbstractMapper
         return $this->model::withTrashed()->whereIn('id', $ids)->pluck('title')->toArray();
     }
 
-    public function checkChildrenExists(int $id): bool
-    {
-        return $this->model::query()->where('parent_id', $id)->exists();
-    }
-
     #[Transaction]
     public function updateChapter(int $id, array $data): bool
     {
@@ -95,6 +90,11 @@ class CourseChapterMapper extends AbstractMapper
         return true;
     }
 
+    public function checkChildrenExists(int $id): bool
+    {
+        return $this->model::query()->where('parent_id', $id)->exists();
+    }
+
     /**
      * 搜索处理器.
      */
@@ -125,7 +125,7 @@ class CourseChapterMapper extends AbstractMapper
                 $query->with(['teacher', 'tags:id,name', 'videoDuration'])
                     ->select(CoursePeriod::COMMON_FIELDS)
                     // withCount要在select后面
-                    ->withCount(['questionPeriod as questionTest']);
+                    ->withCount(['questionPeriod as question_test_count']);
             }]);
         }
 
