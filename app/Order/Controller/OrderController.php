@@ -67,6 +67,17 @@ class OrderController extends MineController
     }
 
     /**
+     * 批量退费.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('batchChangeOrderToRefund'), Permission('order:changeOrder'), OperationLog('异动退费')]
+    public function batchChangeOrderToRefund(OrderRequest $request): ResponseInterface
+    {
+        return $this->service->batchChangeOrderToRefund($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
      * 退费.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -110,8 +121,6 @@ class OrderController extends MineController
     }
 
     /**
-     * @param OrderRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -122,8 +131,6 @@ class OrderController extends MineController
     }
 
     /**
-     * @param OrderRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

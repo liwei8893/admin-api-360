@@ -182,6 +182,20 @@ class OrderService extends AbstractService
     }
 
     /**
+     * 批量退费.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function batchChangeOrderToRefund(array $params): bool
+    {
+        $orderIds = $params['ids'];
+        foreach ($orderIds as $orderId) {
+            $this->changeOrderToRefund(['orderId' => $orderId, 'money' => 0, 'remark' => '退费']);
+        }
+        return true;
+    }
+
+    /**
      * 退费.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -194,6 +208,9 @@ class OrderService extends AbstractService
         if (! $orderModel) {
             throw new NormalStatusException('订单错误!');
         }
+        if ($orderModel->status === Order::STATUS_REFUND) {
+            throw new NormalStatusException('订单已退费，请检查!');
+        }
         $orderModel->status = Order::STATUS_REFUND;
         $orderModel->refund_time = Carbon::now();
         if (! $orderModel->save()) {
@@ -202,7 +219,7 @@ class OrderService extends AbstractService
         // 写日志
         $logRecord = [
             'order_id' => $data['orderId'],
-            'user_id' => $data['userId'],
+            'user_id' => $orderModel->user_id,
             'money' => $data['money'],
             'remark' => $data['remark'],
         ];

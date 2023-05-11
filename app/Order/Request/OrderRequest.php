@@ -62,6 +62,11 @@ class OrderRequest extends MineFormRequest
         ];
     }
 
+    public function batchChangeOrderToRefundRules(): array
+    {
+        return ['ids' => 'required|array'];
+    }
+
     public function changeOrderToNormalRules(): array
     {
         return [
