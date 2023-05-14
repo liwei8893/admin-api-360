@@ -11,11 +11,10 @@ use App\Score\Event\ScoreAddEvent;
 use App\Users\Mapper\UserCourseRecordMapper;
 use App\Users\Mapper\UserScoreMapper;
 use App\Users\Model\User;
+use App\Users\Service\UserScoreService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Event\Annotation\Listener;
 use Hyperf\Event\Contract\ListenerInterface;
-use Mine\Annotation\Transaction;
-use Mine\Exception\NormalStatusException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -24,6 +23,9 @@ class ScoreAddListener implements ListenerInterface
 {
     #[Inject]
     protected UserScoreMapper $mapper;
+
+    #[Inject]
+    protected UserScoreService $userScoreService;
 
     public function listen(): array
     {
@@ -58,7 +60,7 @@ class ScoreAddListener implements ListenerInterface
             return;
         }
         // 没获取过,积分加2
-        $this->changeScore([
+        $this->userScoreService->changeScore([
             'user_id' => $userModel->id,
             'origin_id' => $originId,
             'channel' => '分享积分',
@@ -89,7 +91,7 @@ class ScoreAddListener implements ListenerInterface
             return;
         }
         // 没获取过,积分加1
-        $this->changeScore([
+        $this->userScoreService->changeScore([
             'user_id' => $userModel->id,
             'origin_id' => $originId,
             'channel' => '做题积分',
@@ -130,7 +132,7 @@ class ScoreAddListener implements ListenerInterface
 
         $originId = $todayModel['id'];
         // 没获取过,积分加1
-        $this->changeScore([
+        $this->userScoreService->changeScore([
             'user_id' => $userModel->id,
             'origin_id' => $originId,
             'channel' => '听课积分',
@@ -156,7 +158,7 @@ class ScoreAddListener implements ListenerInterface
             return;
         }
         // 没获取过,积分加10
-        $this->changeScore([
+        $this->userScoreService->changeScore([
             'user_id' => $userModel->id,
             'origin_id' => $originId,
             'channel' => '认证积分',
@@ -181,7 +183,7 @@ class ScoreAddListener implements ListenerInterface
         if (! $orderModel || (int) $orderModel->shop_id !== 950 || ! $orderModel->actual_price || (int) $orderModel->pay_states !== 7) {
             return;
         }
-        $this->changeScore([
+        $this->userScoreService->changeScore([
             'user_id' => $userModel->id,
             'origin_id' => $originId,
             'channel' => '会员积分',
@@ -206,7 +208,7 @@ class ScoreAddListener implements ListenerInterface
         if (! $renewModel || ! $renewModel->money || (int) $renewModel->status !== 1 || (int) $renewModel->audit_status !== 0) {
             return;
         }
-        $this->changeScore([
+        $this->userScoreService->changeScore([
             'user_id' => $userModel->id,
             'origin_id' => $originId,
             'channel' => '续费积分',
@@ -237,7 +239,7 @@ class ScoreAddListener implements ListenerInterface
         if ($renewModel->isNotEmpty()) {
             $money += $renewModel->sum('money');
         }
-        $this->changeScore([
+        $this->userScoreService->changeScore([
             'user_id' => $userModel->id,
             'origin_id' => $originId,
             'channel' => '退费积分',
@@ -245,47 +247,5 @@ class ScoreAddListener implements ListenerInterface
             'score' => $money,
             'type' => 0,
         ]);
-    }
-
-    /**
-     * 变更积分.
-     */
-    #[Transaction]
-    public function changeScore(array $data): bool
-    {
-        $userId = $data['user_id'];
-        $originId = $data['origin_id'];
-        $channel = $data['channel'];
-        $channelType = $data['channel_type'];
-        $score = $data['score'];
-        $type = $data['type'];
-        // 插入积分详情表
-        $data = [
-            'user_id' => $userId,
-            'origin_id' => $originId,
-            'channel' => $channel,
-            'channel_type' => $channelType,
-            'score' => $score,
-        ];
-        if ((int) $type === 1) {
-            // 保存增加积分详情
-            $this->mapper->saveInUserScore($data);
-            // 增加用户积分
-            $states = $this->mapper->incrementUserScore($userId, (int) $score);
-        } else {
-            $userModel = User::query()->find($userId);
-            // 保存减少积分详情
-            $this->mapper->saveUnUserScore($data);
-            // 减少用户积分
-            if ($userModel->score - (int) $score < 0) {
-                $score = $userModel->score;
-            }
-            $states = $this->mapper->decrementUserScore($userId, (int) $score);
-        }
-
-        if (! $states) {
-            throw new NormalStatusException('系统错误');
-        }
-        return true;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Users\Service;
 
 use App\Users\Mapper\UserScoreMapper;
+use App\Users\Model\User;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
@@ -39,15 +40,19 @@ class UserScoreService extends AbstractService
             'channel_type' => $channelType,
             'score' => $score,
         ];
-        if ($type === 1) {
+        if ((int) $type === 1) {
             // 保存增加积分详情
             $this->mapper->saveInUserScore($data);
             // 增加用户积分
             $states = $this->mapper->incrementUserScore((int) $userId, (int) $score);
         } else {
+            $userModel = User::query()->find($userId);
             // 保存减少积分详情
             $this->mapper->saveUnUserScore($data);
             // 减少用户积分
+            if ($userModel->score - (int) $score < 0) {
+                $score = $userModel->score;
+            }
             $states = $this->mapper->decrementUserScore((int) $userId, (int) $score);
         }
 
