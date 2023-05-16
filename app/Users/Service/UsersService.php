@@ -51,27 +51,39 @@ class UsersService extends AbstractService
     #[Transaction]
     public function changeMobile(array $params): bool
     {
-        /* @var User $newUserModel */
-        $newUserModel = $this->mapper->readByMobile($params['mobile']);
-        if ($newUserModel) {
-            $order = $newUserModel->orders()->noDeleteOrder()->exists();
-            // $order=false表目标手机号没有课程,可以直接删除,更换手机号
-            if ($order) {
-                throw new NormalStatusException('新手机号已存在,且有课程,请手动操作!');
-            }
-            $newUserModel->mobile = '';
-            if (! $newUserModel->save()) {
-                throw new NormalStatusException('删除新手机号时失败!');
-            }
-        }
-        // 更换手机号
         /* @var User $userModel */
         $userModel = $this->mapper->read($params['userId']);
         if (! $userModel) {
             throw new NormalStatusException('用户不存在!');
         }
-        $userModel->mobile = $params['mobile'];
-        $userModel->user_pass = $this->mapper->getInitPassword($params['mobile']);
+        $oldMobile = $userModel->mobile;
+        $newMobile = $params['mobile'];
+        /* @var User $newUserModel */
+        $newUserModel = $this->mapper->readByMobile($newMobile);
+        // 新手机号不为空，交换手机号
+        if ($newUserModel) {
+            // 新手机号先设置为空
+            $newUserModel->mobile = '';
+            if (! $newUserModel->save()) {
+                throw new NormalStatusException('删除新手机号时失败!');
+            }
+            // 老手机号设置为新手机号
+            $userModel->mobile = $newMobile;
+            $userModel->user_pass = $this->mapper->getInitPassword($newMobile);
+            if (! $userModel->save()) {
+                throw new NormalStatusException('修改手机号时失败!');
+            }
+            // 新手机号设置为老手机号
+            $newUserModel->mobile = $oldMobile;
+            $newUserModel->user_pass = $this->mapper->getInitPassword($oldMobile);
+            if (! $newUserModel->save()) {
+                throw new NormalStatusException('修改手机号时失败!');
+            }
+            return true;
+        }
+        // 新手机号为空，更换手机号
+        $userModel->mobile = $newMobile;
+        $userModel->user_pass = $this->mapper->getInitPassword($newMobile);
         if (! $userModel->save()) {
             throw new NormalStatusException('修改手机号时失败!');
         }
