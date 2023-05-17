@@ -113,14 +113,6 @@ class CoursePeriod extends MineModel
         return $this->hasOne(UserCourseRecord::class, 'period_id', 'id');
     }
 
-    public function videoDuration(): HasOne
-    {
-        return $this->hasOne(UserCourseRecord::class, 'period_id', 'id')
-            ->whereNotNull('video_duration')
-            ->select(['period_id'])->selectRaw('max(video_duration) as video_duration')
-            ->groupBy(['period_id']);
-    }
-
     /**
      * 多态关联标签.
      */
