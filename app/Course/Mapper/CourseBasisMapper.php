@@ -133,6 +133,9 @@ class CourseBasisMapper extends AbstractMapper
         if (isset($params['subject_id']) && $params['subject_id'] !== '') {
             $query->where('subject_id', '=', $params['subject_id']);
         }
+        if (isset($params['subject']) && $params['subject'] !== '') {
+            $query->where('subject_id', '=', $params['subject']);
+        }
 
         if (! empty($params['course_title'])) {
             $query->where('course_title', $params['course_title']);
