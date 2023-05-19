@@ -93,20 +93,6 @@ class QuestionHistoryService extends AbstractService
     }
 
     /**
-     * 过滤空格
-     */
-    public function deleteHtmlTrim(string $str): string
-    {
-        // 清除字符串两边的空格
-        $str = trim($str);
-        // 替换开头空字符
-        $str = preg_replace("/^[\\s\v" . chr(227) . chr(128) . ']+/', '', $str);
-        // 替换结尾空字符
-        $str = preg_replace("/[\\s\v" . chr(227) . chr(128) . ']+$/', '', $str);
-        return trim($str); // 返回字符串
-    }
-
-    /**
      * 前端提交题目.
      * @throws JsonException
      * @throws ContainerExceptionInterface
@@ -176,10 +162,26 @@ class QuestionHistoryService extends AbstractService
             $saveData['right_answer'] = $handleRightAnswer;
         }
         // 保存到数据库
-        $historyId = $this->save($saveData);
+        /** @var QuestionHistory $historyModel */
+        $historyModel = $this->mapper->saveModel($saveData);
+        $historyModel->addHidden(['created_at', 'updated_at']);
         // TODO 添加积分事件做题
-        event(new ScoreAddEvent('question', $userId, $historyId));
-        return $saveData;
+        event(new ScoreAddEvent('question', $userId, $historyModel->id));
+        return $historyModel->toArray();
+    }
+
+    /**
+     * 过滤空格
+     */
+    public function deleteHtmlTrim(string $str): string
+    {
+        // 清除字符串两边的空格
+        $str = trim($str);
+        // 替换开头空字符
+        $str = preg_replace("/^[\\s\v" . chr(227) . chr(128) . ']+/', '', $str);
+        // 替换结尾空字符
+        $str = preg_replace("/[\\s\v" . chr(227) . chr(128) . ']+$/', '', $str);
+        return trim($str); // 返回字符串
     }
 
     public function changeErrorCollect(array $params): bool
