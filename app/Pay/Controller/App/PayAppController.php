@@ -54,12 +54,14 @@ class PayAppController extends MineController
     }
 
     /**
+     * @throws ContainerExceptionInterface
      * @throws InvalidArgumentException
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('wxAuth')]
     public function wxAuth(PayAppRequest $request): ResponseInterface
     {
-        return $this->redirect($this->service->wxAuth($request->all()));
+        return $this->success(['authPage' => $this->service->wxAuth($request->all())]);
     }
 
     /**
