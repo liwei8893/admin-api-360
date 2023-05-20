@@ -56,6 +56,24 @@ class PayAppService extends AbstractService
     protected OrderSignupService $orderSignupService;
 
     /**
+     * @param array $params
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    public function wxAuth(array $params): string
+    {
+        $authId = $params['authId'];
+        /* @var PayAuth $authConfig */
+        $authConfig = $this->authService->read($authId);
+        if (! $authConfig) {
+            throw new NormalStatusException('认证配置不存在!');
+        }
+        $config = ['app_id' => $authConfig->appid, 'secret' => $authConfig->app_secret];
+        $app = new Application($config);
+        return $app->getOAuth()->redirect($params['redirectUrl']);
+    }
+
+    /**
      * @throws InvalidArgumentException
      */
     public function OAuths(array $params): array
@@ -168,8 +186,6 @@ class PayAppService extends AbstractService
 
     /**
      * 网页支付.
-     * @param array $params
-     * @return array
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws Exception
@@ -195,8 +211,6 @@ class PayAppService extends AbstractService
 
     /**
      * 微信支付回调验签.
-     * @param int $id
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */

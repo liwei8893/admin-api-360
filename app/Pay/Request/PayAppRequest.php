@@ -20,4 +20,9 @@ class PayAppRequest extends MineFormRequest
     {
         return ['code' => 'required', 'authId' => 'required'];
     }
+
+    public function wxAuthRules(): array
+    {
+        return ['authId' => 'required', 'redirectUrl' => 'required'];
+    }
 }
