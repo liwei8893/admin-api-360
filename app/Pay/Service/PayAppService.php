@@ -70,7 +70,7 @@ class PayAppService extends AbstractService
         }
         $config = ['app_id' => $authConfig->appid, 'secret' => $authConfig->app_secret];
         $app = new Application($config);
-        return $app->getOAuth()->redirect($params['redirectUrl']);
+        return $app->getOAuth()->scopes(['snsapi_base'])->redirect($params['redirectUrl']);
     }
 
     /**
