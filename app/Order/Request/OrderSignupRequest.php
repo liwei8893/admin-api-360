@@ -30,6 +30,18 @@ class OrderSignupRequest extends MineFormRequest
         ];
     }
 
+    public function batchAdminSaveRules(): array
+    {
+        return [
+            'courses' => 'required',
+            'mobiles' => 'required|array',
+            'courses.*.day' => 'required|integer',
+            'courses.*.price' => 'required|integer',
+            'courses.*.course_signup' => 'required|array',
+            'courses.*.course_signup.*' => 'required|integer',
+        ];
+    }
+
     /**
      * 新增数据验证规则
      * return array.

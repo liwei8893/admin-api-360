@@ -25,6 +25,16 @@ class OrderSignupController extends MineController
     public OrderSignupService $service;
 
     /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('batchAdminSave'), Permission('order:signup:adminSave,users:list:signup'), OperationLog('管理员批量报名')]
+    public function batchAdminSave(OrderSignupRequest $request): ResponseInterface
+    {
+        return $this->success(['status' => $this->service->batchAdminSave($request->all())]);
+    }
+
+    /**
      * 报名.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface

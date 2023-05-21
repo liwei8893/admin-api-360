@@ -8,6 +8,7 @@ use App\Course\Service\CourseService;
 use App\Order\Mapper\OrderSignupMapper;
 use App\Order\Model\Order;
 use App\Score\Event\ScoreAddEvent;
+use App\Users\Model\User;
 use Exception;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
@@ -33,6 +34,29 @@ class OrderSignupService extends AbstractService
 
     #[Inject]
     protected CourseService $courseService;
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function batchAdminSave(array $params): bool
+    {
+        // 查询用户ID
+        $userIds = User::query()->whereIn('mobile', $params['mobiles'])->pluck('id');
+        if ($userIds->isEmpty()) {
+            return true;
+        }
+        foreach ($userIds as $userId) {
+            // 课程数据里加上用户ID
+            foreach ($params['courses'] as &$course) {
+                $course['userId'] = $userId;
+            }
+            unset($course);
+            // 调用报名方法
+            $this->adminSave($params['courses']);
+        }
+        return true;
+    }
 
     /**
      * 报名.
