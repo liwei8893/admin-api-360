@@ -126,4 +126,14 @@ class CourseCommentAppController extends MineController
         $ids = $request->input('id');
         return $this->sunService->delete((array) $ids) ? $this->success() : $this->error();
     }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('sunContentPageList')]
+    public function sunContentPageList(): ResponseInterface
+    {
+        return $this->success($this->sunService->sunContentPageList($this->request->all()));
+    }
 }
