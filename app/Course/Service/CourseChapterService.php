@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace App\Course\Service;
 
 use App\Course\Mapper\CourseChapterMapper;
+use GuzzleHttp\Exception\GuzzleException;
+use Hyperf\Guzzle\ClientFactory;
+use JsonException;
 use Mine\Abstracts\AbstractService;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 课程大纲服务类.
@@ -23,18 +28,6 @@ class CourseChapterService extends AbstractService
     }
 
     /**
-     * 获取树列表.
-     */
-    public function getTreeList(?array $params = null, bool $isScope = true): array
-    {
-        if ($params['select'] ?? null) {
-            $params['select'] = explode(',', $params['select']);
-        }
-        $params['recycle'] = false;
-        return $this->mapper->getTreeList($params, true, 'id', 'parent_id');
-    }
-
-    /**
      * 从回收站获取树列表.
      */
     public function getTreeListByRecycle(?array $params = null, bool $isScope = true): array
@@ -43,6 +36,18 @@ class CourseChapterService extends AbstractService
             $params['select'] = explode(',', $params['select']);
         }
         $params['recycle'] = true;
+        return $this->mapper->getTreeList($params, true, 'id', 'parent_id');
+    }
+
+    /**
+     * 获取树列表.
+     */
+    public function getTreeList(?array $params = null, bool $isScope = true): array
+    {
+        if ($params['select'] ?? null) {
+            $params['select'] = explode(',', $params['select']);
+        }
+        $params['recycle'] = false;
         return $this->mapper->getTreeList($params, true, 'id', 'parent_id');
     }
 
@@ -68,6 +73,18 @@ class CourseChapterService extends AbstractService
     }
 
     /**
+     * 测一测数据加上type1,练一练加上type2.
+     */
+    public function handleQuestionPeriodData(array $data): array
+    {
+        $questionPeriodData = [];
+        foreach ($data as $item) {
+            $questionPeriodData[$item] = ['type' => 1];
+        }
+        return $questionPeriodData;
+    }
+
+    /**
      * 更新.
      */
     public function update(int $id, array $data): bool
@@ -78,18 +95,6 @@ class CourseChapterService extends AbstractService
         }
         // 更新节
         return $this->mapper->updateChapter($id, $this->handlePeriodData($data));
-    }
-
-    /**
-     * 测一测数据加上type1,练一练加上type2.
-     */
-    public function handleQuestionPeriodData(array $data): array
-    {
-        $questionPeriodData = [];
-        foreach ($data as $item) {
-            $questionPeriodData[$item] = ['type' => 1];
-        }
-        return $questionPeriodData;
     }
 
     public function getChapter(int $id): array
@@ -131,11 +136,42 @@ class CourseChapterService extends AbstractService
             'qiniu_url' => $data['course_period']['qiniu_url'] ?? '',
             'qurstion_str' => $data['qurstion_str'] ?? '',
         ];
+        // 处理视频时长
+        if (! empty($data['course_period']['qiniu_url'])) {
+            $initPeriodData['duration'] = $this->getVideoDuration($data['course_period']['qiniu_url']);
+        }
         $data['course_period'] = array_merge($data['course_period'], $initPeriodData);
         // 处理测一测数据
         $data['question_period'] = $this->handleQuestionPeriodData($data['question_period'] ?? []);
         // 处理标签
         $data['tag'] = $data['tag'] ?? [];
         return $data;
+    }
+
+    /**
+     * 获取七牛云视频时间.
+     */
+    protected function getVideoDuration(string $url): int
+    {
+        if (! str_contains($url, 'http')) {
+            return 0;
+        }
+        try {
+            // 去除 url 两端空格
+            $url = trim($url);
+            if (str_contains($url, '?')) {
+                $url .= '&avinfo';
+            } else {
+                $url .= '?avinfo';
+            }
+            $clientFactory = container()->get(ClientFactory::class);
+            $client = $clientFactory->create();
+            $response = $client->get($url);
+            $apiData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $duration = explode('.', $apiData['streams'][0]['duration'])[0];
+            return (int) $duration;
+        } catch (GuzzleException|JsonException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            return 0;
+        }
     }
 }
