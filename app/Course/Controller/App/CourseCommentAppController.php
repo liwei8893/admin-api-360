@@ -32,7 +32,7 @@ class CourseCommentAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('talkPageList'), Auth('app')]
+    #[GetMapping('talkPageList')]
     public function talkPageList(TalkRequest $request): ResponseInterface
     {
         return $this->success($this->talkService->getAppPageList($request->all()));
@@ -82,7 +82,7 @@ class CourseCommentAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('sunPageList'), Auth('app')]
+    #[GetMapping('sunPageList')]
     public function sunPageList(SunRequest $request): ResponseInterface
     {
         return $this->success($this->sunService->getAppPageList($request->all()));
