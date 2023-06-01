@@ -70,7 +70,7 @@ class StaService extends AbstractService
                 'order.created_at',
                 'order.indate',
             ])
-            ->selectRaw('FROM_UNIXTIME(order.created_at ) as order_created_at')
+            ->selectRaw('FROM_UNIXTIME(order.created_at) as order_created_at')
             ->orderBy('order.user_id', 'desc')
             ->paginate((int) $perPage, ['*'], 'page', (int) $page);
         return $this->mapper->setPaginate($paginate);
@@ -129,7 +129,7 @@ class StaService extends AbstractService
                 'u.grade_id',
                 'ad.detail_name as grade_name',
                 DB::raw('sum(ucr.watch_time) AS watch_time_sum'),
-                DB::raw('FROM_UNIXTIME(order.created_at ) as order_created_at'),
+                DB::raw('FROM_UNIXTIME(order.created_at) as order_created_at'),
             ])
             ->groupBy(['u.id', 'ucr.user_id', 'order.created_at', 'order.indate'])
             ->orderBy('watch_time_sum', 'desc')
@@ -210,7 +210,7 @@ class StaService extends AbstractService
                 'actual_price',
                 'real_year',
             ])
-            ->selectRaw("from_unixtime(order.created_at,'%Y-%m-%d %h:%m:%s') as order_created_at")
+            ->selectRaw('from_unixtime(order.created_at) as order_created_at')
             ->orderBy('order.created_at', 'DESC')
             ->paginate((int) $perPage, ['*'], 'page', (int) $page);
         return $this->mapper->setPaginate($paginate);
