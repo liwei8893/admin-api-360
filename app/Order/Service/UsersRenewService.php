@@ -97,8 +97,6 @@ class UsersRenewService extends AbstractService
                 $model->audit_status = UsersRenew::AUDIT_SUCCESS;
                 // 同步订单状态
                 if ($model->status === 1) {
-                    // 如果为续费,叠加订单金额
-                    $order->actual_price += $model->money * 100;
                     $order->is_renew = $model->status;
                 }
                 // 叠加有效期
