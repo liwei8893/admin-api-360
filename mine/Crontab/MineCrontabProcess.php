@@ -14,22 +14,24 @@ declare(strict_types=1);
 
 namespace Mine\Crontab;
 
-use Swoole\Server;
-use Hyperf\Crontab\Crontab;
-use Hyperf\Di\Annotation\Inject;
-use Hyperf\Process\ProcessManager;
-use Hyperf\Process\AbstractProcess;
-use Psr\Container\ContainerInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
-use Hyperf\Crontab\Strategy\StrategyInterface;
 use Hyperf\Crontab\Event\CrontabDispatcherStarted;
+use Hyperf\Crontab\Strategy\StrategyInterface;
+use Hyperf\Di\Annotation\Inject;
+use Hyperf\Process\AbstractProcess;
+use Hyperf\Process\ProcessManager;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Swoole\Coroutine;
+use Swoole\Server;
 
 class MineCrontabProcess extends AbstractProcess
 {
-    /**
-     * @var string
-     */
     public string $name = 'MineAdmin Crontab';
+
+    #[Inject]
+    protected MineCrontabManage $mineCrontabManage;
 
     /**
      * @var Server
@@ -52,15 +54,8 @@ class MineCrontabProcess extends AbstractProcess
     private $logger;
 
     /**
-     * @var MineCrontabManage
-     */
-    #[Inject]
-    protected MineCrontabManage $mineCrontabManage;
-
-    /**
-     * @param ContainerInterface $container
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function __construct(ContainerInterface $container)
     {
@@ -77,22 +72,17 @@ class MineCrontabProcess extends AbstractProcess
     }
 
     /**
-     * 是否自启进程
-     * @param \Swoole\Coroutine\Server|\Swoole\Server $server
-     * @return bool
+     * 是否自启进程.
+     * @param Server|\Swoole\Coroutine\Server $server
      */
     public function isEnable($server): bool
     {
-        if (!file_exists(BASE_PATH . '/.env')) {
-            return false;
-        }
-        return true;
+        return env('CRONTAB_ENABLE', true);
     }
 
     /**
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function handle(): void
     {
@@ -100,11 +90,11 @@ class MineCrontabProcess extends AbstractProcess
         while (ProcessManager::isRunning()) {
             $this->sleep();
             $crontabs = $this->scheduler->schedule();
-            while (!$crontabs->isEmpty()) {
+            while (! $crontabs->isEmpty()) {
                 /**
                  * @var MineCrontab $crontab
                  */
-                $crontab =  $crontabs->dequeue();
+                $crontab = $crontabs->dequeue();
                 $this->strategy->dispatch($crontab);
             }
         }
@@ -115,6 +105,6 @@ class MineCrontabProcess extends AbstractProcess
         $current = date('s', time());
         $sleep = 60 - $current;
         $this->logger->debug('MineAdmin Crontab dispatcher sleep ' . $sleep . 's.');
-        $sleep > 0 && \Swoole\Coroutine::sleep($sleep);
+        $sleep > 0 && Coroutine::sleep($sleep);
     }
 }
