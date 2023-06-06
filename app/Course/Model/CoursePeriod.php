@@ -55,6 +55,7 @@ use Mine\MineModel;
  * @property int $is_group_live
  * @property string $qurstion_str
  * @property int $duration 视频时长
+ * @property int $hits 点击量
  * @property User $teacher
  * @property Collection|Talk[] $talk
  * @property Collection|Sun[] $sun
@@ -65,7 +66,7 @@ use Mine\MineModel;
  */
 class CoursePeriod extends MineModel
 {
-    public const COMMON_FIELDS = ['course_periods.id', 'course_periods.title', 'course_basis_id', 'course_chapter_id', 'is_free', 'teacher_id', 'assistant_id', 'subject_id', 'subject_name', 'duration', 'qurstion_str', 'updated_at'];
+    public const COMMON_FIELDS = ['course_periods.id', 'course_periods.title', 'course_basis_id', 'course_chapter_id', 'is_free', 'teacher_id', 'assistant_id', 'subject_id', 'subject_name', 'duration', 'hits', 'qurstion_str', 'updated_at'];
 
     /**
      * The table associated with the model.
@@ -75,12 +76,12 @@ class CoursePeriod extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'title', 'course_basis_id', 'course_chapter_id', 'room_video_id', 'room_id', 'is_playback', 'is_free', 'is_vip_class', 'is_try_see', 'is_download', 'try_see_time', 'start_play', 'end_play', 'start_play_date', 'admin_code', 'teacher_code', 'student_code', 'created_at', 'updated_at', 'is_push', 'is_getroominfo', 'cloud_type', 'tencent_play_url', 'teacher_id', 'assistant_id', 'template_name', 'play_back_url', 'assistant_name', 'is_login', 'subject_id', 'subject_name', 'qiniu_url', 'filePath', 'is_group_live', 'qurstion_str', 'duration'];
+    protected array $fillable = ['id', 'title', 'course_basis_id', 'course_chapter_id', 'room_video_id', 'room_id', 'is_playback', 'is_free', 'is_vip_class', 'is_try_see', 'is_download', 'try_see_time', 'start_play', 'end_play', 'start_play_date', 'admin_code', 'teacher_code', 'student_code', 'created_at', 'updated_at', 'is_push', 'is_getroominfo', 'cloud_type', 'tencent_play_url', 'teacher_id', 'assistant_id', 'template_name', 'play_back_url', 'assistant_name', 'is_login', 'subject_id', 'subject_name', 'qiniu_url', 'filePath', 'is_group_live', 'qurstion_str', 'duration', 'hits'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'course_chapter_id' => 'integer', 'is_playback' => 'integer', 'is_free' => 'integer', 'is_vip_class' => 'integer', 'is_try_see' => 'integer', 'is_download' => 'integer', 'try_see_time' => 'integer', 'start_play' => 'integer', 'end_play' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_push' => 'integer', 'is_getroominfo' => 'integer', 'cloud_type' => 'integer', 'is_login' => 'integer', 'is_group_live' => 'integer', 'duration' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'course_chapter_id' => 'integer', 'is_playback' => 'integer', 'is_free' => 'integer', 'is_vip_class' => 'integer', 'is_try_see' => 'integer', 'is_download' => 'integer', 'try_see_time' => 'integer', 'start_play' => 'integer', 'end_play' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_push' => 'integer', 'is_getroominfo' => 'integer', 'cloud_type' => 'integer', 'is_login' => 'integer', 'is_group_live' => 'integer', 'duration' => 'integer', 'hits' => 'integer'];
 
     protected ?string $dateFormat = 'U';
 

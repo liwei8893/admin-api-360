@@ -7,7 +7,6 @@ namespace App\Course\Service;
 use App\Course\Mapper\CoursePeriodMapper;
 use App\Course\Model\CourseBasis;
 use App\Course\Model\CoursePeriod;
-use App\System\Mapper\TagsMapper;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -24,15 +23,11 @@ class CoursePeriodService extends AbstractService
     #[Inject]
     public $mapper;
 
-    #[Inject]
-    protected TagsMapper $tagsMapper;
-
     #[SubjectAuth]
     public function getUrl(int $id): array
     {
         /* @var CoursePeriod $model */
         $model = $this->mapper->read($id);
-        $userId = user('app')->getId();
         if (! $model) {
             throw new NormalStatusException('章节不存在!');
         }
@@ -42,6 +37,9 @@ class CoursePeriodService extends AbstractService
             throw new NormalStatusException('课程不存在!');
         }
         $grade = $courseModel->basisGrade->pluck('key')->toArray();
+        // 增加点击量
+        ++$model->hits;
+        $model->save();
         return ['url' => $model['qiniu_url'], 'subject' => $courseModel['subject_id'], 'grade' => $grade, 'courseId' => $courseModel['id']];
     }
 

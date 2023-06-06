@@ -111,7 +111,7 @@ class CourseChapterMapper extends AbstractMapper
 
         // 章的名称
         if (isset($params['title']) && $params['title'] !== '') {
-            $query->where('title', '=', $params['title']);
+            $query->where('title', 'like', "%{$params['title']}%");
         }
 
         if (! empty($params['withCoursePeriod'])) {
