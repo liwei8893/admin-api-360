@@ -78,10 +78,12 @@ class WxMsgMapper extends AbstractMapper
         }
 
         // 发送时间
-        if (isset($params['send_time']) && $params['send_time'] !== '') {
-            $query->where('send_time', '=', $params['send_time']);
+        if (isset($params['send_time'][0], $params['send_time'][1])) {
+            $query->whereBetween(
+                'send_time',
+                [strtotime($params['send_time'][0]), strtotime($params['send_time'][1])]
+            );
         }
-
         return $query;
     }
 }
