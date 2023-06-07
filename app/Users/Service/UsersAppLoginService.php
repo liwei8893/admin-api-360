@@ -166,14 +166,18 @@ class UsersAppLoginService extends AbstractService
         $app = new Application($config);
         $oauth = $app->getOauth();
         $user = $oauth->userFromCode($code);
-        $userinfo = $this->mapper->getUserInfoByOpenId($user->getId(), User::COMMON_FIELDS);
+        $openId = $user->getId();
+        if (! $openId) {
+            throw new NormalStatusException('openId获取失败，请刷新页面重试!');
+        }
+        $userinfo = $this->mapper->getUserInfoByOpenId($openId, User::COMMON_FIELDS);
         // 判断账号是否禁用
         if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
             throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
         }
         // 未绑定手机号
         if (! $userinfo) {
-            return $this->response->error('请绑定手机号!', 210, ['openId' => $user->getId()]);
+            return $this->response->error('请绑定手机号!', 210, ['openId' => $openId]);
         }
         return $this->response->success(null, $this->loginAfter($userinfo));
     }

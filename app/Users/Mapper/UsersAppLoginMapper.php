@@ -30,6 +30,9 @@ class UsersAppLoginMapper extends AbstractMapper
 
     public function getUserInfoByOpenId(string $openId, array $select = ['*']): Model|Builder|null
     {
+        if (empty($openId)) {
+            return null;
+        }
         return $this->model::query()->where('wx_openid', $openId)->select($select)->first();
     }
 

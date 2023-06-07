@@ -137,5 +137,8 @@ class WxMsgService extends AbstractService
         if (! empty($data['keyword2'])) {
             $data['keyword2'] = Carbon::parse($data['keyword2'])->format('Y-m-d H:i');
         }
+        if (! empty($data['send_time'])) {
+            $data['send_time'] = Carbon::parse($data['send_time'])->format('Y-m-d H:i');
+        }
     }
 }
