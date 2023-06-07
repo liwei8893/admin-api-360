@@ -12,8 +12,6 @@ use Hyperf\Amqp\Result;
 use Hyperf\Di\Annotation\Inject;
 use JsonException;
 use PhpAmqpLib\Message\AMQPMessage;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -28,14 +26,10 @@ class SendWxMsgConsumer extends ConsumerMessage
     public function consumeMessage($data, AMQPMessage $message): string
     {
         try {
-            $messageData = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            $messageData = json_decode($data, true);
             $result = $this->msgService->sendWxMsg($messageData);
             return $this->consume($result);
         } catch (InvalidArgumentException|JsonException|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
-            try {
-                logger('WxMsgConsume')->error(json_encode($e->getMessage(), JSON_THROW_ON_ERROR));
-            } catch (NotFoundExceptionInterface|ContainerExceptionInterface|JsonException $e) {
-            }
             return $this->consume(false);
         }
     }
