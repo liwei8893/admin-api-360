@@ -67,9 +67,8 @@ class UsersMapper extends AbstractMapper
 
     /**
      * 获取初始用户名,手机号隐藏中间4位.
-     * @param mixed $mobile
      */
-    public function getInitUserName($mobile): string
+    public function getInitUserName(string $mobile): string
     {
         return substr_replace($mobile, '****', 3, 4);
     }

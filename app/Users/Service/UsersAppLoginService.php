@@ -101,9 +101,9 @@ class UsersAppLoginService extends AbstractService
         // 合并初始化参数
         $data = array_merge([
             'mobile' => $data['mobile'],
-            'user_name' => $data['user_name'] ?? $this->usersService->getInitUserName($data['mobile']),
-            'user_nickname' => $data['user_name'] ?? $this->usersService->getInitUserName($data['mobile']),
-            'real_name' => $data['real_name'] ?? $this->usersService->getInitUserName($data['mobile']),
+            'user_name' => $data['user_name'] ?? $this->usersService->getInitUserName((string) $data['mobile']),
+            'user_nickname' => $data['user_name'] ?? $this->usersService->getInitUserName((string) $data['mobile']),
+            'real_name' => $data['real_name'] ?? $this->usersService->getInitUserName((string) $data['mobile']),
             'user_pass' => $data['user_pass'] ?? $this->usersService->getInitPassword($data['mobile']),
             'avatar' => config('hxt-app.defaultAvatar'),
             'user_type' => 1,

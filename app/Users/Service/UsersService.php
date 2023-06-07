@@ -131,9 +131,9 @@ class UsersService extends AbstractService
         // 合并初始化参数
         return array_merge([
             'mobile' => $data['mobile'],
-            'user_name' => $this->getInitUserName($data['mobile']),
-            'user_nickname' => $this->getInitUserName($data['mobile']),
-            'real_name' => $this->getInitUserName($data['mobile']),
+            'user_name' => $this->getInitUserName((string) $data['mobile']),
+            'user_nickname' => $this->getInitUserName((string) $data['mobile']),
+            'real_name' => $this->getInitUserName((string) $data['mobile']),
             'user_pass' => $this->getInitPassword($data['mobile']),
             'avatar' => config('hxt-app.defaultAvatar'),
             'user_type' => 1,
@@ -146,9 +146,8 @@ class UsersService extends AbstractService
 
     /**
      * 获取初始用户名.
-     * @param mixed $mobile
      */
-    public function getInitUserName($mobile): string
+    public function getInitUserName(string $mobile): string
     {
         return $this->mapper->getInitUserName($mobile);
     }
