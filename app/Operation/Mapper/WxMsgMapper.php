@@ -26,6 +26,15 @@ class WxMsgMapper extends AbstractMapper
         $this->model = WxMsg::class;
     }
 
+    /**
+     * 新增数据.
+     */
+    public function save(array $data): int
+    {
+        $data['create_time'] = time();
+        return parent::save($data);
+    }
+
     public function getFirstUnsentMsg(): WxMsg|Model|Builder|null
     {
         return $this->model::query()
