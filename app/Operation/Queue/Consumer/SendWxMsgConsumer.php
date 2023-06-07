@@ -19,7 +19,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-#[Consumer(exchange: 'mineadmin', routingKey: 'wxMsg.routing', queue: 'wxMsg.queue', name: 'wxMsg.queue', nums: 1)]
+#[Consumer(exchange: 'mineadmin', routingKey: 'wx_msg.routing', queue: 'wx_msg.queue', name: 'wx_msg.name', nums: 1)]
 class SendWxMsgConsumer extends ConsumerMessage
 {
     #[Inject]

@@ -125,6 +125,7 @@ class WxMsgService extends AbstractService
         $api = $app->getClient();
         $response = $api->postJson('/cgi-bin/message/template/send', $data);
         $json = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        console()->info($response->getContent());
         return $response->getStatusCode() === 200 && $json['errcode'] === 0;
     }
 

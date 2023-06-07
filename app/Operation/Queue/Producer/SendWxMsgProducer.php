@@ -8,7 +8,7 @@ use Hyperf\Amqp\Annotation\Producer;
 use Hyperf\Amqp\Message\ProducerMessage;
 use JsonException;
 
-#[Producer(exchange: 'mineadmin', routingKey: 'wxMsg.routing')]
+#[Producer(exchange: 'mineadmin', routingKey: 'wx_msg.routing')]
 class SendWxMsgProducer extends ProducerMessage
 {
     /**
