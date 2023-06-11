@@ -119,8 +119,8 @@ class UsersListController extends MineController
     /**
      * 重置用户密码
      * @param $id
-     * author:ZQ
-     * time:2022-06-01 15:23
+     *            author:ZQ
+     *            time:2022-06-01 15:23
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -149,7 +149,7 @@ class UsersListController extends MineController
      * @throws NotFoundExceptionInterface
      */
     #[GetMapping('readByMobile/{mobile}'), Permission('users:list:read')]
-    public function readByMobile(int $mobile): ResponseInterface
+    public function readByMobile(string $mobile): ResponseInterface
     {
         return $this->success($this->service->readByMobile($mobile));
     }

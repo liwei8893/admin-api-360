@@ -35,9 +35,8 @@ class UsersMapper extends AbstractMapper
 
     /**
      * 用手机号查询一条数据.
-     * @param mixed $mobile
      */
-    public function readByMobile($mobile): Model|Builder|null
+    public function readByMobile(string $mobile): Model|Builder|null
     {
         return $this->model::query()->where('mobile', $mobile)->first();
     }
@@ -58,9 +57,8 @@ class UsersMapper extends AbstractMapper
 
     /**
      * 获取初始密码,手机号后六位.
-     * @param mixed $mobile
      */
-    public function getInitPassword($mobile): string
+    public function getInitPassword(string $mobile): string
     {
         return substr($mobile, -6);
     }

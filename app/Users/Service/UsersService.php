@@ -59,7 +59,7 @@ class UsersService extends AbstractService
         $oldMobile = $userModel->mobile;
         $newMobile = $params['mobile'];
         /* @var User $newUserModel */
-        $newUserModel = $this->mapper->readByMobile($newMobile);
+        $newUserModel = $this->mapper->readByMobile((string) $newMobile);
         // 新手机号不为空，交换手机号
         if ($newUserModel) {
             // 新手机号先设置为空
@@ -69,7 +69,7 @@ class UsersService extends AbstractService
             }
             // 老手机号设置为新手机号
             $userModel->mobile = $newMobile;
-            $userModel->user_pass = $this->mapper->getInitPassword($newMobile);
+            $userModel->user_pass = $this->mapper->getInitPassword((string) $newMobile);
             if (! $userModel->save()) {
                 throw new NormalStatusException('修改手机号时失败!');
             }
@@ -83,7 +83,7 @@ class UsersService extends AbstractService
         }
         // 新手机号为空，更换手机号
         $userModel->mobile = $newMobile;
-        $userModel->user_pass = $this->mapper->getInitPassword($newMobile);
+        $userModel->user_pass = $this->mapper->getInitPassword((string) $newMobile);
         if (! $userModel->save()) {
             throw new NormalStatusException('修改手机号时失败!');
         }
@@ -134,7 +134,7 @@ class UsersService extends AbstractService
             'user_name' => $this->getInitUserName((string) $data['mobile']),
             'user_nickname' => $this->getInitUserName((string) $data['mobile']),
             'real_name' => $this->getInitUserName((string) $data['mobile']),
-            'user_pass' => $this->getInitPassword($data['mobile']),
+            'user_pass' => $this->getInitPassword((string) $data['mobile']),
             'avatar' => config('hxt-app.defaultAvatar'),
             'user_type' => 1,
             'status' => 1,
@@ -154,9 +154,8 @@ class UsersService extends AbstractService
 
     /**
      * 获取初始密码
-     * @param mixed $mobile
      */
-    public function getInitPassword($mobile): string
+    public function getInitPassword(string $mobile): string
     {
         return $this->mapper->getInitPassword($mobile);
     }
@@ -171,7 +170,7 @@ class UsersService extends AbstractService
         foreach ($mobilesArr as $mobile) {
             // 查询用户
             /* @var User $userModel */
-            $userModel = $this->mapper->readByMobile($mobile);
+            $userModel = $this->mapper->readByMobile((string) $mobile);
             if (! $userModel) {
                 $logInfo[] = ['mobile' => $mobile, 'info' => '未查询到用户'];
                 continue;
