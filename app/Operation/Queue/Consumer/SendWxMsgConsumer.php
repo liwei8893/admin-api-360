@@ -26,10 +26,13 @@ class SendWxMsgConsumer extends ConsumerMessage
     public function consumeMessage($data, AMQPMessage $message): string
     {
         try {
-            $messageData = json_decode($data, true);
+            logger('QueueLog')->info('微信消息消费开始:' . $data);
+            $messageData = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
             $result = $this->msgService->sendWxMsg($messageData);
+            logger('QueueLog')->info('微信消息消费结果：' . json_encode($result));
             return $this->consume($result);
         } catch (InvalidArgumentException|JsonException|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
+            logger('QueueLog')->error('微信消息消费错误：' . json_encode($e->getMessage()));
             return $this->consume(false);
         }
     }
