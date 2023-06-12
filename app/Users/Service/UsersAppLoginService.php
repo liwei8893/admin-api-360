@@ -232,7 +232,10 @@ class UsersAppLoginService extends AbstractService
         // 查找用户信息
         $userinfo = $this->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
         // 判断账号是否禁用
-        if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
+        if (! $userinfo) {
+            throw new NormalStatusException('该账号未注册,请联系课程顾问!');
+        }
+        if ((int) $userinfo['status'] !== MineModel::ENABLE) {
             throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
         }
         // 验证短信
