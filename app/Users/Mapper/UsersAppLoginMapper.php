@@ -49,7 +49,7 @@ class UsersAppLoginMapper extends AbstractMapper
      */
     public function hasSimplePwd(User $userModel): bool
     {
-        $simplePwd = substr($userModel->mobile, -6);
+        $simplePwd = substr((string) $userModel->mobile, -6);
         if ($this->checkPass($simplePwd, $userModel->user_pass)) {
             return true;
         }
