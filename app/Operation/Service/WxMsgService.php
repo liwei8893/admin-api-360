@@ -10,12 +10,12 @@ use App\Operation\Queue\Producer\SendWxMsgProducer;
 use App\Users\Model\User;
 use Carbon\Carbon;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
-use EasyWeChat\OfficialAccount\Application;
 use Hyperf\Amqp\Producer;
 use Hyperf\Di\Annotation\Inject;
 use JsonException;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
+use Pengxuxu\HyperfWechat\EasyWechat;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -64,7 +64,7 @@ class WxMsgService extends AbstractService
     {
         // 查询未发送的一条消息
         $dataMsg = $this->mapper->getFirstUnsentMsg();
-        if (!$dataMsg) {
+        if (! $dataMsg) {
             throw new NormalStatusException('暂无消息发送！');
         }
         $userData = $this->mapper->getSendUsers();
@@ -122,7 +122,8 @@ class WxMsgService extends AbstractService
     {
         $config = config('wechat.official_account.default');
         logger('QueueLog')->info('微信消息配置:' . json_encode($config));
-        $app = new Application($config);
+        //        $app = new Application($config);
+        $app = EasyWechat::officialAccount();
         $api = $app->getClient();
         $response = $api->postJson('/cgi-bin/message/template/send', $data);
         logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
@@ -137,10 +138,10 @@ class WxMsgService extends AbstractService
         if (empty($data['tmp_id'])) {
             $data['tmp_id'] = 'kkK3xAv-Zk3PhcRa6JwlDsITGOF0zLmHs80mM6awdc0';
         }
-        if (!empty($data['keyword2'])) {
+        if (! empty($data['keyword2'])) {
             $data['keyword2'] = Carbon::parse($data['keyword2'])->format('Y-m-d H:i');
         }
-        if (!empty($data['send_time'])) {
+        if (! empty($data['send_time'])) {
             $data['send_time'] = Carbon::parse($data['send_time'])->format('Y-m-d H:i');
         }
     }
