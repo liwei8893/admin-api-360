@@ -244,11 +244,10 @@ class UsersAppLoginService extends AbstractService
 
     /**
      * 修改密码
-     * @param mixed $params
      */
-    public function changePassword($params): bool
+    public function changePassword(array $params): bool
     {
         // 修改密码
-        return $this->usersService->initUserPassword(user()->getId(), $params['user_pass']);
+        return $this->usersService->initUserPassword(user('app')->getId(), $params['user_pass']);
     }
 }
