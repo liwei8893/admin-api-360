@@ -7,7 +7,7 @@ return [
             'class' => Monolog\Handler\RotatingFileHandler::class,
             'constructor' => [
                 'filename' => BASE_PATH . '/runtime/logs/debug/mine.log',
-                'level' => Monolog\Logger::DEBUG,
+                'level' => Monolog\Level::Debug,
             ],
         ],
         'formatter' => [
@@ -24,7 +24,7 @@ return [
             'class' => Monolog\Handler\RotatingFileHandler::class,
             'constructor' => [
                 'filename' => BASE_PATH . '/runtime/logs/sql/sql.log',
-                'level' => Monolog\Logger::DEBUG,
+                'level' => Monolog\Level::Debug,
             ],
         ],
         'formatter' => [

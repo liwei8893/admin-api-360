@@ -146,7 +146,7 @@ class UsersAppLoginService extends AbstractService
         $result = $userModel->toArray();
         $result['orders'] = $orderIds->toArray();
         // 添加是否初始密码
-        $result['isSimplePwd'] = $this->mapper->hasSimplePwd($userModel->toArray());
+        $result['isSimplePwd'] = $this->mapper->hasSimplePwd($userModel);
         // 添加token
         $result['remember_token'] = $token;
         return $result;
