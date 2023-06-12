@@ -47,10 +47,10 @@ class UsersAppLoginMapper extends AbstractMapper
     /**
      * 是否初始密码
      */
-    public function hasSimplePwd(mixed $userModel): bool
+    public function hasSimplePwd(User $userModel): bool
     {
-        $simplePwd = substr((string) $userModel['mobile'], -6);
-        if ($this->checkPass($simplePwd, $userModel['user_pass'])) {
+        $simplePwd = substr($userModel->mobile, -6);
+        if ($this->checkPass($simplePwd, $userModel->user_pass)) {
             return true;
         }
         return false;
