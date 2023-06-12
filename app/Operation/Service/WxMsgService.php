@@ -80,26 +80,11 @@ class WxMsgService extends AbstractService
                 'template_id' => $dataMsg->tmp_id,
                 'client_msg_id' => $dataMsg->id,
                 'data' => [
-                    'first' => [
-                        'value' => $dataMsg->first, // 自定义参数
-                        'color' => '#ff5101', // 自定义颜色
-                    ],
-                    'keyword1' => [
-                        'value' => $dataMsg->keyword1, // 自定义参数
-                        'color' => '#ff5101', // 自定义颜色
-                    ],
-                    'keyword2' => [
-                        'value' => $dataMsg->keyword2, // 自定义参数
-                        'color' => '#ff5101', // 自定义颜色
-                    ],
-                    'keyword3' => [
-                        'value' => $dataMsg->keyword3, // 自定义参数
-                        'color' => '#ff5101', // 自定义颜色
-                    ],
-                    'remark' => [
-                        'value' => $dataMsg->remark, // 自定义参数
-                        'color' => '#ff5101', // 自定义颜色
-                    ],
+                    'first' => ['value' => $dataMsg->first],
+                    'keyword1' => ['value' => $dataMsg->keyword1],
+                    'keyword2' => ['value' => $dataMsg->keyword2],
+                    'keyword3' => ['value' => $dataMsg->keyword3],
+                    'remark' => ['value' => $dataMsg->remark],
                 ],
             ];
 
@@ -120,10 +105,10 @@ class WxMsgService extends AbstractService
      */
     public function sendWxMsg(array $data): bool
     {
-        $config = config('wechat.official_account.default');
-        logger('QueueLog')->info('微信消息配置:' . json_encode($config));
+        //        $config = config('wechat.official_account.default');
+        //        logger('QueueLog')->info('微信消息配置:' . json_encode($config));
         //        $app = new Application($config);
-        $app = EasyWechat::officialAccount();
+        $app = (new EasyWechat())->officialAccount();
         $api = $app->getClient();
         $response = $api->postJson('/cgi-bin/message/template/send', $data);
         logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
