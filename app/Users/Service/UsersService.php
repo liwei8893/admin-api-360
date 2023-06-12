@@ -75,7 +75,7 @@ class UsersService extends AbstractService
             }
             // 新手机号设置为老手机号
             $newUserModel->mobile = $oldMobile;
-            $newUserModel->user_pass = $this->mapper->getInitPassword($oldMobile);
+            $newUserModel->user_pass = $this->mapper->getInitPassword((string) $oldMobile);
             if (! $newUserModel->save()) {
                 throw new NormalStatusException('修改手机号时失败!');
             }

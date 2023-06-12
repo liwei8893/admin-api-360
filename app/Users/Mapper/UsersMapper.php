@@ -49,7 +49,7 @@ class UsersMapper extends AbstractMapper
     {
         $model = $this->model::query()->find($id);
         if ($model) {
-            $model->user_pass = $password ?? $this->getInitPassword($model->mobile);
+            $model->user_pass = $password ?? $this->getInitPassword((string) $model->mobile);
             return $model->save();
         }
         return false;
