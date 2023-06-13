@@ -15,11 +15,11 @@ use App\Users\Model\User;
 use App\Users\Service\UserSalePlatformService;
 use App\Users\Service\UsersAppLoginService;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
-use EasyWeChat\OfficialAccount\Application;
 use Exception;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
+use Pengxuxu\HyperfWechat\EasyWechat;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -56,8 +56,6 @@ class PayAppService extends AbstractService
     protected OrderSignupService $orderSignupService;
 
     /**
-     * @param array $params
-     * @return string
      * @throws InvalidArgumentException
      */
     public function wxAuth(array $params): string
@@ -69,7 +67,7 @@ class PayAppService extends AbstractService
             throw new NormalStatusException('认证配置不存在!');
         }
         $config = ['app_id' => $authConfig->appid, 'secret' => $authConfig->app_secret];
-        $app = new Application($config);
+        $app = EasyWechat::officialAccount('default', $config);
         return $app->getOAuth()->scopes(['snsapi_base'])->redirect($params['redirectUrl']);
     }
 
@@ -86,7 +84,7 @@ class PayAppService extends AbstractService
             throw new NormalStatusException('认证配置不存在!');
         }
         $config = ['app_id' => $authConfig->appid, 'secret' => $authConfig->app_secret];
-        $app = new Application($config);
+        $app = EasyWechat::officialAccount('default', $config);
         $user = $app->getOauth()->userFromCode($code);
         return ['openId' => $user->getId()];
     }
