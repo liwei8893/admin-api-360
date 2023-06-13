@@ -88,4 +88,20 @@ class WxMsgController extends MineController
     {
         return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
     }
+
+    #[PostMapping('sendWxMsg')]
+    public function sendWxMsg(): ResponseInterface
+    {
+        $data = [
+            'url' => 'https://h5.hxt360.com',
+            'touser' => 'ogj0H0odNo1LCXVlJ39wze93NwVk',
+            'template_id' => 'kkK3xAv-Zk3PhcRa6JwlDsITGOF0zLmHs80mM6awdc0',
+            'data' => [
+                'keyword1' => ['value' => 'test'],
+                'keyword2' => ['value' => 'test'],
+                'keyword3' => ['value' => 'test'],
+            ],
+        ];
+        return $this->service->sendWxMsg($data) ? $this->success() : $this->error();
+    }
 }
