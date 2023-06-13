@@ -105,7 +105,7 @@ class WxMsgService extends AbstractService
         //        logger('QueueLog')->info('微信消息配置:' . json_encode($config));
         //        $app = new Application($config);
         try {
-            $app = EasyWechat::officialAccount();
+            $app = (new EasyWechat())->officialAccount();
             logger('QueueLog')->info('获取 app实例');
             $api = $app->getClient();
             logger('QueueLog')->info('获取客户端实例');
