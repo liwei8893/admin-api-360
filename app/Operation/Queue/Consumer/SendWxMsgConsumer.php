@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Operation\Queue\Consumer;
 
 use App\Operation\Service\WxMsgService;
-use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use Hyperf\Amqp\Annotation\Consumer;
 use Hyperf\Amqp\Message\ConsumerMessage;
 use Hyperf\Amqp\Result;
 use Hyperf\Di\Annotation\Inject;
 use JsonException;
 use PhpAmqpLib\Message\AMQPMessage;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 #[Consumer(exchange: 'mineadmin', routingKey: 'wxMsg.routing', queue: 'wxMsg.queue', name: 'wxMsg.queue', nums: 1)]
 class SendWxMsgConsumer extends ConsumerMessage
@@ -31,7 +31,7 @@ class SendWxMsgConsumer extends ConsumerMessage
             $result = $this->msgService->sendWxMsg($messageData);
             logger('QueueLog')->info('微信消息消费结果：' . json_encode($result));
             return $this->consume($result);
-        } catch (InvalidArgumentException|JsonException|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
+        } catch (JsonException|ClientExceptionInterface|NotFoundExceptionInterface|ContainerExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface $e) {
             logger('QueueLog')->error('微信消息消费错误：' . json_encode($e->getMessage()));
             return $this->consume(false);
         }

@@ -9,13 +9,14 @@ use App\Operation\Model\WxMsg;
 use App\Operation\Queue\Producer\SendWxMsgProducer;
 use App\Users\Model\User;
 use Carbon\Carbon;
-use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use Hyperf\Amqp\Producer;
 use Hyperf\Di\Annotation\Inject;
 use JsonException;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 use Pengxuxu\HyperfWechat\EasyWechat;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -96,25 +97,25 @@ class WxMsgService extends AbstractService
     }
 
     /**
-     * @throws JsonException
-     * @throws InvalidArgumentException
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
+     * 发送微信消息.
      */
     public function sendWxMsg(array $data): bool
     {
         //        $config = config('wechat.official_account.default');
         //        logger('QueueLog')->info('微信消息配置:' . json_encode($config));
         //        $app = new Application($config);
-        $app = (new EasyWechat())->officialAccount();
-        $api = $app->getClient();
-        $response = $api->postJson('/cgi-bin/message/template/send', $data);
-        logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
-        logger('QueueLog')->info('微信消息response:' . $response->getContent());
-        $json = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        return $response->getStatusCode() === 200 && $json['errcode'] === 0;
+        try {
+            $app = EasyWechat::officialAccount();
+            $api = $app->getClient();
+            $response = $api->postJson('/cgi-bin/message/template/send', $data);
+            logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
+            logger('QueueLog')->info('微信消息response:' . $response->getContent());
+            $json = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            return $response->getStatusCode() === 200 && $json['errcode'] === 0;
+        } catch (JsonException|NotFoundExceptionInterface|ContainerExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
+            logger('QueueLog')->error('微信消息消费错误：' . json_encode($e->getMessage()));
+            return false;
+        }
     }
 
     protected function handleData(array &$data): void
