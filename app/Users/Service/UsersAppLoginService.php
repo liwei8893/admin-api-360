@@ -7,7 +7,6 @@ namespace App\Users\Service;
 use App\System\Service\SmsService;
 use App\Users\Mapper\UsersAppLoginMapper;
 use App\Users\Model\User;
-use EasyWeChat\OfficialAccount\Application;
 use Exception;
 use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\ModelNotFoundException;
@@ -18,6 +17,7 @@ use Mine\Helper\MineCode;
 use Mine\MineModel;
 use Mine\MineRequest;
 use Mine\MineResponse;
+use Pengxuxu\HyperfWechat\EasyWechat;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -161,9 +161,8 @@ class UsersAppLoginService extends AbstractService
     public function wxLogin(array $params): ResponseInterface
     {
         // 有mobile绑定手机号
-        $config = config('wechat.official_account.default');
         $code = $params['code'];
-        $app = new Application($config);
+        $app = EasyWechat::officialAccount();
         $oauth = $app->getOauth();
         $user = $oauth->userFromCode($code);
         $openId = $user->getId();
