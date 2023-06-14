@@ -31,4 +31,7 @@ class UserCourseRecordDto implements MineModelExcel
 
     #[ExcelProperty(value: '首次听课时间', index: 5)]
     public string $created_at;
+
+    #[ExcelProperty(value: '最后听课时间', index: 6)]
+    public string $updated_at;
 }

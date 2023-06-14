@@ -146,5 +146,6 @@ class UserCourseRecordService extends AbstractService
         $data['video_duration'] = round($data['video_duration'] / 60) . '分钟';
         $data['timeRate'] .= '%';
         $data['created_at'] = date('Y-m-d H:i:s', (int) $data['created_at']);
+        $data['updated_at'] = date('Y-m-d H:i:s', (int) $data['updated_at']);
     }
 }
