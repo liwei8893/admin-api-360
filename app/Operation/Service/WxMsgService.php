@@ -105,7 +105,7 @@ class WxMsgService extends AbstractService
     {
         try {
             $app = EasyWechat::officialAccount();
-            $accessToken = $app->getAccessToken();
+            $accessToken = $app->getAccessToken()->getToken();
             $clientFactory = container()->get(ClientFactory::class);
             $client = $clientFactory->create([
                 'base_uri' => 'https://api.weixin.qq.com',
@@ -118,7 +118,7 @@ class WxMsgService extends AbstractService
             $json = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             //            $api = $app->getClient();
             //            $response = $api->postJson('/cgi-bin/message/template/send', $data);
-            logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
+            //            logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
             logger('QueueLog')->info('微信消息response:' . $response->getBody()->getContents());
             //            $json = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
             return $response->getStatusCode() === 200 && $json['errcode'] === 0;

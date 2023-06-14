@@ -102,6 +102,9 @@ class WxMsgController extends MineController
                 'keyword3' => ['value' => 'test'],
             ],
         ];
+        for ($i = 1; $i <= 4; ++$i) {
+            $this->service->sendWxMsg($data);
+        }
         return $this->service->sendWxMsg($data) ? $this->success() : $this->error();
     }
 }
