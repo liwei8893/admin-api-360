@@ -142,10 +142,9 @@ class UserCourseRecordService extends AbstractService
 
     protected function handleExportData(array &$data): void
     {
-        foreach ($data as &$item) {
-            $item['watch_time'] = round($item['watch_time'] / 60) . '分钟';
-            $item['video_duration'] = round($item['video_duration'] / 60) . '分钟';
-            $item['timeRate'] .= '%';
-        }
+        $data['watch_time'] = round($data['watch_time'] / 60) . '分钟';
+        $data['video_duration'] = round($data['video_duration'] / 60) . '分钟';
+        $data['timeRate'] .= '%';
+        $data['created_at'] = date('Y-m-d H:i:s', (int) $data['created_at']);
     }
 }

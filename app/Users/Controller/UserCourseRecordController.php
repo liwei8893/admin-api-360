@@ -64,6 +64,6 @@ class UserCourseRecordController extends MineController
     #[PostMapping('export'), Permission('users:userCourseRecord:export'), OperationLog]
     public function export(): ResponseInterface
     {
-        return $this->service->export($this->request->all(), UserCourseRecordDto::class, '听课记录');
+        return $this->service->bigExport($this->request->all(), UserCourseRecordDto::class, '听课记录');
     }
 }
