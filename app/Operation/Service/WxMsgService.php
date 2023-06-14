@@ -89,13 +89,28 @@ class WxMsgService extends AbstractService
                     'remark' => ['value' => $dataMsg->remark],
                 ],
             ];
-            for ($i = 1; $i <= 5; ++$i) {
-                $message = new SendWxMsgProducer($data);
-                $this->producer->produce($message);
-            }
+            $message = new SendWxMsgProducer($data);
+            $this->producer->produce($message);
         }
         $dataMsg->status = WxMsg::SENT;
         return $dataMsg->save();
+    }
+
+    public function testSendWxMsg(): bool
+    {
+        $data = [
+            'url' => 'https://h5.hxt360.com',
+            'touser' => 'ogj0H0odNo1LCXVlJ39wze93NwVk',
+            'template_id' => 'kkK3xAv-Zk3PhcRa6JwlDsITGOF0zLmHs80mM6awdc0',
+            'data' => [
+                'keyword1' => ['value' => 'test'],
+                'keyword2' => ['value' => 'test'],
+                'keyword3' => ['value' => 'test'],
+            ],
+        ];
+        $message = new SendWxMsgProducer($data);
+        $this->producer->produce($message);
+        return true;
     }
 
     /**
@@ -105,22 +120,23 @@ class WxMsgService extends AbstractService
     {
         try {
             $app = EasyWechat::officialAccount();
+            // 框架自带客户端
             $accessToken = $app->getAccessToken()->getToken();
             $clientFactory = container()->get(ClientFactory::class);
-            $client = $clientFactory->create([
-                'base_uri' => 'https://api.weixin.qq.com',
-                'timeout' => 5,
-            ]);
-            $response = $client->post('/cgi-bin/message/template/send', [
+            $client = $clientFactory->create();
+            $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
                 'query' => ['access_token' => $accessToken],
                 'json' => $data,
             ]);
-            $json = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $contents = $response->getBody()->getContents();
+            // EasyWechat客户端
             //            $api = $app->getClient();
             //            $response = $api->postJson('/cgi-bin/message/template/send', $data);
-            //            logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
-            logger('QueueLog')->info('微信消息response:' . $response->getBody()->getContents());
-            //            $json = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            //            $contents = $response->getContent();
+
+            logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
+            logger('QueueLog')->info('微信消息response:' . $contents);
+            $json = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
             return $response->getStatusCode() === 200 && $json['errcode'] === 0;
         } catch (JsonException|NotFoundExceptionInterface|ContainerExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
             logger('QueueLog')->error('微信消息消费错误：' . json_encode($e->getMessage()));
