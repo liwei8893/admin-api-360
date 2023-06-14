@@ -108,8 +108,10 @@ class WxMsgService extends AbstractService
                 'keyword3' => ['value' => 'test'],
             ],
         ];
-        $message = new SendWxMsgProducer($data);
-        $this->producer->produce($message);
+        for ($i = 1; $i <= 5; ++$i) {
+            $message = new SendWxMsgProducer($data);
+            $this->producer->produce($message);
+        }
         return true;
     }
 
