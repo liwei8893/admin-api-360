@@ -39,11 +39,14 @@ class UserCourseRecordService extends AbstractService
         if (! $recordModel) {
             return [];
         }
-        return $recordModel->coursePeriod()
+        $coursePeriodModel = $recordModel->coursePeriod()
             ->with(['courseBasis:id,course_title'])
             ->select(['id', 'title', 'course_basis_id', 'qiniu_url'])
-            ->first()
-            ->toArray();
+            ->first();
+        if (! $coursePeriodModel) {
+            return [];
+        }
+        return $coursePeriodModel->toArray();
     }
 
     /**
