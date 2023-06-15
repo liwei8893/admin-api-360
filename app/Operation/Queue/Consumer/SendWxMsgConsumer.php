@@ -9,15 +9,9 @@ use Hyperf\Amqp\Annotation\Consumer;
 use Hyperf\Amqp\Message\ConsumerMessage;
 use Hyperf\Amqp\Result;
 use Hyperf\Di\Annotation\Inject;
-use JsonException;
 use PhpAmqpLib\Message\AMQPMessage;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 
-#[Consumer(exchange: 'mineadmin', routingKey: 'wxMsg.routing', queue: 'wxMsg.queue', name: 'wxMsg.queue', nums: 1)]
+#[Consumer(exchange: 'mineadmin', routingKey: 'wxMsg.routing', queue: 'wxMsg.queue', name: 'wxMsg.queue', nums: 5)]
 class SendWxMsgConsumer extends ConsumerMessage
 {
     #[Inject]
@@ -25,16 +19,8 @@ class SendWxMsgConsumer extends ConsumerMessage
 
     public function consumeMessage($data, AMQPMessage $message): string
     {
-        try {
-            logger('QueueLog')->info('微信消息消费开始:' . $data);
-            $messageData = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-            $result = $this->msgService->sendWxMsg($messageData);
-            logger('QueueLog')->info('微信消息消费结果：' . json_encode($result));
-            return $this->consume($result);
-        } catch (JsonException|ClientExceptionInterface|NotFoundExceptionInterface|ContainerExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface $e) {
-            logger('QueueLog')->error('微信消息消费错误：' . json_encode($e->getMessage()));
-            return $this->consume(false);
-        }
+        $result = $this->msgService->sendWxMsg($data);
+        return $this->consume($result);
     }
 
     public function consume($data): string

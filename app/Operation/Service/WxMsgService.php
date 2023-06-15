@@ -8,7 +8,9 @@ use App\Operation\Mapper\WxMsgMapper;
 use App\Operation\Model\WxMsg;
 use App\Operation\Queue\Producer\SendWxMsgProducer;
 use App\Users\Model\User;
+use App\Users\Service\UsersService;
 use Carbon\Carbon;
+use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Amqp\Producer;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Guzzle\ClientFactory;
@@ -21,7 +23,6 @@ use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * 微信消息服务类.
@@ -32,6 +33,9 @@ class WxMsgService extends AbstractService
      * @var WxMsgMapper
      */
     public $mapper;
+
+    #[Inject]
+    protected UsersService $usersService;
 
     #[Inject]
     protected Producer $producer;
@@ -118,9 +122,12 @@ class WxMsgService extends AbstractService
     /**
      * 发送微信消息.
      */
-    public function sendWxMsg(array $data): bool
+    public function sendWxMsg(array|string $data): bool
     {
         try {
+            if (is_string($data)) {
+                $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            }
             $app = EasyWechat::officialAccount();
             // 框架自带客户端
             $accessToken = $app->getAccessToken()->getToken();
@@ -139,9 +146,19 @@ class WxMsgService extends AbstractService
             logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
             logger('QueueLog')->info('微信消息response:' . $contents);
             $json = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
+            if ($json['errcode'] === 40003) {
+                $openid = $data['touser'];
+                /* @var User $userModel */
+                $userModel = $this->usersService->mapper->first(['wxgzh_openid' => $openid]);
+                if ($userModel) {
+                    $userModel->wxgzh_openid = null;
+                    $userModel->wx_openid = null;
+                    $userModel->save();
+                }
+            }
             return $response->getStatusCode() === 200 && $json['errcode'] === 0;
-        } catch (JsonException|NotFoundExceptionInterface|ContainerExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
-            logger('QueueLog')->error('微信消息消费错误：' . json_encode($e->getMessage()));
+        } catch (JsonException|GuzzleException|NotFoundExceptionInterface|ContainerExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface $e) {
+            logger('QueueLog')->error('openId:' . $data['touser'] . '微信消息消费错误：' . json_encode($e->getMessage()));
             return false;
         }
     }
