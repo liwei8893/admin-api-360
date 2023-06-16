@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Course\Controller\Comment;
 
+use App\Course\Dto\CommentDto;
 use App\Course\Request\SunRequest;
 use App\Course\Service\SunService;
+use Exception;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\DeleteMapping;
@@ -87,5 +89,17 @@ class SunController extends MineController
     public function delete(): ResponseInterface
     {
         return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 数据导出.
+     * @throws Exception
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('export'), Permission('course:sun:export'), OperationLog]
+    public function export(): ResponseInterface
+    {
+        return $this->service->export($this->request->all(), CommentDto::class, '晒一晒数据列表');
     }
 }
