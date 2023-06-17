@@ -143,10 +143,9 @@ class WxMsgService extends AbstractService
             //            $response = $api->postJson('/cgi-bin/message/template/send', $data);
             //            $contents = $response->getContent();
 
-            logger('QueueLog')->info('微信消息StatusCode:' . $response->getStatusCode());
             logger('QueueLog')->info('微信消息response:' . $contents);
             $json = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
-            if ($json['errcode'] === 40003) {
+            if (in_array($json['errcode'], [43004, 40003], true)) {
                 $openid = $data['touser'];
                 /* @var User $userModel */
                 $userModel = $this->usersService->mapper->first(['wxgzh_openid' => $openid]);
