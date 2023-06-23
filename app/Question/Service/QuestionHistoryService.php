@@ -117,6 +117,10 @@ class QuestionHistoryService extends AbstractService
         $rightAnswer = $questionModel->right_answer;
         // 用户答案
         $userAnswer = $params['user_answer'];
+        // 验证用户答案长度
+        if (mb_strlen($userAnswer, 'UTF-8') >= 500) {
+            throw new NormalStatusException('答案长度过长！');
+        }
         // 保存的数据
         $saveData = ['user_id' => $userId, 'ques_id' => $quesId, 'user_answer' => $userAnswer, 'is_right' => 0];
         // 比对答案
