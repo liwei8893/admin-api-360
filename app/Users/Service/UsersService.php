@@ -108,7 +108,7 @@ class UsersService extends AbstractService
      */
     public function save(array $data): int
     {
-        if ($this->existsByMobile($data['mobile'])) {
+        if ($this->existsByMobile((string) $data['mobile'])) {
             throw new NormalStatusException('手机号已存在');
         }
         $data = $this->handleSaveData($data);

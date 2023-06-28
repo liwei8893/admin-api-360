@@ -93,7 +93,7 @@ class UsersAppLoginService extends AbstractService
      */
     public function register(array $data): Model|MineModel
     {
-        if ($this->usersService->existsByMobile($data['mobile'])) {
+        if ($this->usersService->existsByMobile((string) $data['mobile'])) {
             throw new NormalStatusException('手机号已存在');
         }
         // 获取平台编号,挂载到数组
