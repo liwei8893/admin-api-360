@@ -156,15 +156,18 @@ class UsersAppLoginService extends AbstractService
      * @throws ContainerExceptionInterface
      * @throws InvalidArgumentException
      * @throws NotFoundExceptionInterface
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function wxLogin(array $params): ResponseInterface
     {
         // 有mobile绑定手机号
         $code = $params['code'];
         $app = EasyWechat::officialAccount();
-        $oauth = $app->getOauth();
-        $user = $oauth->userFromCode($code);
+        try {
+            $oauth = $app->getOauth();
+            $user = $oauth->userFromCode($code);
+        } catch (\EasyWeChat\Kernel\Exceptions\InvalidArgumentException $e) {
+            throw new NormalStatusException('openId获取失败，请刷新页面重试!');
+        }
         $openId = $user->getId();
         if (! $openId) {
             throw new NormalStatusException('openId获取失败，请刷新页面重试!');

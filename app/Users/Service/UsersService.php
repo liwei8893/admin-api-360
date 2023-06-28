@@ -117,9 +117,8 @@ class UsersService extends AbstractService
 
     /**
      * 用手机号检测用户是否存在.
-     * @param mixed $mobile
      */
-    public function existsByMobile($mobile): bool
+    public function existsByMobile(string $mobile): bool
     {
         return $this->mapper->existsByMobile($mobile);
     }
