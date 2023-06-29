@@ -300,6 +300,10 @@ class UsersService extends AbstractService
     public function getPlatformUser(array $params): array
     {
         if (! empty($params['mobile']) || ! empty($params['user_name']) || ! empty($params['old_platform'])) {
+            $params['mobileEq'] = $params['mobile'] ?? '';
+            $params['userNameEq'] = $params['user_name'] ?? '';
+            $params['oldPlatformEq'] = $params['old_platform'] ?? '';
+            unset($params['mobile'], $params['user_name'], $params['old_platform']);
             return $this->getPageList($params);
         }
         return $this->mapper->getNullPaginate();

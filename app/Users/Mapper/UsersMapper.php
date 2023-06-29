@@ -96,6 +96,16 @@ class UsersMapper extends AbstractMapper
             $query->whereIn('user_type', $params['user_type']);
         }
 
+        if (! empty($params['mobileEq'])) {
+            $query->where('mobile', '=', $params['mobileEq']);
+        }
+        if (! empty($params['oldPlatformEq'])) {
+            $query->where('old_platform', '=', $params['oldPlatformEq']);
+        }
+        if (! empty($params['userNameEq'])) {
+            $query->where('user_name', '=', $params['userNameEq']);
+        }
+
         if (! empty($params['mobile'])) {
             $query->where('mobile', 'like', $params['mobile'] . '%');
         }
