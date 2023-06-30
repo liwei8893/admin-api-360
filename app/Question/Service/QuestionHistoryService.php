@@ -36,6 +36,21 @@ class QuestionHistoryService extends AbstractService
     }
 
     /**
+     * 获取列表数据（带分页）.
+     */
+    public function getPageList(?array $params = null, bool $isScope = true): array
+    {
+        $data = parent::getPageList($params, $isScope);
+        // 变更需求,除了单选,多选,判断,其他都不判断对错
+        foreach ($data['items'] as &$datum) {
+            if (! in_array($datum->question->ques_type, [1, 2, 4], true)) {
+                $datum['is_right'] = 3;
+            }
+        }
+        return $data;
+    }
+
+    /**
      * 获取做题排行榜,缓存一个小时.
      */
     #[Cacheable(prefix: 'ranking', value: 'question', ttl: 86400)]
@@ -197,5 +212,15 @@ class QuestionHistoryService extends AbstractService
         }
         $is_collect = $model['is_collect'] === 1 ? 0 : 1;
         return $this->update($params['id'], ['is_collect' => $is_collect]);
+    }
+
+    /**
+     * 需要处理导出数据时,重写函数.
+     */
+    protected function handleExportData(array &$data): void
+    {
+        if (! empty($data['created_at'])) {
+            $data['created_at'] = date('Y-m-d H:i:s', (int) $data['created_at']);
+        }
     }
 }

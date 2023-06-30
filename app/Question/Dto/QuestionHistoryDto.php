@@ -35,9 +35,6 @@ class QuestionHistoryDto implements MineModelExcel
     #[ExcelProperty(value: '答案', index: 6)]
     public string $user_answer;
 
-    #[ExcelProperty(value: '是否正确(1正确,0错误)', index: 7)]
-    public string $is_right;
-
     #[ExcelProperty(value: '错题本(1收藏,0未收藏)', index: 8)]
     public string $is_collect;
 
