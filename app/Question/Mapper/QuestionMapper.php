@@ -191,7 +191,7 @@ WHERE D.help_topic_id < LENGTH(C.COL) - LENGTH(REPLACE(C.COL, ',', '')) + 1 and 
         }
 
         // 试题类型:1:单选题 2:多选题 3:不定项选择 4:判断题 5:问答题 6:填空题 7:组合题
-        if (! is_array($params['ques_type']) && isset($params['ques_type']) && $params['ques_type'] !== '') {
+        if (isset($params['ques_type']) && $params['ques_type'] !== '' && ! is_array($params['ques_type'])) {
             $query->where('ques_type', '=', $params['ques_type']);
         }
         if (is_array($params['ques_type'])) {
