@@ -41,6 +41,6 @@ class CourseHistoryDto implements MineModelExcel
     #[ExcelProperty(value: '有效期(天)', index: 9)]
     public string $indate;
 
-    #[ExcelProperty(value: '有效期(天)', index: 10, customField: 'users.remark')]
+    #[ExcelProperty(value: '用户备注', index: 10, customField: 'users.remark')]
     public string $remark;
 }
