@@ -125,6 +125,10 @@ class UsersService extends AbstractService
 
     public function handleSaveData(array $data): array
     {
+        // 保存时删除创建时间
+        if (isset($data['created_at'])) {
+            unset($data['created_at']);
+        }
         // 获取平台编号,挂载到数组
         $data = $this->userSalePlatformService->withPlatformNum($data);
         // 合并初始化参数
