@@ -194,7 +194,7 @@ WHERE D.help_topic_id < LENGTH(C.COL) - LENGTH(REPLACE(C.COL, ',', '')) + 1 and 
         if (isset($params['ques_type']) && $params['ques_type'] !== '' && ! is_array($params['ques_type'])) {
             $query->where('ques_type', '=', $params['ques_type']);
         }
-        if (is_array($params['ques_type'])) {
+        if (isset($params['ques_type']) && is_array($params['ques_type'])) {
             $query->whereIn('ques_type', $params['ques_type']);
         }
 
