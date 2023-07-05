@@ -191,6 +191,12 @@ class Order extends MineModel
             ->where('status', MineModel::ENABLE);
     }
 
+    /** 关联核单记录 */
+    public function summary(): HasMany
+    {
+        return $this->hasMany(OrderSummary::class, 'order_id', 'id');
+    }
+
     /**
      * 局部作用域,查询订单状态正常的订单.
      */

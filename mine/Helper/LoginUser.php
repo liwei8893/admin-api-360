@@ -28,7 +28,7 @@ class LoginUser
      */
     public function __construct(string $scene = 'default')
     {
-        /* @var JWT $this- >jwt */
+        /* @var JWT $this - >jwt */
         $this->jwt = make(JWT::class)->setScene($scene);
     }
 
@@ -79,6 +79,11 @@ class LoginUser
     public function getUsername(): string
     {
         return $this->jwt->getParserData()['username'];
+    }
+
+    public function getNickname(): string
+    {
+        return $this->jwt->getParserData()['nickname'];
     }
 
     /**

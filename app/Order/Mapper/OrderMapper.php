@@ -129,6 +129,17 @@ class OrderMapper extends AbstractMapper
             $query->with('course:id,title,price,indate,created_at,subject_id,course_title,is_give');
         }
 
+        if (! empty($params['withSummaryCount'])) {
+            $query->withCount('summary');
+        }
+        if (isset($params['hasSummary'])) {
+            if ($params['hasSummary']) {
+                $query->has('summary');
+            } else {
+                $query->has('summary', '=', 0);
+            }
+        }
+
         // 关联付款表
         if (! empty($params['withPayment'])) {
             $query->with('payment');

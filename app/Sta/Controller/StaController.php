@@ -9,6 +9,7 @@ use App\Sta\Dto\HasCourseRecordDto;
 use App\Sta\Dto\OrderAddDto;
 use App\Sta\Dto\OrderRefundDto;
 use App\Sta\Dto\OrderRenewDto;
+use App\Sta\Dto\orderSummarySumDto;
 use App\Sta\Service\StaService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -141,5 +142,23 @@ class StaController extends MineController
     {
         $params = $this->request->all();
         return $this->service->getOrderRefundExport($params, OrderRefundDto::class, '退费统计导出');
+    }
+
+    #[GetMapping('orderSummarySum'), Permission('sta:orderSummary:sum')]
+    public function orderSummarySum(): ResponseInterface
+    {
+        return $this->success($this->service->getOrderSummarySum($this->request->all()));
+    }
+
+    /**
+     * 续费统计导出.
+     * @throws ContainerExceptionInterface
+     * @throws Exception|NotFoundExceptionInterface
+     */
+    #[PostMapping('orderSummarySum/export'), Permission('sta:orderSummary:sum')]
+    public function orderSummarySumExport(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->service->getOrderSummarySumExport($params, orderSummarySumDto::class, '核单数量统计导出');
     }
 }

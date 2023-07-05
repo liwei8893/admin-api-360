@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Sta\Service;
 
 use App\Order\Model\Order;
+use App\Order\Model\OrderSummary;
 use App\Order\Model\OrderTransaction;
 use App\Order\Model\UsersRenew;
 use App\Sta\Mapper\StaMapper;
@@ -396,6 +397,47 @@ class StaService extends AbstractService
             $item['order_grade'] = $item['order']['orderGrade']->implode('title', ',');
             $item['order_subject'] = $item['order']['orderSubject']->implode('title', ',');
             $item['created_at'] = $item['order']['created_at']->toDateTimeString();
+            return $item->toArray();
+        };
+        return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
+    }
+
+    public function getOrderSummarySum(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $paginate = OrderSummary::query()
+            ->when(isset($params['created_at'][0], $params['created_at'][1]), function (Builder $query) use ($params) {
+                $query->whereBetween(
+                    'created_at',
+                    [strtotime($params['created_at'][0] . ' 00:00:00'), strtotime($params['created_at'][1] . ' 23:59:59')]
+                );
+            })
+            ->when(isset($params['created_name']), function (Builder $query) use ($params) {
+                $query->whereHas('adminUser', function (Builder $query) use ($params) {
+                    $query->where('nickname', 'like', "%{$params['created_name']}%");
+                });
+            })
+            ->select(['created_id'])
+            ->selectRaw('count(*) as count')
+            ->groupBy('created_id')
+            ->with('adminUser:id,username,nickname')
+            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        return $this->mapper->setPaginate($paginate);
+    }
+
+    /**
+     * 核单数量导出.
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    public function getOrderSummarySumExport(array $params, string $dto, string $filename): ResponseInterface
+    {
+        $params['pageSize'] = 10000;
+        $data = $this->getOrderSummarySum($params);
+        $cb = function ($item) {
+            $item['created_name'] = $item['adminUser']['nickname'];
             return $item->toArray();
         };
         return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
