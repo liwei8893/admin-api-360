@@ -23,6 +23,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * 微信消息服务类.
@@ -112,10 +113,8 @@ class WxMsgService extends AbstractService
                 'keyword3' => ['value' => 'test'],
             ],
         ];
-        for ($i = 1; $i <= 5; ++$i) {
-            $message = new SendWxMsgProducer($data);
-            $this->producer->produce($message);
-        }
+        $message = new SendWxMsgProducer($data);
+        $this->producer->produce($message);
         return true;
     }
 
@@ -130,33 +129,23 @@ class WxMsgService extends AbstractService
             }
             $app = EasyWechat::officialAccount();
             // 框架自带客户端
-            $accessToken = $app->getAccessToken()->getToken();
-            $clientFactory = container()->get(ClientFactory::class);
-            $client = $clientFactory->create();
-            $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
-                'query' => ['access_token' => $accessToken],
-                'json' => $data,
-            ]);
-            $contents = $response->getBody()->getContents();
+            //            $accessToken = $app->getAccessToken()->getToken();
+            //            $clientFactory = container()->get(ClientFactory::class);
+            //            $client = $clientFactory->create();
+            //            $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
+            //                'query' => ['access_token' => $accessToken],
+            //                'json' => $data,
+            //            ]);
+            //            $contents = $response->getBody()->getContents();
             // EasyWechat客户端
-            //            $api = $app->getClient();
-            //            $response = $api->postJson('/cgi-bin/message/template/send', $data);
-            //            $contents = $response->getContent();
+            $api = $app->getClient();
+            $response = $api->postJson('/cgi-bin/message/template/send', $data);
+            $contents = $response->getContent();
 
             logger('QueueLog')->info('微信消息response:' . $contents);
             $json = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
-            if (in_array($json['errcode'], [43004, 40003], true)) {
-                $openid = $data['touser'];
-                /* @var User $userModel */
-                $userModel = $this->usersService->mapper->first(['wxgzh_openid' => $openid]);
-                if ($userModel) {
-                    $userModel->wxgzh_openid = null;
-                    $userModel->wx_openid = null;
-                    $userModel->save();
-                }
-            }
             return $response->getStatusCode() === 200 && $json['errcode'] === 0;
-        } catch (JsonException|GuzzleException|NotFoundExceptionInterface|ContainerExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface $e) {
+        } catch (JsonException|GuzzleException|TransportExceptionInterface|NotFoundExceptionInterface|ContainerExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface $e) {
             logger('QueueLog')->error('openId:' . $data['touser'] . '微信消息消费错误：' . json_encode($e->getMessage()));
             return false;
         }

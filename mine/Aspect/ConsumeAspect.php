@@ -4,9 +4,10 @@
  * Created by phpStorm.
  * User: mike
  * Date: 2021/11/19
- * Time: 下午2:14
+ * Time: 下午2:14.
  */
 declare(strict_types=1);
+
 namespace Mine\Aspect;
 
 use Hyperf\Di\Annotation\Aspect;
@@ -15,34 +16,34 @@ use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Mine\Amqp\Event\AfterConsume;
 use Mine\Amqp\Event\BeforeConsume;
 use Mine\Amqp\Event\FailToConsume;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Throwable;
 
 /**
- * Class ConsumeAspect
- * @package Mine\Aspect
+ * Class ConsumeAspect.
  */
 #[Aspect]
 class ConsumeAspect extends AbstractAspect
 {
     public array $classes = [
-        'Hyperf\Amqp\Message\ConsumerMessage::consumeMessage'
+        'Hyperf\Amqp\Message\ConsumerMessage::consumeMessage',
     ];
 
     /**
-     * @param ProceedingJoinPoint $proceedingJoinPoint
      * @return mixed
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function process(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        $data = $proceedingJoinPoint->getArguments()[0];
-        $message = $proceedingJoinPoint->getArguments()[1];
-        try{
+        [$data, $message] = $proceedingJoinPoint->getArguments();
+        try {
             event(new BeforeConsume($message, $data));
             $result = $proceedingJoinPoint->process();
             event(new AfterConsume($message, $data, $result));
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             event(new FailToConsume($message, $data, $e));
             return null;
         }
