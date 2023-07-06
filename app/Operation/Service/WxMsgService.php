@@ -10,20 +10,12 @@ use App\Operation\Queue\Producer\SendWxMsgProducer;
 use App\Users\Model\User;
 use App\Users\Service\UsersService;
 use Carbon\Carbon;
-use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Amqp\Producer;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Guzzle\ClientFactory;
-use JsonException;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 use Pengxuxu\HyperfWechat\EasyWechat;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * 微信消息服务类.
@@ -125,32 +117,27 @@ class WxMsgService extends AbstractService
      */
     public function sendWxMsg(array $setData): bool
     {
-        try {
-            //            if (is_string($data)) {
-            //                $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-            //            }
-            $app = EasyWechat::officialAccount();
-            $api = $app->getClient();
-            foreach ($setData as $data) {
-                // EasyWechat客户端
-                $response = $api->postJson('/cgi-bin/message/template/send', $data);
-                $contents = $response->getContent();
-                logger('QueueLog')->info('微信消息response:' . $contents);
-            }
-            // 框架自带客户端
-            //            $accessToken = $app->getAccessToken()->getToken();
-            //            $clientFactory = container()->get(ClientFactory::class);
-            //            $client = $clientFactory->create();
-            //            $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
-            //                'query' => ['access_token' => $accessToken],
-            //                'json' => $data,
-            //            ]);
-            //            $contents = $response->getBody()->getContents();
-            return true;
-        } catch (JsonException|GuzzleException|TransportExceptionInterface|NotFoundExceptionInterface|ContainerExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface $e) {
-            logger('QueueLog')->error('openId:' . $data['touser'] . '微信消息消费错误：' . json_encode($e->getMessage()));
-            return false;
+        $app = EasyWechat::officialAccount();
+        // EasyWechat客户端
+        //        $api = $app->getClient();
+        //        foreach ($setData as $data) {
+        //            $response = $api->postJson('/cgi-bin/message/template/send', $data);
+        //            $contents = $response->getContent();
+        //            logger('QueueLog')->info('微信消息response:' . $contents);
+        //        }
+        // 框架自带客户端
+        $accessToken = $app->getAccessToken()->getToken();
+        $clientFactory = container()->get(ClientFactory::class);
+        $client = $clientFactory->create();
+        foreach ($setData as $data) {
+            $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
+                'query' => ['access_token' => $accessToken],
+                'json' => $data,
+            ]);
+            $contents = $response->getBody()->getContents();
+            logger('QueueLog')->info('微信消息response:' . $contents);
         }
+        return true;
     }
 
     protected function handleData(array &$data): void
