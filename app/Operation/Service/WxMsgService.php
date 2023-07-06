@@ -6,16 +6,18 @@ namespace App\Operation\Service;
 
 use App\Operation\Mapper\WxMsgMapper;
 use App\Operation\Model\WxMsg;
-use App\Operation\Queue\Producer\SendWxMsgProducer;
 use App\Users\Model\User;
 use App\Users\Service\UsersService;
 use Carbon\Carbon;
+use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Amqp\Producer;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Guzzle\ClientFactory;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 use Pengxuxu\HyperfWechat\EasyWechat;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 微信消息服务类.
@@ -97,7 +99,7 @@ class WxMsgService extends AbstractService
 
     public function testSendWxMsg(): bool
     {
-        $data = [
+        $setData = [[
             'url' => 'https://h5.hxt360.com',
             'touser' => 'ogj0H0odNo1LCXVlJ39wze93NwVk',
             'template_id' => 'kkK3xAv-Zk3PhcRa6JwlDsITGOF0zLmHs80mM6awdc0',
@@ -106,10 +108,17 @@ class WxMsgService extends AbstractService
                 'keyword2' => ['value' => 'test'],
                 'keyword3' => ['value' => 'test'],
             ],
-        ];
-        $message = new SendWxMsgProducer($data);
-        $this->producer->produce($message);
-        return true;
+        ], [
+            'url' => 'https://h5.hxt360.com',
+            'touser' => 'ogj0H0odNo1LCXVlJ39wze93NwVk',
+            'template_id' => 'kkK3xAv-Zk3PhcRa6JwlDsITGOF0zLmHs80mM6awdc0',
+            'data' => [
+                'keyword1' => ['value' => 'test1'],
+                'keyword2' => ['value' => 'test1'],
+                'keyword3' => ['value' => 'test1'],
+            ],
+        ]];
+        return $this->sendWxMsg($setData);
     }
 
     /**
@@ -128,14 +137,17 @@ class WxMsgService extends AbstractService
         // 框架自带客户端
         $accessToken = $app->getAccessToken()->getToken();
         $clientFactory = container()->get(ClientFactory::class);
-        $client = $clientFactory->create();
         foreach ($setData as $data) {
-            $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
-                'query' => ['access_token' => $accessToken],
-                'json' => $data,
-            ]);
-            $contents = $response->getBody()->getContents();
-            logger('QueueLog')->info('微信消息response:' . $contents);
+            try {
+                $client = $clientFactory->create();
+                $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
+                    'query' => ['access_token' => $accessToken],
+                    'json' => $data,
+                ]);
+                $contents = $response->getBody()->getContents();
+                logger('QueueLog')->info('微信消息response:' . $contents);
+            } catch (GuzzleException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            }
         }
         return true;
     }
