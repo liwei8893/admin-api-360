@@ -133,6 +133,6 @@ class OrderSummaryController extends MineController
     #[PostMapping('export'), Permission('order:summary:export'), OperationLog]
     public function export(): ResponseInterface
     {
-        return $this->service->export($this->request->all(), OrderSummaryDto::class, '导出数据列表');
+        return $this->service->export($this->request->all(), OrderSummaryDto::class, '核单详情表');
     }
 }

@@ -34,4 +34,17 @@ class OrderSummaryService extends AbstractService
         }
         return parent::save($data);
     }
+
+    /**
+     * 需要处理导出数据时,重写函数.
+     */
+    protected function handleExportData(array &$data): void
+    {
+        $levelMap = ['未知', 'A类', 'B类', 'C类'];
+        $data['level'] = $levelMap[$data['level']] ?? $levelMap[0];
+        $data['has_wechat'] = $data['has_wechat'] === 1 ? '是' : '否';
+        $data['has_connect'] = $data['has_connect'] === 1 ? '是' : '否';
+        $data['created_at'] = date('Y-m-d H:i:s', (int) $data['created_at']);
+        $data['updated_at'] = date('Y-m-d H:i:s', (int) $data['updated_at']);
+    }
 }

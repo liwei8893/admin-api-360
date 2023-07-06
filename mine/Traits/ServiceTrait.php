@@ -239,6 +239,12 @@ trait ServiceTrait
         if (empty($filename)) {
             $filename = $this->mapper->getModel()->getTable();
         }
+        if (empty($callbackData)) {
+            $callbackData = function (array $item) {
+                $this->handleExportData($item);
+                return $item;
+            };
+        }
 
         return (new MineCollection())->export($dto, $filename, $this->mapper->getList($params), $callbackData);
     }

@@ -14,13 +14,13 @@ use Mine\Interfaces\MineModelExcel;
 #[ExcelData]
 class OrderSummaryDto implements MineModelExcel
 {
-    #[ExcelProperty(value: 'id', index: 0)]
+    #[ExcelProperty(value: 'ID', index: 0)]
     public string $id;
 
-    #[ExcelProperty(value: '用户id', index: 1)]
+    #[ExcelProperty(value: '用户名称', index: 1, customField: 'user.user_name')]
     public string $user_id;
 
-    #[ExcelProperty(value: '订单ID', index: 2)]
+    #[ExcelProperty(value: '手机号', index: 2, customField: 'user.mobile')]
     public string $order_id;
 
     #[ExcelProperty(value: '用户等级', index: 3)]
@@ -35,12 +35,15 @@ class OrderSummaryDto implements MineModelExcel
     #[ExcelProperty(value: '备注', index: 6)]
     public string $content;
 
-    #[ExcelProperty(value: 'created_at', index: 7)]
+    #[ExcelProperty(value: '核单人ID', index: 7)]
+    public string $created_id;
+
+    #[ExcelProperty(value: '核单人', index: 8, customField: 'admin_user.nickname')]
+    public string $created_name;
+
+    #[ExcelProperty(value: 'created_at', index: 9)]
     public string $created_at;
 
-    #[ExcelProperty(value: 'updated_at', index: 8)]
+    #[ExcelProperty(value: 'updated_at', index: 10)]
     public string $updated_at;
-
-    #[ExcelProperty(value: 'deleted_at', index: 9)]
-    public string $deleted_at;
 }
