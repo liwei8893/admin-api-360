@@ -33,6 +33,7 @@ class SendWxMsgConsumer extends ConsumerMessage
      */
     public function isEnable(): bool
     {
-        return \Hyperf\Support\env('AMQP_ENABLE', false);
+        //        return \Hyperf\Support\env('AMQP_ENABLE', false);
+        return false;
     }
 }

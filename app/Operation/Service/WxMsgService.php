@@ -65,7 +65,7 @@ class WxMsgService extends AbstractService
     }
 
     /**
-     * @throws JsonException
+     * 微信定时消息.
      */
     public function addQueueWxMsg(): bool
     {
@@ -79,9 +79,10 @@ class WxMsgService extends AbstractService
             throw new NormalStatusException('未查询到发送人员！');
         }
         // 循环推送到队列
+        $setData = [];
         /* @var User $user */
         foreach ($userData as $user) {
-            $data = [
+            $setData[] = [
                 'url' => 'https://h5.hxt360.com',
                 'touser' => $user->wxgzh_openid,
                 'template_id' => $dataMsg->tmp_id,
@@ -94,11 +95,12 @@ class WxMsgService extends AbstractService
                     'remark' => ['value' => $dataMsg->remark],
                 ],
             ];
-            $message = new SendWxMsgProducer($data);
-            $this->producer->produce($message);
+            //            $message = new SendWxMsgProducer($data);
+            //            $this->producer->produce($message);
         }
         $dataMsg->status = WxMsg::SENT;
-        return $dataMsg->save();
+        $dataMsg->save();
+        return $this->sendWxMsg($setData);
     }
 
     public function testSendWxMsg(): bool
@@ -121,13 +123,20 @@ class WxMsgService extends AbstractService
     /**
      * 发送微信消息.
      */
-    public function sendWxMsg(array|string $data): bool
+    public function sendWxMsg(array $setData): bool
     {
         try {
-            if (is_string($data)) {
-                $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
-            }
+            //            if (is_string($data)) {
+            //                $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            //            }
             $app = EasyWechat::officialAccount();
+            $api = $app->getClient();
+            foreach ($setData as $data) {
+                // EasyWechat客户端
+                $response = $api->postJson('/cgi-bin/message/template/send', $data);
+                $contents = $response->getContent();
+                logger('QueueLog')->info('微信消息response:' . $contents);
+            }
             // 框架自带客户端
             //            $accessToken = $app->getAccessToken()->getToken();
             //            $clientFactory = container()->get(ClientFactory::class);
@@ -137,14 +146,7 @@ class WxMsgService extends AbstractService
             //                'json' => $data,
             //            ]);
             //            $contents = $response->getBody()->getContents();
-            // EasyWechat客户端
-            $api = $app->getClient();
-            $response = $api->postJson('/cgi-bin/message/template/send', $data);
-            $contents = $response->getContent();
-
-            logger('QueueLog')->info('微信消息response:' . $contents);
-            $json = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
-            return $response->getStatusCode() === 200 && $json['errcode'] === 0;
+            return true;
         } catch (JsonException|GuzzleException|TransportExceptionInterface|NotFoundExceptionInterface|ContainerExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface $e) {
             logger('QueueLog')->error('openId:' . $data['touser'] . '微信消息消费错误：' . json_encode($e->getMessage()));
             return false;

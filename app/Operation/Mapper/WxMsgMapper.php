@@ -49,8 +49,8 @@ class WxMsgMapper extends AbstractMapper
             ->select(['id', 'user_name', 'mobile', 'wxgzh_openid'])
             ->where('wxgzh_openid', '!=', '')
             // 测试，查内部人
-//            ->where('user_type', 0)
-//            ->whereIn('id', [83775])
+            ->where('user_type', 0)
+            ->whereIn('id', [83775])
             ->whereHas('orders', function (Builder $query) {
                 $query->where('shop_id', User::VIP_TYPE_SUPER)
                     ->NormalOrder()->IsNotExpire();
