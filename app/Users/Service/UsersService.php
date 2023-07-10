@@ -12,7 +12,7 @@ use Closure;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Utils\Str;
+use Hyperf\Stringable\Str;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
@@ -198,6 +198,9 @@ class UsersService extends AbstractService
      */
     public function changePlatformByModel(User $userModel, string $platform): bool
     {
+        if (Str::upper($userModel->platform) === Str::upper($platform)) {
+            return true;
+        }
         $platformData = $this->userSalePlatformService->getPlatformNum($platform);
         $userModel->platform = $platformData['platform'];
         $userModel->sale_platform = $platformData['sale_platform'];
@@ -280,12 +283,23 @@ class UsersService extends AbstractService
             $mobiles = $data->pluck('mobile');
             // 系统已存在的用户
             $userModel = $model->whereIn('mobile', $mobiles)->get();
-            // 已存在的用户修改平台
+            /* @var User $user */
             foreach ($userModel as $user) {
+                // 已存在的用户修改平台
                 $userData = $data->where('mobile', $user->mobile)->first();
                 if ($userData && ! $user->platform) {
                     $this->changePlatformByModel($user, $userData['platform']);
                 }
+                // 修改年级
+                $gradeId = $grade->where('title', $userData['grade'])->first()['key'];
+                if ($user->grade_id !== $gradeId) {
+                    $user->grade_id = $gradeId;
+                }
+                // 修改用户名
+                if ($user->user_name !== $userData['user_name']) {
+                    $user->user_name = $userData['user_name'];
+                }
+                $user->save();
             }
             // 未报名的手机号
             $diffMobiles = $mobiles->diff($userModel->pluck('mobile'));
