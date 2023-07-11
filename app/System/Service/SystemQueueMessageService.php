@@ -8,6 +8,9 @@ use App\System\Mapper\SystemQueueMessageMapper;
 use App\System\Model\SystemQueueMessage;
 use App\System\Vo\QueueMessageVo;
 use Mine\Abstracts\AbstractService;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Throwable;
 
 /**
  * 信息管理服务类.
@@ -62,9 +65,9 @@ class SystemQueueMessageService extends AbstractService
 
     /**
      * 发私信
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Throwable
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Throwable
      */
     public function sendPrivateMessage(array $data): bool
     {
@@ -74,7 +77,24 @@ class SystemQueueMessageService extends AbstractService
         // 固定私信类型
         $queueMessage->setContentType(SystemQueueMessage::TYPE_PRIVATE_MESSAGE);
         $queueMessage->setSendBy(user()->getId());
-        return push_queue_message($queueMessage, $data['users']) !== -1;
+        return push_queue_message($queueMessage, $data['users']);
+    }
+
+    /**
+     * 发送消息.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Throwable
+     */
+    public function sendMessage(array $data, string $type = SystemQueueMessage::TYPE_TODO): bool
+    {
+        $queueMessage = new QueueMessageVo();
+        $queueMessage->setTitle($data['title']);
+        $queueMessage->setContent($data['content']);
+        // 固定私信类型
+        $queueMessage->setContentType($type);
+        $queueMessage->setSendBy(user()->getId());
+        return push_queue_message($queueMessage, $data['users']);
     }
 
     /**

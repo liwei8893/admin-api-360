@@ -28,7 +28,6 @@ class OrderSummaryService extends AbstractService
     public function save(array $data): int
     {
         $data['created_id'] = user()->getId();
-        $data['created_name'] = user()->getNickname();
         if (isset($data['created_at'])) {
             unset($data['created_at']);
         }
