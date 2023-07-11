@@ -198,7 +198,7 @@ class UsersService extends AbstractService
      */
     public function changePlatformByModel(User $userModel, string $platform): bool
     {
-        if (Str::upper($userModel->platform) === Str::upper($platform)) {
+        if (! empty($userModel->platform) && Str::upper($userModel->platform) === Str::upper($platform)) {
             return true;
         }
         $platformData = $this->userSalePlatformService->getPlatformNum($platform);
