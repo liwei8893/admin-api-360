@@ -29,6 +29,7 @@ class CourseSignupConfigMapper extends AbstractMapper
     {
         $courseIds = $data['course_ids'] ?? [];
         $gradeIds = $data['grade_ids'] ?? [];
+        $data['created_by'] = user()->getId();
         $this->filterExecuteAttributes($data, true);
         $model = $this->model::create($data);
         $model->courseSignup()->sync($courseIds);
@@ -41,6 +42,7 @@ class CourseSignupConfigMapper extends AbstractMapper
     {
         $courseIds = $data['course_ids'] ?? [];
         $gradeIds = $data['grade_ids'] ?? [];
+        $data['updated_by'] = user()->getId();
         $this->filterExecuteAttributes($data, true);
         $model = $this->model::find($id);
         $updateState = $model->update($data) > 0;
@@ -58,7 +60,10 @@ class CourseSignupConfigMapper extends AbstractMapper
         if (isset($params['id']) && $params['id'] !== '') {
             $query->where('id', '=', $params['id']);
         }
-
+        // 模板类型
+        if (isset($params['type']) && $params['type'] !== '') {
+            $query->where('type', '=', $params['type']);
+        }
         // 备注
         if (isset($params['remark']) && $params['remark'] !== '') {
             $query->where('remark', '=', $params['remark']);
