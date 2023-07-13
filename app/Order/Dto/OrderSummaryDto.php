@@ -23,27 +23,30 @@ class OrderSummaryDto implements MineModelExcel
     #[ExcelProperty(value: '手机号', index: 2, customField: 'user.mobile')]
     public string $order_id;
 
-    #[ExcelProperty(value: '用户等级', index: 3)]
+    #[ExcelProperty(value: '平台', index: 3, customField: 'user.platform')]
+    public string $platform;
+
+    #[ExcelProperty(value: '用户等级', index: 4)]
     public string $level;
 
-    #[ExcelProperty(value: '是否添加微信', index: 4)]
+    #[ExcelProperty(value: '是否添加微信', index: 5)]
     public string $has_wechat;
 
-    #[ExcelProperty(value: '是否接通电话', index: 5)]
+    #[ExcelProperty(value: '是否接通电话', index: 6)]
     public string $has_connect;
 
-    #[ExcelProperty(value: '备注', index: 6)]
+    #[ExcelProperty(value: '备注', index: 7)]
     public string $content;
 
-    #[ExcelProperty(value: '核单人ID', index: 7)]
+    #[ExcelProperty(value: '核单人ID', index: 8)]
     public string $created_id;
 
-    #[ExcelProperty(value: '核单人', index: 8, customField: 'admin_user.nickname')]
+    #[ExcelProperty(value: '核单人', index: 9, customField: 'admin_user.nickname')]
     public string $created_name;
 
-    #[ExcelProperty(value: 'created_at', index: 9)]
+    #[ExcelProperty(value: 'created_at', index: 10)]
     public string $created_at;
 
-    #[ExcelProperty(value: 'updated_at', index: 10)]
+    #[ExcelProperty(value: 'updated_at', index: 11)]
     public string $updated_at;
 }

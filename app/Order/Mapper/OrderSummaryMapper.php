@@ -53,6 +53,14 @@ class OrderSummaryMapper extends AbstractMapper
         if (! empty($params['withUser'])) {
             $query->with('user');
         }
+        $query->whereHas('user', function (Builder $query) use ($params) {
+            $query->when(! empty($params['user_mobile']), function ($subQuery) use ($params) {
+                $subQuery->where('mobile', 'like', "{$params['user_mobile']}%");
+            })
+                ->when(! empty($params['user_platform']), function ($subQuery) use ($params) {
+                    $subQuery->where('platform', '=', $params['user_platform']);
+                });
+        });
         if (! empty($params['withAdminUser'])) {
             $query->with('adminUser');
         }
