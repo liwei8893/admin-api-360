@@ -27,6 +27,6 @@ class UserStaController extends MineController
     #[GetMapping('getArealDistribution')]
     public function getArealDistribution(): ResponseInterface
     {
-        return $this->success($this->service->getArealDistribution());
+        return $this->success($this->service->getArealDistribution($this->request->all()));
     }
 }
