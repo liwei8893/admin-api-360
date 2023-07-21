@@ -28,6 +28,12 @@ class OrderSummaryMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
+        if (isset($params['user_id'])) {
+            $query->where('user_id', $params['user_id']);
+        }
+        if (isset($params['status']) && ! is_array($params['status'])) {
+            $query->where('status', $params['status']);
+        }
         // 用户等级
         if (isset($params['level']) && $params['level'] !== '') {
             $query->where('level', '=', $params['level']);

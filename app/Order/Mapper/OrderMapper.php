@@ -128,15 +128,31 @@ class OrderMapper extends AbstractMapper
         if (! empty($params['withCourse'])) {
             $query->with('course:id,title,price,indate,created_at,subject_id,course_title,is_give');
         }
-
+        // 核单数量统计,已完成核单数量统计
         if (! empty($params['withSummaryCount'])) {
-            $query->withCount('summary');
+            $query->withCount(['summary',
+                'summary as summary_status_count' => function (Builder $query) {
+                    $query->where('status', 1);
+                },
+            ]);
         }
-        if (isset($params['hasSummary'])) {
-            if ($params['hasSummary']) {
-                $query->has('summary');
+        // 核单次数筛选
+        if (! empty($params['summary_count'])) {
+            $query->has('summary', '=', $params['summary_count']);
+        }
+
+        if (isset($params['summary_status'])) {
+            if ($params['summary_status']) {
+                $query->whereHas('summary', function (Builder $query) use ($params) {
+                    $query->where('status', $params['summary_status']);
+                });
             } else {
-                $query->has('summary', '=', 0);
+                $query->where(function (Builder $query) use ($params) {
+                    $query->has('summary', '=', 0);
+                    $query->orWhereHas('summary', function (Builder $query) use ($params) {
+                        $query->where('status', $params['summary_status']);
+                    });
+                });
             }
         }
 
