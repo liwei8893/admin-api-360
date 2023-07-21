@@ -23,24 +23,27 @@ class CourseHistoryDto implements MineModelExcel
     #[ExcelProperty(value: '用户平台', index: 3, customField: 'users.platform')]
     public string $platform;
 
-    #[ExcelProperty(value: '创建时间', index: 4)]
+    #[ExcelProperty(value: '年级', index: 4, customField: 'users.grades.label')]
+    public string $grades;
+
+    #[ExcelProperty(value: '创建时间', index: 5)]
     public string $createdAt;
 
-    #[ExcelProperty(value: '到期时间', index: 5)]
+    #[ExcelProperty(value: '到期时间', index: 6)]
     public string $course_end_time;
 
-    #[ExcelProperty(value: '购买年级', index: 6)]
+    #[ExcelProperty(value: '购买年级', index: 7)]
     public string $orderGrade;
 
-    #[ExcelProperty(value: '购买科目', index: 7)]
+    #[ExcelProperty(value: '购买科目', index: 8)]
     public string $orderSubject;
 
-    #[ExcelProperty(value: '实际付款金额', index: 8)]
+    #[ExcelProperty(value: '实际付款金额', index: 9)]
     public string $actual_price;
 
-    #[ExcelProperty(value: '有效期(天)', index: 9)]
+    #[ExcelProperty(value: '有效期(天)', index: 10)]
     public string $indate;
 
-    #[ExcelProperty(value: '用户备注', index: 10, customField: 'users.remark')]
+    #[ExcelProperty(value: '用户备注', index: 11, customField: 'users.remark')]
     public string $remark;
 }

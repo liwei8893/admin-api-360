@@ -23,7 +23,9 @@ class CourseHistoryMapper extends AbstractMapper
     public function getHistoryList(array $data): array
     {
         $query = Order::query()->where('status', '!=', Order::STATUS_REFUND)
-            ->with(['users:id,user_name,old_platform,platform,mobile,remark', 'orderGrade', 'orderSubject'])
+            ->with(['users' => function ($query) {
+                $query->with('grades:label,value,id')->select(['id', 'user_name', 'old_platform', 'platform', 'mobile', 'remark', 'grade_id']);
+            }, 'orderGrade', 'orderSubject'])
             ->whereHas('users', function (Builder $query) use ($data) {
                 $query->where('user_type', User::USER_TYPE)
                     ->when(! empty($data['users_mobile']) && is_array($data['users_mobile']), function (Builder $query) use ($data) {
