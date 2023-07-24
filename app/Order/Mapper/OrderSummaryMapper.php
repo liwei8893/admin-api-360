@@ -87,7 +87,13 @@ class OrderSummaryMapper extends AbstractMapper
                 $query->where('nickname', 'like', "%{$params['created_name']}%");
             });
         }
-
+        // 如果角色是核单人员,只看分配到自己的数据
+        $role = \Hyperf\Collection\collect(user()->getUserRole());
+        if ($role->keyBy('code')->has('HDRY')) {
+            $query->whereHas('adminUser', function (Builder $query) {
+                $query->where('system_user.id', user()->getId());
+            });
+        }
         return $query;
     }
 }
