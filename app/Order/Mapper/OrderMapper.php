@@ -198,14 +198,14 @@ class OrderMapper extends AbstractMapper
 
         if (isset($params['summary_status'])) {
             if ($params['summary_status']) {
-                $query->whereHas('summary', function (Builder $query) use ($params) {
-                    $query->where('status', $params['summary_status']);
+                $query->whereHas('summary', function (Builder $query) {
+                    $query->where('status', 1);
                 });
             } else {
-                $query->where(function (Builder $query) use ($params) {
+                $query->where(function (Builder $query) {
                     $query->has('summary', '=', 0);
-                    $query->orWhereHas('summary', function (Builder $query) use ($params) {
-                        $query->where('status', $params['summary_status']);
+                    $query->orWhereDoesntHave('summary', function (Builder $query) {
+                        $query->where('status', 1);
                     });
                 });
             }
