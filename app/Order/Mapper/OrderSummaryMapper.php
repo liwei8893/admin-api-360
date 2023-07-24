@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Order\Mapper;
 
 use App\Order\Model\OrderSummary;
+use App\Order\Model\OrderSummaryAdmin;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
@@ -23,6 +24,14 @@ class OrderSummaryMapper extends AbstractMapper
         $this->model = OrderSummary::class;
     }
 
+    public function setSummaryAdmin(array $params): bool
+    {
+        return (bool) OrderSummaryAdmin::query()->updateOrInsert(
+            ['order_id' => $params['orderId']],
+            ['admin_id' => $params['adminId']],
+        );
+    }
+
     /**
      * 搜索处理器.
      */
@@ -33,6 +42,9 @@ class OrderSummaryMapper extends AbstractMapper
         }
         if (isset($params['status']) && ! is_array($params['status'])) {
             $query->where('status', $params['status']);
+        }
+        if (isset($params['type']) && ! is_array($params['type'])) {
+            $query->where('type', $params['type']);
         }
         // 用户等级
         if (isset($params['level']) && $params['level'] !== '') {

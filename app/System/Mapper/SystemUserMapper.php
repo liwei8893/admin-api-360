@@ -84,8 +84,8 @@ class SystemUserMapper extends AbstractMapper
         $result = parent::update($id, $data);
         $user = $this->model::find($id);
         if ($user && $result) {
-            !empty($role_ids) && $user->roles()->sync($role_ids);
-            !empty($dept_ids) && $user->depts()->sync($dept_ids);
+            ! empty($role_ids) && $user->roles()->sync($role_ids);
+            ! empty($dept_ids) && $user->depts()->sync($dept_ids);
             $user->posts()->sync($post_ids);
             return true;
         }
@@ -167,19 +167,17 @@ class SystemUserMapper extends AbstractMapper
         if (isset($params['showDept'])) {
             $isAll = $params['showDeptAll'] ?? false;
 
-            $query->with(['depts' => function($query) use($isAll){
-                /* @var Builder $query*/
+            $query->with(['depts' => function ($query) use ($isAll) {
+                /* @var Builder $query */
                 $query->where('status', SystemDept::ENABLE);
                 return $isAll ? $query->select(['*']) : $query->select(['id', 'name']);
             }]);
         }
 
         if (isset($params['role_id'])) {
-            $tablePrefix = env('DB_PREFIX');
-            $query->whereRaw(
-                "id IN ( SELECT user_id FROM {$tablePrefix}system_user_role WHERE role_id = ? )",
-                [$params['role_id']]
-            );
+            $query->whereHas('roles', function (Builder $query) use ($params) {
+                $query->where('code', $params['role_id']);
+            });
         }
 
         if (isset($params['post_id'])) {
@@ -211,7 +209,9 @@ class SystemUserMapper extends AbstractMapper
      */
     public function getUserInfoByIds(array $ids, ?array $select = null): array
     {
-        if (! $select) $select = ['id', 'username', 'nickname', 'phone', 'email', 'created_at'];
+        if (! $select) {
+            $select = ['id', 'username', 'nickname', 'phone', 'email', 'created_at'];
+        }
         return $this->model::query()->whereIn('id', $ids)->select($select)->get()->toArray();
     }
 }

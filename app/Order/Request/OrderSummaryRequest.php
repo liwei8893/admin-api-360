@@ -19,6 +19,14 @@ class OrderSummaryRequest extends MineFormRequest
         return [];
     }
 
+    public function setSummaryAdminRules(): array
+    {
+        return [
+            'adminId' => 'required',
+            'orderIds' => 'required|array',
+        ];
+    }
+
     /**
      * 新增数据验证规则
      * return array.

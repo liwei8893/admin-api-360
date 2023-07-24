@@ -6,6 +6,7 @@ namespace App\Order\Model;
 
 use App\System\Model\SystemUser;
 use App\Users\Model\User;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\hasOne;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
@@ -19,9 +20,10 @@ use Mine\MineModel;
  * @property int $has_connect 是否接通电话
  * @property string $content 备注
  * @property int $status 状态
+ * @property int $type 电话核单1,微信核单2
  * @property int $created_id 创建人ID
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property int $deleted_at
  * @property SystemUser $adminUser
  * @property User $user
@@ -41,12 +43,12 @@ class OrderSummary extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'user_id', 'order_id', 'level', 'has_wechat', 'has_connect', 'content', 'status', 'created_id', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'user_id', 'order_id', 'level', 'has_wechat', 'has_connect', 'content', 'status', 'type', 'created_id', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'order_id' => 'integer', 'level' => 'integer', 'has_wechat' => 'integer', 'has_connect' => 'integer', 'status' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'order_id' => 'integer', 'level' => 'integer', 'has_wechat' => 'integer', 'has_connect' => 'integer', 'status' => 'integer', 'type' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
     /**
      * 定义 user 关联.

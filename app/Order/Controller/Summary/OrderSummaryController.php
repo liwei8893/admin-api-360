@@ -135,4 +135,10 @@ class OrderSummaryController extends MineController
     {
         return $this->service->export($this->request->all(), OrderSummaryDto::class, '核单详情表');
     }
+
+    #[PostMapping('setSummaryAdmin'), Permission('order:summary:setSummaryAdmin')]
+    public function setSummaryAdmin(OrderSummaryRequest $request): ResponseInterface
+    {
+        return $this->service->setSummaryAdmin($request->validated()) ? $this->success() : $this->error();
+    }
 }

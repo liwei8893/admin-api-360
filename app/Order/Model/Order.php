@@ -6,6 +6,7 @@ namespace App\Order\Model;
 
 use App\Course\Model\CourseBasis;
 use App\System\Model\SystemDictData;
+use App\System\Model\SystemUser;
 use App\Users\Model\User;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
@@ -13,6 +14,7 @@ use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasMany;
+use Hyperf\Database\Model\Relations\HasOneThrough;
 use Mine\MineModel;
 
 /**
@@ -195,6 +197,15 @@ class Order extends MineModel
     public function summary(): HasMany
     {
         return $this->hasMany(OrderSummary::class, 'order_id', 'id');
+    }
+
+    /**
+     * 远程一对一关联管理员表.
+     */
+    public function summaryAdmin(): HasOneThrough
+    {
+        return $this->hasOneThrough(SystemUser::class, OrderSummaryAdmin::class, 'order_id', 'id', 'id', 'admin_id')
+            ->select(['system_user.id', 'username', 'phone', 'nickname', 'email', 'avatar']);
     }
 
     /**

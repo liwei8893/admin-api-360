@@ -128,33 +128,6 @@ class OrderMapper extends AbstractMapper
         if (! empty($params['withCourse'])) {
             $query->with('course:id,title,price,indate,created_at,subject_id,course_title,is_give');
         }
-        // 核单数量统计,已完成核单数量统计
-        if (! empty($params['withSummaryCount'])) {
-            $query->withCount(['summary',
-                'summary as summary_status_count' => function (Builder $query) {
-                    $query->where('status', 1);
-                },
-            ]);
-        }
-        // 核单次数筛选
-        if (! empty($params['summary_count'])) {
-            $query->has('summary', '=', $params['summary_count']);
-        }
-
-        if (isset($params['summary_status'])) {
-            if ($params['summary_status']) {
-                $query->whereHas('summary', function (Builder $query) use ($params) {
-                    $query->where('status', $params['summary_status']);
-                });
-            } else {
-                $query->where(function (Builder $query) use ($params) {
-                    $query->has('summary', '=', 0);
-                    $query->orWhereHas('summary', function (Builder $query) use ($params) {
-                        $query->where('status', $params['summary_status']);
-                    });
-                });
-            }
-        }
 
         // 关联付款表
         if (! empty($params['withPayment'])) {
@@ -204,6 +177,63 @@ class OrderMapper extends AbstractMapper
             $endTime = $params['course_end_time'][1] . ' 23:59:59';
             $query->whereRaw("created_at + (indate * 86400) > UNIX_TIMESTAMP('{$startTime}')");
             $query->whereRaw("created_at + (indate * 86400) < UNIX_TIMESTAMP('{$endTime}')");
+        }
+        return $this->handleOrderSummarySearch($query, $params);
+    }
+
+    protected function handleOrderSummarySearch(Builder $query, array $params): Builder
+    {
+        // 核单数量统计,已完成核单数量统计
+        if (! empty($params['withSummaryCount'])) {
+            $query->withCount(['summary',
+                'summary as summary_status_count' => function (Builder $query) {
+                    $query->where('status', 1);
+                },
+            ]);
+        }
+        // 核单次数筛选
+        if (! empty($params['summary_count'])) {
+            $query->has('summary', '=', $params['summary_count']);
+        }
+
+        if (isset($params['summary_status'])) {
+            if ($params['summary_status']) {
+                $query->whereHas('summary', function (Builder $query) use ($params) {
+                    $query->where('status', $params['summary_status']);
+                });
+            } else {
+                $query->where(function (Builder $query) use ($params) {
+                    $query->has('summary', '=', 0);
+                    $query->orWhereHas('summary', function (Builder $query) use ($params) {
+                        $query->where('status', $params['summary_status']);
+                    });
+                });
+            }
+        }
+        // 关联分配的核单人员
+        if (! empty($params['withSummaryAdmin'])) {
+            $query->with('summaryAdmin');
+            // 如果角色是核单人员,只看分配到自己的数据
+            $role = \Hyperf\Collection\collect(user()->getUserRole());
+            if ($role->keyBy('code')->has('HDRY')) {
+                $query->whereHas('summaryAdmin', function (Builder $query) {
+                    $query->where('system_user.id', user()->getId());
+                });
+            }
+        }
+        // 查询是否分配核单人员
+        if (isset($params['hasSummaryAdmin'])) {
+            if ($params['hasSummaryAdmin'] === '1') {
+                $query->has('summaryAdmin');
+            } else {
+                $query->has('summaryAdmin', '=', 0);
+            }
+        }
+        // 查询指定核单人员名称
+        if (isset($params['summaryAdminName'])) {
+            $query->whereHas('summaryAdmin', function (Builder $query) use ($params) {
+                $query->where('nickname', 'like', "%${$params['summaryAdminName']}%");
+            });
         }
         return $query;
     }
