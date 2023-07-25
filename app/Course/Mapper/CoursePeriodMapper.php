@@ -56,19 +56,21 @@ class CoursePeriodMapper extends AbstractMapper
     {
         if (isset($params['tagId']) && ! is_array($params['tagId'])) {
             $query->whereHas('tags', function (Builder $query) use ($params) {
-                $query->where('id', $params['tagId']);
+                $query->where('tags.id', $params['tagId']);
             });
         }
         if (isset($params['tagId']) && is_array($params['tagId'])) {
             $query->whereHas('tags', function (Builder $query) use ($params) {
-                $query->whereIn('id', $params['tagId']);
+                $query->whereIn('tags.id', $params['tagId']);
             });
         }
-        if (isset($params['courseStatus'])) {
-            $query->whereHas('courseBasis', function (Builder $query) use ($params) {
+        $query->whereHas('courseBasis', function (Builder $query) use ($params) {
+            $query->when(isset($params['courseStatus']), function (Builder $query) use ($params) {
                 $query->where('states', $params['courseStatus']);
+            })->when(isset($params['courseId']), function (Builder $query) use ($params) {
+                $query->orWhereIn('course_basis.id', $params['courseId']);
             });
-        }
+        });
         return $query;
     }
 }

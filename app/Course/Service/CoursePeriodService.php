@@ -7,6 +7,7 @@ namespace App\Course\Service;
 use App\Course\Mapper\CoursePeriodMapper;
 use App\Course\Model\CourseBasis;
 use App\Course\Model\CoursePeriod;
+use App\Order\Model\Order;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -65,11 +66,19 @@ class CoursePeriodService extends AbstractService
 
     public function getSearch(array $ids): Collection|array
     {
-        $course = $this->mapper->getListCollect([
+        $params = [
             'tagId' => $ids,
             'select' => ['id', 'title', 'course_basis_id'],
             'courseStatus' => CourseBasis::STATUS_NORMAL,
-        ]);
+        ];
+        // 默认不搜索未上架的课程,如果已经购买就搜索
+        $isLogin = user('app')->hasLogin();
+        if ($isLogin) {
+            $userId = user('app')->getId();
+            /* @var Collection $orderIds */
+            $params['courseId'] = Order::query()->where('user_id', $userId)->normalOrder()->isNotExpire()->pluck('shop_id');
+        }
+        $course = $this->mapper->getListCollect($params);
         $course->load(['courseBasis:id,title,course_title', 'tags:id,name']);
         return $course;
     }
