@@ -22,14 +22,6 @@ class OrderSummaryService extends AbstractService
         $this->mapper = $mapper;
     }
 
-    public function setSummaryAdmin(array $params): bool
-    {
-        foreach ($params['orderIds'] as $orderId) {
-            $this->mapper->setSummaryAdmin(['orderId' => $orderId, 'adminId' => $params['adminId']]);
-        }
-        return true;
-    }
-
     /**
      * 新增数据.
      */

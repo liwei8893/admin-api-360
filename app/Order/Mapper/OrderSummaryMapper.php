@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Order\Mapper;
 
 use App\Order\Model\OrderSummary;
-use App\Order\Model\OrderSummaryAdmin;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
@@ -22,14 +21,6 @@ class OrderSummaryMapper extends AbstractMapper
     public function assignModel(): void
     {
         $this->model = OrderSummary::class;
-    }
-
-    public function setSummaryAdmin(array $params): bool
-    {
-        return (bool) OrderSummaryAdmin::query()->updateOrInsert(
-            ['order_id' => $params['orderId']],
-            ['admin_id' => $params['adminId']],
-        );
     }
 
     /**
@@ -85,13 +76,6 @@ class OrderSummaryMapper extends AbstractMapper
         if (isset($params['created_name'])) {
             $query->whereHas('adminUser', function (Builder $query) use ($params) {
                 $query->where('nickname', 'like', "%{$params['created_name']}%");
-            });
-        }
-        // 如果角色是核单人员,只看分配到自己的数据
-        $role = \Hyperf\Collection\collect(user()->getUserRole());
-        if ($role->keyBy('code')->has('HDRY')) {
-            $query->whereHas('adminUser', function (Builder $query) {
-                $query->where('system_user.id', user()->getId());
             });
         }
         return $query;

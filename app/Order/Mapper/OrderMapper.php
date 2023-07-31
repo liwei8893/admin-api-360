@@ -195,7 +195,7 @@ class OrderMapper extends AbstractMapper
         if (! empty($params['summary_count'])) {
             $query->has('summary', '=', $params['summary_count']);
         }
-
+        // 核单状态筛选
         if (isset($params['summary_status'])) {
             if ($params['summary_status']) {
                 $query->whereHas('summary', function (Builder $query) {
@@ -209,31 +209,6 @@ class OrderMapper extends AbstractMapper
                     });
                 });
             }
-        }
-        // 关联分配的核单人员
-        if (! empty($params['withSummaryAdmin'])) {
-            $query->with('summaryAdmin');
-            // 如果角色是核单人员,只看分配到自己的数据
-            $role = \Hyperf\Collection\collect(user()->getUserRole());
-            if ($role->keyBy('code')->has('HDRY')) {
-                $query->whereHas('summaryAdmin', function (Builder $query) {
-                    $query->where('system_user.id', user()->getId());
-                });
-            }
-        }
-        // 查询是否分配核单人员
-        if (isset($params['hasSummaryAdmin'])) {
-            if ($params['hasSummaryAdmin'] === '1') {
-                $query->has('summaryAdmin');
-            } else {
-                $query->has('summaryAdmin', '=', 0);
-            }
-        }
-        // 查询指定核单人员名称
-        if (isset($params['summaryAdminName'])) {
-            $query->whereHas('summaryAdmin', function (Builder $query) use ($params) {
-                $query->where('nickname', 'like', "%${$params['summaryAdminName']}%");
-            });
         }
         return $query;
     }
