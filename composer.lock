@@ -6600,11 +6600,11 @@
         },
         {
             "name": "symfony/property-access",
-            "version": "v6.3.0",
+            "version": "v6.3.2",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.tencent.com/repository/composer/symfony/property-access/v6.3.0/symfony-property-access-v6.3.0.zip",
-                "reference": "db9358571ce63f09c439c2fee6c12e5b090b69ac",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/symfony/property-access/v6.3.2/symfony-property-access-v6.3.2.zip",
+                "reference": "2dc4f9da444b8f8ff592e95d570caad67924f1d0",
                 "shasum": ""
             },
             "require": {
@@ -6650,7 +6650,7 @@
                 "property-path",
                 "reflection"
             ],
-            "time": "2023-05-19T08:06:44+00:00"
+            "time": "2023-07-13T15:26:11+00:00"
         },
         {
             "name": "symfony/property-info",
@@ -7125,11 +7125,11 @@
         },
         {
             "name": "tangwei/apidocs",
-            "version": "v2.1.7",
+            "version": "v2.1.8",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/tangwei/apidocs/v2.1.7/tangwei-apidocs-v2.1.7.zip",
-                "reference": "c7198830ce7262f6e33baf6943485ca671d5ec50",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/tangwei/apidocs/v2.1.8/tangwei-apidocs-v2.1.8.zip",
+                "reference": "ac985a91d1f6d7126d23b57d1c1428e79729c037",
                 "shasum": ""
             },
             "require": {
@@ -7141,7 +7141,7 @@
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
                 "mockery/mockery": "^1.0",
-                "phpstan/phpstan": "^0.12",
+                "phpstan/phpstan": "^1.0",
                 "phpunit/phpunit": ">=7.0",
                 "symfony/var-dumper": "^5.1"
             },
@@ -7178,7 +7178,7 @@
                 "php",
                 "swagger"
             ],
-            "time": "2023-04-05T06:01:01+00:00"
+            "time": "2023-07-27T07:31:08+00:00"
         },
         {
             "name": "tangwei/dto",
