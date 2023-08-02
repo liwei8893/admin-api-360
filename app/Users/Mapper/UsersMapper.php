@@ -149,6 +149,9 @@ class UsersMapper extends AbstractMapper
             $query->whereIn('platform', $params['platform']);
         }
 
+        if (isset($params['grade_id']) && ! is_array($params['grade_id'])) {
+            $query->where('grade_id', $params['grade_id']);
+        }
         if (isset($params['grade_id']) && is_array($params['grade_id'])) {
             $query->whereIn('grade_id', $params['grade_id']);
         }
