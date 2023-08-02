@@ -43,7 +43,7 @@ class StaService extends AbstractService
             'coursePeriod:id,course_basis_id,title',
             'users:id,user_name,mobile,users.platform'])
             ->leftJoin('order', 'order.user_id', 'user_course_record.user_id')
-            ->where('order.shop_id', User::VIP_TYPE_SUPER)
+            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
             ->where('order.status', '!=', Order::STATUS_REFUND)
             ->where('order.pay_states', Order::PAY_SUCCESS)
             ->where('order.deleted_at', 0)
@@ -101,7 +101,7 @@ class StaService extends AbstractService
             ->leftJoin('user_course_record as ucr', 'ucr.user_id', '=', 'u.id')
             ->leftJoin('attribute_detail as ad', 'ad.id', '=', 'u.grade_id')
             ->leftJoin(DB::raw('(SELECT users_id FROM users_log GROUP BY users_id) AS ul'), 'ul.users_id', '=', 'u.id')
-            ->where('order.shop_id', User::VIP_TYPE_SUPER)
+            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
             ->where('order.status', '!=', Order::STATUS_REFUND)
             ->where('order.pay_states', Order::PAY_SUCCESS)
             ->where('order.deleted_at', 0)
@@ -181,7 +181,7 @@ class StaService extends AbstractService
             ->when(! empty($params['vip_type']), static function (Builder $query) use ($params) {
                 // 会员类型筛选,1优享会员,2超级会员,3至尊会员
                 if ($params['vip_type'] === '2') {
-                    $query->where('order.shop_id', User::VIP_TYPE_SUPER);
+                    $query->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
                 }
             })
             // 用户表筛选
@@ -279,7 +279,7 @@ class StaService extends AbstractService
                 $query->when(! empty($params['vip_type']), static function (Builder $query) use ($params) {
                     // 会员类型筛选,1优享会员,2超级会员,3至尊会员
                     if ($params['vip_type'] === '2') {
-                        $query->where('shop_id', User::VIP_TYPE_SUPER);
+                        $query->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
                     }
                 })
                     ->where('pay_states', Order::PAY_SUCCESS)
@@ -363,7 +363,7 @@ class StaService extends AbstractService
                 $query->when(! empty($params['vip_type']), static function (Builder $query) use ($params) {
                     // 会员类型筛选,1优享会员,2超级会员,3至尊会员
                     if ($params['vip_type'] === '2') {
-                        $query->where('shop_id', User::VIP_TYPE_SUPER);
+                        $query->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
                     }
                 })
                     ->when(isset($params['actual_price']), static function (Builder $query) use ($params) {

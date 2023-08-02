@@ -91,7 +91,7 @@ class OrderSignupService extends AbstractService
                 ! empty($collect['subject']) && $orderModel->orderSubject()->sync($collect['subject']);
                 ! empty($collect['grade']) && $orderModel->orderGrade()->sync($collect['grade']);
                 // TODO 新增会员时增加积分,只有报超级会员时才加积分,$insertData['pay_states]===7时增加,===8时在审核时增加
-                if ($insertData['pay_states'] === Order::PAY_SUCCESS && $course['id'] === 950) {
+                if ($insertData['pay_states'] === Order::PAY_SUCCESS && $course['id'] === User::VIP_TYPE_SUPER) {
                     event(new ScoreAddEvent('init', (int) $collect['userId'], $orderModel->id));
                 }
             }

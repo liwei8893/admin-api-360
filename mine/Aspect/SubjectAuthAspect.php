@@ -8,6 +8,7 @@ use App\Course\Service\CourseService;
 use App\Users\Model\User;
 use App\Users\Service\UsersService;
 use Hyperf\Database\Model\Collection;
+use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
@@ -94,7 +95,9 @@ class SubjectAuthAspect extends AbstractAspect
         if (! $user) {
             // 没会员就进行新分科验证
             /** @var Collection $userSubjectOrder */
-            $userSubjectOrder = $userModel->haveSubject()->with(['course:id,subject_id'])->get();
+            $userSubjectOrder = $userModel->haveSubject()->with(['course' => function (BelongsTo $builder) {
+                $builder->with('basisGrade')->select(['id', 'subject_id']);
+            }])->get();
             if ($userSubjectOrder->isEmpty()) {
                 $this->noPermissionTip();
             }
@@ -107,6 +110,17 @@ class SubjectAuthAspect extends AbstractAspect
             // 有科目,判断当前课程科目是否在内
             $diffSubject = $allSubject->whereIn('key', $subjectId);
             if ($diffSubject->isEmpty()) {
+                $this->noPermissionTip();
+            }
+            // 判断年级,所有年级ID
+            $allGrade = $userSubjectOrder->map(fn ($item) => $item['course']['basisGrade']->pluck('key'))->flatten()->unique()->values()->map(fn ($item) => ['key' => $item]);
+            // 为空表示没有购买年级
+            if ($allGrade->isEmpty()) {
+                $this->noPermissionTip();
+            }
+            // 有科目,判断当前课程年级是否在内
+            $diffGrade = $allGrade->whereIn('key', $gradeId);
+            if ($diffGrade->isEmpty()) {
                 $this->noPermissionTip();
             }
             return $data;

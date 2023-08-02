@@ -8,6 +8,7 @@ use App\Order\Mapper\OrderMapper;
 use App\Order\Model\Order;
 use App\Order\Model\UsersRenew;
 use App\Score\Event\ScoreAddEvent;
+use App\Users\Model\User;
 use App\Users\Service\UserScoreService;
 use Carbon\Carbon;
 use Hyperf\Di\Annotation\Inject;
@@ -86,7 +87,7 @@ class OrderService extends AbstractService
             }
             // TODO 续费时增加积分,不需要审核
             $isNoAudit = user()->isNoAuditRole();
-            if ($isNoAudit && $item->shop_id === 950) {
+            if ($isNoAudit && $item->shop_id === User::VIP_TYPE_SUPER) {
                 event(new ScoreAddEvent('renew', $item->user_id, $insertId));
             }
         }
@@ -227,7 +228,7 @@ class OrderService extends AbstractService
             throw new NormalStatusException('日志写入错误,操作已回滚,请稍后重试!');
         }
         // TODO 退费扣除积分
-        if ($orderModel->shop_id === 950) {
+        if ($orderModel->shop_id === User::VIP_TYPE_SUPER) {
             event(new ScoreAddEvent('courseRefund', $orderModel->user_id, $orderModel->id));
         }
         return true;
@@ -334,7 +335,7 @@ class OrderService extends AbstractService
             $model->cause_text = $params['cause_text'] ?? '';
             $model->save();
             // TODO 增加积分 init 新增会员审核完毕时
-            if ($model->shop_id === 950 && $model->pay_states === Order::PAY_SUCCESS) {
+            if ($model->shop_id === User::VIP_TYPE_SUPER && $model->pay_states === Order::PAY_SUCCESS) {
                 event(new ScoreAddEvent('init', $model->user_id, $model->id));
             }
         }

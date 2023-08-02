@@ -15,7 +15,7 @@ class UserStaService extends AbstractService
         $modelData = User::query()
             ->leftJoin('order', 'users.id', 'order.user_id')
             ->platformDataScope('users.platform')
-            ->where('order.shop_id', 950)
+            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
             ->where('order.pay_states', 7)
             ->where('order.status', '!=', 2)
             ->where('order.deleted_at', 0)

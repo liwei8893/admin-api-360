@@ -7,6 +7,7 @@ namespace App\Order\Service;
 use App\Order\Mapper\UsersRenewMapper;
 use App\Order\Model\UsersRenew;
 use App\Score\Event\ScoreAddEvent;
+use App\Users\Model\User;
 use App\Users\Service\UserScoreService;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
@@ -109,7 +110,7 @@ class UsersRenewService extends AbstractService
             $model->cause_text = $params['cause_text'] ?? '';
             $model->save();
             // TODO 增加积分 renew 续费会员时,续费会员&是续费不是修改有效期&审核通过
-            if ($order->shop_id === 950 && $model->status === 1 && $params['audit_status'] === UsersRenew::AUDIT_SUCCESS) {
+            if ($order->shop_id === User::VIP_TYPE_SUPER && $model->status === 1 && $params['audit_status'] === UsersRenew::AUDIT_SUCCESS) {
                 event(new ScoreAddEvent('renew', $order->user_id, $model->id));
             }
         }

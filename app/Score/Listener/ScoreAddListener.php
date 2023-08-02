@@ -180,7 +180,7 @@ class ScoreAddListener implements ListenerInterface
         // 查询订单
         $orderModel = Order::query()->find($originId);
         // 查询不到订单,或者实际付款金额为0,或者订单状态不为完成 结束
-        if (! $orderModel || (int) $orderModel->shop_id !== 950 || ! $orderModel->actual_price || (int) $orderModel->pay_states !== 7) {
+        if (! $orderModel || (int) $orderModel->shop_id !== User::VIP_TYPE_SUPER || ! $orderModel->actual_price || (int) $orderModel->pay_states !== 7) {
             return;
         }
         $this->userScoreService->changeScore([

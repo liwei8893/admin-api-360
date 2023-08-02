@@ -78,7 +78,7 @@ class AreaService extends AbstractService
     {
         $mobiles = User::query()->whereHas('orders', function (Builder $query) {
             $query->where('status', '!=', 2)->where('pay_states', 7)
-                ->where('shop_id', 950)
+                ->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
                 ->where('deleted_at', 0);
         })->where('user_type', 1)
             ->where(static function ($query) {
