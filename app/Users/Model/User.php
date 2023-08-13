@@ -108,7 +108,7 @@ class User extends MineModel
     public const VIP_TYPE_NONE = [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME];
 
     // 高中课程ID
-    public const VIP_TYPE_HIGH = [1436, 1433, 1432, 1431, 1430, 1429, 1428, 1427, 1426];
+    public const VIP_TYPE_HIGH = [1436, 1433, 1432, 1431, 1430, 1429, 1428, 1427, 1426, 1454];
 
     /**
      * @description 优享会员
@@ -195,11 +195,11 @@ class User extends MineModel
         $super = [self::VIP_TYPE_SUPER, ...self::VIP_TYPE_HIGH];
         return $this->hasOne(Order::class, 'user_id', 'id')->select(['user_id', 'id'])->selectRaw('CASE
            WHEN shop_id = ? THEN 1
-           WHEN shop_id in (950, 1436, 1433, 1432, 1431, 1430, 1429, 1428, 1427, 1426) THEN 2
+           WHEN shop_id in (950, 1436, 1433, 1432, 1431, 1430, 1429, 1428, 1427, 1426, 1454) THEN 2
            WHEN shop_id = ? THEN 3
            ELSE 0 END AS vipType', [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPREME])->selectRaw('CASE
            WHEN shop_id = ? THEN "优享会员"
-           WHEN shop_id in (950, 1436, 1433, 1432, 1431, 1430, 1429, 1428, 1427, 1426) THEN "超级会员"
+           WHEN shop_id in (950, 1436, 1433, 1432, 1431, 1430, 1429, 1428, 1427, 1426, 1454) THEN "超级会员"
            WHEN shop_id = ? THEN "至尊会员"
            ELSE 0 END AS vipName', [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPREME])->selectRaw("DATE_ADD(FROM_UNIXTIME(created_at, '%Y-%m-%d'), INTERVAL indate DAY) AS endDate")->whereIn('shop_id', [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME, ...self::VIP_TYPE_HIGH])->NormalOrder()->IsNotExpire()->orderBy('vipType', 'desc');
     }
