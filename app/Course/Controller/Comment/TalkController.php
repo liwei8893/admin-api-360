@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Course\Controller\Comment;
 
-use App\Course\Dto\CommentDto;
+use App\Course\Dto\CommentTalkDto;
 use App\Course\Request\TalkRequest;
 use App\Course\Service\TalkService;
 use Exception;
@@ -100,6 +100,6 @@ class TalkController extends MineController
     #[PostMapping('export'), Permission('course:talk:export'), OperationLog]
     public function export(): ResponseInterface
     {
-        return $this->service->export($this->request->all(), CommentDto::class, '讲一讲数据列表');
+        return $this->service->export($this->request->all(), CommentTalkDto::class, '讲一讲数据列表');
     }
 }
