@@ -1,0 +1,9 @@
+{
+    "name": "Commerce",
+    "label": "电商管理",
+    "description": "电商管理",
+    "installed": true,
+    "enabled": true,
+    "version": "1.0.0",
+    "order": 0
+}

@@ -117,6 +117,12 @@ class OrderSignupService extends AbstractService
      */
     public function handleInsertCourseData(array $data, mixed $course, string $orderNum = ''): array
     {
+        // 未登录的算进app
+        try {
+            $hasSceneApp = $this->loginUser->getScene() === 'app';
+        } catch (Exception $e) {
+            $hasSceneApp = true;
+        }
         $orderNumber = empty($orderNum) ? $this->getOrderSn() : $orderNum;
         return [
             'user_id' => $data['user_id'],
@@ -127,8 +133,8 @@ class OrderSignupService extends AbstractService
             'shop_type' => $data['shop_type'] ?? 1,
             'pay_type' => $data['pay_type'] ?? 6, // 支付类型，管理员赠送
             'pay_states' => $data['pay_states'] ?? $this->loginUser->isNoSignUpRole() ? Order::PAY_SUCCESS : Order::PAY_AUDIT,
-            'created_id' => $this->loginUser->getId(),
-            'created_name' => $this->loginUser->getScene() === 'app' ? '' : $this->loginUser->getUsername(),
+            'created_id' => $hasSceneApp ? '' : $this->loginUser->getId(),
+            'created_name' => $hasSceneApp ? '' : $this->loginUser->getUsername(),
             'order_price' => isset($data['money']) ? $data['money'] * 100 : $course['price'],
             'is_logistics' => 0,
             'indate' => $data['indate'] ?? 30,
@@ -137,6 +143,7 @@ class OrderSignupService extends AbstractService
             'remark' => $data['remark'] ?? '',
             'is_vip' => $data['is_vip'] ?? 0,
             'real_year' => $data['real_year'] ?? '',
+            'coupon_id' => $data['coupon_id'] ?? 0,
         ];
     }
 

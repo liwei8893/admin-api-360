@@ -48,6 +48,22 @@ class CourseBasisController extends MineController
     }
 
     /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('list')]
+    public function list(): ResponseInterface
+    {
+        $params = $this->request->all();
+        $params['orderBy'] = ['sort', 'id'];
+        $params['orderType'] = ['desc', 'desc'];
+        if (! isset($params['select'])) {
+            $params['select'] = 'id,title';
+        }
+        return $this->success($this->service->getList($params));
+    }
+
+    /**
      * 回收站列表.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
