@@ -40,6 +40,7 @@ class CoursePeriodService extends AbstractService
         $grade = $courseModel->basisGrade->pluck('key')->toArray();
         // 增加点击量
         ++$model->hits;
+        ++$model->real_hits;
         $model->save();
         return ['url' => $model['qiniu_url'], 'subject' => $courseModel['subject_id'], 'grade' => $grade, 'courseId' => $courseModel['id']];
     }

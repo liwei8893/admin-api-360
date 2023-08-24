@@ -8,8 +8,6 @@ use App\Question\Model\Question;
 use App\System\Model\Tag;
 use App\Users\Model\User;
 use App\Users\Model\UserCourseRecord;
-use Carbon\Carbon;
-use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasMany;
@@ -36,8 +34,8 @@ use Mine\MineModel;
  * @property string $admin_code 管理员进入房间的参加码
  * @property string $teacher_code 老师进入房间的参加码
  * @property string $student_code 学生公共参加码
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
  * @property int $is_push 是否推送,0否1是
  * @property int $is_getroominfo 0未拉取直播教室学员观看记录;1已成功拉取到数据；2已拉取未成功或未拉取到数据;
  * @property int $cloud_type 云平台，0 = 百家云，1 = 腾讯云
@@ -56,13 +54,14 @@ use Mine\MineModel;
  * @property string $qurstion_str
  * @property int $duration 视频时长
  * @property int $hits 点击量
- * @property User $teacher
- * @property Collection|Talk[] $talk
- * @property Collection|Sun[] $sun
- * @property Collection|Question[] $questionPeriod
- * @property CourseBasis $courseBasis
- * @property UserCourseRecord $courseRecord
- * @property Collection|Tag[] $tags
+ * @property int $real_hits 真实点击量
+ * @property null|User $teacher
+ * @property null|\Hyperf\Database\Model\Collection|Talk[] $talk
+ * @property null|\Hyperf\Database\Model\Collection|Sun[] $sun
+ * @property null|\Hyperf\Database\Model\Collection|Question[] $questionPeriod
+ * @property null|CourseBasis $courseBasis
+ * @property null|UserCourseRecord $courseRecord
+ * @property null|\Hyperf\Database\Model\Collection|Tag[] $tags
  */
 class CoursePeriod extends MineModel
 {
@@ -76,12 +75,12 @@ class CoursePeriod extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'title', 'course_basis_id', 'course_chapter_id', 'room_video_id', 'room_id', 'is_playback', 'is_free', 'is_vip_class', 'is_try_see', 'is_download', 'try_see_time', 'start_play', 'end_play', 'start_play_date', 'admin_code', 'teacher_code', 'student_code', 'created_at', 'updated_at', 'is_push', 'is_getroominfo', 'cloud_type', 'tencent_play_url', 'teacher_id', 'assistant_id', 'template_name', 'play_back_url', 'assistant_name', 'is_login', 'subject_id', 'subject_name', 'qiniu_url', 'filePath', 'is_group_live', 'qurstion_str', 'duration', 'hits'];
+    protected array $fillable = ['id', 'title', 'course_basis_id', 'course_chapter_id', 'room_video_id', 'room_id', 'is_playback', 'is_free', 'is_vip_class', 'is_try_see', 'is_download', 'try_see_time', 'start_play', 'end_play', 'start_play_date', 'admin_code', 'teacher_code', 'student_code', 'created_at', 'updated_at', 'is_push', 'is_getroominfo', 'cloud_type', 'tencent_play_url', 'teacher_id', 'assistant_id', 'template_name', 'play_back_url', 'assistant_name', 'is_login', 'subject_id', 'subject_name', 'qiniu_url', 'filePath', 'is_group_live', 'qurstion_str', 'duration', 'hits', 'real_hits'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'course_chapter_id' => 'integer', 'is_playback' => 'integer', 'is_free' => 'integer', 'is_vip_class' => 'integer', 'is_try_see' => 'integer', 'is_download' => 'integer', 'try_see_time' => 'integer', 'start_play' => 'integer', 'end_play' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_push' => 'integer', 'is_getroominfo' => 'integer', 'cloud_type' => 'integer', 'is_login' => 'integer', 'is_group_live' => 'integer', 'duration' => 'integer', 'hits' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'course_chapter_id' => 'integer', 'is_playback' => 'integer', 'is_free' => 'integer', 'is_vip_class' => 'integer', 'is_try_see' => 'integer', 'is_download' => 'integer', 'try_see_time' => 'integer', 'start_play' => 'integer', 'end_play' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_push' => 'integer', 'is_getroominfo' => 'integer', 'cloud_type' => 'integer', 'is_login' => 'integer', 'is_group_live' => 'integer', 'duration' => 'integer', 'hits' => 'integer', 'real_hits' => 'integer'];
 
     protected ?string $dateFormat = 'U';
 
