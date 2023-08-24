@@ -49,6 +49,11 @@ class CommerceCardUsageMapper extends AbstractMapper
         if (! empty($params['withUser'])) {
             $query->with('user:id,user_name,mobile');
         }
+        if (isset($params['mobile'])) {
+            $query->whereHas('user', function (Builder $query) use ($params) {
+                $query->where('mobile', 'like', "{$params['mobile']}%");
+            });
+        }
         return $query;
     }
 }
