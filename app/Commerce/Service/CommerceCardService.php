@@ -57,7 +57,7 @@ class CommerceCardService extends AbstractService
         $mobile = $params['mobile'];
         $smsCode = $params['sms_code'];
         // 短信验证码验证
-        //        $this->smsService->checkSmsCaptcha((string) $mobile, (string) $smsCode);
+        $this->smsService->checkSmsCaptcha((string) $mobile, (string) $smsCode);
         // 判断是否使用
         /** @var CommerceCard $cardModel */
         $cardModel = $this->mapper->findCardByCardId((int) $cardId);
