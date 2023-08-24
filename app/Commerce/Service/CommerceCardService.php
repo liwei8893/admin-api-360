@@ -7,6 +7,7 @@ namespace App\Commerce\Service;
 use App\Commerce\Mapper\CommerceCardMapper;
 use App\Commerce\Model\CommerceCard;
 use App\Commerce\Model\CommerceCardUsage;
+use App\Course\Model\CourseBasis;
 use App\Order\Model\Order;
 use App\Order\Service\OrderSignupService;
 use App\Score\Event\ScoreAddEvent;
@@ -113,11 +114,22 @@ class CommerceCardService extends AbstractService
             } elseif (! $orderModel) {
                 // 没有订单,创建订单
                 $insertData = $this->orderSignupService->handleInsertCourseData($insetInfo, $courseModel);
-                Order::create($insertData);
+                $orderModel = Order::create($insertData);
             }
             // 如果是950,年级限制为1-9
             if ($courseModel->id === User::VIP_TYPE_SUPER) {
                 $orderModel->orderGrade()->sync([1, 2, 5, 7, 9, 11, 12, 13, 14]);
+            }
+            // 如果是高中单科,没有特色课的,送特色课
+            if (in_array($courseModel->id, User::VIP_TYPE_HIGH)) {
+                /* @var Order $featureOrderModel */
+                $featureOrderModel = $userModel->orders()->normalOrder()->where('shop_id', 1436)->first();
+                if (! $featureOrderModel) {
+                    $featureInsetInfo = [...$insetInfo, 'remark' => '电商卡片激活赠送特色课', 'money' => 0, 'real_year' => 0];
+                    $featureCourseModel = CourseBasis::query()->find(1436);
+                    $insertData = $this->orderSignupService->handleInsertCourseData($featureInsetInfo, $featureCourseModel);
+                    Order::create($insertData);
+                }
             }
             // 增加积分
             event(new ScoreAddEvent('init', $userModel->id, $orderModel->id));

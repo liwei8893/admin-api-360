@@ -107,7 +107,7 @@ class User extends MineModel
      */
     public const VIP_TYPE_NONE = [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME];
 
-    // 高中课程ID
+    // 高中课程ID,1436为特色课
     public const VIP_TYPE_HIGH = [1436, 1433, 1432, 1431, 1430, 1429, 1428, 1427, 1426, 1454];
 
     /**
