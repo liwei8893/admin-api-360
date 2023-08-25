@@ -89,41 +89,31 @@ class SubjectAuthAspect extends AbstractAspect
                 throw new NormalStatusException('未购买当前课程,请联系课程顾问购买!');
             }
         }
+
+        // 新逻辑,先验证分科订单
+        /** @var Collection $userSubjectOrder */
+        $userSubjectOrder = $userModel->haveSubject()->with(['course' => function (BelongsTo $builder) {
+            $builder->with('basisGrade')->select(['id', 'subject_id']);
+        }])->get();
+        // 有分科订单,科目和年级都验证通过就返回,不然往下走进行老950会员验证
+        if ($userSubjectOrder->isNotEmpty()) {
+            // 是否购买当前科目
+            $hasSubject = $userSubjectOrder->pluck('course.subject_id')->map(fn ($item) => ['key' => $item])->whereIn('key', $subjectId);
+            // 是否购买当前年级
+            $hasGrade = $userSubjectOrder->map(fn ($item) => $item['course']['basisGrade']->pluck('key'))
+                ->flatten()->unique()->values()->map(fn ($item) => ['key' => $item])->whereIn('key', $gradeId);
+            // 科目和年级都验证通过,表示购买了对应分科
+            if ($hasGrade->isNotEmpty() && $hasSubject->isNotEmpty()) {
+                return $data;
+            }
+        }
+
+        // 兼容之前老会员950
         $user = $userModel->vipType()->with(['orderGrade', 'orderSubject'])
             ->first();
-        // 为空验证新分科权限
+        // 没有老会员
         if (! $user) {
-            // 没会员就进行新分科验证
-            /** @var Collection $userSubjectOrder */
-            $userSubjectOrder = $userModel->haveSubject()->with(['course' => function (BelongsTo $builder) {
-                $builder->with('basisGrade')->select(['id', 'subject_id']);
-            }])->get();
-            if ($userSubjectOrder->isEmpty()) {
-                $this->noPermissionTip();
-            }
-            // 所有科目ID
-            $allSubject = $userSubjectOrder->pluck('course.subject_id')->map(fn ($item) => ['key' => $item]);
-            // 为空表示没有购买科目
-            if ($allSubject->isEmpty()) {
-                $this->noPermissionTip();
-            }
-            // 有科目,判断当前课程科目是否在内
-            $diffSubject = $allSubject->whereIn('key', $subjectId);
-            if ($diffSubject->isEmpty()) {
-                $this->noPermissionTip();
-            }
-            // 判断年级,所有年级ID
-            $allGrade = $userSubjectOrder->map(fn ($item) => $item['course']['basisGrade']->pluck('key'))->flatten()->unique()->values()->map(fn ($item) => ['key' => $item]);
-            // 为空表示没有购买年级
-            if ($allGrade->isEmpty()) {
-                $this->noPermissionTip();
-            }
-            // 有科目,判断当前课程年级是否在内
-            $diffGrade = $allGrade->whereIn('key', $gradeId);
-            if ($diffGrade->isEmpty()) {
-                $this->noPermissionTip();
-            }
-            return $data;
+            $this->noPermissionTip();
         }
         // 订单年级,为空表示购买所有年级,直接通过
         /* @var Collection $userGrade */
