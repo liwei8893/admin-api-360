@@ -22,4 +22,7 @@ class CommentDto implements MineModelExcel
 
     #[ExcelProperty(value: '章节名称', index: 3, customField: 'course_period.title')]
     public string $course_period_title;
+
+    #[ExcelProperty(value: '内容', index: 4)]
+    public string $html;
 }

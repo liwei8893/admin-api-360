@@ -64,6 +64,26 @@ class SunService extends AbstractService
         return $this->getPageList($params);
     }
 
+    public function vote($params): array
+    {
+        return $this->mapper->voteToggle($params['id'], user('app')->getId());
+    }
+
+    public function delete(array $ids): bool
+    {
+        foreach ($ids as $id) {
+            // 判断是否是自己的内容,用户只能删除自己发布的
+            $sunModel = $this->mapper->read($id);
+            if (! $sunModel) {
+                throw new NormalStatusException('内容不存在!');
+            }
+            if (user('app')->getId() !== $sunModel['user_id']) {
+                throw new NormalStatusException('只能删除自己发布的内容!');
+            }
+        }
+        return parent::delete($ids);
+    }
+
     protected function handleData(array $params): array
     {
         if (! isset($params['status'])) {
@@ -87,23 +107,11 @@ class SunService extends AbstractService
         return $params;
     }
 
-    public function vote($params): array
+    /**
+     * 需要处理导出数据时,重写函数.
+     */
+    protected function handleExportData(array &$data): void
     {
-        return $this->mapper->voteToggle($params['id'], user('app')->getId());
-    }
-
-    public function delete(array $ids): bool
-    {
-        foreach ($ids as $id) {
-            // 判断是否是自己的内容,用户只能删除自己发布的
-            $sunModel = $this->mapper->read($id);
-            if (! $sunModel) {
-                throw new NormalStatusException('内容不存在!');
-            }
-            if (user('app')->getId() !== $sunModel['user_id']) {
-                throw new NormalStatusException('只能删除自己发布的内容!');
-            }
-        }
-        return parent::delete($ids);
+        $data['html'] = strip_tags($data['html'], '<a><img>');
     }
 }
