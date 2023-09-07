@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Sta\Service;
 
+use App\Course\Model\CoursePeriod;
 use App\Order\Model\Order;
 use App\Order\Model\OrderSummary;
 use App\Order\Model\OrderTransaction;
@@ -31,6 +32,37 @@ class StaService extends AbstractService
      */
     #[Inject]
     public $mapper;
+
+    public function getCourseHits(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $paginate = CoursePeriod::with(['courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title'])
+            ->select(['course_basis_id'])
+            ->selectRaw('sum(real_hits) as hits')
+            ->where('real_hits', '>', 0)
+            // 课程筛选
+            ->whereHas('courseBasis', function (Builder $query) use ($params) {
+                $query->when(! empty($params['course_basis_title']), function (Builder $query) use ($params) {
+                    $query->where('course_basis.title', 'like', "%{$params['course_basis_title']}%");
+                });
+            })
+            ->groupBy('course_basis_id')->orderBy('hits', 'desc')
+            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        return $this->mapper->setPaginate($paginate);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    public function getCourseHitsExport(array $params, string $dto, string $filename): ResponseInterface
+    {
+        $params['pageSize'] = 10000;
+        $data = $this->getCourseHits($params);
+        return (new MineCollection())->export($dto, $filename, $data['items']);
+    }
 
     public function getCourseRecord(array $params): array
     {

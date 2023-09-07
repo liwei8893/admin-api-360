@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Sta\Controller;
 
+use App\Sta\Dto\CourseHitsDto;
 use App\Sta\Dto\CourseRecordDto;
 use App\Sta\Dto\HasCourseRecordDto;
 use App\Sta\Dto\OrderAddDto;
@@ -28,6 +29,30 @@ class StaController extends MineController
 {
     #[Inject]
     public StaService $service;
+
+    /**
+     * 课程点击量.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('courseHits'), Permission('sta:courseHits')]
+    public function courseHits(): ResponseInterface
+    {
+        return $this->success($this->service->getCourseHits($this->request->all()));
+    }
+
+    /**
+     * 课程点击量导出.
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('courseHits/export'), Permission('sta:courseHits')]
+    public function courseHitsExport(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->service->getCourseHitsExport($params, CourseHitsDto::class, '课程点击量导出');
+    }
 
     /**
      * 听课统计
