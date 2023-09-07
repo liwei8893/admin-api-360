@@ -14,6 +14,7 @@ use App\Users\Model\User;
 use App\Users\Model\UserCourseRecord;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
@@ -52,6 +53,14 @@ class StaService extends AbstractService
             ->having('hits', '>', $hits)
             ->paginate((int) $perPage, ['*'], 'page', (int) $page);
         return $this->mapper->setPaginate($paginate);
+    }
+
+    public function getCourseHitsDetail(int $id): array|Collection
+    {
+        return CoursePeriod::query()
+            ->select(['id', 'course_basis_id', 'real_hits', 'title'])
+            ->where('course_basis_id', $id)
+            ->get();
     }
 
     /**

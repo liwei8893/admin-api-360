@@ -43,6 +43,17 @@ class StaController extends MineController
     }
 
     /**
+     * 课程点击量.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('hits/course/{id}'), Permission('sta:hits:course')]
+    public function courseHitsDetail(int $id): ResponseInterface
+    {
+        return $this->success($this->service->getCourseHitsDetail($id));
+    }
+
+    /**
      * 课程点击量导出.
      * @throws ContainerExceptionInterface
      * @throws Exception
