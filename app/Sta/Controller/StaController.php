@@ -11,6 +11,7 @@ use App\Sta\Dto\OrderAddDto;
 use App\Sta\Dto\OrderRefundDto;
 use App\Sta\Dto\OrderRenewDto;
 use App\Sta\Dto\orderSummarySumDto;
+use App\Sta\Dto\PeriodHitsDto;
 use App\Sta\Service\StaService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -35,7 +36,7 @@ class StaController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('courseHits'), Permission('sta:courseHits')]
+    #[GetMapping('hits/course'), Permission('sta:hits:course')]
     public function courseHits(): ResponseInterface
     {
         return $this->success($this->service->getCourseHits($this->request->all()));
@@ -47,11 +48,35 @@ class StaController extends MineController
      * @throws Exception
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('courseHits/export'), Permission('sta:courseHits')]
+    #[PostMapping('hits/course/export'), Permission('sta:hits:course')]
     public function courseHitsExport(): ResponseInterface
     {
         $params = $this->request->all();
         return $this->service->getCourseHitsExport($params, CourseHitsDto::class, '课程点击量导出');
+    }
+
+    /**
+     * 章节点击量.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('hits/period'), Permission('sta:hits:period')]
+    public function periodHits(): ResponseInterface
+    {
+        return $this->success($this->service->getPeriodHits($this->request->all()));
+    }
+
+    /**
+     * 课程点击量导出.
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('hits/period/export'), Permission('sta:hits:period')]
+    public function periodHitsExport(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->service->getPeriodHitsExport($params, PeriodHitsDto::class, '章节点击量导出');
     }
 
     /**

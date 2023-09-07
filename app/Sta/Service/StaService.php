@@ -37,6 +37,7 @@ class StaService extends AbstractService
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
         $page = $params['page'] ?? 1;
+        $hits = $params['hits'] ?? 0;
         $paginate = CoursePeriod::with(['courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title'])
             ->select(['course_basis_id'])
             ->selectRaw('sum(real_hits) as hits')
@@ -48,6 +49,7 @@ class StaService extends AbstractService
                 });
             })
             ->groupBy('course_basis_id')->orderBy('hits', 'desc')
+            ->having('hits', '>', $hits)
             ->paginate((int) $perPage, ['*'], 'page', (int) $page);
         return $this->mapper->setPaginate($paginate);
     }
@@ -61,6 +63,40 @@ class StaService extends AbstractService
     {
         $params['pageSize'] = 10000;
         $data = $this->getCourseHits($params);
+        return (new MineCollection())->export($dto, $filename, $data['items']);
+    }
+
+    public function getPeriodHits(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $hits = $params['real_hits'] ?? 0;
+        $paginate = CoursePeriod::with(['courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title'])
+            ->select(['id', 'course_basis_id', 'real_hits', 'title'])
+            ->where('real_hits', '>', $hits)
+            // 课程筛选
+            ->whereHas('courseBasis', function (Builder $query) use ($params) {
+                $query->when(! empty($params['course_basis_title']), function (Builder $query) use ($params) {
+                    $query->where('course_basis.title', 'like', "%{$params['course_basis_title']}%");
+                });
+            })
+            ->when(! empty($params['title']), function (Builder $query) use ($params) {
+                $query->where('title', 'like', "%{$params['title']}%");
+            })
+            ->orderBy('real_hits', 'desc')
+            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+        return $this->mapper->setPaginate($paginate);
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    public function getPeriodHitsExport(array $params, string $dto, string $filename): ResponseInterface
+    {
+        $params['pageSize'] = 10000;
+        $data = $this->getPeriodHits($params);
         return (new MineCollection())->export($dto, $filename, $data['items']);
     }
 
