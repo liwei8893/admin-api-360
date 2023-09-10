@@ -157,7 +157,7 @@ class CommerceCardService extends AbstractService
         // 生成的卡号
         $cardArr = [];
         for ($i = 0; $i < $params['num']; ++$i) {
-            $cardArr[] = $this->generateCardId((string) $params['course_id']);
+            $cardArr[] = $this->generateCardId();
         }
         if (count($cardArr) !== count(array_unique($cardArr))) {
             throw new NormalStatusException('生成的卡号有重复数据,请重新生成!');
@@ -186,17 +186,15 @@ class CommerceCardService extends AbstractService
         return $exportData;
     }
 
-    public function generateCardId($courseId = ''): string
+    public function generateCardId($len = 8): string
     {
-        $len = 12 - strlen($courseId);
-
         $code = '';
-        $characters = '0123456789';
+        $characters = '123456789';
 
         for ($i = 0; $i < $len; ++$i) {
             $code .= $characters[random_int(0, strlen($characters) - 1)];
         }
-        return $courseId . $code;
+        return $code;
     }
 
     /**
