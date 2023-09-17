@@ -70,7 +70,7 @@ class StaService extends AbstractService
      */
     public function getCourseHitsExport(array $params, string $dto, string $filename): ResponseInterface
     {
-        $params['pageSize'] = 10000;
+        $params['pageSize'] = 100000;
         $data = $this->getCourseHits($params);
         return (new MineCollection())->export($dto, $filename, $data['items']);
     }
@@ -104,7 +104,7 @@ class StaService extends AbstractService
      */
     public function getPeriodHitsExport(array $params, string $dto, string $filename): ResponseInterface
     {
-        $params['pageSize'] = 10000;
+        $params['pageSize'] = 100000;
         $data = $this->getPeriodHits($params);
         return (new MineCollection())->export($dto, $filename, $data['items']);
     }
@@ -162,7 +162,7 @@ class StaService extends AbstractService
      */
     public function getCourseRecordExport(array $params, string $dto, string $filename): ResponseInterface
     {
-        $params['pageSize'] = 10000;
+        $params['pageSize'] = 100000;
         $data = $this->getCourseRecord($params);
         return (new MineCollection())->export($dto, $filename, $data['items']);
     }
@@ -223,7 +223,7 @@ class StaService extends AbstractService
      */
     public function getHasCourseRecordExport(array $params, string $dto, string $filename): ResponseInterface
     {
-        $params['pageSize'] = 10000;
+        $params['pageSize'] = 100000;
         $data = $this->getHasCourseRecord($params);
         $cb = function ($item) {
             $item['has_record'] = ! empty($item['has_record']) ? '是' : '否';
@@ -301,7 +301,7 @@ class StaService extends AbstractService
      */
     public function getOrderAddExport(array $params, string $dto, string $filename): ResponseInterface
     {
-        $params['pageSize'] = 10000;
+        $params['pageSize'] = 100000;
         $data = $this->getOrderAdd($params);
         $cb = function ($item) {
             $item['order_grade'] = $item['orderGrade']->implode('title', ',');
@@ -386,7 +386,7 @@ class StaService extends AbstractService
      */
     public function getOrderRenewExport(array $params, string $dto, string $filename): ResponseInterface
     {
-        $params['pageSize'] = 10000;
+        $params['pageSize'] = 100000;
         $data = $this->getOrderRenew($params);
         $cb = function ($item) {
             $item['order_grade'] = $item['order']['orderGrade']->implode('title', ',');
@@ -468,7 +468,7 @@ class StaService extends AbstractService
      */
     public function getOrderRefundExport(array $params, string $dto, string $filename): ResponseInterface
     {
-        $params['pageSize'] = 10000;
+        $params['pageSize'] = 100000;
         $data = $this->getOrderRefund($params);
         $cb = function ($item) {
             $item['order_grade'] = $item['order']['orderGrade']->implode('title', ',');
@@ -511,7 +511,7 @@ class StaService extends AbstractService
      */
     public function getOrderSummarySumExport(array $params, string $dto, string $filename): ResponseInterface
     {
-        $params['pageSize'] = 10000;
+        $params['pageSize'] = 100000;
         $data = $this->getOrderSummarySum($params);
         $cb = function ($item) {
             $item['created_name'] = $item['adminUser']['nickname'];

@@ -38,12 +38,12 @@ class OrderAddDto implements MineModelExcel
     #[ExcelProperty(value: '订单备注', index: 8)]
     public string $oRemark;
 
-    #[ExcelProperty(value: '实际报名年数', index: 10)]
+    #[ExcelProperty(value: '实际报名年数', index: 9)]
     public string $real_year;
 
-    #[ExcelProperty(value: '购买年级', index: 11)]
+    #[ExcelProperty(value: '购买年级', index: 10)]
     public string $order_grade;
 
-    #[ExcelProperty(value: '购买科目', index: 12)]
+    #[ExcelProperty(value: '购买科目', index: 11)]
     public string $order_subject;
 }
