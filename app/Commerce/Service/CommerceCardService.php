@@ -90,7 +90,7 @@ class CommerceCardService extends AbstractService
         $insetInfo = [
             'indate' => 365,
             'platform' => $userModel->platform,
-            'remark' => '电商卡片激活',
+            'remark' => '会员卡片激活',
             'money' => 365,
             'actual_price' => 365,
             'order_price' => 365 * 100,
