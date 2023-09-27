@@ -30,7 +30,7 @@ class DailyStatistic extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'date' => 'datetime', 'hits' => 'integer', 'h5_hits' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'date' => 'date', 'hits' => 'integer', 'h5_hits' => 'integer'];
 
     protected array $dates = ['date'];
 }
