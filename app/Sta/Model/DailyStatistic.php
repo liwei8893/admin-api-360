@@ -10,7 +10,8 @@ use Mine\MineModel;
 /**
  * @property int $id
  * @property Carbon $date 日期
- * @property int $hits 网站点击量
+ * @property int $hits pc网站点击量
+ * @property int $h5_hits 手机端点击量
  */
 class DailyStatistic extends MineModel
 {
@@ -24,12 +25,12 @@ class DailyStatistic extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'date', 'hits'];
+    protected array $fillable = ['id', 'date', 'hits', 'h5_hits'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'date' => 'datetime', 'hits' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'date' => 'datetime', 'hits' => 'integer', 'h5_hits' => 'integer'];
 
     protected array $dates = ['date'];
 }

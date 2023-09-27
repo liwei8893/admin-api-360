@@ -15,10 +15,14 @@ class DailyMapper extends AbstractMapper
         $this->model = DailyStatistic::class;
     }
 
-    public function setDailyHits(): bool
+    public function setDailyHits(array $params): bool
     {
         $model = DailyStatistic::firstOrCreate(['date' => Carbon::now()->toDateString()]);
-        ++$model->hits;
+        if (isset($params['type']) && $params['type'] === 'h5') {
+            ++$model->h5_hits;
+        } else {
+            ++$model->hits;
+        }
         return $model->save();
     }
 }

@@ -16,8 +16,8 @@ class DailyService extends AbstractService
     #[Inject]
     public $mapper;
 
-    public function setDailyHits(): bool
+    public function setDailyHits(array $params): bool
     {
-        return $this->mapper->setDailyHits();
+        return $this->mapper->setDailyHits($params);
     }
 }
