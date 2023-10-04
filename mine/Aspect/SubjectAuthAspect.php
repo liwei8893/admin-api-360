@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Mine\Aspect;
 
+use App\Course\Model\CoursePeriod;
+use App\Course\Service\CoursePeriodService;
 use App\Course\Service\CourseService;
 use App\Users\Model\User;
 use App\Users\Service\UsersService;
@@ -45,6 +47,7 @@ class SubjectAuthAspect extends AbstractAspect
          * @param string $data ['url']
          * @param int $data ['grade']
          * @param int $data ['subject']
+         * @param int $data ['subject']
          */
         $data = $proceedingJoinPoint->process();
 
@@ -62,6 +65,9 @@ class SubjectAuthAspect extends AbstractAspect
         $courseField = $auth->courseField;
         $courseId = $data[$courseField] ?? null;
 
+        $periodField = $auth->periodField;
+        $periodId = $data[$periodField] ?? null;
+
         $userId = user('app')->getId();
         if (! $userId) {
             throw new NormalStatusException('未登录,请重新登录之后再执行操作!');
@@ -71,6 +77,15 @@ class SubjectAuthAspect extends AbstractAspect
         $userModel = $userService->read($userId);
         if (! $userModel) {
             throw new NormalStatusException('未查询到用户!');
+        }
+        // 有章节ID检查是否免费章节
+        if ($periodId) {
+            $periodService = $this->container->get(CoursePeriodService::class);
+            /* @var CoursePeriod $periodModel */
+            $periodModel = $periodService->read($periodId);
+            if ($periodModel && $periodModel->is_free === 1) {
+                return $data;
+            }
         }
         // 如果有课程ID先验证课程是否单独购买
         if ($courseId) {

@@ -20,4 +20,6 @@ class SubjectAuth extends AbstractAnnotation
     public string $gradeField = 'grade';
 
     public string $courseField = 'courseId';
+
+    public string $periodField = 'periodId';
 }

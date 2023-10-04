@@ -42,7 +42,7 @@ class CoursePeriodService extends AbstractService
         ++$model->hits;
         ++$model->real_hits;
         $model->save();
-        return ['url' => $model['qiniu_url'], 'subject' => $courseModel['subject_id'], 'grade' => $grade, 'courseId' => $courseModel['id']];
+        return ['url' => $model['qiniu_url'], 'subject' => $courseModel['subject_id'], 'grade' => $grade, 'courseId' => $courseModel['id'], 'periodId' => $model->id];
     }
 
     /**

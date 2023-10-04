@@ -8,6 +8,7 @@ use App\Question\Model\Question;
 use App\System\Model\Tag;
 use App\Users\Model\User;
 use App\Users\Model\UserCourseRecord;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasMany;
@@ -56,16 +57,16 @@ use Mine\MineModel;
  * @property int $hits 点击量
  * @property int $real_hits 真实点击量
  * @property null|User $teacher
- * @property null|\Hyperf\Database\Model\Collection|Talk[] $talk
- * @property null|\Hyperf\Database\Model\Collection|Sun[] $sun
- * @property null|\Hyperf\Database\Model\Collection|Question[] $questionPeriod
+ * @property null|Collection|Talk[] $talk
+ * @property null|Collection|Sun[] $sun
+ * @property null|Collection|Question[] $questionPeriod
  * @property null|CourseBasis $courseBasis
  * @property null|UserCourseRecord $courseRecord
- * @property null|\Hyperf\Database\Model\Collection|Tag[] $tags
+ * @property null|Collection|Tag[] $tags
  */
 class CoursePeriod extends MineModel
 {
-    public const COMMON_FIELDS = ['course_periods.id', 'course_periods.title', 'course_basis_id', 'course_chapter_id', 'is_free', 'teacher_id', 'assistant_id', 'subject_id', 'subject_name', 'duration', 'hits', 'qurstion_str', 'updated_at'];
+    public const COMMON_FIELDS = ['course_periods.id', 'course_periods.title', 'course_basis_id', 'course_chapter_id', 'is_free', 'teacher_id', 'assistant_id', 'subject_id', 'subject_name', 'duration', 'hits', 'qurstion_str', 'updated_at', 'course_periods.is_free'];
 
     /**
      * The table associated with the model.
