@@ -28,7 +28,7 @@ class CourseBasisMapper extends AbstractMapper
     /**
      * 批量更新.
      */
-    public function batchUpdate(array $ids, array $data): bool
+    public function batchUpdate(array $ids, array $data): int
     {
         return $this->model::query()->whereIn('id', $ids)->update($data);
     }

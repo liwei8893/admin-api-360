@@ -63,7 +63,7 @@ class CourseBasisService extends AbstractService
      * 批量更新.
      * @param mixed $data
      */
-    public function batchUpdate($data): bool
+    public function batchUpdate($data): int
     {
         $ids = $data['ids'];
         unset($data['ids']);
@@ -75,7 +75,7 @@ class CourseBasisService extends AbstractService
      * @param mixed $id
      * @param mixed $statusValue
      */
-    public function changeCourseStatus(int $id, string $statusValue): bool
+    public function changeCourseStatus(int $id, string $statusValue): int
     {
         return $this->mapper->batchUpdate([$id], ['states' => $statusValue]);
     }
