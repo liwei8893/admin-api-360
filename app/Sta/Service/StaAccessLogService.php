@@ -32,6 +32,9 @@ class StaAccessLogService extends AbstractService
         $request = container()->get(MineRequest::class);
         $agent = $request->getHeader('user-agent')[0];
         $ip = $request->ip();
+        if ($ip === '127.0.0.1') {
+            return true;
+        }
         // 时间
         $params['time'] = time();
         // 客户端IP
