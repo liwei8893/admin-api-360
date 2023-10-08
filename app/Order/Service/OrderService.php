@@ -8,6 +8,8 @@ use App\Order\Mapper\OrderMapper;
 use App\Order\Model\Order;
 use App\Order\Model\UsersRenew;
 use App\Score\Event\ScoreAddEvent;
+use App\System\Model\SystemRole;
+use App\System\Service\SystemQueueMessageService;
 use App\Users\Model\User;
 use App\Users\Service\UserScoreService;
 use Carbon\Carbon;
@@ -17,6 +19,7 @@ use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Throwable;
 
 /**
  * 订单管理服务类.
@@ -37,6 +40,9 @@ class OrderService extends AbstractService
 
     #[Inject]
     protected UserScoreService $userScoreService;
+
+    #[Inject]
+    protected SystemQueueMessageService $queueMessageService;
 
     /**
      * 批量修改有效期
@@ -89,6 +95,15 @@ class OrderService extends AbstractService
             $isNoAudit = user()->isNoAuditRole();
             if ($isNoAudit && $item->shop_id === User::VIP_TYPE_SUPER) {
                 event(new ScoreAddEvent('renew', $item->user_id, $insertId));
+            }
+            // 需要审核,发送站内信
+            if (! $isNoAudit) {
+                // 发送站内消息
+                try {
+                    $adminUsers = SystemRole::find(3)->users;
+                    $this->queueMessageService->sendMessage(['title' => '续费审核', 'content' => '有续费待审核,请查看!', 'users' => [...$adminUsers->pluck('id')->toArray(), 2]]);
+                } catch (NotFoundExceptionInterface|ContainerExceptionInterface|Throwable $e) {
+                }
             }
         }
         return true;
