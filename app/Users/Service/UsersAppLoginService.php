@@ -166,6 +166,7 @@ class UsersAppLoginService extends AbstractService
             $oauth = $app->getOauth();
             $user = $oauth->userFromCode($code);
         } catch (\EasyWeChat\Kernel\Exceptions\InvalidArgumentException $e) {
+            logger()->error('微信登录:' . json_encode($e->getMessage()));
             throw new NormalStatusException('openId获取失败，请刷新页面重试!');
         }
         $openId = $user->getId();
