@@ -161,18 +161,15 @@ class UsersAppLoginService extends AbstractService
     {
         // 有mobile绑定手机号
         $code = $params['code'];
-        logger()->error('微信登录CODE:' . $code);
         $app = EasyWechat::officialAccount();
         try {
             $oauth = $app->getOauth();
             $user = $oauth->scopes(['snsapi_base'])->userFromCode($code);
         } catch (\EasyWeChat\Kernel\Exceptions\InvalidArgumentException $e) {
-            logger()->error('微信登录:' . json_encode($e->getMessage()));
             throw new NormalStatusException('openId获取失败，请刷新页面重试!');
         }
         $openId = $user->getId();
         if (! $openId) {
-            logger()->error('微信登录:' . json_encode($user->getRaw()));
             throw new NormalStatusException('openId获取失败，请刷新页面重试!');
         }
         $userinfo = $this->mapper->getUserInfoByOpenId($openId, User::COMMON_FIELDS);
