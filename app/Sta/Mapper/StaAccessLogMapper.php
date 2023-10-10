@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Sta\Mapper;
 
-use App\Sta\Model\DailyStatistic;
 use App\Sta\Model\StaAccessLog;
-use Carbon\Carbon;
-use Hyperf\Database\Model\Collection;
+use Hyperf\Collection\Collection;
+use Hyperf\DbConnection\Db;
 use Mine\Abstracts\AbstractMapper;
 
 class StaAccessLogMapper extends AbstractMapper
@@ -22,17 +21,29 @@ class StaAccessLogMapper extends AbstractMapper
         return StaAccessLog::insert($params);
     }
 
-    public function getDailyHits(): Collection|array|\Hyperf\Collection\Collection
+    public function getAccessLogMod(array $params): Collection
     {
-        $data = DailyStatistic::query()
-            ->whereBetween('date', [Carbon::now()->startOfMonth()->toDateString(), Carbon::now()->endOfMonth()->toDateString()])
-            ->get();
-        $dayData = $data->first('date', Carbon::now()->toDateString());
-        if ($dayData) {
-            $dayData = ['hits' => $dayData->hits, 'h5_hits' => $dayData->h5_hits];
-        }
-        $monthPc = $data->sum('hits');
-        $monthH5 = $data->sum('h5_hits');
-        return ['day' => $dayData, 'month' => ['hits' => $monthPc, 'h5_hits' => $monthH5]];
+        $sub = StaAccessLog::query()
+            ->whereBetween('time', [$params['start_time'], $params['end_time']])
+            ->select(['page', 'device'])
+            ->selectRaw('count(*) as count')
+            ->groupBy(['page', 'device', 'client_ip']);
+        return StaAccessLog::from(Db::raw("({$sub->toSql()}) as t"))
+            ->mergeBindings($sub->getQuery())
+            ->select(['page', 'device'])
+            ->selectRaw('count(*) as count')
+            ->groupBy(['page', 'device'])
+            ->orderBy('device')
+            ->orderBy('page')->get();
+    }
+
+    public function getAccessLogTotal(array $params): int
+    {
+        $sub = StaAccessLog::query()
+            ->whereBetween('time', [$params['start_time'], $params['end_time']])
+            ->selectRaw('count(*) as count')
+            ->groupBy(['client_ip']);
+        return StaAccessLog::from(Db::raw("({$sub->toSql()}) as t"))
+            ->mergeBindings($sub->getQuery())->count();
     }
 }

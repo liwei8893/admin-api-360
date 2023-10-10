@@ -16,6 +16,22 @@ class StaAccessLogRequest extends MineFormRequest
         ];
     }
 
+    public function getAccessLogModRules(): array
+    {
+        return [
+            'start_time' => 'required|integer',
+            'end_time' => 'required|integer',
+        ];
+    }
+
+    public function getAccessLogTotalRules(): array
+    {
+        return [
+            'start_time' => 'required|integer',
+            'end_time' => 'required|integer',
+        ];
+    }
+
     /**
      * 字段映射名称
      * return array.

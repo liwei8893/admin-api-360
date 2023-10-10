@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Sta\Service;
 
 use App\Sta\Mapper\StaAccessLogMapper;
-use Hyperf\Database\Model\Collection;
+use Hyperf\Collection\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Helper\Str;
@@ -47,8 +47,14 @@ class StaAccessLogService extends AbstractService
         return $this->mapper->setAccessLog($params);
     }
 
-    public function getDailyHits(): Collection|array|\Hyperf\Collection\Collection
+    public function getAccessLogMod(array $params): Collection
     {
-        return $this->mapper->getDailyHits();
+        return $this->mapper->getAccessLogMod($params);
+    }
+
+    public function getAccessLogTotal(array $params): array
+    {
+        $count = $this->mapper->getAccessLogTotal($params);
+        return ['count' => $count];
     }
 }
