@@ -36,14 +36,18 @@ class CourseBasisMapper extends AbstractMapper
     #[Transaction]
     public function update(int $id, array $data): bool
     {
-        $grade = $data['grade'] ?? [];
+        // 拷贝原始数据
+        $rawData = $data;
+        // 过滤数据
         $this->filterExecuteAttributes($data, true);
         $model = $this->model::find($id);
         if (! $model) {
             return false;
         }
         $state = $model->update($data);
-        $model->basisGrade()->sync($grade);
+        if (isset($rawData['grade'])) {
+            $model->basisGrade()->sync($rawData['grade']);
+        }
         return $state;
     }
 
