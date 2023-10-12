@@ -34,6 +34,21 @@ class StaService extends AbstractService
     #[Inject]
     public $mapper;
 
+    public function getUsersTotal(array $params): array
+    {
+        $count = User::query()->whereHas('orders', function (Builder $query) use ($params) {
+            $query->whereRaw('(created_at + (indate * 86400)) > unix_timestamp(now())')
+                ->where('deleted_at', 0)
+                ->where('status', 1)
+                ->where('pay_states', 7)
+                ->when(isset($params['start_time'], $params['end_time']), function (Builder $query) use ($params) {
+                    $query->whereBetween('created_at', [$params['start_time'], $params['end_time']]);
+                })
+                ->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
+        })->count();
+        return ['count' => $count];
+    }
+
     public function getCourseHits(array $params): array
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;

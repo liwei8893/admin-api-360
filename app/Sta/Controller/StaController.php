@@ -32,6 +32,17 @@ class StaController extends MineController
     public StaService $service;
 
     /**
+     * 用户总数.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('users/total')]
+    public function getUsersTotal(): ResponseInterface
+    {
+        return $this->success($this->service->getUsersTotal($this->request->all()));
+    }
+
+    /**
      * 课程点击量.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
