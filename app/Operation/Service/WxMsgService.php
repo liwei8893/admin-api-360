@@ -9,15 +9,15 @@ use App\Operation\Model\WxMsg;
 use App\Users\Model\User;
 use App\Users\Service\UsersService;
 use Carbon\Carbon;
-use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 use Hyperf\Amqp\Producer;
+use Hyperf\Coroutine\Exception\ParallelExecutionException;
+use Hyperf\Coroutine\Parallel;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Guzzle\ClientFactory;
+use Hyperf\Guzzle\HandlerStackFactory;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 use Pengxuxu\HyperfWechat\EasyWechat;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 微信消息服务类.
@@ -127,6 +127,7 @@ class WxMsgService extends AbstractService
     public function sendWxMsg(array $setData): bool
     {
         $app = EasyWechat::officialAccount();
+        $accessToken = $app->getAccessToken()->getToken();
         // EasyWechat客户端
         //        $api = $app->getClient();
         //        foreach ($setData as $data) {
@@ -134,19 +135,36 @@ class WxMsgService extends AbstractService
         //            $contents = $response->getContent();
         //            logger('QueueLog')->info('微信消息response:' . $contents);
         //        }
-        // 框架自带客户端
-        $accessToken = $app->getAccessToken()->getToken();
-        $clientFactory = container()->get(ClientFactory::class);
+        // 创建带连接池的客户端
+        $factory = new HandlerStackFactory();
+        $stack = $factory->create();
+        /** @var Client $client */
+        $client = \Hyperf\Support\make(Client::class, [
+            'config' => [
+                'handler' => $stack,
+            ],
+        ]);
+        // 控制并发数
+        $parallel = new Parallel(30);
         foreach ($setData as $data) {
-            try {
-                $client = $clientFactory->create();
+            $parallel->add(function () use ($data, $client, $accessToken) {
                 $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
                     'query' => ['access_token' => $accessToken],
                     'json' => $data,
                 ]);
                 $contents = $response->getBody()->getContents();
                 logger('QueueLog')->info('微信消息response:' . $contents);
-            } catch (GuzzleException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+                return $contents;
+            });
+        }
+        // 等待协程
+        try {
+            $parallel->wait();
+        } catch (ParallelExecutionException $e) {
+            foreach ($e->getThrowables() as $result) {
+                if (method_exists($result, 'getMessage')) {
+                    logger('QueueLog')->error($result->getMessage());
+                }
             }
         }
         return true;
