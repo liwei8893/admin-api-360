@@ -18,7 +18,7 @@ class DailyMapper extends AbstractMapper
 
     public function updateOrInsertDailySta(array $params): bool
     {
-        return DailyStatistic::updateOrInsert(['date' => Carbon::now()->toDateString()], $params);
+        return (bool) DailyStatistic::updateOrInsert(['date' => Carbon::now()->toDateString()], $params);
     }
 
     /**
