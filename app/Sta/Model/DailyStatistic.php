@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Sta\Model;
 
-use Carbon\Carbon;
 use Mine\MineModel;
 
 /**
  * @property int $id
- * @property Carbon $date 日期
+ * @property \Carbon\Carbon $date 日期
  * @property int $hits pc网站点击量
- * @property int $h5_hits 手机端点击量
+ * @property int $add_user 新增用户
+ * @property int $total_user 用户总数
  */
 class DailyStatistic extends MineModel
 {
@@ -25,12 +25,12 @@ class DailyStatistic extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'date', 'hits', 'h5_hits'];
+    protected array $fillable = ['id', 'date', 'hits', 'add_user', 'total_user'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'date' => 'date', 'hits' => 'integer', 'h5_hits' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'date' => 'datetime:Y-m-d', 'hits' => 'integer', 'add_user' => 'integer', 'total_user' => 'integer'];
 
     protected array $dates = ['date'];
 }

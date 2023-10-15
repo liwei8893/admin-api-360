@@ -26,7 +26,8 @@ class DailyController extends MineController
     #[PostMapping('setDailyHits')]
     public function setDailyHits(): ResponseInterface
     {
-        $this->service->setDailyHits($this->request->all());
+        // 废弃
+        //        $this->service->setDailyHits($this->request->all());
         return $this->success();
     }
 }

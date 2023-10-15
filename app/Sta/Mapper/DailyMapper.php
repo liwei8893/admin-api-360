@@ -6,7 +6,7 @@ namespace App\Sta\Mapper;
 
 use App\Sta\Model\DailyStatistic;
 use Carbon\Carbon;
-use Hyperf\Database\Model\Collection;
+use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
 class DailyMapper extends AbstractMapper
@@ -16,28 +16,19 @@ class DailyMapper extends AbstractMapper
         $this->model = DailyStatistic::class;
     }
 
-    public function setDailyHits(array $params): bool
+    public function updateOrInsertDailySta(array $params): bool
     {
-        $model = DailyStatistic::firstOrCreate(['date' => Carbon::now()->toDateString()]);
-        if (isset($params['type']) && $params['type'] === 'h5') {
-            ++$model->h5_hits;
-        } else {
-            ++$model->hits;
-        }
-        return $model->save();
+        return DailyStatistic::updateOrInsert(['date' => Carbon::now()->toDateString()], $params);
     }
 
-    public function getDailyHits(): Collection|array|\Hyperf\Collection\Collection
+    /**
+     * 搜索处理器.
+     */
+    public function handleSearch(Builder $query, array $params): Builder
     {
-        $data = DailyStatistic::query()
-            ->whereBetween('date', [Carbon::now()->startOfMonth()->toDateString(), Carbon::now()->endOfMonth()->toDateString()])
-            ->get();
-        $dayData = $data->first('date', Carbon::now()->toDateString());
-        if ($dayData) {
-            $dayData = ['hits' => $dayData->hits, 'h5_hits' => $dayData->h5_hits];
+        if (isset($params['start_date'], $params['end_date'])) {
+            $query->whereBetween('date', [$params['start_date'], $params['end_date']]);
         }
-        $monthPc = $data->sum('hits');
-        $monthH5 = $data->sum('h5_hits');
-        return ['day' => $dayData, 'month' => ['hits' => $monthPc, 'h5_hits' => $monthH5]];
+        return $query;
     }
 }

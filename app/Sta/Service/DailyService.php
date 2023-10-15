@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Sta\Service;
 
 use App\Sta\Mapper\DailyMapper;
-use Hyperf\Database\Model\Collection;
+use Carbon\Carbon;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 
@@ -17,13 +17,20 @@ class DailyService extends AbstractService
     #[Inject]
     public $mapper;
 
-    public function setDailyHits(array $params): bool
+    public function updateOrInsertDailySta(array $params): bool
     {
-        return $this->mapper->setDailyHits($params);
+        return $this->mapper->updateOrInsertDailySta($params);
     }
 
-    public function getDailyHits(): Collection|array|\Hyperf\Collection\Collection
+    /**
+     * 获取列表数据.
+     */
+    public function getList(?array $params = null, bool $isScope = false): array
     {
-        return $this->mapper->getDailyHits();
+        if (! isset($params['start_date'], $params['end_date'])) {
+            $params['start_date'] = Carbon::now()->subDays(6)->toDateString();
+            $params['end_date'] = Carbon::now()->toDateString();
+        }
+        return parent::getList($params, $isScope);
     }
 }

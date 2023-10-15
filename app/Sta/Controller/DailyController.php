@@ -23,9 +23,9 @@ class DailyController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getDailyHits')]
-    public function getDailyHits(): ResponseInterface
+    #[GetMapping('getList')]
+    public function getList(): ResponseInterface
     {
-        return $this->success($this->service->getDailyHits());
+        return $this->success($this->service->getList($this->request->all()));
     }
 }
