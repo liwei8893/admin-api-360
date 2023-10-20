@@ -53,6 +53,17 @@ class UserCourseRecordAppController extends MineController
     }
 
     /**
+     * 获取听课排行榜,上周.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getRankingCustomDate')]
+    public function getRankingCustomDate(): ResponseInterface
+    {
+        return $this->success($this->service->getRankingCustomDate($this->request->all()));
+    }
+
+    /**
      * 排行榜我的排名.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -61,6 +72,17 @@ class UserCourseRecordAppController extends MineController
     public function getRankingMe(): ResponseInterface
     {
         return $this->success($this->service->getRankingMe(user('app')->getId()));
+    }
+
+    /**
+     * 排行榜我的排名.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getRankingMeCustomDate'), Auth('app')]
+    public function getRankingMeCustomDate(): ResponseInterface
+    {
+        return $this->success($this->service->getRankingMeCustomDate(user('app')->getId(), $this->request->all()));
     }
 
     /**

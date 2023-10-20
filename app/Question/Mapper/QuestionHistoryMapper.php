@@ -32,28 +32,32 @@ class QuestionHistoryMapper extends AbstractMapper
         return QuestionHistory::query()->where('user_id', $params['userId'])->where('id', $params['id'])->first();
     }
 
-    public function getRanking(): Collection|array
+    public function getRanking(array $params = []): Collection|array
     {
+        $params['start_date'] = $params['start_date'] ?? Carbon::now()->startOfMonth()->timestamp;
+        $params['end_date'] = $params['end_date'] ?? Carbon::now()->endOfMonth()->timestamp;
         return QuestionHistory::query(true)
             ->with(['users:id,user_name,mobile'])
             ->select(['user_id'])
             ->selectRaw('count(user_id) as num')
-            ->whereBetween('created_at', [Carbon::now()->startOfMonth()->timestamp, Carbon::now()->endOfMonth()->timestamp])
+            ->whereBetween('created_at', [$params['start_date'], $params['end_date']])
             ->groupBy(['user_id'])
             ->orderBy('num', 'desc')
             ->limit(10)->get();
     }
 
-    public function getRankingMe(int $userId): int
+    public function getRankingMe(int $userId, array $params = []): int
     {
+        $params['start_date'] = $params['start_date'] ?? Carbon::now()->startOfMonth()->timestamp;
+        $params['end_date'] = $params['end_date'] ?? Carbon::now()->endOfMonth()->timestamp;
         $userNum = QuestionHistory::query()
             ->where('user_id', $userId)
-            ->whereBetween('created_at', [Carbon::now()->startOfMonth()->timestamp, Carbon::now()->endOfMonth()->timestamp])
+            ->whereBetween('created_at', [$params['start_date'], $params['end_date']])
             ->groupBy(['user_id'])
             ->count('user_id');
         $subQuery = QuestionHistory::query()
             ->selectRaw('count(user_id) num')
-            ->whereBetween('created_at', [Carbon::now()->startOfMonth()->timestamp, Carbon::now()->endOfMonth()->timestamp])
+            ->whereBetween('created_at', [$params['start_date'], $params['end_date']])
             ->groupBy(['user_id']);
         return Model::query()->fromSub($subQuery->getQuery(), 't')->where('num', '>=', $userNum)->count();
     }

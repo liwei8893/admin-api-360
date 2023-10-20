@@ -78,6 +78,17 @@ class QuestionAppController extends MineController
     }
 
     /**
+     * 获取做题排行榜.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getRankingCustomDate')]
+    public function getRankingCustomDate(): ResponseInterface
+    {
+        return $this->success($this->historyService->getRankingCustomDate($this->request->all()));
+    }
+
+    /**
      * 获取我的做题排名.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -86,6 +97,17 @@ class QuestionAppController extends MineController
     public function getRankingMe(): ResponseInterface
     {
         return $this->success($this->historyService->getRankingMe(user('app')->getId()));
+    }
+
+    /**
+     * 获取我的做题排名.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getRankingMeCustomDate'), Auth('app')]
+    public function getRankingMeCustomDate(): ResponseInterface
+    {
+        return $this->success($this->historyService->getRankingMeCustomDate(user('app')->getId(), $this->request->all()));
     }
 
     /**

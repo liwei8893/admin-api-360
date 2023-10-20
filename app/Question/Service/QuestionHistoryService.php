@@ -67,6 +67,19 @@ class QuestionHistoryService extends AbstractService
         });
     }
 
+    public function getRankingCustomDate(array $params): Collection|array
+    {
+        return $this->mapper->getRanking($params)->map(function ($item) {
+            if (! empty($item['users'])) {
+                if ($item['users']['mobile'] === $item['users']['user_name']) {
+                    $item['users']['user_name'] = substr_replace($item['users']['user_name'], '****', 3, 4);
+                }
+                unset($item['users']['mobile']);
+            }
+            return $item;
+        });
+    }
+
     /**
      * 获取用户排行榜名次,缓存1小时.
      */
@@ -74,6 +87,11 @@ class QuestionHistoryService extends AbstractService
     public function getRankingMe(int $userId): array
     {
         return ['ranking' => $this->mapper->getRankingMe($userId)];
+    }
+
+    public function getRankingMeCustomDate(int $userId, array $params): array
+    {
+        return ['ranking' => $this->mapper->getRankingMe($userId, $params)];
     }
 
     /**

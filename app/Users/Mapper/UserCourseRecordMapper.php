@@ -48,27 +48,31 @@ class UserCourseRecordMapper extends AbstractMapper
         return UserCourseRecord::query()->where('user_id', $userId)->latest('updated_at')->first();
     }
 
-    public function getRanking(): Collection|array
+    public function getRanking(array $params = []): Collection|array
     {
+        $params['start_date'] = $params['start_date'] ?? Carbon::now()->startOfMonth();
+        $params['end_date'] = $params['end_date'] ?? Carbon::now()->endOfMonth();
         return UserCourseRecordToday::query(true)
             ->with(['users:id,user_name,mobile'])
             ->select(['user_id'])
             ->selectRaw('sum(record_time) as num')
-            ->whereBetween('record_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+            ->whereBetween('record_date', [$params['start_date'], $params['end_date']])
             ->groupBy(['user_id'])
             ->orderBy('num', 'desc')
             ->limit(10)->get();
     }
 
-    public function getRankingMe(int $userId): int
+    public function getRankingMe(int $userId, array $params = []): int
     {
+        $params['start_date'] = $params['start_date'] ?? Carbon::now()->startOfMonth();
+        $params['end_date'] = $params['end_date'] ?? Carbon::now()->endOfMonth();
         $userNum = UserCourseRecordToday::query()
             ->where('user_id', $userId)->groupBy(['user_id'])
-            ->whereBetween('record_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+            ->whereBetween('record_date', [$params['start_date'], $params['end_date']])
             ->sum('record_time');
         $subQuery = UserCourseRecordToday::query()
             ->selectRaw('sum(record_time) num')
-            ->whereBetween('record_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+            ->whereBetween('record_date', [$params['start_date'], $params['end_date']])
             ->groupBy(['user_id']);
         return Model::query()->fromSub($subQuery->getQuery(), 'a')->where('num', '>=', $userNum)->count();
     }
