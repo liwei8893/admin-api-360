@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Sta\Controller;
+namespace App\Sta\Controller\App;
 
 use App\Sta\Service\LearningReportService;
 use Hyperf\Di\Annotation\Inject;
@@ -14,7 +14,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
-#[Controller(prefix: 'sta/learning/report')]
+#[Controller(prefix: 'sta/app/learning/report')]
 class LearningReportController extends MineController
 {
     #[Inject]
