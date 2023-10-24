@@ -97,27 +97,26 @@ class WxMsgService extends AbstractService
         return $this->sendWxMsg($setData);
     }
 
-    public function testSendWxMsg(): bool
+    public function sendLearningReportWxMsg(): bool
     {
-        $setData = [[
-            'url' => 'https://h5.hxt360.com',
-            'touser' => 'ogj0H0odNo1LCXVlJ39wze93NwVk',
-            'template_id' => 'kkK3xAv-Zk3PhcRa6JwlDsITGOF0zLmHs80mM6awdc0',
-            'data' => [
-                'keyword1' => ['value' => 'test'],
-                'keyword2' => ['value' => 'test'],
-                'keyword3' => ['value' => 'test'],
-            ],
-        ], [
-            'url' => 'https://h5.hxt360.com',
-            'touser' => 'ogj0H0odNo1LCXVlJ39wze93NwVk',
-            'template_id' => 'kkK3xAv-Zk3PhcRa6JwlDsITGOF0zLmHs80mM6awdc0',
-            'data' => [
-                'keyword1' => ['value' => 'test1'],
-                'keyword2' => ['value' => 'test1'],
-                'keyword3' => ['value' => 'test1'],
-            ],
-        ]];
+        $userData = $this->mapper->getSendUsers(['id' => [83775]]);
+        if ($userData->isEmpty()) {
+            throw new NormalStatusException('未查询到发送人员！');
+        }
+        $setData = [];
+        foreach ($userData as $user) {
+            $setData[] = [
+                'url' => 'https://h5.hxt360.com/spa/learning-report',
+                'touser' => $user->wxgzh_openid,
+                'template_id' => 'VygHZ1pOK8czJkS7Xc1uJi4au3nI25W0NXM9-Z2dwCk',
+                'data' => [
+                    'first' => ['value' => 'test'],
+                    'keyword1' => ['value' => 'test'],
+                    'keyword2' => ['value' => 'test'],
+                    'remark' => ['value' => 'test'],
+                ],
+            ];
+        }
         return $this->sendWxMsg($setData);
     }
 

@@ -43,7 +43,7 @@ class WxMsgMapper extends AbstractMapper
             ->first();
     }
 
-    public function getSendUsers(): Collection|array
+    public function getSendUsers(array $params = []): Collection|array
     {
         return User::query()
             ->select(['id', 'user_name', 'mobile', 'wxgzh_openid'])
@@ -51,6 +51,9 @@ class WxMsgMapper extends AbstractMapper
             // 测试，查内部人
 //            ->where('user_type', 0)
 //            ->whereIn('id', [83775])
+            ->when(isset($params['id']) && is_array($params['id']), function (Builder $query) use ($params) {
+                $query->whereIn('id', $params['id']);
+            })
             ->whereHas('orders', function (Builder $query) {
                 $query->where('shop_id', User::VIP_TYPE_SUPER)
                     ->NormalOrder()->IsNotExpire();

@@ -88,10 +88,4 @@ class WxMsgController extends MineController
     {
         return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
     }
-
-    #[PostMapping('sendWxMsg')]
-    public function sendWxMsg(): ResponseInterface
-    {
-        return $this->service->testSendWxMsg() ? $this->success() : $this->error();
-    }
 }
