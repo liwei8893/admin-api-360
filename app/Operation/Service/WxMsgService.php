@@ -125,24 +125,25 @@ class WxMsgService extends AbstractService
      */
     public function sendWxMsg(array $setData): bool
     {
-        $app = EasyWechat::officialAccount();
-        $accessToken = $app->getAccessToken()->getToken();
+        //        $app = EasyWechat::officialAccount();
+        //        $accessToken = $app->getAccessToken()->getToken();
         // EasyWechat客户端
-        //        $api = $app->getClient();
+        //        $client = $app->getClient();
         //        foreach ($setData as $data) {
         //            $response = $api->postJson('/cgi-bin/message/template/send', $data);
         //            $contents = $response->getContent();
         //            logger('QueueLog')->info('微信消息response:' . $contents);
         //        }
         // 创建带连接池的客户端
-        $factory = new HandlerStackFactory();
-        $stack = $factory->create();
-        /** @var Client $client */
-        $client = \Hyperf\Support\make(Client::class, [
-            'config' => [
-                'handler' => $stack,
-            ],
-        ]);
+        //        $factory = new HandlerStackFactory();
+        //        $stack = $factory->create();
+        //        /** @var Client $client */
+        //        $client = \Hyperf\Support\make(Client::class, [
+        //            'config' => [
+        //                'handler' => $stack,
+        //            ],
+        //        ]);
+        $client = \Hyperf\Support\make(Client::class);
         // 控制并发数
         $parallel = new Parallel(30);
         foreach ($setData as $data) {
