@@ -14,7 +14,6 @@ use Hyperf\Amqp\Producer;
 use Hyperf\Coroutine\Exception\ParallelExecutionException;
 use Hyperf\Coroutine\Parallel;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\Guzzle\HandlerStackFactory;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 use Pengxuxu\HyperfWechat\EasyWechat;
@@ -99,7 +98,7 @@ class WxMsgService extends AbstractService
 
     public function sendLearningReportWxMsg(): bool
     {
-        $userData = $this->mapper->getSendUsers(['id' => [83775, 133690]]);
+        $userData = $this->mapper->getSendUsers(['id' => [83775, 133690, 8683, 3984, 3935, 3969, 16755, 19285, 18524, 19363, 61674, 85721, 90130, 157389]]);
         if ($userData->isEmpty()) {
             throw new NormalStatusException('未查询到发送人员！');
         }
@@ -110,10 +109,8 @@ class WxMsgService extends AbstractService
                 'touser' => $user->wxgzh_openid,
                 'template_id' => 'VygHZ1pOK8czJkS7Xc1uJi4au3nI25W0NXM9-Z2dwCk',
                 'data' => [
-                    'first' => ['value' => 'test'],
-                    'keyword1' => ['value' => 'test'],
-                    'keyword2' => ['value' => 'test'],
-                    'remark' => ['value' => 'test'],
+                    'keyword1' => ['value' => '学情报告'],
+                    'keyword2' => ['value' => '点击查看上周学情报告!'],
                 ],
             ];
         }
@@ -127,22 +124,7 @@ class WxMsgService extends AbstractService
     {
         $app = EasyWechat::officialAccount();
         $accessToken = $app->getAccessToken()->getToken();
-        // EasyWechat客户端
-        //        $client = $app->getClient();
-        //        foreach ($setData as $data) {
-        //            $response = $api->postJson('/cgi-bin/message/template/send', $data);
-        //            $contents = $response->getContent();
-        //            logger('QueueLog')->info('微信消息response:' . $contents);
-        //        }
         // 创建带连接池的客户端
-        //        $factory = new HandlerStackFactory();
-        //        $stack = $factory->create();
-        //        /** @var Client $client */
-        //        $client = \Hyperf\Support\make(Client::class, [
-        //            'config' => [
-        //                'handler' => $stack,
-        //            ],
-        //        ]);
         $client = \Hyperf\Support\make(Client::class);
         // 控制并发数
         $parallel = new Parallel(30);
