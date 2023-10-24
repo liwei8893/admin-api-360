@@ -146,11 +146,12 @@ class WxMsgService extends AbstractService
         // 控制并发数
         $parallel = new Parallel(30);
         foreach ($setData as $data) {
-            $parallel->add(function () use ($data, $client, $accessToken) {
-                $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
-                    'query' => ['access_token' => $accessToken],
-                    'json' => $data,
-                ]);
+            $parallel->add(function () use ($client) {
+                //                $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
+                //                    'query' => ['access_token' => $accessToken],
+                //                    'json' => $data,
+                //                ]);
+                $response = $client->get('https://www.baidu.com');
                 $contents = $response->getBody()->getContents();
                 logger('QueueLog')->info('微信消息response:' . $contents);
                 return $contents;
