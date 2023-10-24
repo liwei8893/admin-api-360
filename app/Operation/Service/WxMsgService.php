@@ -99,7 +99,7 @@ class WxMsgService extends AbstractService
 
     public function sendLearningReportWxMsg(): bool
     {
-        $userData = $this->mapper->getSendUsers(['id' => [83775]]);
+        $userData = $this->mapper->getSendUsers(['id' => [83775, 133690]]);
         if ($userData->isEmpty()) {
             throw new NormalStatusException('未查询到发送人员！');
         }
@@ -125,8 +125,8 @@ class WxMsgService extends AbstractService
      */
     public function sendWxMsg(array $setData): bool
     {
-        //        $app = EasyWechat::officialAccount();
-        //        $accessToken = $app->getAccessToken()->getToken();
+        $app = EasyWechat::officialAccount();
+        $accessToken = $app->getAccessToken()->getToken();
         // EasyWechat客户端
         //        $client = $app->getClient();
         //        foreach ($setData as $data) {
@@ -147,12 +147,11 @@ class WxMsgService extends AbstractService
         // 控制并发数
         $parallel = new Parallel(30);
         foreach ($setData as $data) {
-            $parallel->add(function () use ($client) {
-                //                $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
-                //                    'query' => ['access_token' => $accessToken],
-                //                    'json' => $data,
-                //                ]);
-                $response = $client->get('https://www.baidu.com');
+            $parallel->add(function () use ($client, $accessToken, $data) {
+                $response = $client->post('https://api.weixin.qq.com/cgi-bin/message/template/send', [
+                    'query' => ['access_token' => $accessToken],
+                    'json' => $data,
+                ]);
                 $contents = $response->getBody()->getContents();
                 logger('QueueLog')->info('微信消息response:' . $contents);
                 return $contents;
