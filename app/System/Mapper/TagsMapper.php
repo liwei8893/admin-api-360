@@ -45,6 +45,10 @@ class TagsMapper extends AbstractMapper
             $query->where('status', '=', $params['status']);
         }
 
+        if (! empty($params['hasCoursePeriod'])) {
+            $query->has('coursePeriod');
+        }
+
         return $query;
     }
 

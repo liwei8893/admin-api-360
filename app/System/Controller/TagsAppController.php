@@ -28,9 +28,6 @@ class TagsAppController extends MineController
     #[GetMapping('getTags')]
     public function getTags(TagsRequest $request): ResponseInterface
     {
-        $params = $request->all();
-        $params['select'] = 'id,name';
-        $params['status'] = 1;
-        return $this->success($this->service->getTagList($params, false));
+        return $this->success($this->service->getTagList($request->all(), false));
     }
 }

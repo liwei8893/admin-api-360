@@ -26,6 +26,9 @@ class TagsService extends AbstractService
     #[Cacheable(prefix: 'Tags', value: 'AppTagList', ttl: 86400)]
     public function getTagList(array $params): array
     {
+        $params['select'] = 'id,name';
+        $params['status'] = 1;
+        $params['hasCoursePeriod'] = true;
         return $this->getList($params, false);
     }
 }
