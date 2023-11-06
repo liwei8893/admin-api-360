@@ -44,9 +44,11 @@ class UserRemarkService extends AbstractService
             unset($data['created_at']);
         }
         // 发送站内消息
-        try {
-            $this->queueMessageService->sendMessage(['title' => '售后', 'content' => $data['remark'], 'users' => [40, 2]]);
-        } catch (NotFoundExceptionInterface|ContainerExceptionInterface|Throwable $e) {
+        if (isset($data['type']) && $data['type'] === 2) {
+            try {
+                $this->queueMessageService->sendMessage(['title' => '售后', 'content' => $data['remark'], 'users' => [40, 2]]);
+            } catch (ContainerExceptionInterface|NotFoundExceptionInterface|Throwable $e) {
+            }
         }
         return parent::save($data);
     }
