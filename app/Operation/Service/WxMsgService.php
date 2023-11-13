@@ -122,6 +122,7 @@ class WxMsgService extends AbstractService
      */
     public function sendWxMsg(array $setData): bool
     {
+        console()->info('开始发送微信消息');
         $app = EasyWechat::officialAccount();
         $accessToken = $app->getAccessToken()->getToken();
         // 创建带连接池的客户端
