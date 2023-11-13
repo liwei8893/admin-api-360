@@ -40,4 +40,9 @@ class LotteryService extends AbstractService
         $data['updated_by'] = user()->getId();
         return parent::update($id, $data);
     }
+
+    public function getNowDateId(): null|int
+    {
+        return $this->mapper->getNowDateId();
+    }
 }

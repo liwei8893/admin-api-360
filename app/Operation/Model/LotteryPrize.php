@@ -15,6 +15,7 @@ use Mine\MineModel;
  * @property int $num 奖品数量
  * @property int $last_num 剩余数量
  * @property float $rate 获奖概率百分之
+ * @property string $img 奖品图片
  * @property string $remark
  * @property int $created_by
  * @property int $updated_by
@@ -34,7 +35,7 @@ class LotteryPrize extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'name', 'type', 'lottery_id', 'num', 'last_num', 'rate', 'remark', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'name', 'type', 'lottery_id', 'num', 'last_num', 'rate', 'img', 'remark', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.

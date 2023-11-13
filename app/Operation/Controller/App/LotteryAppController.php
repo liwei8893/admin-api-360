@@ -41,7 +41,7 @@ class LotteryAppController extends MineController
     #[GetMapping('getList')]
     public function getList(LotteryUserRequest $request): ResponseInterface
     {
-        return $this->success(['id' => $this->prizeService->getList($request->all())]);
+        return $this->success($this->prizeService->getList($request->all()));
     }
 
     /**
@@ -63,6 +63,6 @@ class LotteryAppController extends MineController
     #[PostMapping('saveLotteryUser/{id}'), Auth('app')]
     public function saveLotteryUser(int $id): ResponseInterface
     {
-        return $this->success(['id' => $this->userService->saveLotteryUser($id)]);
+        return $this->success($this->userService->saveLotteryUser($id));
     }
 }
