@@ -23,10 +23,10 @@ class LearningReportService extends AbstractService
     public function getReportByWeek(array $params): array
     {
         // 获取上周开始时间,结束时间
-        $params['start_time'] = Carbon::now()->subWeek()->startOfWeek()->timestamp;
-        //        $params['start_time'] = Carbon::parse('2023-03-01')->timestamp;
-        $params['end_time'] = Carbon::now()->subWeek()->endOfWeek()->timestamp;
-        //        $params['end_time'] = Carbon::now()->timestamp;
+        //        $params['start_time'] = Carbon::now()->subWeek()->startOfWeek()->timestamp;
+        $params['start_time'] = Carbon::now()->startOfWeek()->timestamp;
+        //        $params['end_time'] = Carbon::now()->subWeek()->endOfWeek()->timestamp;
+        $params['end_time'] = Carbon::now()->endOfWeek()->timestamp;
         $params['user_id'] = user('app')->getId();
         // 新学习了几节课
         $courseRecord = $this->mapper->getLearningCourseCount($params);
