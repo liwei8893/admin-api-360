@@ -35,7 +35,7 @@ class WxMsgMapper extends AbstractMapper
         return parent::save($data);
     }
 
-    public function getFirstUnsentMsg(): WxMsg|Model|Builder|null
+    public function getFirstUnsentMsg(): null|Builder|Model|WxMsg
     {
         return $this->model::query()
             ->where('status', WxMsg::UNSENT)
@@ -43,7 +43,7 @@ class WxMsgMapper extends AbstractMapper
             ->first();
     }
 
-    public function getSendUsers(array $params = []): Collection|array
+    public function getSendUsers(array $params = []): array|Collection
     {
         return User::query()
             ->select(['id', 'user_name', 'mobile', 'wxgzh_openid'])
@@ -53,6 +53,9 @@ class WxMsgMapper extends AbstractMapper
 //            ->whereIn('id', [83775])
             ->when(isset($params['id']) && is_array($params['id']), function (Builder $query) use ($params) {
                 $query->whereIn('id', $params['id']);
+            })
+            ->when(isset($params['grade_id']) && is_array($params['grade_id']), function (Builder $query) use ($params) {
+                $query->whereIn('grade_id', $params['grade_id']);
             })
             ->whereHas('orders', function (Builder $query) {
                 $query->where('shop_id', User::VIP_TYPE_SUPER)

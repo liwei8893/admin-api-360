@@ -99,6 +99,7 @@ class WxMsgService extends AbstractService
     public function sendLearningReportWxMsg(): bool
     {
         $userData = $this->mapper->getSendUsers(['id' => [83775, 133690, 8683, 3984, 3935, 3969, 16755, 19285, 18524, 19363, 61674, 85721, 90130, 157389]]);
+        //        $userData = $this->mapper->getSendUsers(['grade_id' => [1, 2, 5, 7, 9, 11, 14, 13, 12]]);
         if ($userData->isEmpty()) {
             throw new NormalStatusException('未查询到发送人员！');
         }
