@@ -25,13 +25,7 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
 class Transaction extends AbstractAnnotation
 {
     /**
-     * retry 重试次数.
+     * @param int $retry 重试次数
      */
-    public int $retry = 1;
-
-    public function __construct($value = 1)
-    {
-        parent::__construct($value);
-        $this->bindMainProperty('retry', [$value]);
-    }
+    public function __construct(public int $retry = 1) {}
 }

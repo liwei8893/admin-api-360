@@ -17,13 +17,13 @@ class SendWxMsgConsumer extends ConsumerMessage
     #[Inject]
     protected WxMsgService $msgService;
 
-    public function consumeMessage($data, AMQPMessage $message): string
+    public function consumeMessage($data, AMQPMessage $message): Result
     {
         $result = $this->msgService->sendWxMsg($data);
         return $this->consume($result);
     }
 
-    public function consume($data): string
+    public function consume($data): Result
     {
         return $data ? Result::ACK : Result::DROP;
     }

@@ -6,7 +6,7 @@ namespace App\Setting\Service;
 
 use Hyperf\Collection\Collection;
 use Hyperf\Config\Annotation\Value;
-use Hyperf\Utils\Filesystem\Filesystem;
+use Hyperf\Support\Filesystem\Filesystem;
 use Mine\Abstracts\AbstractService;
 use Mine\Generator\ModuleGenerator;
 use Mine\Mine;
@@ -42,7 +42,7 @@ class ModuleService extends AbstractService
     public function createModule(array $moduleInfo): bool
     {
         /** @var ModuleGenerator $moduleGen */
-        $moduleGen = make(ModuleGenerator::class);
+        $moduleGen = \Hyperf\Support\make(ModuleGenerator::class);
         $moduleGen->setModuleInfo($moduleInfo)->createModule();
         $this->setModuleCache();
         return true;
@@ -98,7 +98,7 @@ class ModuleService extends AbstractService
     public function deleteModule(string $name): bool
     {
         /** @var Filesystem $filesystem */
-        $filesystem = make(Filesystem::class);
+        $filesystem = \Hyperf\Support\make(Filesystem::class);
         $modulePath = BASE_PATH . '/app/' . ucfirst($name);
         return $filesystem->deleteDirectory($modulePath);
     }
@@ -146,7 +146,7 @@ class ModuleService extends AbstractService
      */
     public function modifyStatus(array $data): bool
     {
-        $modules = make(Mine::class)->getModuleInfo();
+        $modules = \Hyperf\Support\make(Mine::class)->getModuleInfo();
         if (isset($modules[$data['name']])) {
             $filePath = BASE_PATH . '/app/' . $data['name'] . '/config.json';
             $status = $data['status'] ? 'true' : 'false';

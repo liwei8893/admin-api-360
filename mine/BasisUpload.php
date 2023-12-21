@@ -92,7 +92,7 @@ class BasisUpload
      */
     protected function getPath(?string $path = null, bool $isContainRoot = false): string
     {
-        $uploadfile = $isContainRoot ? '/' . env('UPLOAD_PATH', 'uploadfile') . '/' : '';
+        $uploadfile = $isContainRoot ? '/' . \Hyperf\Support\env('UPLOAD_PATH', 'uploadfile') . '/' : '';
         return empty($path) ? $uploadfile . date('Ymd') : $uploadfile . $path;
     }
 

@@ -55,7 +55,7 @@ class SystemUploadQiniuService extends AbstractService
                 'storage_path' => '/' . $storagePath,
                 'suffix' => $fileExt,
                 'object_name' => $filename,
-                'url' => config('file.storage.qiniu.domain') . '/' . $key,
+                'url' => \Hyperf\Config\config('file.storage.qiniu.domain') . '/' . $key,
             ], JSON_THROW_ON_ERROR),
         ];
         /* @var QiniuAdapter $adapter */

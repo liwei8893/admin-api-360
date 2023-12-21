@@ -13,8 +13,9 @@ declare(strict_types=1);
 
 namespace Mine\Generator;
 
-use Hyperf\Utils\Filesystem\Filesystem;
+use Hyperf\Support\Filesystem\Filesystem;
 use Mine\Mine;
+use RuntimeException;
 
 class ModuleGenerator extends MineGenerator
 {
@@ -36,7 +37,7 @@ class ModuleGenerator extends MineGenerator
     public function createModule(): bool
     {
         if (! ($this->moduleInfo['name'] ?? false)) {
-            throw new \RuntimeException('模块名称为空');
+            throw new RuntimeException('模块名称为空');
         }
 
         $this->moduleInfo['name'] = ucfirst($this->moduleInfo['name']);
@@ -45,14 +46,14 @@ class ModuleGenerator extends MineGenerator
         $mine->scanModule();
 
         if (! empty($mine->getModuleInfo($this->moduleInfo['name']))) {
-            throw new \RuntimeException('同名模块已存在');
+            throw new RuntimeException('同名模块已存在');
         }
 
         $appPath = BASE_PATH . '/app/';
         $modulePath = $appPath . $this->moduleInfo['name'] . '/';
 
         /** @var Filesystem $filesystem */
-        $filesystem = make(Filesystem::class);
+        $filesystem = \Hyperf\Support\make(Filesystem::class);
         $filesystem->makeDirectory($appPath . $this->moduleInfo['name']);
 
         foreach ($this->getGeneratorDirs() as $dir) {

@@ -9,7 +9,6 @@ use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Logger\Logger;
 use Hyperf\Logger\LoggerFactory;
-use Hyperf\Utils\Codec\Json;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
@@ -37,7 +36,7 @@ class AppExceptionHandler extends ExceptionHandler
         ];
         return $response->withHeader('Server', 'MineAdmin')
             ->withAddedHeader('content-type', 'application/json; charset=utf-8')
-            ->withStatus(500)->withBody(new SwooleStream(Json::encode($format)));
+            ->withStatus(500)->withBody(new SwooleStream(\Hyperf\Codec\Json::encode($format)));
     }
 
     public function isValid(Throwable $throwable): bool

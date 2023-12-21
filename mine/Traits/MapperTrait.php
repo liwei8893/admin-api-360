@@ -10,8 +10,6 @@ use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
 use Hyperf\ModelCache\Manager;
-use Hyperf\Utils\ApplicationContext;
-use Hyperf\Utils\HigherOrderTapProxy;
 use Mine\Annotation\Transaction;
 use Mine\MineCollection;
 use Mine\MineModel;
@@ -169,7 +167,7 @@ trait MapperTrait
 
     /**
      * 获取单个值
-     * @return null|HigherOrderTapProxy|mixed|void
+     * @return null|\Hyperf\Tappable\HigherOrderTapProxy|mixed|void
      */
     public function value(array $condition, string $columns = 'id')
     {
@@ -200,7 +198,7 @@ trait MapperTrait
     {
         $this->model::destroy($ids);
 
-        $manager = ApplicationContext::getContainer()->get(Manager::class);
+        $manager = \Hyperf\Context\ApplicationContext::getContainer()->get(Manager::class);
         $manager->destroy($ids, $this->model);
 
         return true;
@@ -396,7 +394,7 @@ trait MapperTrait
         ];
     }
 
-    public function create(array $data): Model|MineModel
+    public function create(array $data): MineModel|Model
     {
         $this->filterExecuteAttributes($data, $this->getModel()->incrementing);
         return $this->model::create($data);

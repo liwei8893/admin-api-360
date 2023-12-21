@@ -150,7 +150,7 @@ class SystemUserMapper extends AbstractMapper
         }
 
         if (isset($params['filterSuperAdmin'])) {
-            $query->whereNotIn('id', [env('SUPER_ADMIN')]);
+            $query->whereNotIn('id', [\Hyperf\Support\env('SUPER_ADMIN')]);
         }
 
         if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
@@ -181,7 +181,7 @@ class SystemUserMapper extends AbstractMapper
         }
 
         if (isset($params['post_id'])) {
-            $tablePrefix = env('DB_PREFIX');
+            $tablePrefix = \Hyperf\Support\env('DB_PREFIX');
             $query->whereRaw(
                 "id IN ( SELECT user_id FROM {$tablePrefix}system_user_post WHERE post_id = ? )",
                 [$params['post_id']]

@@ -11,19 +11,19 @@ use Hyperf\Amqp\Result;
 use Hyperf\Di\Annotation\Inject;
 use PhpAmqpLib\Message\AMQPMessage;
 
-#[Consumer(exchange: 'mineadmin', routingKey: 'area.routing', queue: 'area.queue', name: 'area.queue', nums: 5)]
+#[Consumer(exchange: 'mineadmin', routingKey: 'area.routing', queue: 'area.queue', name: 'area.queue', nums: 1)]
 class SetUserAreaConsumer extends ConsumerMessage
 {
     #[Inject]
     protected AreaService $areaService;
 
-    public function consumeMessage($data, AMQPMessage $message): string
+    public function consumeMessage($data, AMQPMessage $message): Result
     {
         $result = $this->areaService->setUserAreaByMobile($data);
         return $this->consume($result);
     }
 
-    public function consume($data): string
+    public function consume($data): Result
     {
         return $data ? Result::ACK : Result::DROP;
     }
@@ -33,6 +33,6 @@ class SetUserAreaConsumer extends ConsumerMessage
      */
     public function isEnable(): bool
     {
-        return env('AMQP_ENABLE', false);
+        return \Hyperf\Support\env('AMQP_ENABLE', false);
     }
 }

@@ -36,7 +36,7 @@ class MineCrontabStrategy
      */
     public function dispatch(MineCrontab $crontab)
     {
-        co(function () use ($crontab) {
+        \Hyperf\Coroutine\co(function () use ($crontab) {
             if ($crontab->getExecuteTime() instanceof Carbon) {
                 $wait = $crontab->getExecuteTime()->getTimestamp() - time();
                 $wait > 0 && \Swoole\Coroutine::sleep($wait);
@@ -52,7 +52,7 @@ class MineCrontabStrategy
      */
     public function executeOnce(MineCrontab $crontab)
     {
-        co(function () use ($crontab) {
+        \Hyperf\Coroutine\co(function () use ($crontab) {
             $this->executor->execute($crontab);
         });
     }

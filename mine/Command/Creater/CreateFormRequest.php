@@ -14,8 +14,6 @@ declare(strict_types=1);
 namespace Mine\Command\Creater;
 
 use Hyperf\Command\Annotation\Command;
-use Hyperf\Utils\Filesystem\FileNotFoundException;
-use Hyperf\Utils\Filesystem\Filesystem;
 use Mine\MineCommand;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -52,7 +50,7 @@ class CreateFormRequest extends MineCommand
         $this->module = ucfirst(trim($this->input->getArgument('module_name')));
         $this->name = ucfirst(trim($this->input->getArgument('name')));
 
-        $fs = new Filesystem();
+        $fs = new \Hyperf\Support\Filesystem\Filesystem();
 
         try {
             $content = str_replace(
@@ -60,7 +58,7 @@ class CreateFormRequest extends MineCommand
                 [$this->module, $this->name],
                 $fs->get($this->getStub('form_request'))
             );
-        } catch (FileNotFoundException $e) {
+        } catch (\Hyperf\Support\Filesystem\FileNotFoundException $e) {
             $this->error($e->getMessage());
             exit;
         }

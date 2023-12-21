@@ -42,7 +42,7 @@ class SaveAspect extends AbstractAspect
     {
         $instance = $proceedingJoinPoint->getInstance();
 
-        if (config('mineadmin.data_scope_enabled')) {
+        if (\Hyperf\Config\config('mineadmin.data_scope_enabled')) {
             try {
                 $user = user();
                 // 设置创建人

@@ -45,7 +45,7 @@ class AreaService extends AbstractService
             // 获取api数据
             $clientFactory = container()->get(ClientFactory::class);
             $client = $clientFactory->create();
-            $appCode = config('hxt-app.mobileArea.AppCode');
+            $appCode = \Hyperf\Config\config('hxt-app.mobileArea.AppCode');
             $response = $client->get('http://plocn.market.alicloudapi.com/plocn', [
                 'headers' => [
                     'Authorization' => 'APPCODE ' . $appCode,

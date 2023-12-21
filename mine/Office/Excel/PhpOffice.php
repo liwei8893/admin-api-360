@@ -127,7 +127,7 @@ class PhpOffice extends MineExcel implements ExcelPropertyInterface
                     if (!empty($annotation['dictName'])) {
                         $sheet->setCellValue($columnRow, $annotation['dictName'][$value]);
                     } else if (!empty($annotation['path'])){
-                        $sheet->setCellValue($columnRow, data_get($items, $annotation['path']));
+                        $sheet->setCellValue($columnRow, \Hyperf\Collection\data_get($items, $annotation['path']));
                     } else if (!empty($annotation['dictData'])) {
                         $sheet->setCellValue($columnRow, $annotation['dictData'][$value]);
                     } else if(!empty($this->dictData[$name])){

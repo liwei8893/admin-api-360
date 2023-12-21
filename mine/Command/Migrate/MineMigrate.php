@@ -16,7 +16,6 @@ namespace Mine\Command\Migrate;
 use Hyperf\Command\Annotation\Command;
 use Hyperf\Database\Commands\Migrations\TableGuesser;
 use Hyperf\Database\Commands\Seeders\BaseCommand;
-use Hyperf\Utils\Str;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Throwable;
@@ -54,7 +53,7 @@ class MineMigrate extends BaseCommand
         // It's possible for the developer to specify the tables to modify in this
         // schema operation. The developer may also specify if this table needs
         // to be freshly created so we can create the appropriate migrations.
-        $name = 'create_' . Str::snake(trim($this->input->getArgument('name'))) . '_table';
+        $name = 'create_' . \Hyperf\Stringable\Str::snake(trim($this->input->getArgument('name'))) . '_table';
 
         $this->module = $this->input->getOption('module');
 

@@ -7,7 +7,7 @@ namespace App\Setting\Service;
 use App\Setting\Mapper\SettingGenerateTablesMapper;
 use App\Setting\Model\SettingGenerateTables;
 use App\System\Service\DataMaintainService;
-use Hyperf\Utils\Filesystem\Filesystem;
+use Exception;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Generator\ApiGenerator;
@@ -20,6 +20,7 @@ use Mine\Generator\ServiceGenerator;
 use Mine\Generator\SqlGenerator;
 use Mine\Generator\VueIndexGenerator;
 use Psr\Container\ContainerInterface;
+use ZipArchive;
 
 /**
  * 业务生成信息表业务处理类
@@ -91,7 +92,7 @@ class SettingGenerateTablesService extends AbstractService
     {
         $table = $this->read($id);
         $columns = $this->dataMaintainService->getColumnList(
-            str_replace(env('DB_PREFIX'), '', $table['table_name'])
+            str_replace(\Hyperf\Support\env('DB_PREFIX'), '', $table['table_name'])
         );
         $model = $this->settingGenerateColumnsService->mapper->getModel();
         $ids = $model->newQuery()->where('table_id', $table['id'])->pluck('id');
@@ -181,7 +182,7 @@ class SettingGenerateTablesService extends AbstractService
 
     /**
      * 预览代码
-     * @throws \Exception
+     * @throws Exception
      */
     public function preview(int $id): array
     {
@@ -192,55 +193,55 @@ class SettingGenerateTablesService extends AbstractService
             [
                 'tab_name' => 'Controller.php',
                 'name' => 'controller',
-                'code' => make(ControllerGenerator::class)->setGenInfo($model)->preview(),
+                'code' => \Hyperf\Support\make(ControllerGenerator::class)->setGenInfo($model)->preview(),
                 'lang' => 'php',
             ],
             [
                 'tab_name' => 'Model.php',
                 'name' => 'model',
-                'code' => make(ModelGenerator::class)->setGenInfo($model)->preview(),
+                'code' => \Hyperf\Support\make(ModelGenerator::class)->setGenInfo($model)->preview(),
                 'lang' => 'php',
             ],
             [
                 'tab_name' => 'Service.php',
                 'name' => 'service',
-                'code' => make(ServiceGenerator::class)->setGenInfo($model)->preview(),
+                'code' => \Hyperf\Support\make(ServiceGenerator::class)->setGenInfo($model)->preview(),
                 'lang' => 'php',
             ],
             [
                 'tab_name' => 'Mapper.php',
                 'name' => 'mapper',
-                'code' => make(MapperGenerator::class)->setGenInfo($model)->preview(),
+                'code' => \Hyperf\Support\make(MapperGenerator::class)->setGenInfo($model)->preview(),
                 'lang' => 'php',
             ],
             [
                 'tab_name' => 'Request.php',
                 'name' => 'request',
-                'code' => make(RequestGenerator::class)->setGenInfo($model)->preview(),
+                'code' => \Hyperf\Support\make(RequestGenerator::class)->setGenInfo($model)->preview(),
                 'lang' => 'php',
             ],
             [
                 'tab_name' => 'Dto.php',
                 'name' => 'dto',
-                'code' => make(DtoGenerator::class)->setGenInfo($model)->preview(),
+                'code' => \Hyperf\Support\make(DtoGenerator::class)->setGenInfo($model)->preview(),
                 'lang' => 'php',
             ],
             [
                 'tab_name' => 'Api.js',
                 'name' => 'api',
-                'code' => make(ApiGenerator::class)->setGenInfo($model)->preview(),
+                'code' => \Hyperf\Support\make(ApiGenerator::class)->setGenInfo($model)->preview(),
                 'lang' => 'javascript',
             ],
             [
                 'tab_name' => 'Index.vue',
                 'name' => 'index',
-                'code' => make(VueIndexGenerator::class)->setGenInfo($model)->preview(),
+                'code' => \Hyperf\Support\make(VueIndexGenerator::class)->setGenInfo($model)->preview(),
                 'lang' => 'html',
             ],
             [
                 'tab_name' => 'Menu.sql',
                 'name' => 'sql',
-                'code' => make(SqlGenerator::class)->setGenInfo($model, user()->getId())->preview(),
+                'code' => \Hyperf\Support\make(SqlGenerator::class)->setGenInfo($model, user()->getId())->preview(),
                 'lang' => 'mysql',
             ],
         ];
@@ -250,7 +251,7 @@ class SettingGenerateTablesService extends AbstractService
      * 生成步骤.
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Exception
+     * @throws Exception
      */
     protected function generateCodeFile(int $id, int $adminId): SettingGenerateTables
     {
@@ -270,7 +271,7 @@ class SettingGenerateTablesService extends AbstractService
         ];
 
         foreach ($classList as $cls) {
-            $class = make($cls);
+            $class = \Hyperf\Support\make($cls);
             if (get_class($class) == 'Mine\Generator\SqlGenerator') {
                 $class->setGenInfo($model, $adminId)->generator();
             } else {
@@ -288,13 +289,13 @@ class SettingGenerateTablesService extends AbstractService
      */
     protected function packageCodeFile(): string
     {
-        $fs = $this->container->get(Filesystem::class);
+        $fs = $this->container->get(\Hyperf\Support\Filesystem\Filesystem::class);
         $zipFileName = BASE_PATH . '/runtime/mineadmin.zip';
         $path = BASE_PATH . '/runtime/generate';
         // 删除老的压缩包
         @unlink($zipFileName);
-        $archive = new \ZipArchive();
-        $archive->open($zipFileName, \ZipArchive::CREATE);
+        $archive = new ZipArchive();
+        $archive->open($zipFileName, ZipArchive::CREATE);
         $files = $fs->files($path);
         foreach ($files as $file) {
             $archive->addFile(
@@ -307,9 +308,9 @@ class SettingGenerateTablesService extends AbstractService
         return $zipFileName;
     }
 
-    protected function addZipFile(\ZipArchive $archive, string $path): void
+    protected function addZipFile(ZipArchive $archive, string $path): void
     {
-        $fs = $this->container->get(Filesystem::class);
+        $fs = $this->container->get(\Hyperf\Support\Filesystem\Filesystem::class);
         foreach ($fs->directories($path) as $directory) {
             if ($fs->isDirectory($directory)) {
                 $archive->addEmptyDir(str_replace(BASE_PATH . '/runtime/generate/', '', $directory));
@@ -338,7 +339,7 @@ class SettingGenerateTablesService extends AbstractService
     {
         // 设置生成目录
         $genDirectory = BASE_PATH . '/runtime/generate';
-        $fs = $this->container->get(Filesystem::class);
+        $fs = $this->container->get(\Hyperf\Support\Filesystem\Filesystem::class);
 
         // 先删除再创建
         $fs->cleanDirectory($genDirectory);

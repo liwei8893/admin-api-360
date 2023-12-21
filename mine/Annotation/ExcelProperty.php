@@ -25,62 +25,30 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
 class ExcelProperty extends AbstractAnnotation
 {
     /**
-     * 列表头名称.
+     * @param null|string $value 字段名
+     * @param null|int $index 列索引号
+     * @param null|int $width 宽度
+     * @param null|string $align 文字对齐方式
+     * @param null|string $headColor 表头字体颜色
+     * @param null|string $headBgColor 表头背景颜色
+     * @param null|string $color 表体文字颜色
+     * @param null|string $bgColor 表体表格背景颜色
+     * @param null|array $dictData 字典数据
+     * @param null|string $dictName 字典名称
+     * @param null|string $path 数据路径 用法: object.value
      */
-    public string $value;
-
-    /**
-     * 列顺序.
-     */
-    public int $index;
-
-    /**
-     * 自定义字段,支持点语法.
-     */
-    public string $customField;
-
-    /**
-     * 宽度.
-     */
-    public int $width;
-
-    /**
-     * 对齐方式，默认居左.
-     */
-    public string $align;
-
-    /**
-     * 列表头字体颜色.
-     */
-    public string $headColor;
-
-    /**
-     * 列表头背景颜色.
-     */
-    public string $headBgColor;
-
-    /**
-     * 列表体字体颜色.
-     */
-    public string $color;
-
-    /**
-     * 列表体背景颜色.
-     */
-    public string $bgColor;
-
-    /**
-     * 字典数据列表.
-     */
-    public ?array $dictData = null;
-
-    /**
-     * 字典名称.
-     */
-    public string $dictName;
-    /**
-     * 数据路径 用法: object.value
-     * @var string
-     */
-    public string $path;
+    public function __construct(
+        public ?string $value = null,
+        public ?int $index = null,
+        public ?string $customField = null,
+        public ?int $width = null,
+        public ?string $align = null,
+        public ?string $headColor = null,
+        public ?string $headBgColor = null,
+        public ?string $color = null,
+        public ?string $bgColor = null,
+        public ?array $dictData = null,
+        public ?string $dictName = null,
+        public ?string $path = null
+    ) {}
 }

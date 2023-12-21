@@ -10,6 +10,6 @@ class EasySmsService extends EasySms
 {
     public function __construct()
     {
-        parent::__construct(config('easysms'));
+        parent::__construct(\Hyperf\Config\config('easysms'));
     }
 }

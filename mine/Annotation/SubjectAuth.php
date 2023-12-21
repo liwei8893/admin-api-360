@@ -15,11 +15,16 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
 #[Attribute(Attribute::TARGET_METHOD)]
 class SubjectAuth extends AbstractAnnotation
 {
-    public string $subjectField = 'subject';
-
-    public string $gradeField = 'grade';
-
-    public string $courseField = 'courseId';
-
-    public string $periodField = 'periodId';
+    /**
+     * @param string $subjectField 科目字段
+     * @param string $gradeField 年级字段
+     * @param string $courseField 课程ID字段
+     * @param string $periodField 章节ID字段
+     */
+    public function __construct(
+        public string $subjectField = 'subject',
+        public string $gradeField = 'grade',
+        public string $courseField = 'courseId',
+        public string $periodField = 'periodId'
+    ) {}
 }

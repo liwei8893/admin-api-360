@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Mine;
 
 use Hyperf\Database\Commands\Ast\ModelUpdateVisitor as Visitor;
-use Hyperf\Utils\Str;
 
 /**
  * Class MineModelVisitor.
@@ -49,7 +48,7 @@ class MineModelVisitor extends Visitor
                 return 'array';
         }
 
-        if (Str::startsWith($cast, 'decimal')) {
+        if (\Hyperf\Stringable\Str::startsWith($cast, 'decimal')) {
             // 如果 cast 为 decimal，则 @property 改为 string
             return 'string';
         }

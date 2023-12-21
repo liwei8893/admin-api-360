@@ -24,14 +24,5 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
 class Auth extends AbstractAnnotation
 {
-    /**
-     * scene.
-     */
-    public string $scene;
-
-    public function __construct($value = 'default')
-    {
-        parent::__construct($value);
-        $this->bindMainProperty('scene', [$value]);
-    }
+    public function __construct(public string $scene = 'default') {}
 }

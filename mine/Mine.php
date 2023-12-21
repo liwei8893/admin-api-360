@@ -13,23 +13,12 @@ declare(strict_types=1);
 
 namespace Mine;
 
-use Hyperf\Utils\Filesystem\Filesystem;
-
 class Mine
 {
-    /**
-     * @var string
-     */
     private static string $version = '1.1.0';
 
-    /**
-     * @var string
-     */
     private string $appPath = '';
 
-    /**
-     * @var array
-     */
     private array $moduleInfo = [];
 
     /**
@@ -49,20 +38,19 @@ class Mine
     public function scanModule(): void
     {
         $modules = glob(self::getAppPath() . '*');
-        $fs = container()->get(Filesystem::class);
+        $fs = container()->get(\Hyperf\Support\Filesystem\Filesystem::class);
         $infos = [];
-        foreach ($modules as &$mod) if (is_dir($mod)) {
-            $modInfo = $mod . DIRECTORY_SEPARATOR . 'config.json';
-            if (file_exists($modInfo)) {
-                $infos[basename($mod)] = json_decode($fs->sharedGet($modInfo), true);
+        foreach ($modules as &$mod) {
+            if (is_dir($mod)) {
+                $modInfo = $mod . DIRECTORY_SEPARATOR . 'config.json';
+                if (file_exists($modInfo)) {
+                    $infos[basename($mod)] = json_decode($fs->sharedGet($modInfo), true);
+                }
             }
         }
         $this->setModuleInfo($infos);
     }
 
-    /**
-     * @return string
-     */
     public static function getVersion(): string
     {
         return self::$version;
@@ -85,7 +73,6 @@ class Mine
     }
 
     /**
-     * @param string|null $name
      * @return mixed
      */
     public function getModuleInfo(string $name = null): array
@@ -105,18 +92,15 @@ class Mine
     }
 
     /**
-     * @param String $key
-     * @param string $value
      * @param false $save
-     * @return bool
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function setModuleConfigValue(String $key, string $value, bool $save = false): bool
+    public function setModuleConfigValue(string $key, string $value, bool $save = false): bool
     {
         if (strpos($key, '.') > 0) {
-            list($mod, $name) = explode('.', $key);
-            if (isset($this->moduleInfo[$mod]) && isset($this->moduleInfo[$mod][$name])) {
+            [$mod, $name] = explode('.', $key);
+            if (isset($this->moduleInfo[$mod], $this->moduleInfo[$mod][$name])) {
                 $this->moduleInfo[$mod][$name] = $value;
                 $save && $this->saveModuleConfig($mod);
                 return true;
@@ -126,19 +110,18 @@ class Mine
     }
 
     /**
-     * @param string $mod
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     protected function saveModuleConfig(string $mod): void
     {
-        if (!empty($mod)) {
-            $fs = container()->get(Filesystem::class);
+        if (! empty($mod)) {
+            $fs = container()->get(\Hyperf\Support\Filesystem\Filesystem::class);
             $modJson = $this->getAppPath() . $mod . DIRECTORY_SEPARATOR . 'config.json';
             if (! $fs->isWritable($modJson)) {
                 $fs->chmod($modJson, 666);
             }
-            $fs->put($modJson, \json_encode($this->getModuleInfo($mod), JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+            $fs->put($modJson, \json_encode($this->getModuleInfo($mod), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         }
     }
 }

@@ -27,7 +27,7 @@ class AppVerify
     public function __construct(string $scene = 'api')
     {
         /* @var JWT $this->jwt */
-        $this->jwt = make(JWT::class)->setScene($scene);
+        $this->jwt = \Hyperf\Support\make(JWT::class)->setScene($scene);
     }
 
     /**

@@ -67,7 +67,7 @@ class MineCrontabManage
      */
     public function getCrontabList(): array
     {
-        $prefix = config('cache.default.prefix');
+        $prefix = \Hyperf\Config\config('cache.default.prefix');
         $data = $this->redis->get($prefix . 'crontab');
 
         if ($data === false) {

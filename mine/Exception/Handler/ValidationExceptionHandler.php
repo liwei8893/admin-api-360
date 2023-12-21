@@ -15,7 +15,6 @@ namespace Mine\Exception\Handler;
 
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\Utils\Codec\Json;
 use Hyperf\Validation\ValidationException;
 use Mine\Helper\MineCode;
 use Psr\Http\Message\ResponseInterface;
@@ -35,7 +34,7 @@ class ValidationExceptionHandler extends ExceptionHandler
         ];
         return $response->withHeader('Server', 'MineAdmin')
             ->withAddedHeader('content-type', 'application/json; charset=utf-8')
-            ->withStatus(200)->withBody(new SwooleStream(Json::encode($format)));
+            ->withStatus(200)->withBody(new SwooleStream(\Hyperf\Codec\Json::encode($format)));
     }
 
     public function isValid(Throwable $throwable): bool

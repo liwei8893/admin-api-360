@@ -21,7 +21,7 @@ trait ModelMacroTrait
         // 数据权限方法
         $model = $this;
         Builder::macro('userDataScope', function (?int $userid = null) use ($model) {
-            if (! config('mineadmin.data_scope_enabled')) {
+            if (! \Hyperf\Config\config('mineadmin.data_scope_enabled')) {
                 return $this;
             }
 
@@ -32,7 +32,7 @@ trait ModelMacroTrait
             }
 
             /* @var Builder $this */
-            if ($userid == env('SUPER_ADMIN')) {
+            if ($userid == \Hyperf\Support\env('SUPER_ADMIN')) {
                 return $this;
             }
 
@@ -132,7 +132,7 @@ trait ModelMacroTrait
         Builder::macro('platformDataScope', function ($platformField = 'platform') {
             $userid = user()->getId();
             /* @var Builder $this */
-            if ($userid === (int) env('SUPER_ADMIN')) {
+            if ($userid === (int) \Hyperf\Support\env('SUPER_ADMIN')) {
                 return $this;
             }
             $platformCodes = [];
@@ -163,7 +163,7 @@ trait ModelMacroTrait
                     case SystemRole::DEPT_BELOW_SCOPE:
                         // 本部门及子部门数据权限
                         $parentDepts = Db::table('system_user_dept')->where('user_id', $userModel->id)->pluck('dept_id')->toArray();
-                        $ids = collect();
+                        $ids = \Hyperf\Collection\collect();
                         foreach ($parentDepts as $deptId) {
                             $ids->push(SystemDept::query()
                                 ->where(function ($query) use ($deptId) {

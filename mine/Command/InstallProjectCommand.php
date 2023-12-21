@@ -278,7 +278,7 @@ class InstallProjectCommand extends MineCommand
     {
         /* @var Mine $mine */
         $this->line("Installation of local modules is about to begin...\n", 'comment');
-        $mine = make(Mine::class);
+        $mine = \Hyperf\Support\make(Mine::class);
         $modules = $mine->getModuleInfo();
         foreach ($modules as $name => $info) {
             $this->call('mine:migrate-run', ['name' => $name, '--force' => 'true']);
@@ -305,7 +305,7 @@ class InstallProjectCommand extends MineCommand
 
         // 创建超级管理员
         Db::table("system_user")->insert([
-            'id' => env('SUPER_ADMIN', 1),
+            'id' => \Hyperf\Support\env('SUPER_ADMIN', 1),
             'username' => 'superAdmin',
             'password' => password_hash('admin123', PASSWORD_DEFAULT),
             'user_type' => '100',
@@ -322,12 +322,12 @@ class InstallProjectCommand extends MineCommand
         ]);
         // 创建管理员角色
         Db::table('system_role')->insert([
-            'id' => env('ADMIN_ROLE', 1),
+            'id' => \Hyperf\Support\env('ADMIN_ROLE', 1),
             'name' => '超级管理员（创始人）',
             'code' => 'superAdmin',
             'data_scope' => 0,
             'sort' => 0,
-            'created_by' => env('SUPER_ADMIN', 0),
+            'created_by' => \Hyperf\Support\env('SUPER_ADMIN', 0),
             'updated_by' => 0,
             'status' => 1,
             'created_at' => date('Y-m-d H:i:s'),
@@ -335,8 +335,8 @@ class InstallProjectCommand extends MineCommand
             'remark' => '系统内置角色，不可删除'
         ]);
         Db::table('system_user_role')->insert([
-            'user_id' => env('SUPER_ADMIN', 1),
-            'role_id' => env('ADMIN_ROLE', 1)
+            'user_id' => \Hyperf\Support\env('SUPER_ADMIN', 1),
+            'role_id' => \Hyperf\Support\env('ADMIN_ROLE', 1)
         ]);
     }
 

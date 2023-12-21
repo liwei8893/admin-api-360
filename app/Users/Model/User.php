@@ -248,6 +248,6 @@ class User extends MineModel
      */
     public function getAvatarAttribute(string $value): string
     {
-        return ! str_contains($value, 'https') ? config('file.storage.qiniu.domain') . '/' . $value : $value;
+        return ! str_contains($value, 'https') ? \Hyperf\Config\config('file.storage.qiniu.domain') . '/' . $value : $value;
     }
 }

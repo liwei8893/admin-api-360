@@ -198,7 +198,7 @@ class Str
      */
     public static function ipToRegion(string $ip): string
     {
-        $ip2Region = make(\Ip2Region::class);
+        $ip2Region = \Hyperf\Support\make(\Ip2Region::class);
         if (empty($ip2Region->btreeSearch($ip)['region'])) {
             return t('jwt.unknown');
         }

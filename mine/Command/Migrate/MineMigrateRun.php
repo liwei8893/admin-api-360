@@ -26,7 +26,7 @@ use Symfony\Component\Console\Input\InputOption;
 #[Command]
 class MineMigrateRun extends BaseCommand
 {
-    use ConfirmableTrait;
+    use \Hyperf\Command\Concerns\Confirmable;
 
     protected ?string $name = 'mine:migrate-run';
 

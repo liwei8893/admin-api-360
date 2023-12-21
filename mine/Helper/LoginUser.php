@@ -29,7 +29,7 @@ class LoginUser
     public function __construct(string $scene = 'default')
     {
         /* @var JWT $this - >jwt */
-        $this->jwt = make(JWT::class)->setScene($scene);
+        $this->jwt = \Hyperf\Support\make(JWT::class)->setScene($scene);
     }
 
     /**
@@ -140,7 +140,7 @@ class LoginUser
      */
     public function isSuperAdmin(): bool
     {
-        return (int) env('SUPER_ADMIN') === $this->getId();
+        return (int) \Hyperf\Support\env('SUPER_ADMIN') === $this->getId();
     }
 
     /**
@@ -150,7 +150,7 @@ class LoginUser
      */
     public function isAdminRole(): bool
     {
-        return in_array(SystemRole::find(env('ADMIN_ROLE'), ['code'])->code, container()->get(SystemUserService::class)->getInfo()['roles'], true);
+        return in_array(SystemRole::find(\Hyperf\Support\env('ADMIN_ROLE'), ['code'])->code, container()->get(SystemUserService::class)->getInfo()['roles'], true);
     }
 
     /**
@@ -188,7 +188,7 @@ class LoginUser
         try {
             $roles = container()->get(SystemUserService::class)->getInfo()['roles'];
             $codes = SystemRole::query()->whereIn('id', [6, 9])->select(['code'])->get()->pluck('code');
-            return collect($roles)->contains(function ($value) use ($codes) {
+            return \Hyperf\Collection\collect($roles)->contains(function ($value) use ($codes) {
                 return in_array($value, $codes->toArray(), true);
             });
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {

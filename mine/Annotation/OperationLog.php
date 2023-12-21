@@ -26,12 +26,7 @@ class OperationLog extends AbstractAnnotation
 {
     /**
      * 菜单名称.
+     * @param null|string $menuName
      */
-    public string $menuName;
-
-    public function __construct($value = '')
-    {
-        parent::__construct($value);
-        $this->bindMainProperty('menuName', [$value]);
-    }
+    public function __construct(public ?string $menuName = null) {}
 }

@@ -8,10 +8,10 @@ return [
             /*
              * 账号基本信息，请从微信公众平台/开放平台获取
              */
-            'app_id' => env('WECHAT_OFFICIAL_ACCOUNT_APPID', 'your-app-id'), // AppID
-            'secret' => env('WECHAT_OFFICIAL_ACCOUNT_SECRET', 'your-app-secret'), // AppSecret
-            'token' => env('WECHAT_OFFICIAL_ACCOUNT_TOKEN', 'your-token'), // Token
-            'aes_key' => env('WECHAT_OFFICIAL_ACCOUNT_AES_KEY', ''), // EncodingAESKey，兼容与安全模式下请一定要填写！！！
+            'app_id' => \Hyperf\Support\env('WECHAT_OFFICIAL_ACCOUNT_APPID', 'your-app-id'), // AppID
+            'secret' => \Hyperf\Support\env('WECHAT_OFFICIAL_ACCOUNT_SECRET', 'your-app-secret'), // AppSecret
+            'token' => \Hyperf\Support\env('WECHAT_OFFICIAL_ACCOUNT_TOKEN', 'your-token'), // Token
+            'aes_key' => \Hyperf\Support\env('WECHAT_OFFICIAL_ACCOUNT_AES_KEY', ''), // EncodingAESKey，兼容与安全模式下请一定要填写！！！
 
             /*
              * OAuth 配置

@@ -45,7 +45,7 @@ class UpdateAspect extends AbstractAspect
         // 更新更改人
         if ($instance instanceof MineModel &&
             in_array('updated_by', $instance->getFillable()) &&
-            config('mineadmin.data_scope_enabled') &&
+            \Hyperf\Config\config('mineadmin.data_scope_enabled') &&
             container()->get(MineRequest::class)->getHeaderLine('authorization')
         ) {
             try {

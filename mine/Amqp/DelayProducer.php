@@ -17,7 +17,6 @@ namespace Mine\Amqp;
 use Hyperf\Amqp\Message\ProducerMessageInterface;
 use Hyperf\Amqp\Producer;
 use Hyperf\Di\Annotation\AnnotationCollector;
-use Hyperf\Utils\ApplicationContext;
 use Mine\Amqp\Event\AfterProduce;
 use Mine\Amqp\Event\BeforeProduce;
 use Mine\Amqp\Event\FailToProduce;
@@ -25,6 +24,7 @@ use Mine\Amqp\Event\ProduceEvent;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Throwable;
 
 class DelayProducer extends Producer
 {
@@ -37,19 +37,19 @@ class DelayProducer extends Producer
     /**
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function produce(ProducerMessageInterface $producerMessage, bool $confirm = false, int $timeout = 5, int $delayTime = 0): bool
     {
-        $this->eventDispatcher = ApplicationContext::getContainer()->get(EventDispatcherInterface::class);
-        return retry(1, function () use ($producerMessage, $confirm, $timeout, $delayTime) {
+        $this->eventDispatcher = \Hyperf\Context\ApplicationContext::getContainer()->get(EventDispatcherInterface::class);
+        return \Hyperf\Support\retry(1, function () use ($producerMessage, $confirm, $timeout, $delayTime) {
             return $this->produceMessage($producerMessage, $confirm, $timeout, $delayTime);
         });
     }
 
     /**
      * 生产消息.
-     * @throws \Throwable
+     * @throws Throwable
      */
     private function produceMessage(ProducerMessageInterface $producerMessage, bool $confirm = false, int $timeout = 5, int $delayTime = 0): bool
     {
@@ -100,7 +100,7 @@ class DelayProducer extends Producer
             // 发送消息到延迟交换器上
             $channel->basic_publish($message, $delayExchange, $delayRoutingKey);
             $channel->wait_for_pending_acks_returns($timeout);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             // 触发队列发送失败事件
             $this->eventDispatcher->dispatch(new FailToProduce($producerMessage, $exception));
 

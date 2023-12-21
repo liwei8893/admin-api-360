@@ -25,19 +25,8 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
 class Resubmit extends AbstractAnnotation
 {
     /**
-     * second.
+     * @param int $second 限制时间（秒）
+     * @param null|string $message 提示信息
      */
-    public int $second = 3;
-
-    /**
-     * 提示信息.
-     */
-    public string $message;
-
-    public function __construct($value, $message = null)
-    {
-        parent::__construct($value);
-        $this->bindMainProperty('second', [$value]);
-        $this->bindMainProperty('message', [$message]);
-    }
+    public function __construct(public int $second = 3, public ?string $message = null) {}
 }

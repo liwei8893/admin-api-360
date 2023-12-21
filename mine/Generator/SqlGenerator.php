@@ -18,8 +18,8 @@ namespace Mine\Generator;
 
 use App\Setting\Model\SettingGenerateTables;
 use App\System\Model\SystemMenu;
+use Exception;
 use Hyperf\DbConnection\Db;
-use Hyperf\Utils\Filesystem\Filesystem;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\Str;
 use Psr\Container\ContainerExceptionInterface;
@@ -35,7 +35,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
 
     protected string $codeContent;
 
-    protected Filesystem $filesystem;
+    protected \Hyperf\Support\Filesystem\Filesystem $filesystem;
 
     protected int $adminId;
 
@@ -43,13 +43,13 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
      * 设置生成信息.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
-     * @throws \Exception
+     * @throws Exception
      */
     public function setGenInfo(SettingGenerateTables $model, int $adminId): SqlGenerator
     {
         $this->model = $model;
         $this->adminId = $adminId;
-        $this->filesystem = make(Filesystem::class);
+        $this->filesystem = \Hyperf\Support\make(\Hyperf\Support\Filesystem\Filesystem::class);
         if (empty($model->module_name) || empty($model->menu_name)) {
             throw new NormalStatusException(t('setting.gen_code_edit'));
         }
@@ -58,7 +58,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
 
     /**
      * 生成代码
-     * @throws \Exception
+     * @throws Exception
      */
     public function generator(): void
     {
@@ -89,7 +89,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
         return Str::camel(str_replace(
             Str::lower($this->model->module_name),
             '',
-            str_replace(env('DB_PREFIX'), '', $this->model->table_name)
+            str_replace(\Hyperf\Support\env('DB_PREFIX'), '', $this->model->table_name)
         ));
     }
 
@@ -127,7 +127,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
 
     /**
      * 占位符替换.
-     * @throws \Exception
+     * @throws Exception
      */
     protected function placeholderReplace(): SqlGenerator
     {
@@ -160,7 +160,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
 
     /**
      * 获取要替换占位符的内容.
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getReplaceContent(): array
     {
@@ -210,7 +210,7 @@ class SqlGenerator extends MineGenerator implements CodeGenerator
      */
     protected function getTableName(): string
     {
-        return env('DB_PREFIX') . SystemMenu::getModel()->getTable();
+        return \Hyperf\Support\env('DB_PREFIX') . SystemMenu::getModel()->getTable();
     }
 
     /**

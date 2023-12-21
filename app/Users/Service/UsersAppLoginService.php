@@ -105,7 +105,7 @@ class UsersAppLoginService extends AbstractService
             'user_nickname' => $data['user_name'] ?? $this->usersService->getInitUserName((string) $data['mobile']),
             'real_name' => $data['real_name'] ?? $this->usersService->getInitUserName((string) $data['mobile']),
             'user_pass' => $data['user_pass'] ?? $this->usersService->getInitPassword((string) $data['mobile']),
-            'avatar' => config('hxt-app.defaultAvatar'),
+            'avatar' => \Hyperf\Config\config('hxt-app.defaultAvatar'),
             'user_type' => 1,
             'status' => 1,
             'sex' => 3,

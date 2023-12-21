@@ -306,7 +306,7 @@ trait ServiceTrait
      */
     public function getArrayToPageList(?array $params = [], string $pageName = 'page'): array
     {
-        $collect = $this->handleArraySearch(collect($this->getArrayData($params)), $params);
+        $collect = $this->handleArraySearch(\Hyperf\Collection\collect($this->getArrayData($params)), $params);
 
         $pageSize = MineModel::PAGE_SIZE;
         $page = 1;

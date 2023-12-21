@@ -14,10 +14,6 @@ declare(strict_types=1);
 namespace Mine\Crontab\Mutex;
 
 use Hyperf\Redis\RedisFactory;
-use Hyperf\Utils\Arr;
-use Hyperf\Utils\Coordinator\Constants;
-use Hyperf\Utils\Coordinator\CoordinatorManager;
-use Hyperf\Utils\Coroutine;
 use Mine\Crontab\MineCrontab;
 
 class RedisServerMutex implements ServerMutex
@@ -54,8 +50,8 @@ class RedisServerMutex implements ServerMutex
         $result = (bool) $redis->set($mutexName, $this->macAddress, ['NX', 'EX' => $crontab->getMutexExpires()]);
 
         if ($result === true) {
-            Coroutine::create(function () use ($crontab, $redis, $mutexName) {
-                $exited = CoordinatorManager::until(Constants::WORKER_EXIT)->yield($crontab->getMutexExpires());
+            \Hyperf\Coroutine\Coroutine::create(function () use ($crontab, $redis, $mutexName) {
+                $exited = \Hyperf\Coordinator\CoordinatorManager::until(\Hyperf\Coordinator\Constants::WORKER_EXIT)->yield($crontab->getMutexExpires());
                 $exited && $redis->del($mutexName);
             });
             return true;
@@ -83,7 +79,7 @@ class RedisServerMutex implements ServerMutex
     {
         $macAddresses = swoole_get_local_mac();
 
-        foreach (Arr::wrap($macAddresses) as $name => $address) {
+        foreach (\Hyperf\Collection\Arr::wrap($macAddresses) as $name => $address) {
             if ($address && $address !== '00:00:00:00:00:00') {
                 return $name . ':' . str_replace(':', '', $address);
             }

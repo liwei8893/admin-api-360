@@ -36,7 +36,7 @@ class CreateModel extends MineCommand
 
     public function handle()
     {
-        $mine = make(Mine::class);
+        $mine = \Hyperf\Support\make(Mine::class);
         $module = $this->input->getOption('module');
         if ($module) {
             $module = ucfirst(trim($this->input->getOption('module')));
@@ -57,8 +57,8 @@ class CreateModel extends MineCommand
             $info = $moduleInfos[$module];
             $path = "app/{$module}/Model";
 
-            $db = env('DB_DATABASE');
-            $prefix = env('DB_PREFIX');
+            $db = \Hyperf\Support\env('DB_DATABASE');
+            $prefix = \Hyperf\Support\env('DB_PREFIX');
 
             $tables = Db::select('SHOW TABLES');
             $key = "Tables_in_{$db}";

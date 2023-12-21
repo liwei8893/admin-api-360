@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 return [
-    'qiniuUrl' => env('QINIU_DOMAIN'),
-    'defaultAvatar' => env('QINIU_DOMAIN') . '/upload/image/defaultAvatar.png',
+    'qiniuUrl' => \Hyperf\Support\env('QINIU_DOMAIN'),
+    'defaultAvatar' => \Hyperf\Support\env('QINIU_DOMAIN') . '/upload/image/defaultAvatar.png',
     'mobileArea' => [
         'AppKey' => 203991360,
         'AppSecret' => 'yCAd6kgUCd0xS9oYlePENpqs8eXKbqUl',

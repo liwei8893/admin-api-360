@@ -88,7 +88,7 @@ class MineCollection extends Collection
      */
     public function export(string $dto, string $filename, array|\Closure $closure = null, \Closure $callbackData = null): \Psr\Http\Message\ResponseInterface
     {
-        $excelDrive = config('mineadmin.excel_drive');
+        $excelDrive = \Hyperf\Config\config('mineadmin.excel_drive');
         if ($excelDrive === 'auto') {
             $excel = extension_loaded('xlswriter') ? new XlsWriter($dto) : new PhpOffice($dto);
         } else {
@@ -117,7 +117,7 @@ class MineCollection extends Collection
      */
     public function import(string $dto, MineModel $model, ?\Closure $closure = null): bool
     {
-        $excelDrive = config('mineadmin.excel_drive');
+        $excelDrive = \Hyperf\Config\config('mineadmin.excel_drive');
         if ($excelDrive === 'auto') {
             $excel = extension_loaded('xlswriter') ? new XlsWriter($dto) : new PhpOffice($dto);
         } else {

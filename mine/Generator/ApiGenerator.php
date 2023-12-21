@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace Mine\Generator;
 
 use App\Setting\Model\SettingGenerateTables;
-use Hyperf\Utils\Filesystem\Filesystem;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\Str;
 use Psr\Container\ContainerExceptionInterface;
@@ -33,7 +32,7 @@ class ApiGenerator extends MineGenerator implements CodeGenerator
 
     protected string $codeContent;
 
-    protected Filesystem $filesystem;
+    protected \Hyperf\Support\Filesystem\Filesystem $filesystem;
 
     /**
      * 设置生成信息.
@@ -43,7 +42,7 @@ class ApiGenerator extends MineGenerator implements CodeGenerator
     public function setGenInfo(SettingGenerateTables $model): ApiGenerator
     {
         $this->model = $model;
-        $this->filesystem = make(Filesystem::class);
+        $this->filesystem = \Hyperf\Support\make(\Hyperf\Support\Filesystem\Filesystem::class);
         if (empty($model->module_name) || empty($model->menu_name)) {
             throw new NormalStatusException(t('setting.gen_code_edit'));
         }
@@ -55,7 +54,7 @@ class ApiGenerator extends MineGenerator implements CodeGenerator
      */
     public function generator(): void
     {
-        $filename = Str::camel(str_replace(env('DB_PREFIX'), '', $this->model->table_name));
+        $filename = Str::camel(str_replace(\Hyperf\Support\env('DB_PREFIX'), '', $this->model->table_name));
         $module = Str::lower($this->model->module_name);
         $this->filesystem->makeDirectory(BASE_PATH . "/runtime/generate/vue/src/api/{$module}", 0755, true, true);
         $path = BASE_PATH . "/runtime/generate/vue/src/api/{$module}/{$filename}.ts";
@@ -78,7 +77,7 @@ class ApiGenerator extends MineGenerator implements CodeGenerator
         return Str::camel(str_replace(
             Str::lower($this->model->module_name),
             '',
-            str_replace(env('DB_PREFIX'), '', $this->model->table_name)
+            str_replace(\Hyperf\Support\env('DB_PREFIX'), '', $this->model->table_name)
         ));
     }
 

@@ -21,7 +21,6 @@ use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Crontab\LoggerInterface;
 use Hyperf\Guzzle\ClientFactory;
-use Hyperf\Utils\Coroutine;
 use Mine\Crontab\Mutex\RedisServerMutex;
 use Mine\Crontab\Mutex\RedisTaskMutex;
 use Mine\Crontab\Mutex\ServerMutex;
@@ -81,7 +80,7 @@ class MineExecutor
                             try {
                                 $result = true;
                                 $res = null;
-                                $instance = make($class);
+                                $instance = \Hyperf\Support\make($class);
                                 if (! empty($parameters)) {
                                     $res = $instance->{$method}($parameters);
                                 } else {
@@ -94,15 +93,15 @@ class MineExecutor
                             }
                         };
 
-                        Coroutine::create($this->decorateRunnable($crontab, $runnable));
+                        \Hyperf\Coroutine\Coroutine::create($this->decorateRunnable($crontab, $runnable));
                     };
                 }
                 break;
             case SettingCrontab::COMMAND_CRONTAB:
                 $command = ['command' => $crontab->getCallback()];
                 $parameter = $crontab->getParameter() ?: '{}';
-                $input = make(ArrayInput::class, array_merge($command, json_decode($parameter, true)));
-                $output = make(NullOutput::class);
+                $input = \Hyperf\Support\make(ArrayInput::class, array_merge($command, json_decode($parameter, true)));
+                $output = \Hyperf\Support\make(NullOutput::class);
                 $application = $this->container->get(ApplicationInterface::class);
                 $application->setAutoExit(false);
                 $callback = function () use ($application, $input, $output, $crontab) {

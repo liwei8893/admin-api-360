@@ -24,14 +24,9 @@ use Hyperf\Di\Annotation\AbstractAnnotation;
 #[Attribute(Attribute::TARGET_METHOD)]
 class DeleteCache extends AbstractAnnotation
 {
-    /**
-     * 缓存key，多个以逗号分开
-     */
-    public string $keys;
 
-    public function __construct($value = null)
-    {
-        parent::__construct($value);
-        $this->bindMainProperty('keys', [$value]);
-    }
+    /**
+     * @param null|string $keys 缓存key，多个以逗号分开
+     */
+    public function __construct(public ?string $keys = null) {}
 }

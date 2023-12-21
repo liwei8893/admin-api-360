@@ -16,7 +16,6 @@ namespace Mine\Generator;
 use App\Setting\Model\SettingGenerateColumns;
 use App\Setting\Model\SettingGenerateTables;
 use Hyperf\Database\Model\Collection;
-use Hyperf\Utils\Filesystem\Filesystem;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\Str;
 
@@ -30,7 +29,7 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
 
     protected string $codeContent;
 
-    protected Filesystem $filesystem;
+    protected \Hyperf\Support\Filesystem\Filesystem $filesystem;
 
     protected Collection $columns;
 
@@ -42,7 +41,7 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
     public function setGenInfo(SettingGenerateTables $model): VueIndexGenerator
     {
         $this->model = $model;
-        $this->filesystem = make(Filesystem::class);
+        $this->filesystem = \Hyperf\Support\make(\Hyperf\Support\Filesystem\Filesystem::class);
         if (empty($model->module_name) || empty($model->menu_name)) {
             throw new NormalStatusException(t('setting.gen_code_edit'));
         }
@@ -88,7 +87,7 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
         return Str::camel(str_replace(
             Str::lower($this->model->module_name),
             '',
-            str_replace(env('DB_PREFIX'), '', $this->model->table_name)
+            str_replace(\Hyperf\Support\env('DB_PREFIX'), '', $this->model->table_name)
         ));
     }
 
@@ -342,7 +341,7 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
      */
     protected function getBusinessEnName(): string
     {
-        return Str::camel(str_replace(env('DB_PREFIX'), '', $this->model->table_name));
+        return Str::camel(str_replace(\Hyperf\Support\env('DB_PREFIX'), '', $this->model->table_name));
     }
 
     protected function getModuleName(): string

@@ -16,7 +16,6 @@ namespace Mine\Command\Seeder;
 use Hyperf\Command\Annotation\Command;
 use Hyperf\Database\Commands\Seeders\BaseCommand;
 use Hyperf\Database\Seeders\SeederCreator;
-use Hyperf\Utils\Str;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -50,7 +49,7 @@ class MineSeeder extends BaseCommand
     public function handle()
     {
         $this->module = ucfirst(trim($this->input->getOption('module')));
-        $name = Str::snake(trim($this->input->getArgument('name')));
+        $name = \Hyperf\Stringable\Str::snake(trim($this->input->getArgument('name')));
 
         $this->writeMigration($name);
     }

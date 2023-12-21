@@ -26,7 +26,7 @@ use Symfony\Component\Console\Input\InputOption;
 #[Command]
 class MineSeederRun extends BaseCommand
 {
-    use ConfirmableTrait;
+    use \Hyperf\Command\Concerns\Confirmable;
 
     /**
      * The console command name.

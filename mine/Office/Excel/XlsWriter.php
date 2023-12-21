@@ -6,7 +6,6 @@ namespace Mine\Office\Excel;
 
 use Closure;
 use Exception;
-use Hyperf\Utils\Arr;
 use Mine\Exception\MineException;
 use Mine\MineModel;
 use Mine\MineRequest;
@@ -140,11 +139,11 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             }
             foreach ($this->property as $property) {
                 if (! empty($property['customField'])) {
-                    $value = Arr::get($item, $property['customField']);
+                    $value = \Hyperf\Collection\Arr::get($item, $property['customField']);
                 } elseif (! empty($property['path'])) {
-                    $value = data_get($item, $property['path']);
+                    $value = \Hyperf\Collection\data_get($item, $property['path']);
                 } else {
-                    $value = Arr::get($item, $property['name']);
+                    $value = \Hyperf\Collection\Arr::get($item, $property['name']);
                 }
                 if (! empty($property['dictName'])) {
                     $value = $property['dictName'][$value];

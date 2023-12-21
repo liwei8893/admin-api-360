@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Mine\Redis;
 
-use Hyperf\Utils\Coroutine;
+use Closure;
 use Mine\Abstracts\AbstractRedis;
 use Mine\Exception\NormalStatusException;
 use Mine\Interfaces\MineRedisInterface;
+use Throwable;
 
 class MineLockRedis extends AbstractRedis implements MineRedisInterface
 {
@@ -29,9 +30,9 @@ class MineLockRedis extends AbstractRedis implements MineRedisInterface
 
     /**
      * 运行锁，简单封装.
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function run(\Closure $closure, string $key, int $expired, int $timeout = 0, float $sleep = 0.1): bool
+    public function run(Closure $closure, string $key, int $expired, int $timeout = 0, float $sleep = 0.1): bool
     {
         if (! $this->lock($key, $expired, $timeout, $sleep)) {
             return false;
@@ -39,7 +40,7 @@ class MineLockRedis extends AbstractRedis implements MineRedisInterface
 
         try {
             call_user_func($closure);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             logger('Redis Lock')->error(t('mineadmin.redis_lock_error'));
             throw new NormalStatusException(t('mineadmin.redis_lock_error'), 500);
         } finally {
@@ -75,7 +76,7 @@ class MineLockRedis extends AbstractRedis implements MineRedisInterface
             if ($lock || $timeout === 0) {
                 break;
             }
-            Coroutine::id() ? Coroutine::sleep($sleep) : usleep(9999999);
+            \Hyperf\Coroutine\Coroutine::id() ? \Hyperf\Coroutine\Coroutine::sleep($sleep) : usleep(9999999);
 
             --$retry;
         }

@@ -6,7 +6,7 @@ return [
     'storage' => [
         'local' => [
             'driver' => \Hyperf\Filesystem\Adapter\LocalAdapterFactory::class,
-            'root' => __DIR__ . '/../../public/' . env('UPLOAD_PATH', 'uploadfile'),
+            'root' => __DIR__ . '/../../public/' . \Hyperf\Support\env('UPLOAD_PATH', 'uploadfile'),
         ],
         'oss' => [
             'driver' => \Hyperf\Filesystem\Adapter\AliyunOssAdapterFactory::class,
@@ -23,10 +23,10 @@ return [
         ],
         'qiniu' => [
             'driver' => \Hyperf\Filesystem\Adapter\QiniuAdapterFactory::class,
-            'accessKey' => env('QINIU_ACCESS_KEY'),
-            'secretKey' => env('QINIU_SECRET_KEY'),
-            'bucket' => env('QINIU_BUCKET'),
-            'domain' => env('QINIU_DOMAIN'),
+            'accessKey' => \Hyperf\Support\env('QINIU_ACCESS_KEY'),
+            'secretKey' => \Hyperf\Support\env('QINIU_SECRET_KEY'),
+            'bucket' => \Hyperf\Support\env('QINIU_BUCKET'),
+            'domain' => \Hyperf\Support\env('QINIU_DOMAIN'),
         ],
         'cos' => [
             'driver' => \Hyperf\Filesystem\Adapter\CosAdapterFactory::class,
@@ -70,28 +70,28 @@ return [
         's3' => [
             'driver' => \Hyperf\Filesystem\Adapter\S3AdapterFactory::class,
             'credentials' => [
-                'key' => env('S3_KEY'),
-                'secret' => env('S3_SECRET'),
+                'key' => \Hyperf\Support\env('S3_KEY'),
+                'secret' => \Hyperf\Support\env('S3_SECRET'),
             ],
-            'region' => env('S3_REGION'),
+            'region' => \Hyperf\Support\env('S3_REGION'),
             'version' => 'latest',
             'bucket_endpoint' => false,
             'use_path_style_endpoint' => false,
-            'endpoint' => env('S3_ENDPOINT'),
-            'bucket_name' => env('S3_BUCKET'),
+            'endpoint' => \Hyperf\Support\env('S3_ENDPOINT'),
+            'bucket_name' => \Hyperf\Support\env('S3_BUCKET'),
         ],
         'minio' => [
             'driver' => \Hyperf\Filesystem\Adapter\S3AdapterFactory::class,
             'credentials' => [
-                'key' => env('S3_KEY'),
-                'secret' => env('S3_SECRET'),
+                'key' => \Hyperf\Support\env('S3_KEY'),
+                'secret' => \Hyperf\Support\env('S3_SECRET'),
             ],
-            'region' => env('S3_REGION'),
+            'region' => \Hyperf\Support\env('S3_REGION'),
             'version' => 'latest',
             'bucket_endpoint' => false,
             'use_path_style_endpoint' => true,
-            'endpoint' => env('S3_ENDPOINT'),
-            'bucket_name' => env('S3_BUCKET'),
+            'endpoint' => \Hyperf\Support\env('S3_ENDPOINT'),
+            'bucket_name' => \Hyperf\Support\env('S3_BUCKET'),
         ],
     ],
 ];

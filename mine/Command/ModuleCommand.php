@@ -28,7 +28,7 @@ use Symfony\Component\Console\Input\InputOption;
 #[Command]
 class ModuleCommand extends MineCommand
 {
-    use ConfirmableTrait;
+    use \Hyperf\Command\Concerns\Confirmable;
     /**
      * 安装命令
      * @var string|null
@@ -48,7 +48,7 @@ class ModuleCommand extends MineCommand
     public function configure()
     {
         parent::configure();
-        $this->mine = make(Mine::class);
+        $this->mine = \Hyperf\Support\make(Mine::class);
         $this->setHelp('run "php bin/hyperf.php mine:module --name cms --option install"');
         $this->setDescription('install command of module MineAdmin');
         $this->addOption(
@@ -89,7 +89,7 @@ class ModuleCommand extends MineCommand
             exit;
         }
 
-        $service = make(ModuleService::class);
+        $service = \Hyperf\Support\make(ModuleService::class);
         $name = ucfirst($name);
 
         // other module

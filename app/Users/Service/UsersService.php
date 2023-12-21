@@ -138,7 +138,7 @@ class UsersService extends AbstractService
             'user_nickname' => $this->getInitUserName((string) $data['mobile']),
             'real_name' => $this->getInitUserName((string) $data['mobile']),
             'user_pass' => $this->getInitPassword((string) $data['mobile']),
-            'avatar' => config('hxt-app.defaultAvatar'),
+            'avatar' => \Hyperf\Config\config('hxt-app.defaultAvatar'),
             'user_type' => 1,
             'status' => 1,
             'sex' => 3,

@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\System\Vo\QueueMessageVo;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Logger\LoggerFactory;
-use Hyperf\Utils\ApplicationContext;
 use Mine\Helper\AppVerify;
 use Mine\Helper\Id;
 use Mine\Helper\LoginUser;
@@ -15,18 +14,16 @@ use Psr\Log\LoggerInterface;
 if (! function_exists('container')) {
     /**
      * 获取容器实例.
-     * @return \Psr\Container\ContainerInterface
      */
     function container(): Psr\Container\ContainerInterface
     {
-        return ApplicationContext::getContainer();
+        return \Hyperf\Context\ApplicationContext::getContainer();
     }
 }
 
 if (! function_exists('redis')) {
     /**
      * 获取Redis实例.
-     * @return \Hyperf\Redis\Redis
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
@@ -96,7 +93,7 @@ if (! function_exists('t')) {
     {
         $acceptLanguage = container()->get(\Mine\MineRequest::class)->getHeaderLine('accept-language');
         $language = ! empty($acceptLanguage) ? explode(',', $acceptLanguage)[0] : 'zh_CN';
-        return __($key, $replace, $language);
+        return \Hyperf\Translation\__($key, $replace, $language);
     }
 }
 
@@ -104,7 +101,6 @@ if (! function_exists('mine_collect')) {
     /**
      * 创建一个Mine的集合类.
      * @param null|mixed $value
-     * @return \Mine\MineCollection
      */
     function mine_collect($value = null): Mine\MineCollection
     {
@@ -186,7 +182,6 @@ if (! function_exists('push_queue_message')) {
 if (! function_exists('add_queue')) {
     /**
      * 添加任务到队列.
-     * @param \App\System\Vo\AmqpQueueVo $amqpQueueVo
      * @throws Throwable
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface

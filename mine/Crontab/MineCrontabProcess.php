@@ -77,7 +77,7 @@ class MineCrontabProcess extends AbstractProcess
      */
     public function isEnable($server): bool
     {
-        return env('CRONTAB_ENABLE', true);
+        return \Hyperf\Support\env('CRONTAB_ENABLE', true);
     }
 
     /**

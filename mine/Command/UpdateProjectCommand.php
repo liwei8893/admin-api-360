@@ -63,7 +63,7 @@ class UpdateProjectCommand extends MineCommand
      */
     public function handle()
     {
-        $modules = make(Mine::class)->getModuleInfo();
+        $modules = \Hyperf\Support\make(Mine::class)->getModuleInfo();
         $basePath = BASE_PATH . '/app/';
         $this->migrator->setConnection('default');
 
