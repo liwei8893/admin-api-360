@@ -53,7 +53,7 @@ class UserCourseRecordService extends AbstractService
      * 获取听课排行榜,缓存1小时.
      */
     #[Cacheable(prefix: 'ranking', value: 'course', ttl: 86400)]
-    public function getRanking(): Collection|array
+    public function getRanking(): array|Collection
     {
         return $this->mapper->getRanking()->map(function ($item) {
             if (! empty($item['users'])) {
@@ -66,7 +66,7 @@ class UserCourseRecordService extends AbstractService
         });
     }
 
-    public function getRankingCustomDate(array $params): Collection|array
+    public function getRankingCustomDate(array $params): array|Collection
     {
         return $this->mapper->getRanking($params)->map(function ($item) {
             if (! empty($item['users'])) {
@@ -125,7 +125,7 @@ class UserCourseRecordService extends AbstractService
         ];
     }
 
-    public function getUserRecord(): Collection|array
+    public function getUserRecord(): array|Collection
     {
         $userId = user('app')->getId();
         $recordModel = $this->mapper->getRecordByUserId($userId);
@@ -136,6 +136,19 @@ class UserCourseRecordService extends AbstractService
             $item['timeRate'] = $item['video_duration'] * 100 !== 0 ? round($item['watch_time'] / $item['video_duration'] * 100, 2) : 0.0;
             return $item;
         })->groupBy('courseBasisId');
+    }
+
+    public function getUserRecordPageList(array $params): array
+    {
+        $params['userId'] = user('app')->getId();
+        $pageData = $this->mapper->getRecordPageList($params);
+        foreach ($pageData['items'] as &$item) {
+            $item['courseBasisId'] = $item['courseBasis']['course_basis_id'] ?? null;
+            $item['courseBasisTitle'] = $item['courseBasis']['title'] ?? '';
+            $item['coursePeriodTitle'] = $item['coursePeriod']['title'] ?? '';
+            $item['timeRate'] = $item['video_duration'] * 100 !== 0 ? round($item['watch_time'] / $item['video_duration'] * 100, 2) : 0.0;
+        }
+        return $pageData;
     }
 
     /**

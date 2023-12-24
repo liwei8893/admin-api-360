@@ -108,6 +108,17 @@ class UserCourseRecordAppController extends MineController
     }
 
     /**
+     * 听课记录分页.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getUserRecordPageList'), Auth('app')]
+    public function getUserRecordPageList(): ResponseInterface
+    {
+        return $this->success($this->service->getUserRecordPageList($this->request->all()));
+    }
+
+    /**
      * 记录课程观看时间.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface

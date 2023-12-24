@@ -43,12 +43,12 @@ class UserCourseRecordMapper extends AbstractMapper
     /**
      * 获取最后一次观看课程记录.
      */
-    public function lastRecord(int $userId): Model|Builder|null
+    public function lastRecord(int $userId): null|Builder|Model
     {
         return UserCourseRecord::query()->where('user_id', $userId)->latest('updated_at')->first();
     }
 
-    public function getRanking(array $params = []): Collection|array
+    public function getRanking(array $params = []): array|Collection
     {
         $params['start_date'] = $params['start_date'] ?? Carbon::now()->startOfMonth();
         $params['end_date'] = $params['end_date'] ?? Carbon::now()->endOfMonth();
@@ -92,7 +92,7 @@ class UserCourseRecordMapper extends AbstractMapper
             ->count();
     }
 
-    public function getReportByMonth(): Collection|array
+    public function getReportByMonth(): array|Collection
     {
         return UserCourseRecord::query()
             ->selectRaw("date_format(from_unixtime(created_at), '%m') month")
@@ -103,13 +103,31 @@ class UserCourseRecordMapper extends AbstractMapper
             ->get();
     }
 
-    public function getRecordByUserId($userId): Collection|array
+    public function getRecordByUserId($userId): array|Collection
     {
         return UserCourseRecord::with([
             'courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title',
             'coursePeriod:id,course_basis_id,title',
             'users:id,user_name,mobile',
-        ])->where('user_id', $userId)->get();
+        ])->where('user_id', $userId)->orderBy('updated_at', 'desc')->get();
+    }
+
+    public function getRecordPageList(array $params): array
+    {
+        $query = UserCourseRecord::with([
+            'courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title',
+            'coursePeriod:id,course_basis_id,title',
+            'users:id,user_name,mobile',
+        ])->where('user_id', $params['userId'])->orderBy('updated_at', 'desc');
+        $perPage = $params['pageSize'] ?? $this->model::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $query = $query->paginate(
+            (int) $perPage,
+            ['*'],
+            'page',
+            (int) $page
+        );
+        return $this->setPaginate($query);
     }
 
     /**
@@ -142,7 +160,7 @@ class UserCourseRecordMapper extends AbstractMapper
      * 查询用户当天听课时长
      * @param mixed $userId
      */
-    public function getTodayDataByUserId($userId): \Hyperf\Database\Model\Model|UserCourseRecordToday|Builder|null
+    public function getTodayDataByUserId($userId): null|Builder|\Hyperf\Database\Model\Model|UserCourseRecordToday
     {
         return UserCourseRecordToday::query()->where('user_id', $userId)
             ->where('record_date', Carbon::today()->toDateString())->first();
