@@ -15,11 +15,11 @@ use App\Users\Model\User;
 use App\Users\Service\UserSalePlatformService;
 use App\Users\Service\UsersAppLoginService;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
+use EasyWeChat\OfficialAccount\Application;
 use Exception;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
-use Pengxuxu\HyperfWechat\EasyWechat;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -28,6 +28,8 @@ use Yansongda\Pay\Exception\ContainerException;
 use Yansongda\Pay\Exception\InvalidParamsException;
 use Yansongda\Pay\Pay;
 use Yansongda\Supports\Collection;
+
+use function Hyperf\Config\config;
 
 /**
  * 公众号配置服务类.
@@ -66,8 +68,8 @@ class PayAppService extends AbstractService
         if (! $authConfig) {
             throw new NormalStatusException('认证配置不存在!');
         }
-        $config = ['app_id' => $authConfig->appid, 'secret' => $authConfig->app_secret];
-        $app = EasyWechat::officialAccount('default', $config);
+        $config = array_merge(config('wechat.official_account.default'), ['app_id' => $authConfig->appid, 'secret' => $authConfig->app_secret]);
+        $app = new Application($config);
         return $app->getOAuth()->scopes(['snsapi_base'])->redirect($params['redirectUrl']);
     }
 
@@ -83,8 +85,8 @@ class PayAppService extends AbstractService
         if (! $authConfig) {
             throw new NormalStatusException('认证配置不存在!');
         }
-        $config = ['app_id' => $authConfig->appid, 'secret' => $authConfig->app_secret];
-        $app = EasyWechat::officialAccount('default', $config);
+        $config = array_merge(config('wechat.official_account.default'), ['app_id' => $authConfig->appid, 'secret' => $authConfig->app_secret]);
+        $app = new Application($config);
         $user = $app->getOauth()->userFromCode($code);
         return ['openId' => $user->getId()];
     }
@@ -93,7 +95,7 @@ class PayAppService extends AbstractService
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function payLinkVip(array $params): Collection|array
+    public function payLinkVip(array $params): array|Collection
     {
         $payLinkId = $params['payLinkId'];
         /** @var PayLink $payLinkModel */

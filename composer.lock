@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8628503e1267c41b73bc4a0fbad50cd9",
+    "content-hash": "3035f7e0c8e4a6677c71c8007d0a14d2",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -1005,11 +1005,11 @@
         },
         {
             "name": "hyperf/amqp",
-            "version": "v3.1.0",
+            "version": "v3.1.3",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/hyperf/amqp/v3.1.0/hyperf-amqp-v3.1.0.zip",
-                "reference": "de0a82343264217ffc3c1f180d446fc5998f84d1",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/hyperf/amqp/v3.1.3/hyperf-amqp-v3.1.3.zip",
+                "reference": "dae558843dbb1b12b5f7e7a9e01af063de4be3ae",
                 "shasum": ""
             },
             "require": {
@@ -1055,7 +1055,7 @@
                 "hyperf",
                 "php"
             ],
-            "time": "2023-11-24T03:10:53+00:00"
+            "time": "2023-12-15T09:45:03+00:00"
         },
         {
             "name": "hyperf/async-queue",
@@ -1585,11 +1585,11 @@
         },
         {
             "name": "hyperf/crontab",
-            "version": "v3.1.0",
+            "version": "v3.1.3",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/hyperf/crontab/v3.1.0/hyperf-crontab-v3.1.0.zip",
-                "reference": "e04d2397646301fd8a6a29c5a68a4457f69dab94",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/hyperf/crontab/v3.1.3/hyperf-crontab-v3.1.3.zip",
+                "reference": "f10ebaef367c7c7d87ab97be7baade7973607c00",
                 "shasum": ""
             },
             "require": {
@@ -1628,7 +1628,7 @@
                 "php",
                 "swoole"
             ],
-            "time": "2023-11-24T03:10:53+00:00"
+            "time": "2023-12-19T09:01:35+00:00"
         },
         {
             "name": "hyperf/database",
@@ -3547,6 +3547,50 @@
             "time": "2023-10-17T14:13:20+00:00"
         },
         {
+            "name": "limingxinleo/easywechat-classmap",
+            "version": "v1.0.1",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/limingxinleo/easywechat-classmap/v1.0.1/limingxinleo-easywechat-classmap-v1.0.1.zip",
+                "reference": "c9b6e52a14a5f0f1a10fb8db4a165d9d13f5a9ea",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0"
+            },
+            "conflict": {
+                "w7corp/easywechat": "<6.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "hyperf/context": "^3.0",
+                "mockery/mockery": "^1.0",
+                "phpstan/phpstan": "^1.0",
+                "phpunit/phpunit": ">=7.0",
+                "swoole/ide-helper": "^4.5",
+                "w7corp/easywechat": "^6.3"
+            },
+            "type": "library",
+            "extra": {
+                "hyperf": {
+                    "config": "Fan\\EasyWeChat\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Fan\\EasyWeChat\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "keywords": [
+                "hyperf",
+                "php"
+            ],
+            "time": "2022-05-28T11:33:52+00:00"
+        },
+        {
             "name": "maennchen/zipstream-php",
             "version": "3.1.0",
             "dist": {
@@ -4182,11 +4226,11 @@
         },
         {
             "name": "overtrue/flysystem-qiniu",
-            "version": "3.2.2",
+            "version": "3.2.3",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/overtrue/flysystem-qiniu/3.2.2/overtrue-flysystem-qiniu-3.2.2.zip",
-                "reference": "cf87e0fd74ba80736c7e0e9d19e1422eee6617d2",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/overtrue/flysystem-qiniu/3.2.3/overtrue-flysystem-qiniu-3.2.3.zip",
+                "reference": "5e04ac38be53b57345c56e02973fc4224db776e6",
                 "shasum": ""
             },
             "require": {
@@ -4225,7 +4269,7 @@
                 }
             ],
             "description": "Flysystem adapter for the Qiniu storage.",
-            "time": "2023-05-02T13:14:45+00:00"
+            "time": "2023-12-21T14:40:53+00:00"
         },
         {
             "name": "overtrue/socialite",
@@ -4378,52 +4422,6 @@
                 "random"
             ],
             "time": "2020-10-15T08:29:30+00:00"
-        },
-        {
-            "name": "pengxuxu/hyperf-easywechat6",
-            "version": "v1.0.4",
-            "dist": {
-                "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/pengxuxu/hyperf-easywechat6/v1.0.4/pengxuxu-hyperf-easywechat6-v1.0.4.zip",
-                "reference": "0eac128e8b351ad755a5dd496892911a8b60359c",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.0.2",
-                "w7corp/easywechat": "^6.11.1"
-            },
-            "conflict": {
-                "w7corp/easywechat": "<6.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.14|^3.0",
-                "hyperf/context": "~2.2.0|^3.0",
-                "mockery/mockery": "^1.0",
-                "phpstan/phpstan": "^0.12",
-                "phpunit/phpunit": ">=7.0",
-                "swoole/ide-helper": "^4.5"
-            },
-            "type": "library",
-            "extra": {
-                "hyperf": {
-                    "config": "Pengxuxu\\HyperfWechat\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Pengxuxu\\HyperfWechat\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "hyperf easywechat6",
-            "keywords": [
-                "easywechat",
-                "hyperf",
-                "php"
-            ],
-            "time": "2023-03-13T03:15:58+00:00"
         },
         {
             "name": "php-amqplib/php-amqplib",
@@ -7874,11 +7872,11 @@
         },
         {
             "name": "zircote/swagger-php",
-            "version": "4.8.1",
+            "version": "4.8.2",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/zircote/swagger-php/4.8.1/zircote-swagger-php-4.8.1.zip",
-                "reference": "2a2ae434965f5c497713e05d1398fc9476dfdeb0",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/zircote/swagger-php/4.8.2/zircote-swagger-php-4.8.2.zip",
+                "reference": "a70a5dc5db26183c86f589ff3d76fb11e141fc58",
                 "shasum": ""
             },
             "require": {
@@ -7941,7 +7939,7 @@
                 "rest",
                 "service discovery"
             ],
-            "time": "2023-12-11T08:35:08+00:00"
+            "time": "2023-12-19T19:59:07+00:00"
         },
         {
             "name": "zoujingli/ip2region",
@@ -8288,11 +8286,11 @@
         },
         {
             "name": "hyperf/testing",
-            "version": "v3.1.0",
+            "version": "v3.1.3",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/hyperf/testing/v3.1.0/hyperf-testing-v3.1.0.zip",
-                "reference": "a0b4f5472953ccadb4b54a39dfd6695dff5d3dcd",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/hyperf/testing/v3.1.3/hyperf-testing-v3.1.3.zip",
+                "reference": "00be4729882b0fcc9f5307b08db635f6ad3b56cc",
                 "shasum": ""
             },
             "require": {
@@ -8336,7 +8334,7 @@
                 "swoole",
                 "testing"
             ],
-            "time": "2023-11-29T03:44:48+00:00"
+            "time": "2023-12-17T08:53:12+00:00"
         },
         {
             "name": "hyperf/watcher",
@@ -8625,18 +8623,18 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "10.1.10",
+            "version": "10.1.11",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/phpunit/php-code-coverage/10.1.10/phpunit-php-code-coverage-10.1.10.zip",
-                "reference": "599109c8ca6bae97b23482d557d2874c25a65e59",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/phpunit/php-code-coverage/10.1.11/phpunit-php-code-coverage-10.1.11.zip",
+                "reference": "78c3b7625965c2513ee96569a4dbb62601784145",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
                 "ext-xmlwriter": "*",
-                "nikic/php-parser": "^4.15",
+                "nikic/php-parser": "^4.18 || ^5.0",
                 "php": ">=8.1",
                 "phpunit/php-file-iterator": "^4.0",
                 "phpunit/php-text-template": "^3.0",
@@ -8682,7 +8680,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2023-12-11T06:28:43+00:00"
+            "time": "2023-12-21T15:38:30+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -9118,15 +9116,15 @@
         },
         {
             "name": "sebastian/complexity",
-            "version": "3.1.0",
+            "version": "3.2.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/sebastian/complexity/3.1.0/sebastian-complexity-3.1.0.zip",
-                "reference": "68cfb347a44871f01e33ab0ef8215966432f6957",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/sebastian/complexity/3.2.0/sebastian-complexity-3.2.0.zip",
+                "reference": "68ff824baeae169ec9f2137158ee529584553799",
                 "shasum": ""
             },
             "require": {
-                "nikic/php-parser": "^4.10",
+                "nikic/php-parser": "^4.18 || ^5.0",
                 "php": ">=8.1"
             },
             "require-dev": {
@@ -9135,7 +9133,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "3.1-dev"
+                    "dev-main": "3.2-dev"
                 }
             },
             "autoload": {
@@ -9155,15 +9153,15 @@
             ],
             "description": "Library for calculating the complexity of PHP code units",
             "homepage": "https://github.com/sebastianbergmann/complexity",
-            "time": "2023-09-28T11:50:59+00:00"
+            "time": "2023-12-21T08:37:17+00:00"
         },
         {
             "name": "sebastian/diff",
-            "version": "5.0.3",
+            "version": "5.1.0",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/sebastian/diff/5.0.3/sebastian-diff-5.0.3.zip",
-                "reference": "912dc2fbe3e3c1e7873313cc801b100b6c68c87b",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/sebastian/diff/5.1.0/sebastian-diff-5.1.0.zip",
+                "reference": "fbf413a49e54f6b9b17e12d900ac7f6101591b7f",
                 "shasum": ""
             },
             "require": {
@@ -9176,7 +9174,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "5.0-dev"
+                    "dev-main": "5.1-dev"
                 }
             },
             "autoload": {
@@ -9205,7 +9203,7 @@
                 "unidiff",
                 "unified diff"
             ],
-            "time": "2023-05-01T07:48:21+00:00"
+            "time": "2023-12-22T10:55:06+00:00"
         },
         {
             "name": "sebastian/environment",
@@ -9362,15 +9360,15 @@
         },
         {
             "name": "sebastian/lines-of-code",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/sebastian/lines-of-code/2.0.1/sebastian-lines-of-code-2.0.1.zip",
-                "reference": "649e40d279e243d985aa8fb6e74dd5bb28dc185d",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/sebastian/lines-of-code/2.0.2/sebastian-lines-of-code-2.0.2.zip",
+                "reference": "856e7f6a75a84e339195d48c556f23be2ebf75d0",
                 "shasum": ""
             },
             "require": {
-                "nikic/php-parser": "^4.10",
+                "nikic/php-parser": "^4.18 || ^5.0",
                 "php": ">=8.1"
             },
             "require-dev": {
@@ -9399,7 +9397,7 @@
             ],
             "description": "Library for counting the lines of code in PHP source code",
             "homepage": "https://github.com/sebastianbergmann/lines-of-code",
-            "time": "2023-08-31T09:25:50+00:00"
+            "time": "2023-12-21T08:38:20+00:00"
         },
         {
             "name": "sebastian/object-enumerator",

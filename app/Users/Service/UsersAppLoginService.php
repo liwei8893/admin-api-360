@@ -7,6 +7,7 @@ namespace App\Users\Service;
 use App\System\Service\SmsService;
 use App\Users\Mapper\UsersAppLoginMapper;
 use App\Users\Model\User;
+use EasyWeChat\OfficialAccount\Application;
 use Exception;
 use Hyperf\Database\Model\Model;
 use Hyperf\Database\Model\ModelNotFoundException;
@@ -17,11 +18,12 @@ use Mine\Helper\MineCode;
 use Mine\MineModel;
 use Mine\MineRequest;
 use Mine\MineResponse;
-use Pengxuxu\HyperfWechat\EasyWechat;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\SimpleCache\InvalidArgumentException;
+
+use function Hyperf\Config\config;
 
 class UsersAppLoginService extends AbstractService
 {
@@ -91,7 +93,7 @@ class UsersAppLoginService extends AbstractService
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function register(array $data): Model|MineModel
+    public function register(array $data): MineModel|Model
     {
         if ($this->usersService->existsByMobile((string) $data['mobile'])) {
             throw new NormalStatusException('手机号已存在');
@@ -161,8 +163,9 @@ class UsersAppLoginService extends AbstractService
     {
         // 有mobile绑定手机号
         $code = $params['code'];
-        $app = EasyWechat::officialAccount();
         try {
+            $config = config('wechat.official_account.default');
+            $app = new Application($config);
             $oauth = $app->getOauth();
             $user = $oauth->scopes(['snsapi_base'])->userFromCode($code);
         } catch (\EasyWeChat\Kernel\Exceptions\InvalidArgumentException $e) {

@@ -9,6 +9,7 @@ use App\Operation\Model\WxMsg;
 use App\Users\Model\User;
 use App\Users\Service\UsersService;
 use Carbon\Carbon;
+use EasyWeChat\OfficialAccount\Application;
 use GuzzleHttp\Client;
 use Hyperf\Amqp\Producer;
 use Hyperf\Coroutine\Exception\ParallelExecutionException;
@@ -16,7 +17,8 @@ use Hyperf\Coroutine\Parallel;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
-use Pengxuxu\HyperfWechat\EasyWechat;
+
+use function Hyperf\Config\config;
 
 /**
  * 微信消息服务类.
@@ -124,7 +126,8 @@ class WxMsgService extends AbstractService
     public function sendWxMsg(array $setData): bool
     {
         console()->info('开始发送微信消息');
-        $app = EasyWechat::officialAccount();
+        $config = config('wechat.official_account.default');
+        $app = new Application($config);
         $accessToken = $app->getAccessToken()->getToken();
         // 创建带连接池的客户端
         $client = \Hyperf\Support\make(Client::class);
