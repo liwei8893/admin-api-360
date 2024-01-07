@@ -6,6 +6,8 @@ namespace App\Users\Service;
 
 use App\Score\Service\AvatarService;
 use App\Users\Mapper\UsersMapper;
+use App\Users\Model\User;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
@@ -72,5 +74,17 @@ class UsersAppService extends AbstractService
         }
         $pageSize = $params['pageSize'] ?? '15';
         return $this->mapper->setPaginate($avatarModel->paginate((int) $pageSize));
+    }
+
+    public function getUserHaveSubject(): \Hyperf\Collection\Collection
+    {
+        /* @var User $userModel */
+        $userModel = $this->read(user('app')->getId());
+        if (! $userModel) {
+            throw new NormalStatusException('用户不存在!');
+        }
+        /** @var Collection $userSubjectOrder */
+        $userSubjectOrder = $userModel->haveSubject()->with(['course:id,subject_id'])->get();
+        return $userSubjectOrder->pluck('course.subject_id');
     }
 }

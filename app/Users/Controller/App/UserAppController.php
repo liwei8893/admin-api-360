@@ -26,7 +26,7 @@ class UserAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getUserInfo'),Auth('app')]
+    #[GetMapping('getUserInfo'), Auth('app')]
     public function getUserInfo(): ResponseInterface
     {
         return $this->success(user('app')->getUserInfo());
@@ -37,7 +37,7 @@ class UserAppController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('updateInfo'),Auth('app')]
+    #[PostMapping('updateInfo'), Auth('app')]
     public function updateInfo(UsersAppRequest $request): ResponseInterface
     {
         $params = $request->all();
@@ -46,12 +46,10 @@ class UserAppController extends MineController
 
     /**
      * 设置头像.
-     * @param UsersAppRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('setAvatar'),Auth('app')]
+    #[PostMapping('setAvatar'), Auth('app')]
     public function setAvatar(UsersAppRequest $request): ResponseInterface
     {
         $params = $request->validated();
@@ -60,14 +58,23 @@ class UserAppController extends MineController
 
     /**
      * 获取用户已拥有头像.
-     * @param UsersAppRequest $request
-     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getAvatar'),Auth('app')]
+    #[GetMapping('getAvatar'), Auth('app')]
     public function getAvatar(UsersAppRequest $request): ResponseInterface
     {
         return $this->success($this->service->getAvatar($request->all()));
+    }
+
+    /**
+     * 获取用户报单科数组.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getUserHaveSubject'), Auth('app')]
+    public function getUserHaveSubject(): ResponseInterface
+    {
+        return $this->success($this->service->getUserHaveSubject());
     }
 }
