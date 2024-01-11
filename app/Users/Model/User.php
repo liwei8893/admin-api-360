@@ -102,14 +102,7 @@ use Mine\MineModel;
  */
 class User extends MineModel
 {
-    /**
-     * @description 无会员
-     */
-    public const VIP_TYPE_NONE = [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME];
-
-    // 高中课程ID,1436为特色课
     public const VIP_TYPE_HIGH = [
-        1436, // 高中特色课
         1433, // 高中历史
         1432, // 高中生物
         1431, // 高中地理
@@ -119,13 +112,24 @@ class User extends MineModel
         1427, // 高中数学
         1426, // 高中语文
         1454, // 高中政治
-        1458, // 特色课
-        1459, // 语文
-        1460, // 数学
-        1461, // 英语
-        1462, // 物理
-        1463, // 化学
+        1436, // 高中特色课
+        1456, // 小学语文
+        1457, // 小学数学
+        1458, // 小学英语
+        1434, // 小学特色课
+        1459, // 初中语文
+        1460, // 初中数学
+        1461, // 初中英语
+        1462, // 初中物理
+        1463, // 初中化学
+        1435, // 初中特色课
     ];
+
+    /**
+     * @description 无会员
+     */
+    public const VIP_TYPE_NONE = [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME];
+    // 高中课程ID,1436为特色课
 
     /**
      * @description 优享会员

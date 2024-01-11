@@ -26,6 +26,24 @@ class CourseBasisMapper extends AbstractMapper
     }
 
     /**
+     * 单个或批量从回收站恢复数据.
+     */
+    public function recovery(array $ids): bool
+    {
+        $this->model::query()->whereIn((new $this->model())->getKeyName(), $ids)->update(['is_del' => 0]);
+        return true;
+    }
+
+    /**
+     * 单个或批量软删除数据.
+     */
+    public function delete(array $ids): bool
+    {
+        $this->model::query()->whereIn((new $this->model())->getKeyName(), $ids)->update(['is_del' => 1]);
+        return true;
+    }
+
+    /**
      * 批量更新.
      */
     public function batchUpdate(array $ids, array $data): int

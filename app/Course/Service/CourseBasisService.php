@@ -49,16 +49,6 @@ class CourseBasisService extends AbstractService
         return $this->mapper->getPageList($params, $isScope);
     }
 
-    public function recovery(array $ids): bool
-    {
-        return ! empty($ids) && $this->mapper->disable($ids, 'is_del');
-    }
-
-    public function delete(array $ids): bool
-    {
-        return ! empty($ids) && $this->mapper->enable($ids, 'is_del');
-    }
-
     /**
      * 批量更新.
      * @param mixed $data
