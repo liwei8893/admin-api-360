@@ -46,6 +46,9 @@ class SystemLoginLogMapper extends AbstractMapper
                 [$params['login_time'][0] . ' 00:00:00', $params['login_time'][1] . ' 23:59:59']
             );
         }
+        if (! empty($params['withSystemUser'])) {
+            $query->with('systemUser:id,username,nickname');
+        }
         return $query;
     }
 }

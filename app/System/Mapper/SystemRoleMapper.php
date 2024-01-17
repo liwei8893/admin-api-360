@@ -52,7 +52,6 @@ class SystemRoleMapper extends AbstractMapper
 
     /**
      * 通过 code 查询角色名称.
-     * @return string
      */
     public function findNameByCode(string $code): ?string
     {
@@ -157,6 +156,10 @@ class SystemRoleMapper extends AbstractMapper
 
         if (isset($params['status'])) {
             $query->where('status', $params['status']);
+        }
+
+        if (isset($params['data_scope'])) {
+            $query->where('data_scope', $params['data_scope']);
         }
 
         if (isset($params['filterAdminRole'])) {

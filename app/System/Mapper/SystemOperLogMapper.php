@@ -43,6 +43,9 @@ class SystemOperLogMapper extends AbstractMapper
                 [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
             );
         }
+        if (! empty($params['withSystemUser'])) {
+            $query->with('systemUser:id,username,nickname');
+        }
         return $query;
     }
 }
