@@ -173,7 +173,9 @@ class SystemUserMapper extends AbstractMapper
                 return $isAll ? $query->select(['*']) : $query->select(['id', 'name']);
             }]);
         }
-
+        if (! empty($params['withRole'])) {
+            $query->with('roles:id,name,code,remark');
+        }
         if (isset($params['role_id'])) {
             $query->whereHas('roles', function (Builder $query) use ($params) {
                 $query->where('code', $params['role_id']);
