@@ -8,6 +8,7 @@ use App\Score\Service\AvatarService;
 use App\Users\Mapper\UsersMapper;
 use App\Users\Model\User;
 use Hyperf\Database\Model\Collection;
+use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
@@ -76,7 +77,7 @@ class UsersAppService extends AbstractService
         return $this->mapper->setPaginate($avatarModel->paginate((int) $pageSize));
     }
 
-    public function getUserHaveSubject(): \Hyperf\Collection\Collection
+    public function getUserHaveSubject(): array
     {
         /* @var User $userModel */
         $userModel = $this->read(user('app')->getId());
@@ -84,7 +85,20 @@ class UsersAppService extends AbstractService
             throw new NormalStatusException('用户不存在!');
         }
         /** @var Collection $userSubjectOrder */
-        $userSubjectOrder = $userModel->haveSubject()->with(['course:id,subject_id'])->get();
-        return $userSubjectOrder->pluck('course.subject_id');
+        $userSubjectOrder = $userModel->haveSubject()->with(['course' => function (BelongsTo $builder) {
+            $builder->with('basisGrade')->select(['id', 'subject_id']);
+        }])->get();
+        if ($userSubjectOrder->isEmpty()) {
+            return [];
+        }
+        $result = [];
+        foreach ($userSubjectOrder as $item) {
+            $subjectId = $item->course->subject_id;
+            foreach ($item->course->basisGrade as $gradeItem) {
+                $result[] = ['grade' => $gradeItem->key, 'subject' => $subjectId];
+            }
+        }
+        var_dump($result);
+        return $result;
     }
 }

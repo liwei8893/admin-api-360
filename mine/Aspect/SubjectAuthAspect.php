@@ -112,20 +112,20 @@ class SubjectAuthAspect extends AbstractAspect
         }])->get();
         // 有分科订单,科目和年级都验证通过就返回,不然往下走进行老950会员验证
         if ($userSubjectOrder->isNotEmpty()) {
-            // 是否购买当前科目
-            $hasSubject = $userSubjectOrder->pluck('course.subject_id')->map(fn ($item) => ['key' => $item])->whereIn('key', $subjectId);
-            // 是否购买当前年级
-            $hasGrade = $userSubjectOrder->map(fn ($item) => $item['course']['basisGrade']->pluck('key'))
-                ->flatten()->unique()->values()->map(fn ($item) => ['key' => $item])->whereIn('key', $gradeId);
-            // 科目和年级都验证通过,表示购买了对应分科
-            if ($hasGrade->isNotEmpty() && $hasSubject->isNotEmpty()) {
-                return $data;
+            foreach ($userSubjectOrder as $item) {
+                // 是否购买当前科目
+                $hasSubject = $item->course->subject_id === $subjectId;
+                // 是否购买当前年级
+                $hasGrade = $item['course']['basisGrade']->whereIn('key', $gradeId);
+                // 科目和年级都验证通过,表示购买了对应分科
+                if ($hasSubject && $hasGrade->isNotEmpty()) {
+                    return $data;
+                }
             }
         }
 
         // 兼容之前老会员950
-        $user = $userModel->vipType()->with(['orderGrade', 'orderSubject'])
-            ->first();
+        $user = $userModel->vipType()->with(['orderGrade', 'orderSubject'])->first();
         // 没有老会员
         if (! $user) {
             $this->noPermissionTip();

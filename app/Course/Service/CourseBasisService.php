@@ -38,6 +38,8 @@ class CourseBasisService extends AbstractService
         if (! isset($params['orderType'])) {
             $params['orderType'] = ['desc', 'asc'];
         }
+        // 添加课程年级关联
+        $params['withBasisGrade'] = true;
         // 去掉收费课程
         $params['is_give'] = 0;
         return $this->mapper->getPageList($params, false);
