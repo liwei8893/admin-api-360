@@ -114,7 +114,7 @@ class SubjectAuthAspect extends AbstractAspect
         if ($userSubjectOrder->isNotEmpty()) {
             foreach ($userSubjectOrder as $item) {
                 // 是否购买当前科目
-                $hasSubject = $item->course->subject_id === $subjectId;
+                $hasSubject = (int) $item->course->subject_id === (int) $subjectId;
                 // 是否购买当前年级
                 $hasGrade = $item['course']['basisGrade']->whereIn('key', $gradeId);
                 // 科目和年级都验证通过,表示购买了对应分科
