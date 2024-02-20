@@ -102,7 +102,7 @@ class OrderService extends AbstractService
                 try {
                     $adminUsers = SystemRole::find(3)->users;
                     $this->queueMessageService->sendMessage(['title' => '续费审核', 'content' => '有续费待审核,请查看!', 'users' => [...$adminUsers->pluck('id')->toArray(), 2]]);
-                } catch (NotFoundExceptionInterface|ContainerExceptionInterface|Throwable $e) {
+                } catch (ContainerExceptionInterface|NotFoundExceptionInterface|Throwable $e) {
                 }
             }
         }
@@ -403,6 +403,7 @@ class OrderService extends AbstractService
         $data['created_at'] = date('Y-m-d h:m:s', (int) $data['created_at']);
         $data['payment_number'] = ! empty($data['payment']) ? implode(',', array_column($data['payment'], 'payment_number')) : '';
         $data['order_grade'] = ! empty($data['order_grade']) ? implode(',', array_column($data['order_grade'], 'title')) : '';
+        $data['order_subject_count'] = count($data['order_subject']);
         $data['order_subject'] = ! empty($data['order_subject']) ? implode(',', array_column($data['order_subject'], 'title')) : '';
     }
 }

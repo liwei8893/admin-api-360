@@ -95,7 +95,10 @@ class OrderMapper extends AbstractMapper
         if (isset($params['shop_name'])) {
             $query->where('shop_name', 'like', "%{$params['shop_name']}%");
         }
-        if (isset($params['shop_id'])) {
+        if (isset($params['shop_id']) && is_array($params['shop_id'])) {
+            $query->whereIn('shop_id', $params['shop_id']);
+        }
+        if (isset($params['shop_id']) && ! is_array($params['shop_id'])) {
             $query->where('shop_id', $params['shop_id']);
         }
         if (isset($params['pay_type'])) {
