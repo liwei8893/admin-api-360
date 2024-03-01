@@ -35,7 +35,7 @@ class CourseShopService extends AbstractService
         return $data;
     }
 
-    public function getAppList(array $params): Collection
+    public function getAppList(array $params): array
     {
         /** @var Builder|Collection|CourseShop[] $data */
         $data = $this->getListCollect($params, false);
@@ -48,7 +48,7 @@ class CourseShopService extends AbstractService
             /** @var Collection $orderIds */
             $orderIds = Order::query()->where('user_id', $userId)->normalOrder()->isNotExpire()->pluck('shop_id');
         }
-        return $data->filter(function (CourseShop $item) use ($isLogin, $orderIds) {
+        $data = $data->filter(function (CourseShop $item) use ($isLogin, $orderIds) {
             // show_rule: 0:购买之后才显示,1:总是显示
             // vip_auth: 2超级会员,3至尊会员
             // 没登录 总是显示
@@ -78,5 +78,7 @@ class CourseShopService extends AbstractService
             }
             return true;
         });
+
+        return $data->values()->toArray();
     }
 }
