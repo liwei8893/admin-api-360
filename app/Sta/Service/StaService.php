@@ -320,6 +320,7 @@ class StaService extends AbstractService
         $data = $this->getOrderAdd($params);
         $cb = function ($item) {
             $item['order_grade'] = $item['orderGrade']->implode('title', ',');
+            $item['order_subject_count'] = $item['orderSubject']->count();
             $item['order_subject'] = $item['orderSubject']->implode('title', ',');
             return $item;
         };
@@ -405,6 +406,7 @@ class StaService extends AbstractService
         $data = $this->getOrderRenew($params);
         $cb = function ($item) {
             $item['order_grade'] = $item['order']['orderGrade']->implode('title', ',');
+            $item['order_subject_count'] = $item['order']['orderSubject']->count();
             $item['order_subject'] = $item['order']['orderSubject']->implode('title', ',');
             $item = $item->toArray();
             $item['status'] = $item['status'] === 1 ? '续费' : '修改有效期';

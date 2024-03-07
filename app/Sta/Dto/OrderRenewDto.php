@@ -52,4 +52,7 @@ class OrderRenewDto implements MineModelExcel
 
     #[ExcelProperty(value: '购买科目', index: 13)]
     public string $order_subject;
+
+    #[ExcelProperty(value: '购买科目数量', index: 14)]
+    public string $order_subject_count;
 }

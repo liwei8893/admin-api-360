@@ -65,7 +65,7 @@ class OrderDto implements MineModelExcel
     #[ExcelProperty(value: '购买科目', index: 16)]
     public string $order_subject;
 
-    #[ExcelProperty(value: '购买科目', index: 17)]
+    #[ExcelProperty(value: '购买科目数量', index: 17)]
     public string $order_subject_count;
 
     #[ExcelProperty(value: '付款链接平台', index: 18)]
