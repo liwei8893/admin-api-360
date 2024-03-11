@@ -142,7 +142,6 @@ trait ModelMacroTrait
             $roles = $userModel->roles()->get(['id', 'data_scope']);
             $deptModel = $userModel->depts;
             $curPlatform = $deptModel->pluck('platform')->toArray();
-
             foreach ($roles as $role) {
                 switch ($role->data_scope) {
                     case SystemRole::ALL_SCOPE:
@@ -167,8 +166,9 @@ trait ModelMacroTrait
                         foreach ($parentDepts as $deptId) {
                             $ids->push(SystemDept::query()
                                 ->where(function ($query) use ($deptId) {
-                                    $query->where('level', 'like', '0,' . $deptId . '%');
-                                    $query->orWhere('id', $deptId);
+                                    $query->where('id', '=', $deptId)
+                                        ->orWhere('level', 'like', $deptId . ',%')
+                                        ->orWhere('level', 'like', '%,' . $deptId);
                                 })
                                 ->pluck('platform'));
                         }
