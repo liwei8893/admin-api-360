@@ -29,6 +29,6 @@ class LoginMessage extends Message
      */
     public function getTemplate(GatewayInterface $gateway = null): string
     {
-        return 'SMS_179670044';
+        return 'SMS_465421300';
     }
 }

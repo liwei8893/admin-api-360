@@ -62,6 +62,41 @@ class SmsService extends AbstractService
     }
 
     /**
+     * 登录验证码
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function getLoginSms(array $params): bool
+    {
+        $message = new LoginMessage();
+        $easySms = new EasySmsService();
+        $this->handleSmsSendBefore($params['mobile']);
+        try {
+            $res = $easySms->send($params['mobile'], $message);
+            return $this->handleSmsSendAfter($params['mobile'], $message, $res);
+        } catch (InvalidArgumentException|NoGatewayAvailableException $e) {
+            throw new NormalStatusException('短信发送失败,请稍后重试!');
+        }
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function getAuthSms(array $params): bool
+    {
+        $message = new AuthMessage();
+        $easySms = new EasySmsService();
+        $this->handleSmsSendBefore($params['mobile']);
+        try {
+            $res = $easySms->send($params['mobile'], $message);
+            return $this->handleSmsSendAfter($params['mobile'], $message, $res);
+        } catch (InvalidArgumentException|NoGatewayAvailableException $e) {
+            throw new NormalStatusException('短信发送失败,请稍后重试!');
+        }
+    }
+
+    /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
@@ -117,40 +152,5 @@ class SmsService extends AbstractService
             return true;
         }
         return false;
-    }
-
-    /**
-     * 登录验证码
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public function getLoginSms(array $params): bool
-    {
-        $message = new LoginMessage();
-        $easySms = new EasySmsService();
-        $this->handleSmsSendBefore($params['mobile']);
-        try {
-            $res = $easySms->send($params['mobile'], $message);
-            return $this->handleSmsSendAfter($params['mobile'], $message, $res);
-        } catch (InvalidArgumentException|NoGatewayAvailableException $e) {
-            throw new NormalStatusException('短信发送失败,请稍后重试!');
-        }
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    public function getAuthSms(array $params): bool
-    {
-        $message = new AuthMessage();
-        $easySms = new EasySmsService();
-        $this->handleSmsSendBefore($params['mobile']);
-        try {
-            $res = $easySms->send($params['mobile'], $message);
-            return $this->handleSmsSendAfter($params['mobile'], $message, $res);
-        } catch (InvalidArgumentException|NoGatewayAvailableException $e) {
-            throw new NormalStatusException('短信发送失败,请稍后重试!');
-        }
     }
 }
