@@ -53,7 +53,7 @@
     "tangwei/apidocs": "^2.1.12",
     "w7corp/easywechat": "^6.13.1",
     "xmo/jwt-auth": "0.6.0",
-    "yansongda/pay": "~3.2.14",
+    "yansongda/hyperf-pay": "^1.6.0",
     "yurunsoft/phpmailer-swoole": "^1.0.2",
     "zoujingli/ip2region": "^1.0.13"
   },

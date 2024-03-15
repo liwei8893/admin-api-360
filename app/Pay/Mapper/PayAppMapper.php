@@ -10,13 +10,14 @@ use App\Pay\Model\PayLink;
 use Exception;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Model;
+use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Exception\NormalStatusException;
 use Mine\MineRequest;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
-use Yansongda\Pay\Pay;
+use Yansongda\HyperfPay\Pay;
 use Yansongda\Supports\Collection;
 
 /**
@@ -28,6 +29,9 @@ class PayAppMapper extends AbstractMapper
      * @var PayLink
      */
     public $model;
+
+    #[Inject]
+    protected Pay $pay;
 
     public function assignModel(): void
     {
@@ -44,7 +48,7 @@ class PayAppMapper extends AbstractMapper
         // 获取微信支付配置
         $payConfig = $payLinkModel->payConfig->toArray();
         $payConfig['mch_public_cert_path'] = BASE_PATH . '/storage/cert' . $payConfig['mch_public_cert_path'];
-        $payConfig['notify_url'] = \Hyperf\Support\env('APP_URL') . 'pay/app/wxNotify/' . $payLinkId;
+        $payConfig['notify_url'] = \Hyperf\Support\env('APP_URL') . '/pay/app/wxNotify/' . $payLinkId;
         return [
             'wechat' => ['default' => $payConfig],
             'logger' => [
@@ -54,6 +58,7 @@ class PayAppMapper extends AbstractMapper
                 'type' => 'daily', // optional, 可选 daily.
                 'max_file' => 30, // optional, 当 type 为 daily 时有效，默认 30 天
             ],
+            '_force' => true,
         ];
     }
 
@@ -82,7 +87,7 @@ class PayAppMapper extends AbstractMapper
         return $params;
     }
 
-    public function getOrderModel(string $order_number): Order|Model|Builder|null
+    public function getOrderModel(string $order_number): null|Builder|Model|Order
     {
         // 获取订单
         return Order::query()->where('order_number', $order_number)->first();
@@ -157,7 +162,7 @@ class PayAppMapper extends AbstractMapper
             'amount' => ['total' => $params['order_price']],
             'payer' => ['openid' => $params['openid']],
         ];
-        return Pay::wechat($config)->mp($order);
+        return $this->pay->wechat($config)->mp($order);
     }
 
     /**
@@ -182,16 +187,16 @@ class PayAppMapper extends AbstractMapper
                 ],
             ],
         ];
-        return Pay::wechat($config)->wap($order);
+        return $this->pay->wechat($config)->h5($order);
     }
 
-    public function aliWapPay(array $config,array $params): ResponseInterface
+    public function aliWapPay(array $config, array $params): ResponseInterface
     {
         $order = [
             'out_trade_no' => $params['payment_number'],
             'total_amount' => $params['order_price'] * 0.01,
             'subject' => $params['title'],
         ];
-        return Pay::alipay($config)->wap($order);
+        return $this->pay->alipay($config)->h5($order);
     }
 }

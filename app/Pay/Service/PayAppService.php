@@ -20,13 +20,13 @@ use Exception;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
+use Mine\MineRequest;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Yansongda\Pay\Exception\ContainerException;
-use Yansongda\Pay\Exception\InvalidParamsException;
-use Yansongda\Pay\Pay;
+use Yansongda\Artful\Exception\ContainerException;
+use Yansongda\Artful\Exception\InvalidParamsException;
+use Yansongda\HyperfPay\Pay;
 use Yansongda\Supports\Collection;
 
 use function Hyperf\Config\config;
@@ -56,6 +56,9 @@ class PayAppService extends AbstractService
 
     #[Inject]
     protected OrderSignupService $orderSignupService;
+
+    #[Inject]
+    protected Pay $pay;
 
     /**
      * @throws InvalidArgumentException
@@ -105,7 +108,7 @@ class PayAppService extends AbstractService
         }
 
         /** @var User $userModel */
-        $userModel = $this->appLoginService->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
+        $userModel = $this->appLoginService->mapper->checkUserByMobile($params['mobile']);
         if (! $userModel) {
             $registerData = ['mobile' => $params['mobile'], 'platform' => $payLinkModel->platform, 'remark' => $payLinkModel->remark];
             if (! empty($params['userName'])) {
@@ -213,12 +216,14 @@ class PayAppService extends AbstractService
      * 微信支付回调验签.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws ContainerException
      */
     public function wxNotify(int $id): ResponseInterface
     {
         $payConfig = $this->mapper->getPayConfig($id);
         try {
-            $pay = Pay::wechat($payConfig)->callback(ServerRequestInterface::class);
+            $request = contains()->get(MineRequest::class);
+            $pay = $this->pay->wechat($payConfig)->callback($request);
             $paymentModel = OrderPayment::query()->where('payment_number', $pay['out_trade_no'])->first();
             if ($paymentModel) {
                 $paymentModel->trade_no = $pay['transaction_id'];
@@ -230,7 +235,7 @@ class PayAppService extends AbstractService
             }
         } catch (ContainerException|InvalidParamsException $e) {
         }
-        return Pay::wechat()->success();
+        return $this->pay->wechat()->success();
     }
 
     /**

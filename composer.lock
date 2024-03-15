@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3035f7e0c8e4a6677c71c8007d0a14d2",
+    "content-hash": "d35c901c56d9a71bc69a242934531bcf",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -7722,31 +7722,28 @@
             "time": "2023-04-08T08:33:56+00:00"
         },
         {
-            "name": "yansongda/pay",
-            "version": "v3.2.14",
+            "name": "yansongda/artful",
+            "version": "v1.0.9",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/yansongda/pay/v3.2.14/yansongda-pay-v3.2.14.zip",
-                "reference": "81df62a8637526c0beabe3a5803513672c9337aa",
+                "url": "https://mirrors.tencent.com/repository/composer/yansongda/artful/v1.0.9/yansongda-artful-v1.0.9.zip",
+                "reference": "1fbf987c0deb95a9b67eb343f2b96c8489635e6f",
                 "shasum": ""
             },
             "require": {
-                "ext-bcmath": "*",
-                "ext-json": "*",
-                "ext-libxml": "*",
-                "ext-openssl": "*",
-                "ext-simplexml": "*",
-                "php": ">=7.4",
-                "psr/container": "^1.1 | ^2.0",
+                "guzzlehttp/psr7": "^2.6",
+                "php": ">=8.0",
+                "psr/container": "^1.1 || ^2.0",
                 "psr/event-dispatcher": "^1.0",
                 "psr/http-client": "^1.0",
-                "psr/http-message": "^1.0",
-                "psr/log": "^1.1 | ^2.0 | ^3.0",
-                "yansongda/supports": "~3.2.0"
+                "psr/http-message": "^1.1 || ^2.0",
+                "psr/log": "^1.1 || ^2.0 || ^3.0",
+                "yansongda/supports": "~4.0.9"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.0",
+                "friendsofphp/php-cs-fixer": "^3.44",
                 "guzzlehttp/guzzle": "^7.0",
+                "hyperf/pimple": "^2.2",
                 "mockery/mockery": "^1.4",
                 "monolog/monolog": "^2.2",
                 "phpstan/phpstan": "^1.0.0",
@@ -7757,9 +7754,124 @@
                 "symfony/var-dumper": "^5.1"
             },
             "suggest": {
-                "hyperf/utils": "Hyperf 框架下使用 SDK，请安装",
-                "illuminate/container": "Laravel 框架下使用 SDK，请安装",
-                "php-di/php-di": "其它/无框架下使用 SDK，请安装"
+                "hyperf/pimple": "其它/无框架下使用 SDK，请安装，任选其一",
+                "illuminate/container": "其它/无框架下使用 SDK，请安装，任选其一"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Functions.php"
+                ],
+                "psr-4": {
+                    "Yansongda\\Artful\\": "src"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "yansongda",
+                    "email": "me@yansongda.cn"
+                }
+            ],
+            "description": "Artful 是一个简单易用的 API 请求框架 PHP Api RequesT Framwork U Like。",
+            "keywords": [
+                "api",
+                "artful",
+                "framework",
+                "request"
+            ],
+            "time": "2024-02-06T13:19:54+00:00"
+        },
+        {
+            "name": "yansongda/hyperf-pay",
+            "version": "v1.6.0",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/yansongda/hyperf-pay/v1.6.0/yansongda-hyperf-pay-v1.6.0.zip",
+                "reference": "2981b05ed6d1684c2f47bfb8758ba66ad22e15ee",
+                "shasum": ""
+            },
+            "require": {
+                "hyperf/guzzle": "^3.0",
+                "php": ">=8.0",
+                "yansongda/pay": "~3.6.0"
+            },
+            "require-dev": {
+                "composer/composer": "^2.0",
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "hyperf/event": "^3.0",
+                "hyperf/logger": "^3.0",
+                "mockery/mockery": "^1.0",
+                "phpstan/phpstan": "^1.0",
+                "phpunit/phpunit": "^10.0",
+                "swoole/ide-helper": "dev-master",
+                "symfony/var-dumper": "^5.1"
+            },
+            "suggest": {
+                "swow/swow": "Required to create swow components."
+            },
+            "type": "library",
+            "extra": {
+                "hyperf": {
+                    "config": "Yansongda\\HyperfPay\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Yansongda\\HyperfPay\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "可能是基于 hyperf 的最优雅的支付宝、微信、银联支付 SDK 了",
+            "keywords": [
+                "alipay",
+                "hyperf",
+                "pay",
+                "php",
+                "unipay",
+                "wechat",
+                "yansongda"
+            ],
+            "time": "2024-02-02T05:49:56+00:00"
+        },
+        {
+            "name": "yansongda/pay",
+            "version": "v3.6.3",
+            "dist": {
+                "type": "zip",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/yansongda/pay/v3.6.3/yansongda-pay-v3.6.3.zip",
+                "reference": "fba0bb30636cb936eed9e9078d781e0dc4e4282b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-bcmath": "*",
+                "ext-json": "*",
+                "ext-libxml": "*",
+                "ext-openssl": "*",
+                "ext-simplexml": "*",
+                "php": ">=8.0",
+                "yansongda/artful": "~1.0.9",
+                "yansongda/supports": "~4.0.9"
+            },
+            "conflict": {
+                "hyperf/framework": "<3.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.44",
+                "guzzlehttp/guzzle": "^7.0",
+                "hyperf/pimple": "^2.2",
+                "mockery/mockery": "^1.4",
+                "monolog/monolog": "^2.2",
+                "phpstan/phpstan": "^1.0.0",
+                "phpunit/phpunit": "^9.0",
+                "symfony/event-dispatcher": "^5.2.0",
+                "symfony/http-foundation": "^5.2.0",
+                "symfony/psr-http-message-bridge": "^2.1",
+                "symfony/var-dumper": "^5.1"
             },
             "type": "library",
             "autoload": {
@@ -7785,27 +7897,25 @@
                 "pay",
                 "wechat"
             ],
-            "time": "2023-02-26T11:52:56+00:00"
+            "time": "2024-02-29T12:19:11+00:00"
         },
         {
             "name": "yansongda/supports",
-            "version": "v3.2.5",
+            "version": "v4.0.9",
             "dist": {
                 "type": "zip",
-                "url": "https://mirrors.cloud.tencent.com/repository/composer/yansongda/supports/v3.2.5/yansongda-supports-v3.2.5.zip",
-                "reference": "c3f736efe169696cef94730976e604a61c345b5c",
+                "url": "https://mirrors.tencent.com/repository/composer/yansongda/supports/v4.0.9/yansongda-supports-v4.0.9.zip",
+                "reference": "c3479723be665360a5635c15f184a1d0a8dc995a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.4"
+                "php": ">=8.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
                 "mockery/mockery": "^1.4",
-                "monolog/monolog": "^2.0",
                 "phpstan/phpstan": "^1.1.0",
-                "phpunit/phpunit": "^9.0",
-                "symfony/console": "^5.1"
+                "phpunit/phpunit": "^9.0"
             },
             "suggest": {
                 "monolog/monolog": "Use logger",
@@ -7836,7 +7946,7 @@
                 "config",
                 "support"
             ],
-            "time": "2022-03-28T10:25:04+00:00"
+            "time": "2024-01-06T05:14:33+00:00"
         },
         {
             "name": "yurunsoft/phpmailer-swoole",
