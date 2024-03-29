@@ -98,7 +98,6 @@ class UsersAppService extends AbstractService
                 $result[] = ['grade' => $gradeItem->key, 'subject' => $subjectId];
             }
         }
-        var_dump($result);
         return $result;
     }
 }

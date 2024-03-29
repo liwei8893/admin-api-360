@@ -10,6 +10,9 @@
 import { BasicColumn, BasicCrud } from '@cps/ma-crud/types'
 import MaCrud from '@cps/ma-crud/index.vue'
 import { useApi } from '@/api'
+
+defineOptions({ name: '{CODE}' })
+
 const { {BUSINESS_EN_NAME} } = useApi.{MODULE_NAME}
 const crudRef = ref<InstanceType<typeof MaCrud>>()
 
@@ -20,4 +23,3 @@ const crudRef = ref<InstanceType<typeof MaCrud>>()
 
 {COLUMNS}
 </script>
-<script lang="tsx"> export default { name: '{CODE}' } </script>
