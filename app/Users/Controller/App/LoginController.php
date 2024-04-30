@@ -39,7 +39,6 @@ class LoginController extends MineController
      * @throws ContainerExceptionInterface
      * @throws InvalidArgumentException
      * @throws NotFoundExceptionInterface
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     #[PostMapping('wxLogin')]
     public function wxLogin(UsersAppLoginRequest $request): ResponseInterface
