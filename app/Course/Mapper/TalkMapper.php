@@ -76,6 +76,15 @@ class TalkMapper extends AbstractMapper
         if (isset($params['url']) && $params['url'] !== '') {
             $query->where('url', '=', $params['url']);
         }
+
+        // 创建时间
+        if (isset($params['created_at'][0], $params['created_at'][1])) {
+            $query->whereBetween(
+                'created_at',
+                [strtotime($params['created_at'][0] . ' 00:00:00'), strtotime($params['created_at'][1] . ' 23:59:59')]
+            );
+        }
+
         if (!empty($params['withUser'])) {
             $query->with('user:id,user_name,mobile,platform,avatar,avatar_frame');
         }
