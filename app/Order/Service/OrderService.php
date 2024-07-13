@@ -52,7 +52,9 @@ class OrderService extends AbstractService
     #[Transaction]
     public function changeEndDate($params): bool
     {
-        if (empty($params['day']) && in_array($params['type'], [1, 2], true)) {
+        // $params['type'] 1:有效期增加,2:有效期减少,3:指定有效期
+        $params['type'] = (int)$params['type'];
+        if (empty($params['month']) && in_array($params['type'], [1, 2], true)) {
             throw new NormalStatusException('参数错误:未选择有效期天数!');
         }
         if (empty($params['date']) && $params['type'] === 3) {
@@ -60,7 +62,7 @@ class OrderService extends AbstractService
         }
         // 是否续费
         $query = [];
-        if (! empty($params['renew']) && ! empty($params['money'])) {
+        if (!empty($params['renew']) && !empty($params['money'])) {
             $query = ['is_renew' => 1, 'renew_time' => time()];
         }
         $orderData = $this->mapper->getCollectByIds($params['ids'], ['id', 'created_at', 'indate', 'user_id', 'shop_id']);
@@ -74,21 +76,22 @@ class OrderService extends AbstractService
             // 增加有效期,判断到期时间是否大于当前日期,如果已经过期从当前日期计算
             if ($params['type'] === 1) {
                 $endDate = Carbon::parse($item->course_end_time);
+                // 检查结束日期是否已过去
                 if ($endDate->isPast()) {
-                    $params['date'] = Carbon::now()->addDays($params['day'])->toDateString();
+                    $params['date'] = Carbon::now()->addMonths($params['month'])->toDateString();
                 } else {
-                    $params['date'] = $endDate->addDays($params['day'])->toDateString();
+                    $params['date'] = $endDate->addMonths($params['month'])->toDateString();
                 }
             }
             // 减少有效期
             if ($params['type'] === 2) {
-                $params['date'] = Carbon::parse($item->course_end_time)->addDays(-$params['day'])->toDateString();
+                $params['date'] = Carbon::parse($item->course_end_time)->addMonths(-$params['month'])->toDateString();
             }
             // 修改到指定有效期
             $update = $this->handleEndDateToTime($item->toArray(), $params['date'], $query);
             // 插入续费记录
             $insertId = $this->handleRenewData($item->toArray(), $params);
-            if (! $update || ! $insertId) {
+            if (!$update || !$insertId) {
                 throw new NormalStatusException('更新失败,请稍后重试!');
             }
             // TODO 续费时增加积分,不需要审核
@@ -97,7 +100,7 @@ class OrderService extends AbstractService
                 event(new ScoreAddEvent('renew', $item->user_id, $insertId));
             }
             // 需要审核,发送站内信
-            if (! $isNoAudit) {
+            if (!$isNoAudit) {
                 // 发送站内消息
                 try {
                     $adminUsers = SystemRole::find(3)->users;
@@ -123,13 +126,13 @@ class OrderService extends AbstractService
         // 是否需要审核
         $isAudit = user()->isNoAuditRole();
         // 需要审核不直接修改
-        if (! $isAudit) {
+        if (!$isAudit) {
             return true;
         }
         if ($hasAdd) {
-            return (bool) $this->mapper->incrementInDate($item['id'], $diffDay, $query);
+            return (bool)$this->mapper->incrementInDate($item['id'], $diffDay, $query);
         }
-        return (bool) $this->mapper->decrementInDate($item['id'], $diffDay, $query);
+        return (bool)$this->mapper->decrementInDate($item['id'], $diffDay, $query);
     }
 
     /**
@@ -153,7 +156,7 @@ class OrderService extends AbstractService
         // 复制模型修改备注
         /** @var null|Order $orderModel */
         $orderModel = $this->mapper->read($data['orderId']);
-        if (! $orderModel) {
+        if (!$orderModel) {
             throw new NormalStatusException('订单错误!');
         }
         $data['remark'] = "从{$data['oldUserId']}转入";
@@ -167,7 +170,7 @@ class OrderService extends AbstractService
         $copyOrderModel->save();
         $newOrderId = $copyOrderModel->id;
         // 软删除老订单数据
-        if (! $this->mapper->softDelete($orderModel->id)) {
+        if (!$this->mapper->softDelete($orderModel->id)) {
             throw new NormalStatusException('订单更新失败,请稍后重试!');
         }
         // 写日志
@@ -178,7 +181,7 @@ class OrderService extends AbstractService
             'remark' => $data['remark'],
             'newOrderId' => $newOrderId,
         ];
-        if (! $this->orderTransactionService->OrderToUserRecord($logRecord)) {
+        if (!$this->orderTransactionService->OrderToUserRecord($logRecord)) {
             throw new NormalStatusException('日志写入错误,操作已回滚,请稍后重试!');
         }
         return true;
@@ -191,7 +194,7 @@ class OrderService extends AbstractService
     public function changeOrderToCourse($data): bool
     {
         $orderModel = $this->mapper->read($data['orderId']);
-        if (! $orderModel) {
+        if (!$orderModel) {
             throw new NormalStatusException('订单错误!');
         }
         return true;
@@ -221,7 +224,7 @@ class OrderService extends AbstractService
     {
         /** @var null|Order $orderModel */
         $orderModel = $this->mapper->read($data['orderId']);
-        if (! $orderModel) {
+        if (!$orderModel) {
             throw new NormalStatusException('订单错误!');
         }
         if ($orderModel->status === Order::STATUS_REFUND) {
@@ -229,7 +232,7 @@ class OrderService extends AbstractService
         }
         $orderModel->status = Order::STATUS_REFUND;
         $orderModel->refund_time = Carbon::now();
-        if (! $orderModel->save()) {
+        if (!$orderModel->save()) {
             throw new NormalStatusException('退费失败!');
         }
         // 写日志
@@ -239,7 +242,7 @@ class OrderService extends AbstractService
             'money' => $data['money'],
             'remark' => $data['remark'],
         ];
-        if (! $this->orderTransactionService->OrderToRefundRecord($logRecord)) {
+        if (!$this->orderTransactionService->OrderToRefundRecord($logRecord)) {
             throw new NormalStatusException('日志写入错误,操作已回滚,请稍后重试!');
         }
         // TODO 退费扣除积分
@@ -253,7 +256,7 @@ class OrderService extends AbstractService
     {
         /** @var null|Order $orderModel */
         $orderModel = $this->mapper->read($data['orderId']);
-        if (! $orderModel) {
+        if (!$orderModel) {
             throw new NormalStatusException('订单错误!');
         }
         // 暂停恢复计算暂停时间,补上.去掉状态时间
@@ -268,7 +271,7 @@ class OrderService extends AbstractService
             $orderModel->refund_time = null;
         }
         $orderModel->status = Order::STATUS_NORMAL;
-        if (! $orderModel->save()) {
+        if (!$orderModel->save()) {
             throw new NormalStatusException('恢复状态失败!');
         }
         return true;
@@ -278,12 +281,12 @@ class OrderService extends AbstractService
     {
         /** @var null|Order $orderModel */
         $orderModel = $this->mapper->read($data['orderId']);
-        if (! $orderModel) {
+        if (!$orderModel) {
             throw new NormalStatusException('订单错误!');
         }
         $orderModel->status = Order::STATUS_PAUSE;
         $orderModel->status_time = Carbon::now();
-        if (! $orderModel->save()) {
+        if (!$orderModel->save()) {
             throw new NormalStatusException('恢复状态失败!');
         }
         return true;
@@ -296,11 +299,11 @@ class OrderService extends AbstractService
     {
         /** @var null|Order $orderModel */
         $orderModel = $this->mapper->read($data['orderId']);
-        if (! $orderModel) {
+        if (!$orderModel) {
             throw new NormalStatusException('订单错误!');
         }
         $orderModel->deleted_at = time();
-        if (! $orderModel->save()) {
+        if (!$orderModel->save()) {
             throw new NormalStatusException('订单删除失败!');
         }
         return true;
@@ -332,7 +335,7 @@ class OrderService extends AbstractService
         foreach ($params['ids'] as $id) {
             /* @var Order $model */
             $model = $this->mapper->read($id);
-            if (! $model) {
+            if (!$model) {
                 continue;
             }
             // 状态不为待审核跳过
@@ -365,11 +368,11 @@ class OrderService extends AbstractService
     {
         /** @var Order $orderModel */
         $orderModel = $this->mapper->read($params['orderId']);
-        if (! $orderModel) {
+        if (!$orderModel) {
             throw new NormalStatusException('订单不存在');
         }
-        $orderPrice = (int) $orderModel->actual_price;
-        $newPrice = (int) $params['actual_price'];
+        $orderPrice = (int)$orderModel->actual_price;
+        $newPrice = (int)$params['actual_price'];
         // 修改报名金额
         if ($newPrice !== $orderPrice) {
             // 要变更的积分
@@ -400,10 +403,10 @@ class OrderService extends AbstractService
         $data['tag_type'] = $tagTypeMap[$data['tag_type']] ?? '未知';
         $payTypeMap = [1 => '微信', 6 => '管理员赠送'];
         $data['pay_type'] = $payTypeMap[$data['pay_type']] ?? '未知';
-        $data['created_at'] = date('Y-m-d h:m:s', (int) $data['created_at']);
-        $data['payment_number'] = ! empty($data['payment']) ? implode(',', array_column($data['payment'], 'payment_number')) : '';
-        $data['order_grade'] = ! empty($data['order_grade']) ? implode(',', array_column($data['order_grade'], 'title')) : '';
+        $data['created_at'] = date('Y-m-d h:m:s', (int)$data['created_at']);
+        $data['payment_number'] = !empty($data['payment']) ? implode(',', array_column($data['payment'], 'payment_number')) : '';
+        $data['order_grade'] = !empty($data['order_grade']) ? implode(',', array_column($data['order_grade'], 'title')) : '';
         $data['order_subject_count'] = count($data['order_subject']);
-        $data['order_subject'] = ! empty($data['order_subject']) ? implode(',', array_column($data['order_subject'], 'title')) : '';
+        $data['order_subject'] = !empty($data['order_subject']) ? implode(',', array_column($data['order_subject'], 'title')) : '';
     }
 }
