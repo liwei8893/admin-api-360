@@ -12,6 +12,8 @@ use Mine\MineModel;
  * @property int $parent_id 父ID
  * @property string $level 组级集合
  * @property string $name 菜单名称
+ * @property int $grade 年级
+ * @property int $subject 科目
  * @property int $status 状态 (1正常 0停用)
  * @property int $sort 排序
  * @property \Carbon\Carbon $created_at 创建时间
@@ -29,10 +31,10 @@ class ExamClassify extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'parent_id', 'level', 'name', 'status', 'sort', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'parent_id', 'level', 'name', 'grade', 'subject', 'status', 'sort', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'parent_id' => 'integer', 'status' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'parent_id' => 'integer', 'grade' => 'integer', 'subject' => 'integer', 'status' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }

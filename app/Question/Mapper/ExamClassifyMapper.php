@@ -6,6 +6,7 @@ namespace App\Question\Mapper;
 
 use App\Question\Model\ExamClassify;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractMapper;
 
 /**
@@ -47,6 +48,32 @@ class ExamClassifyMapper extends AbstractMapper
     }
 
     /**
+     * 查找所有子元素
+     * @param int $id
+     * @param array $select
+     * @return Collection|array
+     */
+    public function findChildren(int $id, array $select = ['*']): Collection|array
+    {
+        /* @var ExamClassify $curModel */
+        $curModel = $this->read($id);
+        return $this->model::query()
+            ->select($select)
+            ->where('level', 'like', "{$curModel->level},{$curModel->id},%")
+            ->orWhere('level', 'like', "%,{$curModel->id}")->get();
+    }
+
+    public function updateChildren(int $id, array $data): bool
+    {
+        /* @var ExamClassify $curModel */
+        $curModel = $this->read($id);
+        return (bool)$this->model::query()
+            ->where('level', 'like', "{$curModel->level},{$curModel->id},%")
+            ->orWhere('level', 'like', "%,{$curModel->id}")
+            ->update($data);
+    }
+
+    /**
      * 搜索处理器.
      */
     public function handleSearch(Builder $query, array $params): Builder
@@ -69,6 +96,16 @@ class ExamClassifyMapper extends AbstractMapper
         // 状态 (1正常 0停用)
         if (isset($params['status']) && $params['status'] !== '') {
             $query->where('status', '=', $params['status']);
+        }
+
+        // 年级
+        if (isset($params['grade']) && $params['grade'] !== '') {
+            $query->where('grade', '=', $params['grade']);
+        }
+
+        // 科目
+        if (isset($params['subject']) && $params['subject'] !== '') {
+            $query->where('subject', '=', $params['subject']);
         }
 
         // 排序

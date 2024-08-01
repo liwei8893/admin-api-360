@@ -6,9 +6,16 @@ namespace App\Question\Service;
 
 use App\Question\Mapper\ExamMapper;
 use App\Question\Model\Exam;
+use App\Question\Model\ExamClassify;
+use App\Users\Model\User;
+use App\Users\Service\UsersService;
+use Hyperf\Di\Annotation\Inject;
 use JsonException;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 试卷表服务类.
@@ -20,9 +27,49 @@ class ExamService extends AbstractService
      */
     public $mapper;
 
+    #[Inject]
+    protected ExamClassifyService $classifyService;
+
+    #[Inject]
+    protected ContainerInterface $container;
+
     public function __construct(ExamMapper $mapper)
     {
         $this->mapper = $mapper;
+    }
+
+    /**
+     * 试卷权限验证.
+     * @param int $classify_id
+     * @return bool
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function examAuth(int $classify_id): bool
+    {
+        // 拿到分类信息,映射出对应订单ID,60=小学=1498,61=中学=1499
+        /* @var ExamClassify $classifyModel */
+        $classifyModel = $this->classifyService->read($classify_id);
+        if (!$classifyModel) {
+            throw new NormalStatusException('分类不存在!');
+        }
+        $shopIdMap = [60 => 1498, 61 => 1499];
+        $shopId = $shopIdMap[$classifyModel->grade] ?? 0;
+
+        // 拿到用户模型
+        $userId = user('app')->getId();
+        $userService = $this->container->get(UsersService::class);
+        /* @var User $userModel */
+        $userModel = $userService->read($userId);
+        if (!$userModel) {
+            throw new NormalStatusException('未查询到用户!');
+        }
+        // 拿到所有订单,题目永久有效期
+        $orderModel = $userModel->orders()->normalOrder()->where('shop_id', $shopId)->first();
+        if (!$orderModel) {
+            throw new NormalStatusException('未购买当前题目,请联系课程顾问购买!');
+        }
+        return true;
     }
 
     /**
@@ -44,29 +91,70 @@ class ExamService extends AbstractService
         return parent::update($id, $this->handleData($data));
     }
 
-    public function batchRead(array $params): array
-    {
-        if (! $params['ids'] && ! is_string($params['ids'])) {
-            throw new NormalStatusException('题目id错误');
-        }
-        $ids = explode(',', $params['ids']);
-        $data = ['id' => $ids];
-        return $this->mapper->listQuerySetting($data, false)->with([
-            'examSubject:value,label',
-            'examType:value,label',
-            'examGrade:value,label',
-        ])->get()->toArray();
-    }
-
     public function changeSort(array $data): bool
     {
         /* @var Exam $model */
         $model = $this->read($data['id']);
-        if (! $model) {
+        if (!$model) {
             return false;
         }
         $model->sort = $data['sort'];
         return $model->save();
+    }
+
+    /**
+     * 获取试卷列表
+     * @param array $params
+     * @return array
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function getAppExamList(array $params): array
+    {
+        if (!isset($params['classify_id'])) {
+            return [];
+        }
+        // 增加权限验证
+        $this->examAuth((int)$params['classify_id']);
+        $userId = user('app')->getId();
+        $params['status'] = 1;
+        $params['orderBy'] = ['sort', 'id'];
+        $params['orderType'] = ['desc', 'desc'];
+        $data = $this->getListCollect($params);
+        $data->load(['examHistory' => function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        }]);
+        return $data->toArray();
+    }
+
+    /**
+     * 自动组卷
+     * @param array $params
+     * @return array
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function getExamAuto(array $params): array
+    {
+        // 增加权限验证
+        $this->examAuth((int)$params['classify_id']);
+        $classifyId = $this->classifyService->findChildren((int)$params['classify_id'], ['id'])->pluck('id')->toArray();
+        $examCount = 6;
+        $result = [];
+        for ($i = 0; $i < $examCount; $i++) {
+            $exam = $this->mapper->randomExam($classifyId);
+            if ($exam) {
+                $result[] = $exam->toArray();
+            }
+        }
+        return $result;
+    }
+
+
+    public function getExamHistoryList(array $params): array
+    {
+        $params['user_id'] = user('app')->getId();
+        return $this->mapper->getExamHistoryList($params);
     }
 
     /**
@@ -77,7 +165,7 @@ class ExamService extends AbstractService
         // "title": "单选题", "key": "1"
         // "title": "多选题", "key": "2"
         // "title": "判断题", "key": "4"
-        if (in_array((int) $data['ques_type'], [1, 2, 4])) {
+        if (in_array((int)$data['ques_type'], [1, 2, 4])) {
             // 处理答案内容
             foreach ($data['ques_option'] as &$option) {
                 $option['content'] = htmlspecialchars_decode($option['content']);
@@ -88,11 +176,11 @@ class ExamService extends AbstractService
         }
         // "title": "问答题", "key": "5"
         // 问答题处理,答案选项为空
-        if ((int) $data['ques_type'] === 5) {
+        if ((int)$data['ques_type'] === 5) {
             $data['ques_option'] = null;
         }
         // "title": "填空题", "key": "6"
-        if ((int) $data['ques_type'] === 6) {
+        if ((int)$data['ques_type'] === 6) {
             // 处理答案内容
             foreach ($data['ques_option'] as &$option) {
                 $option['content'] = strip_tags(htmlspecialchars_decode($option['content']), '<img><strong><em><span><br><sup><sub>');

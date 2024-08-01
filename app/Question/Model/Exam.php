@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Question\Model;
 
 use App\System\Model\SystemDictData;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
@@ -30,10 +31,11 @@ use Mine\MineModel;
  * @property \Carbon\Carbon $created_at 创建时间
  * @property \Carbon\Carbon $updated_at 更新时间
  * @property string $deleted_at 删除时间
- * @property null|ExamClassify $examClassify
- * @property null|SystemDictData $examGrade
- * @property null|SystemDictData $examSubject
- * @property null|SystemDictData $examType
+ * @property-read ExamHistory|null $examHistory 
+ * @property-read ExamClassify|null $examClassify 
+ * @property-read SystemDictData|null $examGrade 
+ * @property-read SystemDictData|null $examSubject 
+ * @property-read SystemDictData|null $examType 
  */
 class Exam extends MineModel
 {
@@ -79,5 +81,10 @@ class Exam extends MineModel
     {
         return $this->hasOne(SystemDictData::class, 'value', 'ques_type')
             ->where('code', 'questionType')->where('status', MineModel::ENABLE);
+    }
+
+    public function examHistory(): HasOne
+    {
+        return $this->hasOne(ExamHistory::class, 'exam_id', 'id');
     }
 }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Question\Service;
 
 use App\Question\Mapper\ExamClassifyMapper;
+use App\Question\Model\ExamClassify;
+use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 
@@ -26,7 +28,7 @@ class ExamClassifyService extends AbstractService
     /**
      * 获取树列表.
      */
-    public function getTreeList(?array $params = null, bool $isScope = true): array
+    public function getTreeList(?array $params = null, bool $isScope = false): array
     {
         if ($params['select'] ?? null) {
             $params['select'] = explode(',', $params['select']);
@@ -68,6 +70,12 @@ class ExamClassifyService extends AbstractService
      */
     public function update(int $id, array $data): bool
     {
+        /* @var ExamClassify $curModel */
+        $curModel = $this->read($id);
+        // 如果更新年级或者科目,把下级所有分类的年级科目都更新
+        if ((isset($data['grade']) && (int)$data['grade'] !== $curModel->grade) || (isset($data['subject']) && (int)$data['subject'] !== $curModel->subject)) {
+            $this->mapper->updateChildren($id, ['grade' => $data['grade'] ?? null, 'subject' => $data['subject'] ?? null]);
+        }
         return $this->mapper->update($id, $this->handleData($data));
     }
 
@@ -80,7 +88,7 @@ class ExamClassifyService extends AbstractService
         $ctuIds = [];
         if (count($ids)) {
             foreach ($ids as $id) {
-                if (! $this->checkChildrenExists((int) $id)) {
+                if (!$this->checkChildrenExists((int)$id)) {
                     $this->mapper->realDelete([$id]);
                 } else {
                     array_push($ctuIds, $id);
@@ -99,11 +107,22 @@ class ExamClassifyService extends AbstractService
     }
 
     /**
+     * 查找所有子元素
+     * @param int $id
+     * @param array $select
+     * @return Collection|array
+     */
+    public function findChildren(int $id, array $select = ['*']): Collection|array
+    {
+        return $this->mapper->findChildren($id, $select);
+    }
+
+    /**
      * 处理数据.
      */
     protected function handleData(array $data): array
     {
-        if (isset($data['id']) && (int) $data['id'] === (int) $data['parent_id']) {
+        if (isset($data['id'], $data['parent_id']) && (int)$data['id'] === (int)$data['parent_id']) {
             throw new NormalStatusException('上级不能等于本级', 500);
         }
 
