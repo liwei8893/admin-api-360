@@ -32,16 +32,16 @@ class CourseBasisService extends AbstractService
         $params['is_del'] = 0;
         // 获取一个月内更新章节数量
         $params['periodUpdateCount'] = true;
-        if (! isset($params['orderBy'])) {
+        if (!isset($params['orderBy'])) {
             $params['orderBy'] = ['sort', 'id'];
         }
-        if (! isset($params['orderType'])) {
+        if (!isset($params['orderType'])) {
             $params['orderType'] = ['desc', 'asc'];
         }
         // 添加课程年级关联
         $params['withBasisGrade'] = true;
         // 去掉收费课程
-        $params['is_give'] = 0;
+        $params['is_give'] = $params['is_give'] ?: 0;
         return $this->mapper->getPageList($params, false);
     }
 

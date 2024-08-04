@@ -18,6 +18,7 @@ use Mine\MineModel;
  * @property int $price 金额
  * @property int $day 天数
  * @property int $real_year 真实报名年数
+ * @property int $chapter_count_auth 章节权限
  * @property int $sort 排序
  * @property string $remark 备注
  * @property int $created_by 创建者
@@ -25,8 +26,8 @@ use Mine\MineModel;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property string $deleted_at
- * @property Collection|CourseBasis[] $courseSignup
- * @property Collection|SystemDictData[] $gradeSignup
+ * @property-read Collection|CourseBasis[]|null $courseSignup
+ * @property-read Collection|SystemDictData[]|null $gradeSignup
  */
 class CourseSignupConfig extends MineModel
 {
@@ -40,12 +41,12 @@ class CourseSignupConfig extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'type', 'title', 'price', 'day', 'real_year', 'sort', 'remark', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'type', 'title', 'price', 'day', 'real_year', 'chapter_count_auth', 'sort', 'remark', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'type' => 'integer', 'price' => 'integer', 'day' => 'integer', 'real_year' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'type' => 'integer', 'price' => 'integer', 'day' => 'integer', 'real_year' => 'integer', 'chapter_count_auth' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function courseSignup(): BelongsToMany
     {

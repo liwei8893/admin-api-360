@@ -18,6 +18,7 @@ use Mine\Abstracts\AbstractMapper;
  */
 class UserCourseRecordMapper extends AbstractMapper
 {
+
     public function assignModel(): void
     {
         $this->model = UserCourseRecord::class;
@@ -28,13 +29,13 @@ class UserCourseRecordMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-        if (! empty($params['user_id'])) {
+        if (!empty($params['user_id'])) {
             $query->where('user_id', $params['user_id']);
         }
-        if (! empty($params['withCourseBasis'])) {
+        if (!empty($params['withCourseBasis'])) {
             $query->with(['courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title']);
         }
-        if (! empty($params['withCoursePeriod'])) {
+        if (!empty($params['withCoursePeriod'])) {
             $query->with(['coursePeriod:id,course_basis_id,title,subject_name,subject_id']);
         }
         return $query;
@@ -43,12 +44,12 @@ class UserCourseRecordMapper extends AbstractMapper
     /**
      * 获取最后一次观看课程记录.
      */
-    public function lastRecord(int $userId): null|Builder|Model
+    public function lastRecord(int $userId): Model|Builder|null
     {
         return UserCourseRecord::query()->where('user_id', $userId)->latest('updated_at')->first();
     }
 
-    public function getRanking(array $params = []): array|Collection
+    public function getRanking(array $params = []): Collection|array
     {
         $params['start_date'] = $params['start_date'] ?? Carbon::now()->startOfMonth();
         $params['end_date'] = $params['end_date'] ?? Carbon::now()->endOfMonth();
@@ -92,7 +93,7 @@ class UserCourseRecordMapper extends AbstractMapper
             ->count();
     }
 
-    public function getReportByMonth(): array|Collection
+    public function getReportByMonth(): Collection|array
     {
         return UserCourseRecord::query()
             ->selectRaw("date_format(from_unixtime(created_at), '%m') month")
@@ -103,7 +104,7 @@ class UserCourseRecordMapper extends AbstractMapper
             ->get();
     }
 
-    public function getRecordByUserId($userId): array|Collection
+    public function getRecordByUserId($userId): Collection|array
     {
         return UserCourseRecord::with([
             'courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title',
@@ -122,12 +123,23 @@ class UserCourseRecordMapper extends AbstractMapper
         $perPage = $params['pageSize'] ?? $this->model::PAGE_SIZE;
         $page = $params['page'] ?? 1;
         $query = $query->paginate(
-            (int) $perPage,
+            (int)$perPage,
             ['*'],
             'page',
-            (int) $page
+            (int)$page
         );
         return $this->setPaginate($query);
+    }
+
+    /**
+     * 完课率
+     */
+    public function getTimeRate(int $videoDuration, int $watchTime): float
+    {
+        if (isset($watchTime, $videoDuration) && $videoDuration * 100 !== 0) {
+            return round($watchTime / $videoDuration * 100, 2);
+        }
+        return 0.00;
     }
 
     /**
@@ -141,6 +153,10 @@ class UserCourseRecordMapper extends AbstractMapper
                 ['video_duration' => $params['videoDuration']]
             );
         $recordModel->watch_time += $params['watchTime'];
+        // 计算听课率
+        $recordModel->time_rate = $this->getTimeRate((int)$params['videoDuration'], $recordModel->watch_time);
+        // 计算是否完成
+        $recordModel->complete_status = $recordModel->time_rate >= UserCourseRecord::COMPLETE_TIME_RATE ? 1 : 0;
         return $recordModel->save();
     }
 
@@ -164,5 +180,25 @@ class UserCourseRecordMapper extends AbstractMapper
     {
         return UserCourseRecordToday::query()->where('user_id', $userId)
             ->where('record_date', Carbon::today()->toDateString())->first();
+    }
+
+    /**
+     * 获取未使用的番茄数量
+     * @param int $userId
+     * @return int
+     */
+    public function getUnusedTomatoCount(int $userId): int
+    {
+        return UserCourseRecord::query()->where('user_id', $userId)->where('complete_status', 1)->count();
+    }
+
+    /**
+     * 获取一个未使用的番茄
+     * @param int $userId
+     * @return UserCourseRecord|\Hyperf\Database\Model\Model|Builder|null
+     */
+    public function getUnusedTomatoFirst(int $userId): UserCourseRecord|\Hyperf\Database\Model\Model|Builder|null
+    {
+        return UserCourseRecord::query()->where('user_id', $userId)->where('complete_status', 1)->first();
     }
 }

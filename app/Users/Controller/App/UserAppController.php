@@ -77,4 +77,16 @@ class UserAppController extends MineController
     {
         return $this->success($this->service->getUserHaveSubject());
     }
+
+    /**
+     * 获取积分.
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getScore'), Auth('app')]
+    public function getScore(): ResponseInterface
+    {
+        return $this->success($this->service->getScore());
+    }
 }

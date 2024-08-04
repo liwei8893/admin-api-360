@@ -69,13 +69,15 @@ use Mine\MineModel;
  * @property int $is_vip 1:普通会员，2:超级会员，3:至尊会员
  * @property string $platform 用户平台
  * @property int $real_year 真实报名年数
- * @property string $course_end_time
- * @property User $users
- * @property CourseBasis $course
- * @property Collection|OrderPayment[] $payment
- * @property Collection|UsersRenew[] $usersRenew
- * @property Collection|SystemDictData[] $orderSubject
- * @property Collection|SystemDictData[] $orderGrade
+ * @property int $chapter_count_auth 可观看章节数量(0购买课程之后全部都能看)
+ * @property-read string $course_end_time
+ * @property-read User|null $users
+ * @property-read CourseBasis|null $course
+ * @property-read Collection|OrderPayment[]|null $payment
+ * @property-read Collection|UsersRenew[]|null $usersRenew
+ * @property-read Collection|SystemDictData[]|null $orderSubject
+ * @property-read Collection|SystemDictData[]|null $orderGrade
+ * @property-read Collection|OrderSummary[]|null $summary
  */
 class Order extends MineModel
 {
@@ -116,10 +118,10 @@ class Order extends MineModel
 
     protected ?string $dateFormat = 'U';
 
-    protected array $fillable = ['id', 'user_id', 'shop_id', 'course_basis_id', 'shop_name', 'course_name', 'order_number', 'pay_number', 'shop_type', 'pay_type', 'order_price', 'vip_discount', 'coupon_discount', 'other_discount', 'pay_states', 'ship_status', 'tag_type', 'is_present', 'is_logistics', 'grade', 'deleted_at', 'created_at', 'updated_at', 'indate', 'address_id', 'is_exchange', 'coupon_id', 'remark', 'spell_id', 'group_id', 'class_grade_id', 'is_offline', 'status', 'bug_subject', 'bug_subject_name', 'indate_close', 'audit_status', 'update_indate', 'is_renew', 'activities', 'actual_price', 'created_name', 'created_id', 'cause_text', 'is_over', 'renew_time', 'status_time', 'refund_time', 'renew_order_id', 'apply_type', 'is_vip', 'platform', 'real_year'];
+    protected array $fillable = ['id', 'user_id', 'shop_id', 'course_basis_id', 'shop_name', 'course_name', 'order_number', 'pay_number', 'shop_type', 'pay_type', 'order_price', 'vip_discount', 'coupon_discount', 'other_discount', 'pay_states', 'ship_status', 'tag_type', 'is_present', 'is_logistics', 'grade', 'deleted_at', 'created_at', 'updated_at', 'indate', 'address_id', 'is_exchange', 'coupon_id', 'remark', 'spell_id', 'group_id', 'class_grade_id', 'is_offline', 'status', 'bug_subject', 'bug_subject_name', 'indate_close', 'audit_status', 'update_indate', 'is_renew', 'activities', 'actual_price', 'created_name', 'created_id', 'cause_text', 'is_over', 'renew_time', 'status_time', 'refund_time', 'renew_order_id', 'apply_type', 'is_vip', 'platform', 'real_year', 'chapter_count_auth'];
 
     // 订单需要审核
-    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'shop_id' => 'integer', 'course_basis_id' => 'integer', 'shop_type' => 'integer', 'pay_type' => 'integer', 'order_price' => 'integer', 'vip_discount' => 'integer', 'coupon_discount' => 'integer', 'other_discount' => 'integer', 'pay_states' => 'integer', 'ship_status' => 'integer', 'tag_type' => 'integer', 'is_present' => 'integer', 'is_logistics' => 'integer', 'grade' => 'integer', 'deleted_at' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'address_id' => 'integer', 'is_exchange' => 'integer', 'coupon_id' => 'integer', 'spell_id' => 'integer', 'group_id' => 'integer', 'class_grade_id' => 'integer', 'is_offline' => 'integer', 'status' => 'integer', 'indate_close' => 'integer', 'audit_status' => 'integer', 'update_indate' => 'integer', 'is_renew' => 'integer', 'actual_price' => 'decimal:2', 'created_id' => 'integer', 'is_over' => 'integer', 'renew_time' => 'datetime', 'status_time' => 'datetime', 'refund_time' => 'datetime', 'renew_order_id' => 'integer', 'apply_type' => 'integer', 'is_vip' => 'integer', 'real_year' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'shop_id' => 'integer', 'course_basis_id' => 'integer', 'shop_type' => 'integer', 'pay_type' => 'integer', 'order_price' => 'integer', 'vip_discount' => 'integer', 'coupon_discount' => 'integer', 'other_discount' => 'integer', 'pay_states' => 'integer', 'ship_status' => 'integer', 'tag_type' => 'integer', 'is_present' => 'integer', 'is_logistics' => 'integer', 'grade' => 'integer', 'deleted_at' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'address_id' => 'integer', 'is_exchange' => 'integer', 'coupon_id' => 'integer', 'spell_id' => 'integer', 'group_id' => 'integer', 'class_grade_id' => 'integer', 'is_offline' => 'integer', 'status' => 'integer', 'indate_close' => 'integer', 'audit_status' => 'integer', 'update_indate' => 'integer', 'is_renew' => 'integer', 'actual_price' => 'decimal:2', 'created_id' => 'integer', 'is_over' => 'integer', 'renew_time' => 'datetime', 'status_time' => 'datetime', 'refund_time' => 'datetime', 'renew_order_id' => 'integer', 'apply_type' => 'integer', 'is_vip' => 'integer', 'real_year' => 'integer', 'chapter_count_auth' => 'integer'];
 
     // 追加字段
     protected array $appends = ['created_at|indate' => 'course_end_time'];
@@ -132,7 +134,7 @@ class Order extends MineModel
     public function getCourseEndTimeAttribute(): string
     {
         if (isset($this->attributes['indate'], $this->attributes['created_at'])) {
-            return date('Y-m-d H:i:s', strtotime("+{$this->attributes['indate']} day", (int) $this->attributes['created_at']));
+            return date('Y-m-d H:i:s', strtotime("+{$this->attributes['indate']} day", (int)$this->attributes['created_at']));
         }
         return '';
     }

@@ -389,6 +389,9 @@ class OrderService extends AbstractService
             $orderModel->actual_price = $newPrice;
         }
         $orderModel->real_year = $params['real_year'];
+        if (isset($params['chapter_count_auth'])) {
+            $orderModel->chapter_count_auth = $params['chapter_count_auth'];
+        }
         return $orderModel->save();
     }
 

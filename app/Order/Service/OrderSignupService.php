@@ -71,7 +71,7 @@ class OrderSignupService extends AbstractService
             // 查报名的课程 是否已经报过
             $courseModels = $this->courseService->getCourseInfoByIds($collect['course_signup'], ['id', 'title', 'price']);
             // 筛选出没报过的
-            $diffCourse = $this->filterCourseIsHave((int) $collect['userId'], $courseModels);
+            $diffCourse = $this->filterCourseIsHave((int)$collect['userId'], $courseModels);
             if ($diffCourse->isEmpty()) {
                 continue;
             }
@@ -79,6 +79,7 @@ class OrderSignupService extends AbstractService
             $comParam = [
                 'user_id' => $collect['userId'],
                 'real_year' => $collect['real_year'],
+                'chapter_count_auth' => $collect['chapter_count_auth'],
                 'indate' => $collect['day'],
                 'money' => $collect['price'],
                 'remark' => '后台报名',
@@ -88,11 +89,11 @@ class OrderSignupService extends AbstractService
                 $insertData = $this->handleInsertCourseData($comParam, $course);
                 /* @var Order $orderModel */
                 $orderModel = $this->mapper->saveModel($insertData);
-                ! empty($collect['subject']) && $orderModel->orderSubject()->sync($collect['subject']);
-                ! empty($collect['grade']) && $orderModel->orderGrade()->sync($collect['grade']);
+                !empty($collect['subject']) && $orderModel->orderSubject()->sync($collect['subject']);
+                !empty($collect['grade']) && $orderModel->orderGrade()->sync($collect['grade']);
                 // TODO 新增会员时增加积分,只有报超级会员时才加积分,$insertData['pay_states]===7时增加,===8时在审核时增加
                 if ($insertData['pay_states'] === Order::PAY_SUCCESS && $course['id'] === User::VIP_TYPE_SUPER) {
-                    event(new ScoreAddEvent('init', (int) $collect['userId'], $orderModel->id));
+                    event(new ScoreAddEvent('init', (int)$collect['userId'], $orderModel->id));
                 }
             }
         }
@@ -137,6 +138,7 @@ class OrderSignupService extends AbstractService
             'created_name' => $hasSceneApp ? '' : $this->loginUser->getUsername(),
             'order_price' => isset($data['money']) ? $data['money'] * 100 : $course['price'],
             'is_logistics' => 0,
+            'chapter_count_auth' => $data['chapter_count_auth'] ?? 0,
             'indate' => $data['indate'] ?? 30,
             'actual_price' => $data['money'] ?? '',
             'activities' => $data['activities'] ?? '',

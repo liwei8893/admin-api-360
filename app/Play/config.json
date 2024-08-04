@@ -1,0 +1,9 @@
+{
+    "name": "Play",
+    "label": "游戏管理",
+    "description": "游戏管理",
+    "installed": true,
+    "enabled": true,
+    "version": "1.0.0",
+    "order": 0
+}

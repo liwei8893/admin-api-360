@@ -16,6 +16,7 @@ use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use function Hyperf\Collection\collect;
 
 /**
  * 错题表服务类.
@@ -43,7 +44,7 @@ class QuestionHistoryService extends AbstractService
         $data = parent::getPageList($params, $isScope);
         // 变更需求,除了单选,多选,判断,其他都不判断对错
         foreach ($data['items'] as &$datum) {
-            if (! in_array($datum->question->ques_type, [1, 2, 4], true)) {
+            if (!in_array($datum->question->ques_type, [1, 2, 4], true)) {
                 $datum['is_right'] = 3;
             }
         }
@@ -54,23 +55,23 @@ class QuestionHistoryService extends AbstractService
      * 获取做题排行榜,缓存一个小时.
      */
     #[Cacheable(prefix: 'ranking', value: 'question', ttl: 86400)]
-    public function getRanking(): Collection|array
+    public function getRanking(): array
     {
         return $this->mapper->getRanking()->map(function ($item) {
-            if (! empty($item['users'])) {
+            if (!empty($item['users'])) {
                 if ($item['users']['mobile'] === $item['users']['user_name']) {
                     $item['users']['user_name'] = substr_replace($item['users']['user_name'], '****', 3, 4);
                 }
                 unset($item['users']['mobile']);
             }
             return $item;
-        });
+        })->toArray();
     }
 
     public function getRankingCustomDate(array $params): Collection|array
     {
         return $this->mapper->getRanking($params)->map(function ($item) {
-            if (! empty($item['users'])) {
+            if (!empty($item['users'])) {
                 if ($item['users']['mobile'] === $item['users']['user_name']) {
                     $item['users']['user_name'] = substr_replace($item['users']['user_name'], '****', 3, 4);
                 }
@@ -100,7 +101,7 @@ class QuestionHistoryService extends AbstractService
     #[Cacheable(prefix: 'report', value: 'question_#{userId}', ttl: 86400)]
     public function getReport(int $userId): array
     {
-        $monthMap = \Hyperf\Collection\collect([
+        $monthMap = collect([
             'month01' => ['month' => '01', 'num' => 0],
             'month02' => ['month' => '02', 'num' => 0],
             'month03' => ['month' => '03', 'num' => 0],
@@ -115,7 +116,7 @@ class QuestionHistoryService extends AbstractService
             'month12' => ['month' => '12', 'num' => 0],
         ]);
         $data = $this->mapper->getReportByMonth()
-            ->keyBy(fn ($item) => 'month' . $item['month']);
+            ->keyBy(fn($item) => 'month' . $item['month']);
         $total = $this->mapper->getReportByTotal($userId);
         $rate = $this->mapper->getRankingRate($userId);
         return [
@@ -143,7 +144,7 @@ class QuestionHistoryService extends AbstractService
         }
         /* @var Question $questionModel 获取题目模型 */
         $questionModel = $this->questionService->read($quesId);
-        if (! $questionModel) {
+        if (!$questionModel) {
             throw new NormalStatusException('未查询到题目!');
         }
         // 获取正确答案
@@ -225,7 +226,7 @@ class QuestionHistoryService extends AbstractService
     {
         $userId = user('app')->getId();
         $model = $this->mapper->first(['user_id' => $userId, 'id' => $params['id']]);
-        if (! $model) {
+        if (!$model) {
             throw new NormalStatusException('只能收藏自己的题目!');
         }
         $is_collect = $model['is_collect'] === 1 ? 0 : 1;
@@ -237,8 +238,8 @@ class QuestionHistoryService extends AbstractService
      */
     protected function handleExportData(array &$data): void
     {
-        if (! empty($data['created_at'])) {
-            $data['created_at'] = date('Y-m-d H:i:s', (int) $data['created_at']);
+        if (!empty($data['created_at'])) {
+            $data['created_at'] = date('Y-m-d H:i:s', (int)$data['created_at']);
         }
     }
 }

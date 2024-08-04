@@ -8,11 +8,13 @@ use App\Score\Event\ScoreAddEvent;
 use App\Users\Mapper\UserCourseRecordMapper;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Database\Model\Collection;
+use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use function Hyperf\Collection\collect;
 
 /**
  * 听课记录服务类.
@@ -23,6 +25,10 @@ class UserCourseRecordService extends AbstractService
      * @var UserCourseRecordMapper
      */
     public $mapper;
+
+    #[Inject]
+    protected UserScoreService $userScoreService;
+
 
     public function __construct(UserCourseRecordMapper $mapper)
     {
@@ -36,14 +42,14 @@ class UserCourseRecordService extends AbstractService
     {
         $userId = user()->getId();
         $recordModel = $this->mapper->lastRecord($userId);
-        if (! $recordModel) {
+        if (!$recordModel) {
             return [];
         }
         $coursePeriodModel = $recordModel->coursePeriod()
             ->with(['courseBasis:id,course_title'])
             ->select(['id', 'title', 'course_basis_id', 'qiniu_url'])
             ->first();
-        if (! $coursePeriodModel) {
+        if (!$coursePeriodModel) {
             return [];
         }
         return $coursePeriodModel->toArray();
@@ -53,23 +59,23 @@ class UserCourseRecordService extends AbstractService
      * 获取听课排行榜,缓存1小时.
      */
     #[Cacheable(prefix: 'ranking', value: 'course', ttl: 86400)]
-    public function getRanking(): array|Collection
+    public function getRanking(): array
     {
         return $this->mapper->getRanking()->map(function ($item) {
-            if (! empty($item['users'])) {
+            if (!empty($item['users'])) {
                 if ($item['users']['mobile'] === $item['users']['user_name']) {
                     $item['users']['user_name'] = substr_replace($item['users']['user_name'], '****', 3, 4);
                 }
                 unset($item['users']['mobile']);
             }
             return $item;
-        });
+        })->toArray();
     }
 
-    public function getRankingCustomDate(array $params): array|Collection
+    public function getRankingCustomDate(array $params): Collection|array
     {
         return $this->mapper->getRanking($params)->map(function ($item) {
-            if (! empty($item['users'])) {
+            if (!empty($item['users'])) {
                 if ($item['users']['mobile'] === $item['users']['user_name']) {
                     $item['users']['user_name'] = substr_replace($item['users']['user_name'], '****', 3, 4);
                 }
@@ -99,7 +105,7 @@ class UserCourseRecordService extends AbstractService
     #[Cacheable(prefix: 'report', value: 'course_#{userId}', ttl: 86400)]
     public function getReport(int $userId): array
     {
-        $monthMap = \Hyperf\Collection\collect([
+        $monthMap = collect([
             'month01' => ['month' => '01', 'num' => 0],
             'month02' => ['month' => '02', 'num' => 0],
             'month03' => ['month' => '03', 'num' => 0],
@@ -115,7 +121,7 @@ class UserCourseRecordService extends AbstractService
         ]);
         $data = $this->mapper->getReportByMonth()
             ->makeHidden(['timeRate'])
-            ->keyBy(fn ($item) => 'month' . $item['month']);
+            ->keyBy(fn($item) => 'month' . $item['month']);
         $total = $this->mapper->getReportByTotal($userId);
         $rate = $this->mapper->getRankingRate($userId);
         return [
@@ -166,11 +172,54 @@ class UserCourseRecordService extends AbstractService
         $params['userId'] = user('app')->getId();
         $setRecordState = $this->mapper->setWatchTime($params);
         $setRecordTodayState = $this->mapper->setWatchTimeToday($params);
-        if (! $setRecordState || ! $setRecordTodayState) {
+        if (!$setRecordState || !$setRecordTodayState) {
             throw new NormalStatusException('保存播放记录失败!');
         }
         // Todo 添加听课积分事件
         event(new ScoreAddEvent('course', $params['userId'], 0));
+        return true;
+    }
+
+    /**
+     * 获取未使用的番茄数量
+     * @return array
+     */
+    public function getUnusedTomato(): array
+    {
+        $userId = user('app')->getId();
+        if (!$userId) {
+            throw new NormalStatusException('请先登录!');
+        }
+        return ['tomato' => $this->mapper->getUnusedTomatoCount($userId)];
+    }
+
+    /**
+     * 使用番茄
+     * @return bool
+     */
+    #[Transaction]
+    public function usedTomato(): bool
+    {
+        $userId = user('app')->getId();
+        if (!$userId) {
+            throw new NormalStatusException('未查询到用户!');
+        }
+        $recordModel = $this->mapper->getUnusedTomatoFirst($userId);
+        if (!$recordModel) {
+            throw new NormalStatusException('没有可用番茄!');
+        }
+        // 把记录改为已使用
+        $recordModel->complete_status = 2;
+        $recordModel->save();
+        // 增加积分
+        $this->userScoreService->changeScore([
+            'user_id' => $recordModel->user_id,
+            'origin_id' => $recordModel->id,
+            'channel' => '完课获得',
+            'channel_type' => 4,
+            'score' => 1,
+            'type' => 1,
+        ]);
         return true;
     }
 
@@ -179,7 +228,7 @@ class UserCourseRecordService extends AbstractService
         $data['watch_time'] = round($data['watch_time'] / 60) . '分钟';
         $data['video_duration'] = round($data['video_duration'] / 60) . '分钟';
         $data['timeRate'] .= '%';
-        $data['created_at'] = date('Y-m-d H:i:s', (int) $data['created_at']);
-        $data['updated_at'] = date('Y-m-d H:i:s', (int) $data['updated_at']);
+        $data['created_at'] = date('Y-m-d H:i:s', (int)$data['created_at']);
+        $data['updated_at'] = date('Y-m-d H:i:s', (int)$data['updated_at']);
     }
 }

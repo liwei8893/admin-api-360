@@ -128,4 +128,27 @@ class UserCourseRecordAppController extends MineController
     {
         return $this->service->setWatchTime($request->all()) ? $this->success() : $this->error();
     }
+
+    /**
+     * 获取未使用的番茄数量
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getUnusedTomato'), Auth('app')]
+    public function getUnusedTomato(): ResponseInterface
+    {
+        return $this->success($this->service->getUnusedTomato());
+    }
+
+    /**
+     * 使用番茄,采摘.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('usedTomato'), Auth('app')]
+    public function usedTomato(): ResponseInterface
+    {
+        return $this->service->usedTomato() ? $this->success() : $this->error();
+    }
 }

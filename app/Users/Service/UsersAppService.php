@@ -29,7 +29,7 @@ class UsersAppService extends AbstractService
     {
         $userId = user('app')->getId();
         $state = $this->mapper->update($userId, $params);
-        if (! $state) {
+        if (!$state) {
             throw new NormalStatusException('信息更新失败!');
         }
         return $this->mapper->read($userId);
@@ -38,11 +38,11 @@ class UsersAppService extends AbstractService
     public function setAvatar($params): ?MineModel
     {
         $avatarModel = $this->avatarService->read($params['id']);
-        if (! $avatarModel) {
+        if (!$avatarModel) {
             throw new NormalStatusException('头像不存在!');
         }
         $userModel = $this->read(user('app')->getId());
-        if (! $userModel) {
+        if (!$userModel) {
             throw new NormalStatusException('用户不存在!');
         }
         if ($avatarModel->type === 1) {
@@ -52,7 +52,7 @@ class UsersAppService extends AbstractService
         } else {
             throw new NormalStatusException('头像类型错误!');
         }
-        if (! $userModel->save()) {
+        if (!$userModel->save()) {
             throw new NormalStatusException('图片更新失败,请稍后重试!');
         }
         return $userModel->fresh();
@@ -66,7 +66,7 @@ class UsersAppService extends AbstractService
     public function getAvatar($params): array
     {
         $userModel = $this->read(user('app')->getId());
-        if (! $userModel) {
+        if (!$userModel) {
             throw new NormalStatusException('用户不存在!');
         }
         $avatarModel = $userModel->avatarTable();
@@ -74,14 +74,14 @@ class UsersAppService extends AbstractService
             $avatarModel->where('type', $params['type']);
         }
         $pageSize = $params['pageSize'] ?? '15';
-        return $this->mapper->setPaginate($avatarModel->paginate((int) $pageSize));
+        return $this->mapper->setPaginate($avatarModel->paginate((int)$pageSize));
     }
 
     public function getUserHaveSubject(): array
     {
         /* @var User $userModel */
         $userModel = $this->read(user('app')->getId());
-        if (! $userModel) {
+        if (!$userModel) {
             throw new NormalStatusException('用户不存在!');
         }
         /** @var Collection $userSubjectOrder */
@@ -99,5 +99,19 @@ class UsersAppService extends AbstractService
             }
         }
         return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getScore(): array
+    {
+        /* @var User $userModel */
+        $userModel = $this->read(user('app')->getId());
+        if (!$userModel) {
+            throw new NormalStatusException('用户不存在!');
+        }
+
+        return ['score' => $userModel->score];
     }
 }

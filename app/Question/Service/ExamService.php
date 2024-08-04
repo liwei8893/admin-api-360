@@ -47,13 +47,13 @@ class ExamService extends AbstractService
      */
     public function examAuth(int $classify_id): bool
     {
-        // 拿到分类信息,映射出对应订单ID,60=小学=1498,61=中学=1499
+        // 拿到分类信息,映射出对应订单ID,60=小学=1501,61=中学=1502
         /* @var ExamClassify $classifyModel */
         $classifyModel = $this->classifyService->read($classify_id);
         if (!$classifyModel) {
             throw new NormalStatusException('分类不存在!');
         }
-        $shopIdMap = [60 => 1498, 61 => 1499];
+        $shopIdMap = [60 => 1501, 61 => 1502];
         $shopId = $shopIdMap[$classifyModel->grade] ?? 0;
 
         // 拿到用户模型
