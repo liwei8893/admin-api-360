@@ -160,7 +160,7 @@ class UploadController extends MineController
     #[GetMapping('getFileInfoById')]
     public function getFileInfoByid(): ResponseInterface
     {
-        return $this->success($this->service->read((int) $this->request->input('id', null)));
+        return $this->success($this->service->read((int)$this->request->input('id', null)));
     }
 
     /**
@@ -171,7 +171,11 @@ class UploadController extends MineController
     #[GetMapping('getFileInfoByHash')]
     public function getFileInfoByHash(): ResponseInterface
     {
-        return $this->success($this->service->readByHash($this->request->input('hash', null)));
+        $fileModel = $this->service->readByHash($this->request->input('hash', null));
+        if (!$fileModel) {
+            return $this->success('文件不存在');
+        }
+        return $this->success($fileModel);
     }
 
     /**
@@ -186,8 +190,8 @@ class UploadController extends MineController
         if (empty($id)) {
             return $this->error('附件ID必填');
         }
-        $model = $this->service->read((int) $id);
-        if (! $model) {
+        $model = $this->service->read((int)$id);
+        if (!$model) {
             throw new MineException('附件不存在', 500);
         }
         return $this->_download(BASE_PATH . '/public' . $model->url, $model->origin_name);
@@ -206,7 +210,7 @@ class UploadController extends MineController
             return $this->error('附件hash必填');
         }
         $model = $this->service->readByHash($hash);
-        if (! $model) {
+        if (!$model) {
             throw new MineException('附件不存在', 500);
         }
         return $this->_download(BASE_PATH . '/public' . $model->url, $model->origin_name);
