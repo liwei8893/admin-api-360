@@ -51,6 +51,20 @@ class UserCourseRecord extends MineModel
      */
     protected array $casts = ['id' => 'integer', 'period_id' => 'integer', 'user_id' => 'integer', 'video_duration' => 'integer', 'watch_time' => 'integer', 'time_rate' => 'decimal:2', 'complete_status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
+    protected array $appends = ['watch_time|video_duration' => 'timeRate'];
+
+    /**
+     * 完课率
+     * author:ZQ
+     * time:2022-08-28 16:32.
+     */
+    public function getTimeRateAttribute(): float
+    {
+        if (isset($this->attributes['watch_time'], $this->attributes['video_duration']) && $this->attributes['video_duration'] * 100 !== 0) {
+            return round($this->attributes['watch_time'] / $this->attributes['video_duration'] * 100, 2);
+        }
+        return 0.0;
+    }
 
     /**
      * 定义 users 关联.
