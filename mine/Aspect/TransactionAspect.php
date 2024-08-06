@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace Mine\Aspect;
 
 use Hyperf\DbConnection\Db;
@@ -18,6 +19,7 @@ use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Mine\Annotation\Transaction;
 use Mine\Exception\MineException;
+use Throwable;
 
 /**
  * Class TransactionAspect
@@ -43,16 +45,16 @@ class TransactionAspect extends AbstractAspect
         try {
             Db::beginTransaction();
             $number = 0;
-            $retry  = intval($transaction->retry);
+            $retry = (int)$transaction->retry;
             do {
                 $result = $proceedingJoinPoint->process();
-                if (! is_null($result)) {
+                if (!is_null($result)) {
                     break;
                 }
                 ++$number;
             } while ($number < $retry);
             Db::commit();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Db::rollBack();
             throw new MineException($e->getMessage(), 500);
         }
