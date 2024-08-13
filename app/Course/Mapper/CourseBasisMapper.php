@@ -59,7 +59,7 @@ class CourseBasisMapper extends AbstractMapper
         // 过滤数据
         $this->filterExecuteAttributes($data, true);
         $model = $this->model::find($id);
-        if (! $model) {
+        if (!$model) {
             return false;
         }
         $state = $model->update($data);
@@ -89,7 +89,7 @@ class CourseBasisMapper extends AbstractMapper
             $query->where('course_type', '=', $params['course_type']);
         }
 
-        if (isset($params['id']) && ! is_array($params['id'])) {
+        if (isset($params['id']) && !is_array($params['id'])) {
             $query->where('id', $params['id']);
         }
 
@@ -97,7 +97,7 @@ class CourseBasisMapper extends AbstractMapper
             $query->whereIn('id', $params['id']);
         }
 
-        if (isset($params['course_second_title']) && ! is_array($params['course_second_title'])) {
+        if (isset($params['course_second_title']) && !is_array($params['course_second_title'])) {
             $query->where('course_second_title', $params['course_second_title']);
         }
 
@@ -119,10 +119,10 @@ class CourseBasisMapper extends AbstractMapper
         }
 
         // 是否删除
-        if (! isset($params['is_del'])) {
+        if (!isset($params['is_del'])) {
             $query->where('is_del', '=', 0);
         }
-        if (! empty($params['is_del'])) {
+        if (!empty($params['is_del'])) {
             $query->where('is_del', '=', $params['is_del']);
         }
 
@@ -140,7 +140,7 @@ class CourseBasisMapper extends AbstractMapper
             $query->where('season', $params['season']);
         }
         // 年级
-        if (isset($params['grade']) && ! is_array($params['grade'])) {
+        if (isset($params['grade']) && !is_array($params['grade'])) {
             $query->whereHas('basisGrade', function (Builder $query) use ($params) {
                 $query->where('grade_id', $params['grade']);
             });
@@ -148,6 +148,16 @@ class CourseBasisMapper extends AbstractMapper
         if (isset($params['grade']) && is_array($params['grade'])) {
             $query->whereHas('basisGrade', function (Builder $query) use ($params) {
                 $query->whereIn('grade_id', $params['grade']);
+            });
+        }
+        if (isset($params['grade_id']) && !is_array($params['grade_id'])) {
+            $query->whereHas('basisGrade', function (Builder $query) use ($params) {
+                $query->where('grade_id', $params['grade_id']);
+            });
+        }
+        if (isset($params['grade_id']) && is_array($params['grade_id'])) {
+            $query->whereHas('basisGrade', function (Builder $query) use ($params) {
+                $query->whereIn('grade_id', $params['grade_id']);
             });
         }
 
@@ -159,29 +169,29 @@ class CourseBasisMapper extends AbstractMapper
             $query->where('subject_id', '=', $params['subject']);
         }
 
-        if (! empty($params['course_title'])) {
+        if (!empty($params['course_title'])) {
             $query->where('course_title', $params['course_title']);
         }
 
-        if (! empty($params['withBasisType'])) {
+        if (!empty($params['withBasisType'])) {
             $query->with(['basisType:id,name']);
         }
 
-        if (! empty($params['withBasisGrade'])) {
+        if (!empty($params['withBasisGrade'])) {
             $query->with(['basisGrade']);
         }
 
-        if (! empty($params['withCountChapter'])) {
+        if (!empty($params['withCountChapter'])) {
             $query->withCount(['chapter' => function (Builder $query) {
                 $query->where('parent_id', '!=', 0);
             }]);
         }
 
-        if (! empty($params['excludeShop'])) {
+        if (!empty($params['excludeShop'])) {
             $query->has('scoreShop', '<');
         }
         // 章节一个月内是否有更新
-        if (! empty($params['periodUpdateCount'])) {
+        if (!empty($params['periodUpdateCount'])) {
             $query->withCount(['period as period_update_count' => function (Builder $query) {
                 $query->where('updated_at', '>=', Carbon::now()->subDays(30)->timestamp);
             }]);
