@@ -48,7 +48,7 @@ class UsersMapper extends AbstractMapper
     {
         $model = $this->model::query()->find($id);
         if ($model) {
-            $model->user_pass = $password ?? $this->getInitPassword((string) $model->mobile);
+            $model->user_pass = $password ?? $this->getInitPassword((string)$model->mobile);
             return $model->save();
         }
         return false;
@@ -75,60 +75,64 @@ class UsersMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-        if (isset($params['id']) && ! is_array($params['id'])) {
+        if (isset($params['app']) && is_array($params['app'])) {
+            $strApp = implode("|", $params['app']);
+            $query->whereRaw("CONCAT(',',app,',') REGEXP ',({$strApp}),'");
+        }
+        if (isset($params['id']) && !is_array($params['id'])) {
             $query->where('id', $params['id']);
         }
         if (isset($params['id']) && is_array($params['id'])) {
             $query->whereIn('id', $params['id']);
         }
 
-        if (isset($params['status']) && ! is_array($params['status'])) {
+        if (isset($params['status']) && !is_array($params['status'])) {
             $query->where('status', $params['status']);
         }
         if (isset($params['status']) && is_array($params['status'])) {
             $query->whereIn('status', $params['status']);
         }
 
-        if (isset($params['user_type']) && ! is_array($params['user_type'])) {
+        if (isset($params['user_type']) && !is_array($params['user_type'])) {
             $query->where('user_type', $params['user_type']);
         }
         if (isset($params['user_type']) && is_array($params['user_type'])) {
             $query->whereIn('user_type', $params['user_type']);
         }
 
-        if (! empty($params['mobileEq'])) {
+        if (!empty($params['mobileEq'])) {
             $query->where('mobile', '=', $params['mobileEq']);
         }
-        if (! empty($params['oldPlatformEq'])) {
+        if (!empty($params['oldPlatformEq'])) {
             $query->where('old_platform', '=', $params['oldPlatformEq']);
         }
-        if (! empty($params['userNameEq'])) {
+        if (!empty($params['userNameEq'])) {
             $query->where('user_name', '=', $params['userNameEq']);
         }
 
-        if (! empty($params['mobile'])) {
+        if (!empty($params['mobile'])) {
             $query->where('mobile', 'like', $params['mobile'] . '%');
         }
 
-        if (! empty($params['old_platform'])) {
+        if (!empty($params['old_platform'])) {
             $query->where('old_platform', 'like', $params['old_platform'] . '%');
         }
 
-        if (! empty($params['is_teacher'])) {
+        if (!empty($params['is_teacher'])) {
             $query->where('is_teacher', $params['is_teacher']);
         }
 
-        if (! empty($params['is_assistant'])) {
+        if (!empty($params['is_assistant'])) {
             $query->where('is_assistant', $params['is_assistant']);
         }
 
-        if (! empty($params['user_name'])) {
+        if (!empty($params['user_name'])) {
             $query->where('user_name', 'like', '%' . $params['user_name'] . '%');
         }
 
-        if (! empty($params['keywords'])) {
+        if (!empty($params['keywords'])) {
             $query->where(
-                fn ($query) => $query->where('mobile', 'like', '%' . $params['keywords'] . '%')
+                fn($query) => $query->where('mobile', 'like', '%' . $params['keywords'] . '%')
                     ->orWhere('user_name', 'like', '%' . $params['keywords'] . '%')
                     ->orWhere('remark', 'like', '%' . $params['keywords'] . '%')
             );
@@ -141,7 +145,7 @@ class UsersMapper extends AbstractMapper
             );
         }
 
-        if (isset($params['platform']) && ! is_array($params['platform'])) {
+        if (isset($params['platform']) && !is_array($params['platform'])) {
             $query->where('platform', '=', $params['platform']);
         }
 
@@ -149,7 +153,7 @@ class UsersMapper extends AbstractMapper
             $query->whereIn('platform', $params['platform']);
         }
 
-        if (isset($params['grade_id']) && ! is_array($params['grade_id'])) {
+        if (isset($params['grade_id']) && !is_array($params['grade_id'])) {
             $query->where('grade_id', $params['grade_id']);
         }
         if (isset($params['grade_id']) && is_array($params['grade_id'])) {
@@ -160,42 +164,42 @@ class UsersMapper extends AbstractMapper
             if ($params['vipType'] === '0') {
                 $query->whereHas(
                     'orders',
-                    fn (Builder $query) => $query->normalOrder()->whereNotIn('shop_id', [...User::VIP_TYPE_NONE, ...User::VIP_TYPE_HIGH])
+                    fn(Builder $query) => $query->normalOrder()->whereNotIn('shop_id', [...User::VIP_TYPE_NONE, ...User::VIP_TYPE_HIGH])
                 );
             }
             if ($params['vipType'] === '1') {
                 $query->whereHas(
                     'orders',
-                    fn (Builder $query) => $query->normalOrder()->where('shop_id', User::VIP_TYPE_ENJOY)
+                    fn(Builder $query) => $query->normalOrder()->where('shop_id', User::VIP_TYPE_ENJOY)
                 );
             }
             if ($params['vipType'] === '2') {
                 $query->whereHas(
                     'orders',
-                    fn (Builder $query) => $query->normalOrder()->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+                    fn(Builder $query) => $query->normalOrder()->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
                 );
             }
             if ($params['vipType'] === '3') {
                 $query->whereHas(
                     'orders',
-                    fn (Builder $query) => $query->normalOrder()->where('shop_id', User::VIP_TYPE_SUPREME)
+                    fn(Builder $query) => $query->normalOrder()->where('shop_id', User::VIP_TYPE_SUPREME)
                 );
             }
         }
 
-        if (! empty($params['withGrades'])) {
+        if (!empty($params['withGrades'])) {
             $query->with(['grades:label,value']);
         }
 
-        if (! empty($params['withVipType'])) {
+        if (!empty($params['withVipType'])) {
             $query->with(['vipType']);
         }
 
-        if (! empty($params['withStatus'])) {
+        if (!empty($params['withStatus'])) {
             $query->with(['status']);
         }
 
-        if (! empty($params['withUserType'])) {
+        if (!empty($params['withUserType'])) {
             $query->with(['userType']);
         }
         return $query;

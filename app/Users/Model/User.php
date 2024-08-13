@@ -13,6 +13,7 @@ use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
+use function Hyperf\Config\config;
 
 /**
  * @property int $id
@@ -90,15 +91,16 @@ use Mine\MineModel;
  * @property string $remark_case 首月情况备注
  * @property int $is_student_type 1小学 2初中
  * @property string $mp_openid 小程序openid
- * @property Avatar[]|Collection $avatarTable
- * @property string $avatar 用户头像
- * @property SystemDictData $grades
- * @property Collection|Order[] $haveSubject
- * @property Collection|Order[] $orders
- * @property mixed $user_pass 密码
- * @property SystemDictData $status 状态 1启用 0禁用
- * @property SystemDictData $userType
- * @property Order $vipType
+ * @property string $app 所属应用
+ * @property-read SystemDictData|null $status 状态 1启用 0禁用
+ * @property-read SystemDictData|null $userType
+ * @property-read Order|null $vipType
+ * @property-read Collection|Order[]|null $haveSubject
+ * @property-read Collection|Order[]|null $orders
+ * @property-read SystemDictData|null $grades
+ * @property-write mixed $user_pass 密码
+ * @property-read Collection|Avatar[]|null $avatarTable
+ * @property-read string $avatar 用户头像
  */
 class User extends MineModel
 {
@@ -166,7 +168,7 @@ class User extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'user_name', 'real_name', 'user_nickname', 'user_pass', 'user_email', 'id_card', 'remember_token', 'mobile', 'status', 'sex', 'last_login_ip', 'last_login_time', 'birthday', 'signature', 'avatar', 'avatar_frame', 'created_at', 'updated_at', 'is_buy', 'wx_openid', 'qq_openid', 'integral', 'grade_id', 'province_id', 'city_id', 'area_id', 'user_type', 'dis_id', 'identity_card', 'bank_user_name', 'user_from', 'extension_from_user_id', 'qq', 'is_teacher', 'is_assistant', 'is_student', 'attribute_grade_id', 'edit_username', 't_type', 'sale_platform', 'headmaster', 'is_headmaster', 'parent_name', 'parent_wx', 'teacher_wx', 'address', 'remark', 'yw', 'sx', 'yy', 'wl', 'hx', 'ls', 'dl', 'sw', 'zz', 'platform', 'is_show', 'wxgzh_openid', 'old_platform', 'is_adviser', 'order_updated_at', 'experience', 'created_name', 'created_id', 'is_playback_type', 'contact_time', 'user_property', 'days', 'score', 'is_remind', 'first_month', 'tag', 'market_id', 'remark_case', 'is_student_type', 'mp_openid'];
+    protected array $fillable = ['id', 'user_name', 'real_name', 'user_nickname', 'user_pass', 'user_email', 'id_card', 'remember_token', 'mobile', 'status', 'sex', 'last_login_ip', 'last_login_time', 'birthday', 'signature', 'avatar', 'avatar_frame', 'created_at', 'updated_at', 'is_buy', 'wx_openid', 'qq_openid', 'integral', 'grade_id', 'province_id', 'city_id', 'area_id', 'user_type', 'dis_id', 'identity_card', 'bank_user_name', 'user_from', 'extension_from_user_id', 'qq', 'is_teacher', 'is_assistant', 'is_student', 'attribute_grade_id', 'edit_username', 't_type', 'sale_platform', 'headmaster', 'is_headmaster', 'parent_name', 'parent_wx', 'teacher_wx', 'address', 'remark', 'yw', 'sx', 'yy', 'wl', 'hx', 'ls', 'dl', 'sw', 'zz', 'platform', 'is_show', 'wxgzh_openid', 'old_platform', 'is_adviser', 'order_updated_at', 'experience', 'created_name', 'created_id', 'is_playback_type', 'contact_time', 'user_property', 'days', 'score', 'is_remind', 'first_month', 'tag', 'market_id', 'remark_case', 'is_student_type', 'mp_openid', 'app'];
 
     /**
      * The attributes that should be cast to native types.
@@ -250,6 +252,6 @@ class User extends MineModel
      */
     public function getAvatarAttribute(string $value): string
     {
-        return ! str_contains($value, 'https') ? \Hyperf\Config\config('file.storage.qiniu.domain') . '/' . $value : $value;
+        return !str_contains($value, 'https') ? config('file.storage.qiniu.domain') . '/' . $value : $value;
     }
 }

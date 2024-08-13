@@ -114,22 +114,26 @@ class CourseChapterMapper extends AbstractMapper
             $query->where('title', 'like', "%{$params['title']}%");
         }
 
-        if (! empty($params['withCoursePeriod'])) {
+        if (!empty($params['withCoursePeriod'])) {
             $query->with(['coursePeriod' => function (HasOne $query) {
                 $query->with(['teacher', 'tags', 'questionPeriod'])
                     ->select(array_merge(CoursePeriod::COMMON_FIELDS, ['qiniu_url']));
             }]);
         }
-        if (! empty($params['withAppCoursePeriod'])) {
+        if (!empty($params['withAppCoursePeriod'])) {
             $query->with(['coursePeriod' => function (HasOne $query) {
-                $query->with(['teacher', 'tags:id,name'])
+                $isLogin = user('app')->hasLogin();
+                $userId = $isLogin ? user('app')->getId() : null;
+                $query->with(['teacher', 'tags:id,name', 'courseRecord' => function (HasOne $query) use ($userId) {
+                    $query->where('user_id', $userId);
+                }])
                     ->select(CoursePeriod::COMMON_FIELDS)
                     // withCount要在select后面
                     ->withCount(['questionPeriod as question_test_count']);
             }]);
         }
 
-        if (! empty($params['withCourseBasis'])) {
+        if (!empty($params['withCourseBasis'])) {
             $query->with('courseBasis');
         }
 
