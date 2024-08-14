@@ -187,38 +187,39 @@ class SubjectAuthAspect extends AbstractAspect
                 }
             }
         }
-
-        // 兼容之前老会员950
-        $user = $userModel->vipType()->with(['orderGrade', 'orderSubject'])->first();
-        // 没有老会员
-        if (!$user) {
-            $this->noPermissionTip();
-        }
-        // 订单年级,为空表示购买所有年级,直接通过
-        /* @var Collection $userGrade */
-        $userGrade = $user->orderGrade;
-        if ($userGrade->isEmpty()) {
-            return $data;
-        }
-        // 不为空表示购买部分年级,验证课程年级是否包含在内,不包含说明没有购买当前年级,不通过
-        $diffGrade = $userGrade->whereIn('key', $gradeId);
-        if ($diffGrade->isEmpty()) {
-            $this->noPermissionTip();
-        }
-        // 包含在内,表示购买了当前年级,在验证科目
-        /* @var Collection $userSubject */
-        $userSubject = $user->orderSubject;
-        // 没有用户科目表示只限制年级,通过
-        if ($userSubject->isEmpty()) {
-            return $data;
-        }
-        // 有科目表示还限制了科目,验证科目是否包含在内,不包含说明没有购买当前科目,不通过
-        $diffSubject = $userSubject->whereIn('key', $subjectId);
-        if ($diffSubject->isEmpty()) {
-            $this->noPermissionTip();
-        }
-        // 科目验证完毕,通过
-        return $data;
+//
+//        // 兼容之前老会员950
+//        $user = $userModel->vipType()->with(['orderGrade', 'orderSubject'])->first();
+//        // 没有老会员
+//        if (!$user) {
+//            $this->noPermissionTip();
+//        }
+//        // 订单年级,为空表示购买所有年级,直接通过
+//        /* @var Collection $userGrade */
+//        $userGrade = $user->orderGrade;
+//        if ($userGrade->isEmpty()) {
+//            return $data;
+//        }
+//        // 不为空表示购买部分年级,验证课程年级是否包含在内,不包含说明没有购买当前年级,不通过
+//        $diffGrade = $userGrade->whereIn('key', $gradeId);
+//        if ($diffGrade->isEmpty()) {
+//            $this->noPermissionTip();
+//        }
+//        // 包含在内,表示购买了当前年级,在验证科目
+//        /* @var Collection $userSubject */
+//        $userSubject = $user->orderSubject;
+//        // 没有用户科目表示只限制年级,通过
+//        if ($userSubject->isEmpty()) {
+//            return $data;
+//        }
+//        // 有科目表示还限制了科目,验证科目是否包含在内,不包含说明没有购买当前科目,不通过
+//        $diffSubject = $userSubject->whereIn('key', $subjectId);
+//        if ($diffSubject->isEmpty()) {
+//            $this->noPermissionTip();
+//        }
+//        // 科目验证完毕,通过
+//        return $data;
+        $this->noPermissionTip();
     }
 
     protected function noPermissionTip(): void
