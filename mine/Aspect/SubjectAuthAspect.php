@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mine\Aspect;
 
+use App\Course\Model\CourseBasis;
 use App\Course\Model\CoursePeriod;
 use App\Course\Service\CourseChapterService;
 use App\Course\Service\CoursePeriodService;
@@ -92,45 +93,20 @@ class SubjectAuthAspect extends AbstractAspect
         if (!$userModel) {
             throw new NormalStatusException('未查询到用户!');
         }
+        $courseService = $this->container->get(CourseService::class);
 
-        // 如果有课程ID先验证课程是否单独购买
+        // 如果有课程ID表示是验证课程权限,先验证课程是否单独购买
+        $courseModel = null;
         if ($courseId) {
-            $courseService = $this->container->get(CourseService::class);
+            /* @var CourseBasis $courseModel */
             $courseModel = $courseService->read($courseId);
             if (!$courseModel) {
                 throw new NormalStatusException('课程不存在!');
             }
-            // 新需求:番茄的课程有效期为永久,删除掉有效期查询判断->isNotExpire()
-            $tomatoCourseId = [1489, 1490, 1491, 1492, 1493, 1494, 1495, 1496, 1497, 1498, 1499, 1500];
-            if (in_array((int)$courseId, $tomatoCourseId, true)) {
-                /* @var Order $orderModel */
-                $orderModel = $userModel->orders()->normalOrder()->where('shop_id', $courseId)->first();
-            } else {
-                $orderModel = $userModel->orders()->normalOrder()->isNotExpire()->where('shop_id', $courseId)->first();
-            }
-            // 课程需要购买,没购买
-            if (!$orderModel && $courseModel['is_give']) {
-                throw new NormalStatusException('未购买当前课程,请联系课程顾问购买!');
-            }
+            $orderModel = $userModel->orders()->normalOrder()->isNotExpire()->where('shop_id', $courseId)->first();
+            // 已经购买,直接通过
             if ($orderModel) {
-                // 课程购买之后还需要验证章节权限,order.chapter_count_auth,代表可以观看前多少节课,0代表不限制
-                $chapterCount = $orderModel->chapter_count_auth;
-                if ($chapterCount === 0) {
-                    return $data;
-                }
-                // 找到观看的章节是第多少节,如果在购买的节数里就返回数据
-                $chapterService = $this->container->get(CourseChapterService::class);
-                $chapterData = $chapterService->getChapter($courseId);
-                $periodData = [];
-                foreach ($chapterData as $chapterItem) {
-                    foreach ($chapterItem['children'] as $child) {
-                        $periodData[] = $child['course_period']['id'];
-                    }
-                }
-                $index = collect($periodData)->search($periodId);
-                if (($index + 1) <= $chapterCount) {
-                    return $data;
-                }
+                return $data;
             }
             // 课程需要购买,没购买
             if ($courseModel['is_give']) {
@@ -139,19 +115,43 @@ class SubjectAuthAspect extends AbstractAspect
         }
 
         // 新逻辑,先验证分科订单
-        /** @var Collection $userSubjectOrder */
-        $userSubjectOrder = $userModel->haveSubject()->with(['course' => function (BelongsTo $builder) {
-            $builder->with('basisGrade')->select(['id', 'subject_id']);
+        /* @var Collection | Order[] | null $userOrderModel */
+        $userOrderModel = $userModel->orderCourse()->with(['course' => function (BelongsTo $builder) {
+            $builder->with('basisGrade');
         }])->get();
-        // 有分科订单,科目和年级都验证通过就返回,不然往下走进行老950会员验证
-        if ($userSubjectOrder->isNotEmpty()) {
-            foreach ($userSubjectOrder as $item) {
+        if ($userOrderModel->isNotEmpty()) {
+            foreach ($userOrderModel as $item) {
+                $orderCourse = $item->course;
                 // 是否购买当前科目
-                $hasSubject = (int)$item->course->subject_id === (int)$subjectId;
+                $hasSubject = $orderCourse->subject_id === (int)$subjectId;
+
                 // 是否购买当前年级
-                $hasGrade = $item['course']['basisGrade']->whereIn('key', $gradeId);
-                // 科目和年级都验证通过,表示购买了对应分科
-                if ($hasSubject && $hasGrade->isNotEmpty()) {
+                $hasGrade = $orderCourse->basisGrade->whereIn('key', $gradeId)->isNotEmpty();
+
+                // 没有课程ID表示验证题目,题目只需要验证年级跟科目
+                if (!$courseId) {
+                    if ($hasSubject && $hasGrade) {
+                        return $data;
+                    }
+                    continue;
+                }
+                // 类型守卫
+                if (!$courseModel) {
+                    continue;
+                }
+
+                // 开始验证课程
+                // 是否验证季节,不等于0表示需要验证
+                $hasSeason = $orderCourse->season === 0 || $orderCourse->season === $courseModel->season;
+
+                // 验证课程类型
+                $orderCourseType = explode(',', $orderCourse->course_sub_title);
+                $hasType = $orderCourse->course_sub_title === '' || in_array((string)$courseModel->course_title, $orderCourseType, true);
+//                var_dump($orderCourse->title, $courseModel->title, $hasType, $hasSeason, $hasSubject, $hasGrade);
+//                var_dump('!!!!!!!!!!!!!!!!!');
+                // 所有验证都通过
+                // 课程购买之后还需要验证章节权限,order.chapter_count_auth,代表可以观看前多少节课,0代表不限制
+                if ($hasType && $hasSeason && $hasSubject && $hasGrade && $this->chapterCountAuth($item->chapter_count_auth, $courseModel->id, $periodId)) {
                     return $data;
                 }
             }
@@ -193,5 +193,32 @@ class SubjectAuthAspect extends AbstractAspect
     protected function noPermissionTip(): void
     {
         throw new NormalStatusException('未购买当前科目,请联系课程顾问购买!');
+    }
+
+    /**
+     * 验证章节权限,order.chapter_count_auth,代表可以观看前多少节课,0代表不限制
+     * @param int $chapterCount
+     * @param int $courseId
+     * @param int $periodId
+     * @return bool
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    protected function chapterCountAuth(int $chapterCount, int $courseId, int $periodId): bool
+    {
+        if ($chapterCount === 0) {
+            return true;
+        }
+        // 找到观看的章节是第多少节,如果在购买的节数里就返回数据
+        $chapterService = $this->container->get(CourseChapterService::class);
+        $chapterData = $chapterService->getChapter($courseId);
+        $periodData = [];
+        foreach ($chapterData as $chapterItem) {
+            foreach ($chapterItem['children'] as $child) {
+                $periodData[] = $child['course_period']['id'];
+            }
+        }
+        $index = collect($periodData)->search($periodId);
+        return ($index + 1) <= $chapterCount;
     }
 }

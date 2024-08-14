@@ -231,6 +231,16 @@ class User extends MineModel
         return $this->hasMany(Order::class, 'user_id', 'id')->whereIn('shop_id', self::VIP_TYPE_HIGH)->NormalOrder()->IsNotExpire();
     }
 
+    public function orderCourse()
+    {
+        return $this->hasMany(Order::class, 'user_id', 'id')
+            ->whereHas('course', function ($query) {
+                $query->where('course_title', 64);
+            })
+            ->NormalOrder()
+            ->IsNotExpire();
+    }
+
     /**
      * 密码加密.
      */

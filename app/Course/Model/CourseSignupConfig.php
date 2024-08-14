@@ -13,6 +13,7 @@ use Mine\MineModel;
 
 /**
  * @property int $id 主键
+ * @property int $app 所属应用
  * @property int $type 模板类型,1教务用,2课程顾问用
  * @property string $title 课程名称
  * @property int $price 金额
@@ -41,12 +42,12 @@ class CourseSignupConfig extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'type', 'title', 'price', 'day', 'real_year', 'chapter_count_auth', 'sort', 'remark', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'app', 'type', 'title', 'price', 'day', 'real_year', 'chapter_count_auth', 'sort', 'remark', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'type' => 'integer', 'price' => 'integer', 'day' => 'integer', 'real_year' => 'integer', 'chapter_count_auth' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'app' => 'integer', 'type' => 'integer', 'price' => 'integer', 'day' => 'integer', 'real_year' => 'integer', 'chapter_count_auth' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function courseSignup(): BelongsToMany
     {

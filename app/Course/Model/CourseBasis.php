@@ -57,8 +57,9 @@ use Mine\MineModel;
  * @property int $subject_id 科目
  * @property int $is_deal 是否处理过该课程(学习报告使用)
  * @property int $is_signup 报名,0不可以1可以
- * @property int $course_title
+ * @property int $course_title 课程分类
  * @property int $course_second_title 二级分类id
+ * @property string $course_sub_title 订单课程子分类
  * @property string $other_img 360课程封面
  * @property int $is_playback_type 1普通 2超级 3至尊
  * @property int $is_show_pic 前端是否显示价格0不显示1显示
@@ -67,12 +68,13 @@ use Mine\MineModel;
  * @property int $vip_type 1:优享会员,2:超级会员,3:至尊会员
  * @property int $is_give 1:表示是活动赠送的课程,如果学员购买了这个课添加到素养课里面
  * @property int $class_type 0:小学中学高中都能查,1小学,2中学,3高中
- * @property Collection|SystemDictData[] $basisGrade
- * @property CourseBasisType $basisType
- * @property Collection|CourseChapter[] $chapter
  * @property mixed $price 课程价格
- * @property Collection|Order[] $order
- * @property ScoreShop $scoreShop
+ * @property-read CourseBasisType|null $basisType
+ * @property-read Collection|SystemDictData[]|null $basisGrade
+ * @property-read Collection|CourseChapter[]|null $chapter
+ * @property-read Collection|CoursePeriod[]|null $period
+ * @property-read ScoreShop|null $scoreShop
+ * @property-read Collection|Order[]|null $order
  */
 class CourseBasis extends MineModel
 {
@@ -90,12 +92,13 @@ class CourseBasis extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'title', 'subtitle', 'course_type', 'course_sub_type', 'course_classify_id', 'sort', 'price', 'origin_price', 'vip_price', 'course_cover', 'cover_video', 'advance_time', 'is_free', 'is_playback', 'is_generated_class', 'is_vip_class', 'watch_num', 'validity_date', 'start_play_date', 'end_play_date', 'start_play_year', 'sales_num', 'sales_base', 'browse_base', 'states', 'browse_num', 'created_at', 'updated_at', 'indate', 'need_address', 'is_del', 'is_top', 'is_hot', 'material_name', 'note', 'class_id', 'is_group', 'grade_id', 'subject_id', 'is_deal', 'is_signup', 'course_title', 'course_second_title', 'other_img', 'is_playback_type', 'is_show_pic', 'season', 'is_show_sub_title', 'vip_type', 'is_give', 'class_type'];
+    protected array $fillable = ['id', 'title', 'subtitle', 'course_type', 'course_sub_type', 'course_classify_id', 'sort', 'price', 'origin_price', 'vip_price', 'course_cover', 'cover_video', 'advance_time', 'is_free', 'is_playback', 'is_generated_class', 'is_vip_class', 'watch_num', 'validity_date', 'start_play_date', 'end_play_date', 'start_play_year', 'sales_num', 'sales_base', 'browse_base', 'states', 'browse_num', 'created_at', 'updated_at', 'indate', 'need_address', 'is_del', 'is_top', 'is_hot', 'material_name', 'note', 'class_id', 'is_group', 'grade_id', 'subject_id', 'is_deal', 'is_signup', 'course_title', 'course_second_title', 'course_sub_title', 'other_img', 'is_playback_type', 'is_show_pic', 'season', 'is_show_sub_title', 'vip_type', 'is_give', 'class_type'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'course_type' => 'string', 'course_sub_type' => 'integer', 'course_classify_id' => 'integer', 'sort' => 'integer', 'price' => 'integer', 'origin_price' => 'integer', 'vip_price' => 'integer', 'advance_time' => 'integer', 'is_free' => 'integer', 'is_playback' => 'integer', 'is_generated_class' => 'integer', 'is_vip_class' => 'integer', 'watch_num' => 'integer', 'validity_date' => 'integer', 'start_play_date' => 'integer', 'end_play_date' => 'integer', 'start_play_year' => 'integer', 'sales_num' => 'integer', 'sales_base' => 'integer', 'browse_base' => 'integer', 'states' => 'string', 'browse_num' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'need_address' => 'integer', 'is_del' => 'integer', 'is_top' => 'integer', 'is_hot' => 'integer', 'class_id' => 'integer', 'is_group' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'string', 'is_deal' => 'integer', 'is_signup' => 'string', 'course_title' => 'string', 'course_second_title' => 'integer', 'is_playback_type' => 'integer', 'is_show_pic' => 'integer', 'season' => 'integer', 'is_show_sub_title' => 'integer', 'vip_type' => 'string', 'is_give' => 'integer', 'class_type' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'course_type' => 'integer', 'course_sub_type' => 'integer', 'course_classify_id' => 'integer', 'sort' => 'integer', 'price' => 'integer', 'origin_price' => 'integer', 'vip_price' => 'integer', 'advance_time' => 'integer', 'is_free' => 'integer', 'is_playback' => 'integer', 'is_generated_class' => 'integer', 'is_vip_class' => 'integer', 'watch_num' => 'integer', 'validity_date' => 'integer', 'start_play_date' => 'integer', 'end_play_date' => 'integer', 'start_play_year' => 'integer', 'sales_num' => 'integer', 'sales_base' => 'integer', 'browse_base' => 'integer', 'states' => 'integer', 'browse_num' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'need_address' => 'integer', 'is_del' => 'integer', 'is_top' => 'integer', 'is_hot' => 'integer', 'class_id' => 'integer', 'is_group' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'integer', 'is_deal' => 'integer', 'is_signup' => 'integer', 'course_title' => 'integer', 'course_second_title' => 'integer', 'is_playback_type' => 'integer', 'is_show_pic' => 'integer', 'season' => 'integer', 'is_show_sub_title' => 'integer', 'vip_type' => 'integer', 'is_give' => 'integer', 'class_type' => 'integer'];
+
 
     public function getPriceAttribute(): float|int
     {
@@ -104,7 +107,7 @@ class CourseBasis extends MineModel
 
     public function setPriceAttribute($value): void
     {
-        $this->attributes['price'] = (int) $value * 100;
+        $this->attributes['price'] = (int)$value * 100;
     }
 
     public function basisType(): HasOne

@@ -11,7 +11,6 @@ use App\Course\Service\CoursePeriodService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
-use Mine\Annotation\Auth;
 use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -32,11 +31,11 @@ class CourseAppController extends MineController
     protected CourseBasisService $basisService;
 
     /**
-     * 获取试卷链接.
+     * 获取课程链接.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('getUrl/{id}'), Auth('app')]
+    #[GetMapping('getUrl/{id}')]
     public function getUrl(int $id): ResponseInterface
     {
         return $this->success($this->periodService->getUrl($id));
@@ -75,7 +74,7 @@ class CourseAppController extends MineController
     public function getCourseInfo(int $id): ResponseInterface
     {
         $model = $this->basisService->read($id);
-        if (! $model) {
+        if (!$model) {
             return $this->error('课程不存在!');
         }
         return $this->success($model);

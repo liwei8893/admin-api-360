@@ -29,12 +29,12 @@ class CoursePeriodService extends AbstractService
     {
         /* @var CoursePeriod $model */
         $model = $this->mapper->read($id);
-        if (! $model) {
+        if (!$model) {
             throw new NormalStatusException('章节不存在!');
         }
         $model->makeVisible(['qiniu_url']);
         $courseModel = $model->courseBasis;
-        if (! $courseModel) {
+        if (!$courseModel) {
             throw new NormalStatusException('课程不存在!');
         }
         $grade = $courseModel->basisGrade->pluck('key')->toArray();
@@ -87,7 +87,7 @@ class CoursePeriodService extends AbstractService
     public function getPeriod(int $id): array
     {
         $period = $this->mapper->first(['id' => $id], CoursePeriod::COMMON_FIELDS);
-        if (! $period) {
+        if (!$period) {
             return [];
         }
         $period->load(['tags']);

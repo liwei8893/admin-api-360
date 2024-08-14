@@ -56,6 +56,12 @@ class CourseSignupConfigMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
+        if (isset($params['app']) && $params['app'] !== '') {
+            $query->where('app', '=', $params['app']);
+        }
+        if (isset($params['title']) && $params['title'] !== '') {
+            $query->where('title', 'like', "%{$params['id']}%");
+        }
         // 主键
         if (isset($params['id']) && $params['id'] !== '') {
             $query->where('id', '=', $params['id']);
@@ -90,10 +96,10 @@ class CourseSignupConfigMapper extends AbstractMapper
         if (isset($params['deleted_at']) && $params['deleted_at'] !== '') {
             $query->where('deleted_at', '=', $params['deleted_at']);
         }
-        if (! empty($params['withCourse'])) {
+        if (!empty($params['withCourse'])) {
             $query->with(['courseSignup:id,title']);
         }
-        if (! empty($params['withGrade'])) {
+        if (!empty($params['withGrade'])) {
             $query->with(['gradeSignup']);
         }
 

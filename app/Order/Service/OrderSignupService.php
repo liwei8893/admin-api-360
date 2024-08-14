@@ -82,6 +82,7 @@ class OrderSignupService extends AbstractService
                 'chapter_count_auth' => $collect['chapter_count_auth'],
                 'indate' => $collect['day'],
                 'money' => $collect['price'],
+                'app' => $collect['app'],
                 'remark' => '后台报名',
             ];
             // 插入
@@ -146,6 +147,8 @@ class OrderSignupService extends AbstractService
             'is_vip' => $data['is_vip'] ?? 0,
             'real_year' => $data['real_year'] ?? '',
             'coupon_id' => $data['coupon_id'] ?? 0,
+            // 所属应用,1:优课,2番茄,3密课
+            'app' => $data['app'] ?? 1,
         ];
     }
 
