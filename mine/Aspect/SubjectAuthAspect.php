@@ -137,9 +137,9 @@ class SubjectAuthAspect extends AbstractAspect
                 if (!$hasSubject) {
                     continue; //科目不通过
                 }
-                var_dump($orderCourse->title);
-                var_dump($orderSubject->isNotEmpty());
-                var_dump($orderSubject->whereIn('key', $subjectId)->isEmpty());
+//                var_dump($orderCourse->title);
+//                var_dump($orderSubject->isNotEmpty());
+//                var_dump($orderSubject->whereIn('key', $subjectId)->isEmpty());
                 // 课程科目通过之后还要检测订单科目是否限制
                 if ($orderSubject->isNotEmpty() && $orderSubject->whereIn('key', $subjectId)->isEmpty()) {
                     continue; //科目不通过
