@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Users\Controller\App;
 
+use App\User\Request\UserAppLoginRequest;
 use App\Users\Request\UsersAppLoginRequest;
 use App\Users\Service\UsersAppLoginService;
+use EasyWeChat\Kernel\Exceptions\HttpException;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\PostMapping;
@@ -15,6 +17,11 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\SimpleCache\InvalidArgumentException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 #[Controller(prefix: 'users/app')]
 class LoginController extends MineController
@@ -65,7 +72,7 @@ class LoginController extends MineController
      * @throws InvalidArgumentException
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('logout'),Auth('app')]
+    #[PostMapping('logout'), Auth('app')]
     public function logout(): ResponseInterface
     {
         $this->service->logout();
@@ -88,9 +95,30 @@ class LoginController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('changePassword'),Auth('app')]
+    #[PostMapping('changePassword'), Auth('app')]
     public function changePassword(UsersAppLoginRequest $request): ResponseInterface
     {
         return $this->service->changePassword($request->validated()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * 微信jsSdk初始化配置
+     * @param UsersAppLoginRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws NotFoundExceptionInterface
+     * @throws HttpException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    #[PostMapping('jsSdkAuth')]
+    public function jsSdkAuth(UsersAppLoginRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->jsSdkAuth($request->input('url')));
     }
 }

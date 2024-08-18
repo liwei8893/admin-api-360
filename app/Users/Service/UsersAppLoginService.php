@@ -7,6 +7,7 @@ namespace App\Users\Service;
 use App\System\Service\SmsService;
 use App\Users\Mapper\UsersAppLoginMapper;
 use App\Users\Model\User;
+use EasyWeChat\Kernel\Exceptions\HttpException;
 use EasyWeChat\OfficialAccount\Application;
 use Exception;
 use Hyperf\Database\Model\Model;
@@ -22,7 +23,11 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use function Hyperf\Config\config;
 
 class UsersAppLoginService extends AbstractService
@@ -56,21 +61,21 @@ class UsersAppLoginService extends AbstractService
         try {
             $userinfo = $this->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
             // 判断账号是否禁用
-            if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
+            if ($userinfo && (int)$userinfo['status'] !== MineModel::ENABLE) {
                 throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
             }
             // 判断登录方式 验证码
-            if (! empty($params['sms_code'])) {
+            if (!empty($params['sms_code'])) {
                 $resSmsCode = $params['sms_code'];
-                $this->smsService->checkSmsCaptcha((string) $params['mobile'], (string) $resSmsCode);
+                $this->smsService->checkSmsCaptcha((string)$params['mobile'], (string)$resSmsCode);
                 // 验证码通过 判断是否有用户,没有就注册为新用户
-                if (! $userinfo && $userModel = $this->register($params)) {
+                if (!$userinfo && $userModel = $this->register($params)) {
                     return $this->loginAfter($userModel);
                 }
                 // 验证成功
                 return $this->loginAfter($userinfo);
             }
-            if (! $userinfo) {
+            if (!$userinfo) {
                 throw new NormalStatusException('该账号未注册,请联系课程顾问!');
             }
             // 密码验证
@@ -95,7 +100,7 @@ class UsersAppLoginService extends AbstractService
      */
     public function register(array $data): MineModel|Model
     {
-        if ($this->usersService->existsByMobile((string) $data['mobile'])) {
+        if ($this->usersService->existsByMobile((string)$data['mobile'])) {
             throw new NormalStatusException('手机号已存在');
         }
         // 获取平台编号,挂载到数组
@@ -103,11 +108,11 @@ class UsersAppLoginService extends AbstractService
         // 合并初始化参数
         $data = array_merge([
             'mobile' => $data['mobile'],
-            'user_name' => $data['user_name'] ?? $this->usersService->getInitUserName((string) $data['mobile']),
-            'user_nickname' => $data['user_name'] ?? $this->usersService->getInitUserName((string) $data['mobile']),
-            'real_name' => $data['real_name'] ?? $this->usersService->getInitUserName((string) $data['mobile']),
-            'user_pass' => $data['user_pass'] ?? $this->usersService->getInitPassword((string) $data['mobile']),
-            'avatar' => \Hyperf\Config\config('hxt-app.defaultAvatar'),
+            'user_name' => $data['user_name'] ?? $this->usersService->getInitUserName((string)$data['mobile']),
+            'user_nickname' => $data['user_name'] ?? $this->usersService->getInitUserName((string)$data['mobile']),
+            'real_name' => $data['real_name'] ?? $this->usersService->getInitUserName((string)$data['mobile']),
+            'user_pass' => $data['user_pass'] ?? $this->usersService->getInitPassword((string)$data['mobile']),
+            'avatar' => config('hxt-app.defaultAvatar'),
             'user_type' => 1,
             'status' => 1,
             'sex' => 3,
@@ -172,16 +177,16 @@ class UsersAppLoginService extends AbstractService
             throw new NormalStatusException('openId获取失败，请刷新页面重试!');
         }
         $openId = $user->getId();
-        if (! $openId) {
+        if (!$openId) {
             throw new NormalStatusException('openId获取失败，请刷新页面重试!');
         }
         $userinfo = $this->mapper->getUserInfoByOpenId($openId, User::COMMON_FIELDS);
         // 判断账号是否禁用
-        if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
+        if ($userinfo && (int)$userinfo['status'] !== MineModel::ENABLE) {
             throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
         }
         // 未绑定手机号
-        if (! $userinfo) {
+        if (!$userinfo) {
             return $this->response->error('请绑定手机号!', 210, ['openId' => $openId]);
         }
         return $this->response->success(null, $this->loginAfter($userinfo));
@@ -198,14 +203,14 @@ class UsersAppLoginService extends AbstractService
             $mobile = $params['mobile'];
             $smsCode = $params['sms_code'];
             $openId = $params['openId'];
-            $this->smsService->checkSmsCaptcha((string) $mobile, (string) $smsCode);
+            $this->smsService->checkSmsCaptcha((string)$mobile, (string)$smsCode);
             $userinfo = $this->mapper->checkUserByMobile($mobile, User::COMMON_FIELDS);
             // 判断账号是否禁用
-            if ($userinfo && (int) $userinfo['status'] !== MineModel::ENABLE) {
+            if ($userinfo && (int)$userinfo['status'] !== MineModel::ENABLE) {
                 throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
             }
             // 验证码通过 判断是否有用户,没有就注册为新用户
-            if (! $userinfo) {
+            if (!$userinfo) {
                 /** @var User $userinfo */
                 $userinfo = $this->register($params);
             }
@@ -237,15 +242,15 @@ class UsersAppLoginService extends AbstractService
         // 查找用户信息
         $userinfo = $this->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
         // 判断账号是否禁用
-        if (! $userinfo) {
+        if (!$userinfo) {
             throw new NormalStatusException('该账号未注册,请联系课程顾问!');
         }
-        if ((int) $userinfo['status'] !== MineModel::ENABLE) {
+        if ((int)$userinfo['status'] !== MineModel::ENABLE) {
             throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
         }
         // 验证短信
         $resSmsCode = $params['sms_code'];
-        $this->smsService->checkSmsCaptcha((string) $params['mobile'], (string) $resSmsCode);
+        $this->smsService->checkSmsCaptcha((string)$params['mobile'], (string)$resSmsCode);
         // 修改密码
         return $this->usersService->initUserPassword($userinfo['id'], $params['user_pass']);
     }
@@ -257,5 +262,27 @@ class UsersAppLoginService extends AbstractService
     {
         // 修改密码
         return $this->usersService->initUserPassword(user('app')->getId(), $params['user_pass']);
+    }
+
+    /**
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws InvalidArgumentException
+     * @throws ClientExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws HttpException
+     * @throws ServerExceptionInterface
+     */
+    public function jsSdkAuth($url): array
+    {
+        $config = config('wechat.official_account.default');
+        $app = new Application($config);
+        return $app->getUtils()->buildJsSdkConfig(
+            url: $url,
+            jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData', 'chooseWXPay',],
+            openTagList: [],
+            debug: false,
+        );
     }
 }

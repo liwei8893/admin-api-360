@@ -132,29 +132,35 @@ class SubjectAuthAspect extends AbstractAspect
                 $orderGrade = $item->orderGrade;
                 // 订单科目
                 $orderSubject = $item->orderSubject;
+
+//                var_dump($orderCourse->title);
                 // 是否购买当前科目,不等于0表示需要验证
                 $hasSubject = $orderCourse->subject_id === 0 || $orderCourse->subject_id === (int)$subjectId;
                 if (!$hasSubject) {
                     continue; //科目不通过
                 }
-//                var_dump($orderCourse->title);
+//                var_dump('课程科目通过');
 //                var_dump($orderSubject->isNotEmpty());
 //                var_dump($orderSubject->whereIn('key', $subjectId)->isEmpty());
+//                var_dump($subjectId);
+//                var_dump($orderSubject->toArray());
                 // 课程科目通过之后还要检测订单科目是否限制
                 if ($orderSubject->isNotEmpty() && $orderSubject->whereIn('key', $subjectId)->isEmpty()) {
                     continue; //科目不通过
                 }
+//                var_dump('订单科目通过');
 
                 // 是否购买当前年级,不等于空表示需要验证
                 $hasGrade = $orderCourseGrade->isEmpty() || $orderCourseGrade->whereIn('key', $gradeId)->isNotEmpty();
                 if (!$hasGrade) {
                     continue; //年级不通过
                 }
+//                var_dump('课程年级通过');
                 // 课程年级通过之后还要检测订单年级是否限制
                 if ($orderGrade->isNotEmpty() && $orderGrade->whereIn('key', $gradeId)->isEmpty()) {
                     continue; //年级不通过
                 }
-
+//                var_dump('订单年级通过');
                 // 没有课程ID表示验证题目,题目只需要验证年级跟科目
                 if (!$courseId) {
                     return $data;
@@ -170,13 +176,14 @@ class SubjectAuthAspect extends AbstractAspect
                 if (!$hasSeason) {
                     continue; //季节不通过
                 }
-
+//                var_dump('季节通过');
                 // 验证课程类型
                 $orderCourseType = explode(',', $orderCourse->course_sub_title);
                 $hasType = $orderCourse->course_sub_title === '' || in_array((string)$courseModel->course_title, $orderCourseType, true);
                 if (!$hasType) {
                     continue; //类型不通过
                 }
+//                var_dump('课程类型通过');
                 // 没有$periodId不验证章节
                 if (!$periodId) {
                     return $data;
