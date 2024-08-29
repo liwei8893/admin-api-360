@@ -44,7 +44,7 @@ class QuestionHistoryService extends AbstractService
         $data = parent::getPageList($params, $isScope);
         // 变更需求,除了单选,多选,判断,其他都不判断对错
         foreach ($data['items'] as &$datum) {
-            if (!in_array($datum->question->ques_type, [1, 2, 4], true)) {
+            if (isset($datum->question->ques_type) && !in_array($datum->question->ques_type, [1, 2, 4], true)) {
                 $datum['is_right'] = 3;
             }
         }
