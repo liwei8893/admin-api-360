@@ -149,6 +149,6 @@ class UserCourseRecordAppController extends MineController
     #[PostMapping('usedTomato'), Auth('app')]
     public function usedTomato(): ResponseInterface
     {
-        return $this->service->usedTomato() ? $this->success() : $this->error();
+        return $this->success(["score" => $this->service->usedTomato()]);
     }
 }

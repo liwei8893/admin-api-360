@@ -195,10 +195,10 @@ class UserCourseRecordService extends AbstractService
 
     /**
      * 使用番茄
-     * @return bool
+     * @return int
      */
     #[Transaction]
-    public function usedTomato(): bool
+    public function usedTomato(): int
     {
         $userId = user('app')->getId();
         if (!$userId) {
@@ -206,21 +206,23 @@ class UserCourseRecordService extends AbstractService
         }
         $recordModel = $this->mapper->getUnusedTomatoFirst($userId);
         if (!$recordModel) {
-            throw new NormalStatusException('没有可用番茄!');
+            throw new NormalStatusException('数量不足!');
         }
         // 把记录改为已使用
         $recordModel->complete_status = 2;
         $recordModel->save();
+        // 增加需求,完课获得的积分在1-10分之间
+        $score = mt_rand(1, 10);
         // 增加积分
         $this->userScoreService->changeScore([
             'user_id' => $recordModel->user_id,
             'origin_id' => $recordModel->id,
             'channel' => '完课获得',
             'channel_type' => 4,
-            'score' => 1,
+            'score' => $score,
             'type' => 1,
         ]);
-        return true;
+        return $score;
     }
 
     protected function handleExportData(array &$data): void
