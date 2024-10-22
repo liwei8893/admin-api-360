@@ -56,7 +56,7 @@ class UsersAppLoginRequest extends MineFormRequest
     public function changePasswordRules(): array
     {
         return [
-            'user_pass' => 'string|between:6,20',
+            'user_pass' => 'required|string|between:6,20',
         ];
     }
 
