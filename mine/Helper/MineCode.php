@@ -6,7 +6,7 @@ namespace Mine\Helper;
 
 class MineCode
 {
-    public const TOKEN_EXPIRED = 1001;      // TOKEN过期、不存在
+    public const TOKEN_EXPIRED = 401;      // TOKEN过期、不存在
 
     public const VALIDATE_FAILED = 1002;    // 数据验证失败
 
