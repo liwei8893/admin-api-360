@@ -57,11 +57,11 @@ class CommerceCardService extends AbstractService
         $mobile = $params['mobile'];
         $smsCode = $params['sms_code'];
         // 短信验证码验证
-        $this->smsService->checkSmsCaptcha((string) $mobile, (string) $smsCode);
+        $this->smsService->checkSmsCaptcha((string)$mobile, (string)$smsCode);
         // 判断是否使用
         /** @var CommerceCard $cardModel */
-        $cardModel = $this->mapper->findCardByCardId((int) $cardId);
-        if (! $cardModel) {
+        $cardModel = $this->mapper->findCardByCardId((int)$cardId);
+        if (!$cardModel) {
             throw new NormalStatusException('卡号不正确,请核对后输入!');
         }
         if ($cardModel->status === 1) {
@@ -71,13 +71,13 @@ class CommerceCardService extends AbstractService
         // 开始注册
         /** @var User $userModel */
         $userModel = $this->loginService->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
-        if (! $userModel) {
+        if (!$userModel) {
             $registerData = ['mobile' => $mobile, 'platform' => 'H', 'remark' => '电商卡片激活'];
             $userModel = $this->loginService->register($registerData);
         }
         // 报名课程
         $courseModel = $cardModel->course;
-        if (! $courseModel) {
+        if (!$courseModel) {
             throw new NormalStatusException('当前卡片未关联课程,请联系官网客服!');
         }
         /* @var Order $orderModel */
@@ -111,7 +111,7 @@ class CommerceCardService extends AbstractService
             $cardModel->usage()->save($cardUsageModel);
             if ($orderModel && $orderModel->pay_states !== Order::PAY_SUCCESS) {
                 $orderModel->update($insetInfo);
-            } elseif (! $orderModel) {
+            } elseif (!$orderModel) {
                 // 没有订单,创建订单
                 $insertData = $this->orderSignupService->handleInsertCourseData($insetInfo, $courseModel);
                 $orderModel = Order::create($insertData);
@@ -124,7 +124,7 @@ class CommerceCardService extends AbstractService
             if (in_array($courseModel->id, User::VIP_TYPE_HIGH)) {
                 /* @var Order $featureOrderModel */
                 $featureOrderModel = $userModel->orders()->normalOrder()->where('shop_id', 1436)->first();
-                if (! $featureOrderModel) {
+                if (!$featureOrderModel) {
                     $featureInsetInfo = [...$insetInfo, 'remark' => '电商卡片激活赠送特色课', 'money' => 0, 'real_year' => 0];
                     $featureCourseModel = CourseBasis::query()->find(1436);
                     $insertData = $this->orderSignupService->handleInsertCourseData($featureInsetInfo, $featureCourseModel);
@@ -137,7 +137,7 @@ class CommerceCardService extends AbstractService
         } catch (Exception $e) {
             // 报错就回滚
             DB::rollBack();
-            throw new NormalStatusException('系统错误,请联系官网客服激活卡片!');
+            throw new NormalStatusException($e->getMessage());
         }
         return true;
     }
@@ -177,7 +177,7 @@ class CommerceCardService extends AbstractService
         }
         try {
             $status = $this->mapper->batchInsertData($insertData);
-            if (! $status) {
+            if (!$status) {
                 throw new NormalStatusException('生成的卡号有重复数据,请重新生成!');
             }
         } catch (Exception $e) {
