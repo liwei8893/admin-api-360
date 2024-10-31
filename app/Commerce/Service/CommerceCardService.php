@@ -137,7 +137,7 @@ class CommerceCardService extends AbstractService
         } catch (Exception $e) {
             // 报错就回滚
             DB::rollBack();
-            throw new NormalStatusException($e->getMessage());
+            throw new NormalStatusException('系统错误,请联系官网客服激活卡片!');
         }
         return true;
     }
