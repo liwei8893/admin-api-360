@@ -1,0 +1,9 @@
+{
+    "name": "Ai",
+    "label": "Ai精准测",
+    "description": "Ai精准测",
+    "installed": true,
+    "enabled": true,
+    "version": "1.0.0",
+    "order": 0
+}

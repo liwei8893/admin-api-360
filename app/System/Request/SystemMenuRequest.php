@@ -24,7 +24,7 @@ class SystemMenuRequest extends MineFormRequest
     {
         return [
             'name' => 'required|max:30',
-            'code' => 'required|min:3|max:50',
+            'code' => 'required|min:2|max:50',
         ];
     }
 
@@ -36,7 +36,7 @@ class SystemMenuRequest extends MineFormRequest
     {
         return [
             'name' => 'required|max:30',
-            'code' => 'required|min:3|max:50',
+            'code' => 'required|min:2|max:50',
         ];
     }
 
