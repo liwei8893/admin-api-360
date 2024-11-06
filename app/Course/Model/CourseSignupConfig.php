@@ -18,7 +18,7 @@ use Mine\MineModel;
  * @property string $title 课程名称
  * @property int $price 金额
  * @property int $day 天数
- * @property int $real_year 真实报名年数
+ * @property string $real_year 真实报名年数
  * @property int $chapter_count_auth 章节权限
  * @property int $sort 排序
  * @property string $remark 备注
@@ -47,7 +47,7 @@ class CourseSignupConfig extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'app' => 'integer', 'type' => 'integer', 'price' => 'integer', 'day' => 'integer', 'real_year' => 'integer', 'chapter_count_auth' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'app' => 'integer', 'type' => 'integer', 'price' => 'integer', 'day' => 'integer', 'real_year' => 'decimal:2', 'chapter_count_auth' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function courseSignup(): BelongsToMany
     {
