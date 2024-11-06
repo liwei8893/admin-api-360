@@ -39,7 +39,7 @@ class CourseHistoryService extends AbstractService
         foreach ($params['ids'] as $orderId) {
             /* @var Order $orderModel */
             $orderModel = $this->orderService->read($orderId);
-            if (! $orderModel) {
+            if (!$orderModel) {
                 continue;
             }
             if ($params['type'] === 1) {
@@ -66,7 +66,7 @@ class CourseHistoryService extends AbstractService
      */
     public function courseHistoryExport(array $params, string $dto, string $filename): ResponseInterface
     {
-        $params['pageSize'] = 10000;
+        $params['pageSize'] = 30000;
         $data = $this->getHistoryList($params);
         $cb = function ($item) {
             $item['orderGrade'] = $item['orderGrade']->implode('title', ',');
