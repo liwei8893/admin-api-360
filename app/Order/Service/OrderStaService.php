@@ -73,16 +73,20 @@ class OrderStaService extends AbstractService
         return $data->reduce(function ($carry, $item) use ($dayField) {
             $item['date'] = $item->created_at->toDateString();
             $item['tag'] = 'other';
-            if ((int) $item[$dayField] === 1) {
+            if ((float)$item[$dayField] === 0.5) {
+                $item['tag'] = 'd05';
+            } elseif ((int)$item[$dayField] === 1) {
                 $item['tag'] = 'd1';
-            } elseif ((int) $item[$dayField] === 2) {
+            } elseif ((int)$item[$dayField] === 2) {
                 $item['tag'] = 'd2';
-            } elseif ((int) $item[$dayField] === 3) {
+            } elseif ((int)$item[$dayField] === 3) {
                 $item['tag'] = 'd3';
-            } elseif ((int) $item[$dayField] > 3) {
+            } elseif ((int)$item[$dayField] === 4) {
                 $item['tag'] = 'd4';
+            } elseif ((int)$item[$dayField] >= 5) {
+                $item['tag'] = 'd5';
             }
-            if (! isset($carry[$item['date']][$item['platform']][$item['tag']])) {
+            if (!isset($carry[$item['date']][$item['platform']][$item['tag']])) {
                 $carry[$item['date']][$item['platform']][$item['tag']] = 1;
             } else {
                 ++$carry[$item['date']][$item['platform']][$item['tag']];
@@ -108,7 +112,7 @@ class OrderStaService extends AbstractService
             } elseif ($item[$dayField] > 1200) {
                 $item['tag'] = 'd4';
             }
-            if (! isset($carry[$item['date']][$item['platform']][$item['tag']])) {
+            if (!isset($carry[$item['date']][$item['platform']][$item['tag']])) {
                 $carry[$item['date']][$item['platform']][$item['tag']] = 1;
             } else {
                 ++$carry[$item['date']][$item['platform']][$item['tag']];
@@ -130,10 +134,12 @@ class OrderStaService extends AbstractService
                 if (empty($value[$platform])) {
                     $value[$platform] = ['sum' => 0];
                 }
+                $value[$platform]['d05'] = $value[$platform]['d05'] ?? 0;
                 $value[$platform]['d1'] = $value[$platform]['d1'] ?? 0;
                 $value[$platform]['d2'] = $value[$platform]['d2'] ?? 0;
                 $value[$platform]['d3'] = $value[$platform]['d3'] ?? 0;
                 $value[$platform]['d4'] = $value[$platform]['d4'] ?? 0;
+                $value[$platform]['d5'] = $value[$platform]['d5'] ?? 0;
             }
             $value['sum'] = 0;
             foreach ($value as $itemKey => $item) {
@@ -141,7 +147,12 @@ class OrderStaService extends AbstractService
                     continue;
                 }
                 // 合计行
-                $sum = ($item['d1'] ?? 0) + (! empty($item['d2']) ? ($item['d2'] * 2) : 0) + (! empty($item['d3']) ? ($item['d3'] * 3) : 0) + (! empty($item['d4']) ? ($item['d4'] * 4) : 0);
+                $sum = (!empty($item['d05']) ? ($item['d05'] / 2) : 0)
+                    + ($item['d1'] ?? 0)
+                    + (!empty($item['d2']) ? ($item['d2'] * 2) : 0)
+                    + (!empty($item['d3']) ? ($item['d3'] * 3) : 0)
+                    + (!empty($item['d4']) ? ($item['d4'] * 4) : 0)
+                    + (!empty($item['d45']) ? ($item['d5'] * 5) : 0);
                 $value[$itemKey]['sum'] = $sum;
                 $value['sum'] += $sum;
                 $colSum['sum'] += $sum;
