@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Users\Controller\App;
 
-use App\User\Request\UserAppLoginRequest;
 use App\Users\Request\UsersAppLoginRequest;
 use App\Users\Service\UsersAppLoginService;
 use EasyWeChat\Kernel\Exceptions\HttpException;

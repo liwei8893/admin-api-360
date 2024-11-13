@@ -59,7 +59,15 @@ class UsersAppLoginService extends AbstractService
     public function login(array $params): array
     {
         try {
+            // 是否调试账号
+            $isDebug = $params['mobile'] === 18602780217;
+            if ($isDebug) {
+                console()->info(date('Y-m-d H:i:s') . '开始运行login');
+            }
             $userinfo = $this->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
+            if ($isDebug) {
+                console()->info(date('Y-m-d H:i:s') . '-查询用户完成');
+            }
             // 判断账号是否禁用
             if ($userinfo && (int)$userinfo['status'] !== MineModel::ENABLE) {
                 throw new NormalStatusException('账号已被禁用,请联系课程顾问!');
@@ -80,6 +88,9 @@ class UsersAppLoginService extends AbstractService
             }
             // 密码验证
             if ($this->mapper->checkPass($params['user_pass'], $userinfo['user_pass'])) {
+                if ($isDebug) {
+                    console()->info(date('Y-m-d H:i:s') . '-密码验证完成');
+                }
                 // 验证成功
                 return $this->loginAfter($userinfo);
             }
@@ -131,24 +142,42 @@ class UsersAppLoginService extends AbstractService
      */
     public function loginAfter(User $userModel): array
     {
+        // 是否调试账号
+        $isDebug = $userModel->mobile === '18602780217';
+
         $request = container()->get(MineRequest::class);
         // 生成jwt token
         $token = user('app')->getToken(['id' => $userModel->id]);
+        if ($isDebug) {
+            console()->info(date('Y-m-d H:i:s') . '-生成jwt token完成');
+        }
         // 更新最后登录时间
         $userModel->update([
             'last_login_ip' => $request->ip(),
             'last_login_time' => time(),
             'remember_token' => $token,
         ]);
+        if ($isDebug) {
+            console()->info(date('Y-m-d H:i:s') . '-更新最后登录时间完成');
+        }
         // 插入登录日志表
         $this->mapper->setLoginLog(['users_id' => $userModel->id]);
+        if ($isDebug) {
+            console()->info(date('Y-m-d H:i:s') . '-插入登录日志表完成');
+        }
         // 已购买的课程id列表挂载到用户信息中
         $userModel->load(['orders' => static function ($query) {
             $query->normalOrder()->isNotExpire()->select(['user_id', 'shop_id']);
         }]);
+        if ($isDebug) {
+            console()->info(date('Y-m-d H:i:s') . '-已购买的课程查询完成');
+        }
         $orderIds = $userModel->orders->pluck('shop_id');
         // 挂载会员类型,到期时间
         $userModel->load(['vipType']);
+        if ($isDebug) {
+            console()->info(date('Y-m-d H:i:s') . '-挂载会员类型,到期时间完成');
+        }
         // 复制用户模型
         $result = $userModel->toArray();
         $result['orders'] = $orderIds->toArray();
@@ -156,6 +185,9 @@ class UsersAppLoginService extends AbstractService
         $result['isSimplePwd'] = $this->mapper->hasSimplePwd($userModel);
         // 添加token
         $result['remember_token'] = $token;
+        if ($isDebug) {
+            console()->info(date('Y-m-d H:i:s') . '-login完成');
+        }
         return $result;
     }
 
