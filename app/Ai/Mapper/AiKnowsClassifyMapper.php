@@ -119,6 +119,11 @@ class AiKnowsClassifyMapper extends AbstractMapper
             $query->where('ratio', '=', $params['ratio']);
         }
 
+        // 难度:1易,2中,3难
+        if (isset($params['difficulty']) && $params['difficulty'] !== '') {
+            $query->where('difficulty', '=', $params['difficulty']);
+        }
+
         // 状态 (1正常 0停用)
         if (isset($params['status']) && $params['status'] !== '') {
             $query->where('status', '=', $params['status']);

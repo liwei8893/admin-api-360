@@ -11,7 +11,7 @@ declare(strict_types=1);
  */
 
 namespace App\Ai\Request;
- 
+
 use Mine\MineFormRequest;
 
 /**
@@ -35,13 +35,8 @@ class AiKnowsClassifyRequest extends MineFormRequest
     public function saveRules(): array
     {
         return [
-            //父ID 验证
-            'parent_id' => 'required',
-            //组级集合 验证
-            'level' => 'required',
             //菜单名称 验证
             'name' => 'required',
-
         ];
     }
 
@@ -52,13 +47,8 @@ class AiKnowsClassifyRequest extends MineFormRequest
     public function updateRules(): array
     {
         return [
-            //父ID 验证
-            'parent_id' => 'required',
-            //组级集合 验证
-            'level' => 'required',
             //菜单名称 验证
             'name' => 'required',
-
         ];
     }
 

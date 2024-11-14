@@ -99,6 +99,6 @@ class AreaController extends MineController
     #[DeleteMapping('delete'), Auth, Permission('system:area:delete'), OperationLog]
     public function delete(): ResponseInterface
     {
-        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 }
