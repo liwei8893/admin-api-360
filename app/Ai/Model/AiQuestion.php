@@ -19,7 +19,7 @@ use Mine\MineModel;
  * @property string $ques_title 试题题目
  * @property string $ques_stem 试题题干
  * @property string $ques_stem_text 文本题干
- * @property string $ques_option 选项/问题参考答案/填空题：参考答案
+ * @property array $ques_option 选项/问题参考答案/填空题：参考答案
  * @property int $empty_nmb 填空数量,只填空题生效
  * @property string $right_answer 正确答案/填空题：答案验证规则1完全一致2仅顺序一致3仅供参考4未设置
  * @property string $ques_analysis 试题解析
@@ -31,6 +31,10 @@ use Mine\MineModel;
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
  * @property string $deleted_at 删除时间
+ * @property-read AiKnowsClassify|null $knowsClassify
+ * @property-read SystemDictData|null $grade
+ * @property-read SystemDictData|null $subject
+ * @property-read SystemDictData|null $quesType
  */
 class AiQuestion extends MineModel
 {
@@ -49,7 +53,7 @@ class AiQuestion extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'classify_id' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'integer', 'ques_type' => 'integer', 'empty_nmb' => 'integer', 'ques_difficulty' => 'integer', 'status' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'classify_id' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'integer', 'ques_type' => 'integer', 'ques_option' => 'array', 'empty_nmb' => 'integer', 'ques_difficulty' => 'integer', 'status' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function knowsClassify(): HasOne
     {

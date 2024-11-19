@@ -30,7 +30,10 @@ class AiKnowsClassifyMapper extends AbstractMapper
     public function getSelectTree(): array
     {
         return $this->model::query()
-            ->select(['id', 'parent_id', 'id AS value', 'name AS label'])
+            ->select(['id', 'parent_id', 'level', 'name', 'grade', 'subject', 'ratio', 'difficulty'])
+            ->where('status', 1)
+            ->orderByDesc('sort')
+            ->orderByDesc('id')
             ->get()->toTree();
     }
 
@@ -66,6 +69,7 @@ class AiKnowsClassifyMapper extends AbstractMapper
         $curModel = $this->read($id);
         return $this->model::query()
             ->select($select)
+            ->where('status', 1)
             ->where('level', 'like', "{$curModel->level},{$curModel->id},%")
             ->orWhere('level', 'like', "%,{$curModel->id}")->get();
     }

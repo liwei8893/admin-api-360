@@ -93,7 +93,7 @@ class AiQuestionService extends AbstractService
             }
             unset($option);
             // 处理答案选项
-            $data['ques_option'] = json_encode($data['ques_option'], JSON_THROW_ON_ERROR);
+//            $data['ques_option'] = json_encode($data['ques_option'], JSON_THROW_ON_ERROR);
         }
         // "title": "问答题", "key": "5"
         // 问答题处理,答案选项为空
@@ -110,7 +110,7 @@ class AiQuestionService extends AbstractService
             // 获取填空数量
             $data['empty_nmb'] = count($data['ques_option']);
             // 处理答案选项
-            $data['ques_option'] = json_encode($data['ques_option'], JSON_THROW_ON_ERROR);
+//            $data['ques_option'] = json_encode($data['ques_option'], JSON_THROW_ON_ERROR);
         }
 
         // 通用处理

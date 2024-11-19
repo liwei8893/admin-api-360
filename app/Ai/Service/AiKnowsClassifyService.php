@@ -9,6 +9,7 @@ use App\Ai\Model\AiKnowsClassify;
 use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
+use function Hyperf\Collection\collect;
 
 /**
  * 知识点分类服务类
@@ -148,5 +149,14 @@ class AiKnowsClassifyService extends AbstractService
     public function findChildren(int $id, array $select = ['*']): Collection|array
     {
         return $this->mapper->findChildren($id, $select);
+    }
+
+    public function findAllChildren(array $ids, array $select = ['*']): \Hyperf\Collection\Collection
+    {
+        $data = collect();
+        foreach ($ids as $id) {
+            $data = $data->merge($this->findChildren($id, $select));
+        }
+        return $data;
     }
 }
