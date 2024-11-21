@@ -33,7 +33,6 @@ class AiKnowsClassifyMapper extends AbstractMapper
             ->select(['id', 'parent_id', 'id AS value', 'name AS label'])
             ->where('status', 1)
             ->orderByDesc('sort')
-            ->orderByDesc('id')
             ->get()->toTree();
     }
 
@@ -47,7 +46,6 @@ class AiKnowsClassifyMapper extends AbstractMapper
             ->select(['id', 'parent_id', 'level', 'name', 'grade', 'subject', 'ratio', 'difficulty'])
             ->where('status', 1)
             ->orderByDesc('sort')
-            ->orderByDesc('id')
             ->get()->toTree();
     }
 
