@@ -31,7 +31,6 @@ class AiKnowsClassifyMapper extends AbstractMapper
     {
         return $this->model::query()
             ->select(['id', 'parent_id', 'id AS value', 'name AS label'])
-            ->where('status', 1)
             ->orderByDesc('sort')
             ->get()->toTree();
     }
