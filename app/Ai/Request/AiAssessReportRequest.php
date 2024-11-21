@@ -39,6 +39,8 @@ class AiAssessReportRequest extends MineFormRequest
         return [
             'difficulty' => 'required',
             'knows_id' => 'required',
+            'grade' => 'required',
+            'subject' => 'required',
         ];
     }
 

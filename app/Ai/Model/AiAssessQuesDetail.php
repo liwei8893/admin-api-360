@@ -24,10 +24,11 @@ use Mine\MineModel;
  * @property int $is_answer 是否作答
  * @property int $is_right 是否正确
  * @property int $user_answer_duration 答题时间
- * @property \Carbon\Carbon $created_at 创建时间
- * @property \Carbon\Carbon $updated_at 更新时间
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
  * @property string $deleted_at 删除时间
- * @property-read AiQuestion|null $question 
+ * @property-read AiQuestion|null $question
+ * @property-read AiKnowsClassify|null $knowsLevel2
  */
 class AiAssessQuesDetail extends MineModel
 {
@@ -51,5 +52,10 @@ class AiAssessQuesDetail extends MineModel
     public function question(): HasOne
     {
         return $this->hasOne(AiQuestion::class, 'id', 'ques_id');
+    }
+
+    public function knowsLevel2(): HasOne
+    {
+        return $this->hasOne(AiKnowsClassify::class, 'id', 'knows_level2_id');
     }
 }

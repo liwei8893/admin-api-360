@@ -37,12 +37,19 @@ class AiKnowsClassifyMapper extends AbstractMapper
 
     /**
      * 获取App前端选择树
+     * @param array $params
      * @return array
      */
-    public function getAppTree(): array
+    public function getAppTree(array $params): array
     {
         return $this->model::query()
-            ->select(['id', 'parent_id', 'level', 'name', 'grade', 'subject', 'ratio', 'difficulty'])
+            ->select(['id', 'parent_id', 'level', 'layer', 'name', 'grade', 'subject', 'ratio', 'difficulty'])
+            ->when(isset($params['grade']), function (Builder $builder) use ($params) {
+                $builder->where('grade', $params['grade']);
+            })
+            ->when(isset($params['subject']), function (Builder $builder) use ($params) {
+                $builder->where('subject', $params['subject']);
+            })
             ->where('status', 1)
             ->orderByDesc('sort')
             ->get()->toTree();
@@ -112,6 +119,11 @@ class AiKnowsClassifyMapper extends AbstractMapper
         // 组级集合
         if (isset($params['level']) && $params['level'] !== '') {
             $query->where('level', 'like', '%' . $params['level'] . '%');
+        }
+
+        // 层级
+        if (isset($params['layer']) && $params['layer'] !== '') {
+            $query->where('layer', $params['layer']);
         }
 
         // 菜单名称

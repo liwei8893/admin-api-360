@@ -58,6 +58,8 @@ class AiAssessReportService extends AbstractService
     {
         $difficulty = $params['difficulty'];
         $knowsId = $params['knows_id'];
+        $grade = $params['grade'];
+        $subject = $params['subject'];
         $userId = user('app')->getId();
         // 查找所有的子知识点
         $classifyList = $this->AiKnowsClassifyService->findAllChildren($knowsId);
@@ -69,6 +71,8 @@ class AiAssessReportService extends AbstractService
         $insetReport = [
             'user_id' => $userId,
             'knows_id' => $knowsId,
+            'grade' => $grade,
+            'subject' => $subject,
             'difficulty' => $difficulty,
             'knows_count' => $questionList->pluck('classify_id')->unique()->count(),
             'ques_count' => $questionList->count(),
@@ -95,7 +99,9 @@ class AiAssessReportService extends AbstractService
                 'knows_level2_id' => $knowsClassify->id,
                 'knows_level2_name' => $knowsClassify->name,
                 'knows_difficulty' => $knowsClassify->difficulty,
-                'rec_answer_duration' => $this->genRecAnswerDuration($difficulty),
+                'rec_answer_duration' => $this->genRecAnswerDuration($knowsClassify->difficulty),
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
             ];
         }
         AiAssessQuesDetail::query()->insert($insetQuesDetail);

@@ -65,9 +65,14 @@ class AiKnowsClassifyService extends AbstractService
         return $this->mapper->getSelectTree();
     }
 
-    public function getAppTree(): array
+    public function getAppTree(array $params): array
     {
-        return $this->mapper->getAppTree();
+        return $this->mapper->getAppTree($params);
+    }
+
+    public function getAppList(array $params): array
+    {
+        return $this->mapper->getList($params, false);
     }
 
     /**
@@ -111,8 +116,14 @@ class AiKnowsClassifyService extends AbstractService
 
         if ($pid === 0) {
             $data['level'] = $data['parent_id'] = '0';
+            $data['layer'] = 1;
         } else {
-            $data['level'] = $this->read($data['parent_id'])->level . ',' . $data['parent_id'];
+            /* @var AiKnowsClassify $parentMod */
+            $parentMod = $this->read($pid);
+            if ($parentMod) {
+                $data['level'] = $parentMod->level . ',' . $data['parent_id'];
+                $data['layer'] = $parentMod->layer + 1;
+            }
         }
         return $data;
     }

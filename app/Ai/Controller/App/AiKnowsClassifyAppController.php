@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Ai\Controller\App;
 
+use App\Ai\Request\AiKnowsClassifyRequest;
 use App\Ai\Service\AiKnowsClassifyService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -25,10 +26,14 @@ class AiKnowsClassifyAppController extends MineController
     protected AiKnowsClassifyService $service;
 
     #[GetMapping("getTree")]
-    public function getTree(): ResponseInterface
+    public function getTree(AiKnowsClassifyRequest $request): ResponseInterface
     {
-        return $this->success($this->service->getAppTree());
+        return $this->success($this->service->getAppTree($request->all()));
     }
 
-
+    #[GetMapping("getList")]
+    public function getList(AiKnowsClassifyRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getAppList($request->all()));
+    }
 }

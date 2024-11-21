@@ -12,6 +12,7 @@ use Mine\MineModel;
  * @property int $id 主键
  * @property int $parent_id 父ID
  * @property string $level 组级集合
+ * @property int $layer 层级
  * @property string $name 菜单名称
  * @property int $grade 年级
  * @property int $subject 科目
@@ -35,10 +36,10 @@ class AiKnowsClassify extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'parent_id', 'level', 'name', 'grade', 'subject', 'ratio', 'difficulty', 'status', 'sort', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'parent_id', 'level', 'layer', 'name', 'grade', 'subject', 'ratio', 'difficulty', 'status', 'sort', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'parent_id' => 'integer', 'grade' => 'integer', 'subject' => 'integer', 'ratio' => 'decimal:2', 'difficulty' => 'integer', 'status' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'parent_id' => 'integer', 'layer' => 'integer', 'grade' => 'integer', 'subject' => 'integer', 'ratio' => 'decimal:2', 'difficulty' => 'integer', 'status' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }

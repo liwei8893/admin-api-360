@@ -15,6 +15,8 @@ use Mine\MineModel;
  * @property int $user_id 用户ID
  * @property array $knows_id 知识点ID
  * @property int $difficulty 难度,1-3
+ * @property int $grade 年级
+ * @property int $subject 科目
  * @property int $is_assess_done 是否完成评测:1完成,0未完成
  * @property int $knows_count 知识点总数
  * @property int $knows_mastered_count 已掌握知识点数量
@@ -41,12 +43,12 @@ class AiAssessReport extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'user_id', 'knows_id', 'difficulty', 'is_assess_done', 'knows_count', 'knows_mastered_count', 'knows_unmastered_count', 'knows_mastered_rate', 'ques_count', 'ques_correct_count', 'ques_incorrect_count', 'ques_correct_rate', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'user_id', 'knows_id', 'difficulty', 'grade', 'subject', 'is_assess_done', 'knows_count', 'knows_mastered_count', 'knows_unmastered_count', 'knows_mastered_rate', 'ques_count', 'ques_correct_count', 'ques_incorrect_count', 'ques_correct_rate', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'knows_id' => 'array', 'difficulty' => 'integer', 'is_assess_done' => 'integer', 'knows_count' => 'integer', 'knows_mastered_count' => 'integer', 'knows_unmastered_count' => 'integer', 'knows_mastered_rate' => 'decimal:2', 'ques_count' => 'integer', 'ques_correct_count' => 'integer', 'ques_incorrect_count' => 'integer', 'ques_correct_rate' => 'decimal:2', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'knows_id' => 'array', 'difficulty' => 'integer', 'grade' => 'integer', 'subject' => 'integer', 'is_assess_done' => 'integer', 'knows_count' => 'integer', 'knows_mastered_count' => 'integer', 'knows_unmastered_count' => 'integer', 'knows_mastered_rate' => 'decimal:2', 'ques_count' => 'integer', 'ques_correct_count' => 'integer', 'ques_incorrect_count' => 'integer', 'ques_correct_rate' => 'decimal:2', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function quesDetail(): HasMany
     {
