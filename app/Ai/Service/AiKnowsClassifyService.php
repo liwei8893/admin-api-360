@@ -65,6 +65,11 @@ class AiKnowsClassifyService extends AbstractService
         return $this->mapper->getSelectTree();
     }
 
+    public function getAppTree(): array
+    {
+        return $this->mapper->getAppTree();
+    }
+
     /**
      * 新增数据
      * @param array $data

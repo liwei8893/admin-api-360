@@ -79,7 +79,8 @@ class AiAssessReportService extends AbstractService
         $insetQuesDetail = [];
         /* @var AiQuestion $ques */
         foreach ($questionList as $ques) {
-            $knows_level1 = $classifyParentList->where('id', $ques->knowsClassify->parent_id)->first();
+            $knowsClassify = $ques->knowsClassify;
+            $knows_level1 = $classifyParentList->where('id', $knowsClassify->parent_id)->first();
             if ($knows_level1) {
                 $knows_level1_name = $knows_level1->name;
             } else {
@@ -89,11 +90,11 @@ class AiAssessReportService extends AbstractService
                 'user_id' => $userId,
                 'assess_report_id' => $reportMod->id,
                 'ques_id' => $ques->id,
-                'knows_level1_id' => $ques->knowsClassify->parent_id,
+                'knows_level1_id' => $knowsClassify->parent_id,
                 'knows_level1_name' => $knows_level1_name,
-                'knows_level2_id' => $ques->knowsClassify->id,
-                'knows_level2_name' => $ques->knowsClassify->name,
-                'knows_difficulty' => $ques->knowsClassify->difficulty,
+                'knows_level2_id' => $knowsClassify->id,
+                'knows_level2_name' => $knowsClassify->name,
+                'knows_difficulty' => $knowsClassify->difficulty,
                 'rec_answer_duration' => $this->genRecAnswerDuration($difficulty),
             ];
         }
@@ -136,5 +137,35 @@ class AiAssessReportService extends AbstractService
         // 难度3 答题时间3分钟
         // 后期根据题目平均答题时间修改
         return $difficulty * 60;
+    }
+
+    /**
+     * 完成报告
+     * @param array $params
+     * @return bool
+     */
+    public function finish(array $params): bool
+    {
+        $id = $params['id'];
+        $reportMod = AiAssessReport::query()->find($id);
+        if (!$reportMod) {
+            throw new NormalStatusException('评测报告不存在');
+        }
+        $quesDetail = $reportMod->quesDetail;
+        // 计算未掌握知识点数量 knows_unmastered_count
+        $reportMod->knows_unmastered_count = $quesDetail->where('is_right', 0)->pluck('knows_level2_id')->unique()->count();
+        // 计算已掌握知识点数量 knows_mastered_count
+        $reportMod->knows_mastered_count = $reportMod->knows_count - $reportMod->knows_unmastered_count;
+        // 计算知识点掌握率 knows_mastered_rate
+        $reportMod->knows_mastered_rate = round(($reportMod->knows_mastered_count / $reportMod->knows_count) * 100, 2);
+        // 计算正确题目数 ques_correct_count
+        $reportMod->ques_correct_count = $quesDetail->where('is_right', 1)->count();
+        // 计算错误题目数 ques_incorrect_count
+        $reportMod->ques_incorrect_count = $quesDetail->where('is_right', 0)->count();
+        // 计算题目正确率 ques_correct_rate
+        $reportMod->ques_correct_rate = round(($reportMod->ques_correct_count / $reportMod->ques_count) * 100, 2);
+        // 报告设置为完成
+        $reportMod->is_assess_done = 1;
+        return $reportMod->save();
     }
 }

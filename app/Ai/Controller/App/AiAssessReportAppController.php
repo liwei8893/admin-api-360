@@ -39,6 +39,7 @@ class AiAssessReportAppController extends MineController
     protected AiAssessReportService $service;
 
     /**
+     * 生成评测报告
      * @param AiAssessReportRequest $request
      * @return ResponseInterface
      * @throws ContainerExceptionInterface
@@ -51,6 +52,7 @@ class AiAssessReportAppController extends MineController
     }
 
     /**
+     * 获取评测报告详情
      * @param AiAssessReportRequest $request
      * @return ResponseInterface
      * @throws ContainerExceptionInterface
@@ -60,5 +62,18 @@ class AiAssessReportAppController extends MineController
     public function getOne(AiAssessReportRequest $request): ResponseInterface
     {
         return $this->success($this->service->getOne((int)$request->input('id')));
+    }
+
+    /**
+     * 完成评测报告
+     * @param AiAssessReportRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping("finish"), Auth('app')]
+    public function finish(AiAssessReportRequest $request): ResponseInterface
+    {
+        return $this->service->finish($request->all()) ? $this->success() : $this->error();
     }
 }

@@ -14,6 +14,7 @@ namespace App\Ai\Service;
 
 use App\Ai\Mapper\AiAssessQuesDetailMapper;
 use App\Ai\Model\AiAssessQuesDetail;
+use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 
@@ -26,6 +27,9 @@ class AiAssessQuesDetailService extends AbstractService
      * @var AiAssessQuesDetailMapper
      */
     public $mapper;
+
+    #[Inject]
+    protected AiQuesDetailStatService $aiQuesDetailStatService;
 
     public function __construct(AiAssessQuesDetailMapper $mapper)
     {
@@ -66,6 +70,8 @@ class AiAssessQuesDetailService extends AbstractService
         // 标记为已答题
         $mod->is_answer = 1;
         $mod->save();
+        // 插入题目统计
+        $this->aiQuesDetailStatService->addQuesStat($mod->ques_id, $mod->is_right);
         return true;
     }
 }

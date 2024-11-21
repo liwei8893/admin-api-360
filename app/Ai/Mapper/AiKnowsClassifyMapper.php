@@ -30,6 +30,20 @@ class AiKnowsClassifyMapper extends AbstractMapper
     public function getSelectTree(): array
     {
         return $this->model::query()
+            ->select(['id', 'parent_id', 'id AS value', 'name AS label'])
+            ->where('status', 1)
+            ->orderByDesc('sort')
+            ->orderByDesc('id')
+            ->get()->toTree();
+    }
+
+    /**
+     * 获取App前端选择树
+     * @return array
+     */
+    public function getAppTree(): array
+    {
+        return $this->model::query()
             ->select(['id', 'parent_id', 'level', 'name', 'grade', 'subject', 'ratio', 'difficulty'])
             ->where('status', 1)
             ->orderByDesc('sort')

@@ -27,7 +27,7 @@ class AiKnowsClassifyAppController extends MineController
     #[GetMapping("getTree")]
     public function getTree(): ResponseInterface
     {
-        return $this->success($this->service->getSelectTree());
+        return $this->success($this->service->getAppTree());
     }
 
 

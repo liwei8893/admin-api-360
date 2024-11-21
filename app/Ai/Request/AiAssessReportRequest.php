@@ -27,6 +27,13 @@ class AiAssessReportRequest extends MineFormRequest
         return [];
     }
 
+    public function finishRules(): array
+    {
+        return [
+            'id' => 'required',
+        ];
+    }
+
     public function genRules(): array
     {
         return [
