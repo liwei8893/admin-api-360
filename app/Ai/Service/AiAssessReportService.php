@@ -67,6 +67,9 @@ class AiAssessReportService extends AbstractService
         $classifyParentList = AiKnowsClassify::query()->where('status', 1)->whereIn('id', $knowsId)->get();
         // 查找题目
         $questionList = $this->randomQuestionList($classifyList->pluck('id')->toArray(), $difficulty);
+        if ($questionList->isEmpty()) {
+            throw new NormalStatusException('暂无题目');
+        }
         // 保存到评测报告表
         $insetReport = [
             'user_id' => $userId,
