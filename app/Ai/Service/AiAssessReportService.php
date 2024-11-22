@@ -41,6 +41,14 @@ class AiAssessReportService extends AbstractService
         $this->mapper = $mapper;
     }
 
+    public function getAppPageList(array $params): array
+    {
+        $params['orderBy'] = ['id'];
+        $params['orderType'] = ['desc'];
+        $params['user_id'] = user('app')->getId();
+        return $this->mapper->getPageList($params);
+    }
+
     public function getOne(int $id): array
     {
         $mod = AiAssessReport::query()->find($id);

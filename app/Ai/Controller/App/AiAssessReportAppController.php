@@ -39,6 +39,19 @@ class AiAssessReportAppController extends MineController
     protected AiAssessReportService $service;
 
     /**
+     * 获取分页列表
+     * @param AiAssessReportRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping("getPageList"), Auth('app')]
+    public function getPageList(AiAssessReportRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getAppPageList($request->all()));
+    }
+
+    /**
      * 生成评测报告
      * @param AiAssessReportRequest $request
      * @return ResponseInterface
