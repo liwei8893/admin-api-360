@@ -71,6 +71,7 @@ class AiAssessReportService extends AbstractService
         $insetReport = [
             'user_id' => $userId,
             'knows_id' => $knowsId,
+            'knows_name' => $classifyParentList->pluck('name')->toArray(),
             'grade' => $grade,
             'subject' => $subject,
             'difficulty' => $difficulty,

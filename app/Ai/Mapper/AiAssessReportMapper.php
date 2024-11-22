@@ -39,7 +39,9 @@ class AiAssessReportMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-        
+        if (isset($params['user_id']) && $params['user_id'] !== '') {
+            $query->where('user_id', '=', $params['user_id']);
+        }
         // 难度,1-3
         if (isset($params['difficulty']) && $params['difficulty'] !== '') {
             $query->where('difficulty', '=', $params['difficulty']);
