@@ -89,4 +89,16 @@ class AiAssessReportAppController extends MineController
     {
         return $this->service->finish($request->all()) ? $this->success() : $this->error();
     }
+
+    /**
+     * @param AiAssessReportRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping("getKDA")]
+    public function getKDA(AiAssessReportRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getKDA((int)$request->input('id')));
+    }
 }

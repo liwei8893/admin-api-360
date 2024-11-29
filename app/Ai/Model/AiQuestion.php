@@ -28,13 +28,14 @@ use Mine\MineModel;
  * @property int $sort 排序
  * @property int $created_by 创建人
  * @property int $updated_by 修改人
- * @property Carbon $created_at 创建时间
- * @property Carbon $updated_at 更新时间
+ * @property \Carbon\Carbon $created_at 创建时间
+ * @property \Carbon\Carbon $updated_at 更新时间
  * @property string $deleted_at 删除时间
- * @property-read AiKnowsClassify|null $knowsClassify
- * @property-read SystemDictData|null $grade
- * @property-read SystemDictData|null $subject
- * @property-read SystemDictData|null $quesType
+ * @property-read AiQuesDetailStat|null $quesStat 
+ * @property-read AiKnowsClassify|null $knowsClassify 
+ * @property-read SystemDictData|null $grade 
+ * @property-read SystemDictData|null $subject 
+ * @property-read SystemDictData|null $quesType 
  */
 class AiQuestion extends MineModel
 {
@@ -55,6 +56,14 @@ class AiQuestion extends MineModel
      */
     protected array $casts = ['id' => 'integer', 'classify_id' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'integer', 'ques_type' => 'integer', 'ques_option' => 'array', 'empty_nmb' => 'integer', 'ques_difficulty' => 'integer', 'status' => 'integer', 'sort' => 'integer', 'created_by' => 'integer', 'updated_by' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
+    // 关联题目详情统计表
+    public function quesStat(): HasOne
+    {
+        return $this->hasOne(AiQuesDetailStat::class, 'ques_id', 'id');
+    }
+
+
+    // 关联知识点
     public function knowsClassify(): HasOne
     {
         return $this->hasOne(AiKnowsClassify::class, 'id', 'classify_id');

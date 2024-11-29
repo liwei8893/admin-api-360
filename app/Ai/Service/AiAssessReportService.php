@@ -41,6 +41,37 @@ class AiAssessReportService extends AbstractService
         $this->mapper = $mapper;
     }
 
+    public function getKDA(int $id): array
+    {
+        $mod = AiAssessReport::query()->find($id);
+        if (!$mod) {
+            throw new NormalStatusException('评测报告不存在');
+        }
+        $model = AiAssessReport::query();
+//        $model = $model->whereJsonContains('knows_id', $mod->knows_id);
+        // kda列表
+        $kdaMod = $model->selectRaw('kda, count(*) as count')->groupBy('kda')->orderBy('kda')->get();
+        // 总人数
+        $userTotal = $kdaMod->sum('count');
+        // kda最高值
+        $kdaMax = $kdaMod->max('kda');
+        // kda平均值
+        $kdaAvg = $kdaMod->avg('kda');
+        // 众数-数量最多的值
+        $kdaMostValue = $kdaMod->sortByDesc('count')->first()->kda;
+        // 排名
+        $kdaRank = $kdaMod->where('kda', '<', $mod->kda)->sum('count');
+        $kdaRank = ($kdaRank / ($userTotal - 1)) * 100;
+        return [
+            'userTotal' => $userTotal,
+            'kdaMax' => (float)$kdaMax,
+            'kdaAvg' => round((float)$kdaAvg, 2),
+            'kdaMostValue' => (float)$kdaMostValue,
+            'kdaRank' => (int)$kdaRank,
+            'kdaList' => $kdaMod->toArray(),
+        ];
+    }
+
     public function getAppPageList(array $params): array
     {
         $params['orderBy'] = ['id'];
@@ -96,6 +127,7 @@ class AiAssessReportService extends AbstractService
         /* @var AiQuestion $ques */
         foreach ($questionList as $ques) {
             $knowsClassify = $ques->knowsClassify;
+            $quesStat = $ques->quesStat;
             $knows_level1 = $classifyParentList->where('id', $knowsClassify->parent_id)->first();
             if ($knows_level1) {
                 $knows_level1_name = $knows_level1->name;
@@ -111,7 +143,7 @@ class AiAssessReportService extends AbstractService
                 'knows_level2_id' => $knowsClassify->id,
                 'knows_level2_name' => $knowsClassify->name,
                 'knows_difficulty' => $knowsClassify->difficulty,
-                'rec_answer_duration' => $this->genRecAnswerDuration($knowsClassify->difficulty),
+                'rec_answer_duration' => $this->genRecAnswerDuration($knowsClassify->difficulty, $quesStat->avg_answer_duration ?? 0),
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ];
@@ -128,7 +160,7 @@ class AiAssessReportService extends AbstractService
     public function randomQuestionList(array $classifyId, int $difficulty): Collection
     {
         $questionList = AiQuestion::query()
-            ->with(['knowsClassify'])
+            ->with(['knowsClassify', 'quesStat'])
             ->where('status', 1)
             ->where('ques_difficulty', $difficulty)
             ->whereIn('classify_id', $classifyId)
@@ -145,16 +177,23 @@ class AiAssessReportService extends AbstractService
 
     /**
      * 生成建议的答题时间
-     * @param int $difficulty
+     * @param int $difficulty 难度
+     * @param int $avgAnswerDuration 平均答题时间
      * @return int
      */
-    public function genRecAnswerDuration(int $difficulty): int
+    public function genRecAnswerDuration(int $difficulty, int $avgAnswerDuration): int
     {
+
         // 难度1 答题时间1分钟
         // 难度2 答题时间2分钟
         // 难度3 答题时间3分钟
-        // 后期根据题目平均答题时间修改
-        return $difficulty * 60;
+        $base = $difficulty * 60;
+        if ($avgAnswerDuration === 0) {
+            $avgAnswerDuration = $difficulty * 60;
+        }
+        // 调整系数
+        $t = 0.5;
+        return (int)($base + $t * ($avgAnswerDuration - $base));
     }
 
     /**
@@ -182,6 +221,20 @@ class AiAssessReportService extends AbstractService
         $reportMod->ques_incorrect_count = $quesDetail->where('is_right', 0)->count();
         // 计算题目正确率 ques_correct_rate
         $reportMod->ques_correct_rate = round(($reportMod->ques_correct_count / $reportMod->ques_count) * 100, 2);
+
+        // 计算kda指标,1计算平均建议答题时间,2计算平均答题时间,3计算平均难度
+        // K = （建议答题时间 - 实际答题时间） / （建议答题时间 - 最短时间）
+        $avgRecAnswerDuration = $quesDetail->avg('rec_answer_duration'); // 平均建议答题时间
+        $avgAnswerDuration = $quesDetail->avg('user_answer_duration'); // 平均答题时间
+        $k = (($avgRecAnswerDuration - $avgAnswerDuration) / ($avgRecAnswerDuration - 1)) * 100;
+        // D = （实际难度 - 最小难度） / （最大难度 - 最小难度）
+        $avgDifficulty = $quesDetail->avg('knows_difficulty'); // 平均难度
+        $d = (($avgDifficulty - 1) / (3 - 1)) * 100;
+        // A（正确率）
+        $a = $reportMod->ques_correct_rate;
+        $kda = max(0, ($k + $d + $a) / 3);
+        $reportMod->kda = round($kda, 1);
+
         // 报告设置为完成
         $reportMod->is_assess_done = 1;
         return $reportMod->save();
