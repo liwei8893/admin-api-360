@@ -55,6 +55,8 @@ class AiAssessReportService extends AbstractService
         $userTotal = $kdaMod->sum('count');
         // kda最高值
         $kdaMax = $kdaMod->max('kda');
+        // kda最小值
+        $kdaMin = $kdaMod->min('kda');
         // kda平均值
         $kdaAvg = $kdaMod->avg('kda');
         // 众数-数量最多的值
@@ -65,6 +67,7 @@ class AiAssessReportService extends AbstractService
         return [
             'userTotal' => $userTotal,
             'kdaMax' => (float)$kdaMax,
+            'kdaMin' => (float)$kdaMin,
             'kdaAvg' => round((float)$kdaAvg, 2),
             'kdaMostValue' => (float)$kdaMostValue,
             'kdaRank' => (int)$kdaRank,
