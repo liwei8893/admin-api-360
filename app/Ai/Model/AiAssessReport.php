@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Ai\Model;
 
+use App\Users\Model\User;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\HasMany;
+use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
 
@@ -28,10 +30,11 @@ use Mine\MineModel;
  * @property int $ques_incorrect_count 错误题目数
  * @property string $ques_correct_rate 题目正确率
  * @property string $kda kda指标
- * @property \Carbon\Carbon $created_at 创建时间
- * @property \Carbon\Carbon $updated_at 更新时间
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
  * @property string $deleted_at 删除时间
- * @property-read \Hyperf\Database\Model\Collection|AiAssessQuesDetail[]|null $quesDetail 
+ * @property-read Collection|AiAssessQuesDetail[]|null $quesDetail
+ * @property-read User|null $user
  */
 class AiAssessReport extends MineModel
 {
@@ -55,5 +58,10 @@ class AiAssessReport extends MineModel
     public function quesDetail(): HasMany
     {
         return $this->hasMany(AiAssessQuesDetail::class, 'assess_report_id', 'id');
+    }
+
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }

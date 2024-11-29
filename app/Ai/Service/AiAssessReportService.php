@@ -89,7 +89,7 @@ class AiAssessReportService extends AbstractService
         if (!$mod) {
             throw new NormalStatusException('评测报告不存在');
         }
-        $mod->load(['quesDetail' => function ($query) {
+        $mod->load(['user:id,user_name', 'quesDetail' => function ($query) {
             $query->with(['question']);
         }]);
         return $mod->toArray();
