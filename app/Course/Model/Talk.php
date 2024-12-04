@@ -6,6 +6,7 @@ namespace App\Course\Model;
 
 use App\Users\Model\User;
 use Carbon\Carbon;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasOne;
 use Hyperf\Database\Model\SoftDeletes;
@@ -17,11 +18,15 @@ use Mine\MineModel;
  * @property int $course_period_id 关联章节表ID
  * @property int $status 默认2需要审核,通过为1,拒绝为0
  * @property string $url 视频url
+ * @property string $teacher_comment 老师点评
  * @property int $created_by
  * @property int $updated_by
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $deleted_at
+ * @property-read User|null $user
+ * @property-read CoursePeriod|null $coursePeriod
+ * @property-read Collection|User[]|null $userVote
  */
 class Talk extends MineModel
 {
@@ -35,7 +40,7 @@ class Talk extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'user_id', 'course_period_id', 'status', 'url', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'user_id', 'course_period_id', 'status', 'url', 'teacher_comment', 'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
