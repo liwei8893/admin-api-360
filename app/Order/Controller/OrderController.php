@@ -9,6 +9,7 @@ use App\Order\Service\OrderService;
 use App\Order\Service\UsersRenewService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\DeleteMapping;
 use Hyperf\HttpServer\Annotation\PostMapping;
 use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
@@ -138,5 +139,15 @@ class OrderController extends MineController
     public function editRenew(OrderRequest $request): ResponseInterface
     {
         return $this->usersRenewService->editRenew($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[DeleteMapping('deleteRenew'), Permission('order:deleteRenew'), OperationLog('异动删除续费')]
+    public function deleteRenew(OrderRequest $request): ResponseInterface
+    {
+        return $this->usersRenewService->deleteRenew($request->all()) ? $this->success() : $this->error();
     }
 }

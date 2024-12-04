@@ -81,12 +81,12 @@ class UsersRenewService extends AbstractService
         foreach ($params['ids'] as $id) {
             /* @var UsersRenew $model */
             $model = $this->mapper->read($id);
-            if (! $model) {
+            if (!$model) {
                 continue;
             }
             // 查询订单
             $order = $model->order;
-            if (! $order) {
+            if (!$order) {
                 continue;
             }
             // 状态不为待审核跳过
@@ -125,15 +125,15 @@ class UsersRenewService extends AbstractService
     {
         /** @var UsersRenew $renewModel */
         $renewModel = $this->mapper->read($params['id']);
-        if (! $renewModel) {
+        if (!$renewModel) {
             throw new NormalStatusException('订单不存在');
         }
         // 不是续费单直接跳过
         if ($renewModel->status === UsersRenew::STATUS_CHANGE) {
             return true;
         }
-        $renewMoney = (int) $renewModel->money;
-        $newMoney = (int) $params['money'];
+        $renewMoney = (int)$renewModel->money;
+        $newMoney = (int)$params['money'];
         // 修改续费金额
         if ($newMoney !== $renewMoney) {
             // 要变更的积分
@@ -151,5 +151,11 @@ class UsersRenewService extends AbstractService
         }
         $renewModel->real_year = $params['real_year'];
         return $renewModel->save();
+    }
+
+    public function deleteRenew(array $params): bool
+    {
+        $id = $params['id'];
+        return $this->delete([$id]);
     }
 }

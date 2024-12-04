@@ -24,6 +24,11 @@ class OrderRequest extends MineFormRequest
         return ['orderId' => 'required|integer', 'actual_price' => 'required|integer', 'real_year' => 'required'];
     }
 
+    public function deleteRenewRules(): array
+    {
+        return ['id' => 'required|integer'];
+    }
+
     public function editRenewRules(): array
     {
         return ['id' => 'required|integer', 'money' => 'required|integer', 'real_year' => 'required'];
