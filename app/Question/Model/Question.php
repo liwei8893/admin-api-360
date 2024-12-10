@@ -20,27 +20,28 @@ use Mine\MineModel;
  * @property int $channel 试题来源 默认1：每日一题 ，2：入学测试，3：视频解析
  * @property int $semester 学期 1 春季 2秋季
  * @property int $ques_type 试题类型:1:单选题 2:多选题 3:不定项选择 4:判断题 5:问答题 6:填空题 7:组合题
- * @property string $ques_title
+ * @property string $ques_title 题目标题
  * @property string $ques_stem 试题题干
  * @property string $ques_stem_text 文本题干
  * @property string $ques_option 选项/问题参考答案/填空题：参考答案
+ * @property int $empty_nmb 填空数量,只填空题生效
  * @property string $right_answer 正确答案/填空题：答案验证规则1完全一致2仅顺序一致3仅供参考4未设置
  * @property string $ques_analysis 试题解析
  * @property int $ques_difficulty 试题难度:1:易 2:中 3:难
  * @property int $sort 排序
  * @property int $states 状态:0:显示 1:隐藏
- * @property int $deleted_at 删除时间
- * @property int $created_id 创建人
- * @property Carbon $created_at 创建时间
- * @property int $updated_id 修改人
- * @property Carbon $updated_at 修改时间
  * @property int $form_at 日期
  * @property string $knows_text 知识点文本
- * @property Know $knows
- * @property QuestionHistory $questionHistory
- * @property SystemDictData $questionSubject
- * @property SystemDictData $questionType
- * @property Collection|Tag[] $tags
+ * @property int $created_id 创建人
+ * @property int $updated_id 修改人
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 修改时间
+ * @property int $deleted_at 删除时间
+ * @property-read QuestionHistory|null $questionHistory
+ * @property-read SystemDictData|null $questionSubject
+ * @property-read SystemDictData|null $questionType
+ * @property-read Know|null $knows
+ * @property-read Collection|Tag[]|null $tags
  */
 class Question extends MineModel
 {
@@ -58,12 +59,12 @@ class Question extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'knows_id', 'classify_id', 'parent_id', 'channel', 'semester', 'ques_type', 'ques_title', 'ques_stem', 'ques_stem_text', 'ques_option', 'right_answer', 'ques_analysis', 'ques_difficulty', 'sort', 'states', 'deleted_at', 'created_id', 'updated_id', 'form_at', 'knows_text'];
+    protected array $fillable = ['id', 'knows_id', 'classify_id', 'parent_id', 'channel', 'semester', 'ques_type', 'ques_title', 'ques_stem', 'ques_stem_text', 'ques_option', 'empty_nmb', 'right_answer', 'ques_analysis', 'ques_difficulty', 'sort', 'states', 'form_at', 'knows_text', 'created_id', 'updated_id', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'classify_id' => 'integer', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'integer', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'deleted_at' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_id' => 'integer', 'updated_at' => 'datetime', 'form_at' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'classify_id' => 'integer', 'parent_id' => 'integer', 'channel' => 'integer', 'semester' => 'integer', 'ques_type' => 'integer', 'empty_nmb' => 'integer', 'ques_difficulty' => 'integer', 'sort' => 'integer', 'states' => 'integer', 'form_at' => 'integer', 'created_id' => 'integer', 'updated_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
 
     protected ?string $dateFormat = 'U';
 
