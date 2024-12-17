@@ -25,4 +25,7 @@ class quesCountDto implements MineModelExcel
 
     #[ExcelProperty(value: '做题数量', index: 4)]
     public string $ques_count;
+
+    #[ExcelProperty(value: '报名时间', index: 5)]
+    public string $order_created_at;
 }
