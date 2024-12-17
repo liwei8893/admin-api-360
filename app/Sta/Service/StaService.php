@@ -9,7 +9,6 @@ use App\Order\Model\Order;
 use App\Order\Model\OrderSummary;
 use App\Order\Model\OrderTransaction;
 use App\Order\Model\UsersRenew;
-use App\Question\Model\QuestionHistory;
 use App\Sta\Mapper\StaMapper;
 use App\Users\Model\User;
 use App\Users\Model\UserCourseRecord;
@@ -549,11 +548,16 @@ class StaService extends AbstractService
         $page = $params['page'] ?? 1;
         $params['start_time'] = !empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
         $params['end_time'] = !empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
-        $paginate = QuestionHistory::query()
-            ->leftJoin('users', 'users.id', '=', 'question_history.user_id')
-            ->leftJoin('attribute_detail as ad', 'ad.id', '=', 'users.grade_id')
-            ->where('question_history.created_at', '>=', $params['start_time'])
-            ->where('question_history.created_at', '<=', $params['end_time'])
+        $paginate = Order::query()
+            ->leftJoin('users as u', 'u.id', '=', 'order.user_id')
+            ->leftJoin('question_history as qh', 'qh.user_id', '=', 'u.id')
+            ->leftJoin('attribute_detail as ad', 'ad.id', '=', 'u.grade_id')
+            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+            ->where('order.status', '!=', Order::STATUS_REFUND)
+            ->where('order.pay_states', Order::PAY_SUCCESS)
+            ->where('order.deleted_at', 0)
+            ->where('order.created_at', '>=', $params['start_time'])
+            ->where('order.created_at', '<=', $params['end_time'])
             // 用户表筛选
             ->whereHas('users', function (Builder $query) use ($params) {
                 $query->when(!empty($params['mobile']), function (Builder $query) use ($params) {
@@ -566,15 +570,17 @@ class StaService extends AbstractService
                     ->platformDataScope();
             })
             ->select([
-                'users.id',
-                'users.user_name',
-                'users.mobile',
-                'users.platform',
-                'users.grade_id',
+                'u.id',
+                'u.user_name',
+                'u.mobile',
+                'u.platform',
+                'u.grade_id',
+                DB::raw('COUNT(qh.user_id) as ques_count'),
+                'order.created_at',
                 'ad.detail_name as grade_name',
-                DB::raw('COUNT(users.id) as ques_count'),
+                DB::raw('FROM_UNIXTIME(order.created_at) as order_created_at'),
             ])
-            ->groupBy(['users.id'])
+            ->groupBy(['u.id', 'order.created_at'])
             ->orderBy('ques_count', 'desc')
             ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
