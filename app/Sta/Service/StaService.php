@@ -9,6 +9,7 @@ use App\Order\Model\Order;
 use App\Order\Model\OrderSummary;
 use App\Order\Model\OrderTransaction;
 use App\Order\Model\UsersRenew;
+use App\Question\Model\QuestionHistory;
 use App\Sta\Mapper\StaMapper;
 use App\Users\Model\User;
 use App\Users\Model\UserCourseRecord;
@@ -60,13 +61,13 @@ class StaService extends AbstractService
             ->where('real_hits', '>', 0)
             // 课程筛选
             ->whereHas('courseBasis', function (Builder $query) use ($params) {
-                $query->when(! empty($params['course_basis_title']), function (Builder $query) use ($params) {
+                $query->when(!empty($params['course_basis_title']), function (Builder $query) use ($params) {
                     $query->where('course_basis.title', 'like', "%{$params['course_basis_title']}%");
                 });
             })
             ->groupBy('course_basis_id')->orderBy('hits', 'desc')
             ->having('hits', '>', $hits)
-            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
     }
 
@@ -100,15 +101,15 @@ class StaService extends AbstractService
             ->where('real_hits', '>', $hits)
             // 课程筛选
             ->whereHas('courseBasis', function (Builder $query) use ($params) {
-                $query->when(! empty($params['course_basis_title']), function (Builder $query) use ($params) {
+                $query->when(!empty($params['course_basis_title']), function (Builder $query) use ($params) {
                     $query->where('course_basis.title', 'like', "%{$params['course_basis_title']}%");
                 });
             })
-            ->when(! empty($params['title']), function (Builder $query) use ($params) {
+            ->when(!empty($params['title']), function (Builder $query) use ($params) {
                 $query->where('title', 'like', "%{$params['title']}%");
             })
             ->orderBy('real_hits', 'desc')
-            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
     }
 
@@ -128,8 +129,8 @@ class StaService extends AbstractService
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
         $page = $params['page'] ?? 1;
-        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
-        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
+        $params['start_time'] = !empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
+        $params['end_time'] = !empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
         $paginate = UserCourseRecord::with([
             'courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title',
             'coursePeriod:id,course_basis_id,title',
@@ -143,16 +144,16 @@ class StaService extends AbstractService
             ->where('order.created_at', '<=', $params['end_time'])
             // 课程筛选
             ->whereHas('courseBasis', function (Builder $query) use ($params) {
-                $query->when(! empty($params['course_basis_title']), function (Builder $query) use ($params) {
+                $query->when(!empty($params['course_basis_title']), function (Builder $query) use ($params) {
                     $query->where('course_basis.title', 'like', "%{$params['course_basis_title']}%");
                 });
             })
             // 用户表筛选
             ->whereHas('users', function (Builder $query) use ($params) {
-                $query->when(! empty($params['mobile']), function (Builder $query) use ($params) {
+                $query->when(!empty($params['mobile']), function (Builder $query) use ($params) {
                     $query->where('mobile', $params['mobile']);
                 })
-                    ->when(! empty($params['platform']), function (Builder $query) use ($params) {
+                    ->when(!empty($params['platform']), function (Builder $query) use ($params) {
                         $query->where('platform', $params['platform']);
                     })
                     ->where('user_type', User::USER_TYPE)
@@ -165,7 +166,7 @@ class StaService extends AbstractService
             ])
             ->selectRaw('FROM_UNIXTIME(order.created_at) as order_created_at')
             ->orderBy('order.user_id', 'desc')
-            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
     }
 
@@ -186,8 +187,8 @@ class StaService extends AbstractService
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
         $page = $params['page'] ?? 1;
-        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
-        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
+        $params['start_time'] = !empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
+        $params['end_time'] = !empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
         $paginate = Order::query()
             ->leftJoin('users as u', 'u.id', '=', 'order.user_id')
             ->leftJoin('user_course_record as ucr', 'ucr.user_id', '=', 'u.id')
@@ -201,10 +202,10 @@ class StaService extends AbstractService
             ->where('order.created_at', '<=', $params['end_time'])
             // 用户表筛选
             ->whereHas('users', function (Builder $query) use ($params) {
-                $query->when(! empty($params['mobile']), function (Builder $query) use ($params) {
+                $query->when(!empty($params['mobile']), function (Builder $query) use ($params) {
                     $query->where('mobile', $params['mobile']);
                 })
-                    ->when(! empty($params['platform']), function (Builder $query) use ($params) {
+                    ->when(!empty($params['platform']), function (Builder $query) use ($params) {
                         $query->where('platform', $params['platform']);
                     })
                     ->where('user_type', User::USER_TYPE)
@@ -226,7 +227,7 @@ class StaService extends AbstractService
             ])
             ->groupBy(['u.id', 'ucr.user_id', 'order.created_at', 'order.indate'])
             ->orderBy('watch_time_sum', 'desc')
-            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
     }
 
@@ -241,8 +242,8 @@ class StaService extends AbstractService
         $params['pageSize'] = 100000;
         $data = $this->getHasCourseRecord($params);
         $cb = function ($item) {
-            $item['has_record'] = ! empty($item['has_record']) ? '是' : '否';
-            $item['has_login'] = ! empty($item['has_login']) ? '是' : '否';
+            $item['has_record'] = !empty($item['has_record']) ? '是' : '否';
+            $item['has_login'] = !empty($item['has_login']) ? '是' : '否';
             $item['watch_time_sum'] = round($item['watch_time_sum'] / 60);
             return $item;
         };
@@ -253,8 +254,8 @@ class StaService extends AbstractService
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
         $page = $params['page'] ?? 1;
-        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfMonth()->timestamp;
-        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfMonth()->timestamp;
+        $params['start_time'] = !empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfMonth()->timestamp;
+        $params['end_time'] = !empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfMonth()->timestamp;
         $paginate = Order::query()
             ->with(['orderGrade', 'orderSubject'])
             ->leftJoin('users as u', 'order.user_id', 'u.id')
@@ -266,11 +267,11 @@ class StaService extends AbstractService
                 if ($params['actual_price'] === '0') {
                     $query->where('order.actual_price', 0);
                 }
-                if (! empty($params['actual_price']) && $params['actual_price'] === '1') {
+                if (!empty($params['actual_price']) && $params['actual_price'] === '1') {
                     $query->where('order.actual_price', '!=', 0);
                 }
             })
-            ->when(! empty($params['vip_type']), static function (Builder $query) use ($params) {
+            ->when(!empty($params['vip_type']), static function (Builder $query) use ($params) {
                 // 会员类型筛选,1优享会员,2超级会员,3至尊会员
                 if ($params['vip_type'] === '2') {
                     $query->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
@@ -278,10 +279,10 @@ class StaService extends AbstractService
             })
             // 用户表筛选
             ->whereHas('users', function (Builder $query) use ($params) {
-                $query->when(! empty($params['mobile']), function (Builder $query) use ($params) {
+                $query->when(!empty($params['mobile']), function (Builder $query) use ($params) {
                     $query->where('mobile', $params['mobile']);
                 })
-                    ->when(! empty($params['platform']), function (Builder $query) use ($params) {
+                    ->when(!empty($params['platform']), function (Builder $query) use ($params) {
                         $query->where('platform', $params['platform']);
                     })
                     ->where('user_type', User::USER_TYPE)
@@ -305,7 +306,7 @@ class StaService extends AbstractService
             ])
             ->selectRaw('from_unixtime(order.created_at) as order_created_at')
             ->orderBy('order.created_at', 'DESC')
-            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
     }
 
@@ -331,8 +332,8 @@ class StaService extends AbstractService
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
         $page = $params['page'] ?? 1;
-        $params['start_time'] = ! empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfMonth()->timestamp;
-        $params['end_time'] = ! empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfMonth()->timestamp;
+        $params['start_time'] = !empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfMonth()->timestamp;
+        $params['end_time'] = !empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfMonth()->timestamp;
         $paginate = UsersRenew::query()
             ->with([
                 'users:id,user_name,mobile,platform,remark',
@@ -352,16 +353,16 @@ class StaService extends AbstractService
                 if ($params['money'] === '0') {
                     $query->where('users_renew.money', 0);
                 }
-                if (! empty($params['money']) && $params['money'] === '1') {
+                if (!empty($params['money']) && $params['money'] === '1') {
                     $query->where('users_renew.money', '!=', 0);
                 }
             })
             // 用户表筛选
             ->whereHas('users', function (Builder $query) use ($params) {
-                $query->when(! empty($params['mobile']), function (Builder $query) use ($params) {
+                $query->when(!empty($params['mobile']), function (Builder $query) use ($params) {
                     $query->where('mobile', $params['mobile']);
                 })
-                    ->when(! empty($params['platform']), function (Builder $query) use ($params) {
+                    ->when(!empty($params['platform']), function (Builder $query) use ($params) {
                         $query->where('platform', $params['platform']);
                     })
                     ->where('user_type', User::USER_TYPE)
@@ -369,7 +370,7 @@ class StaService extends AbstractService
             })
             // 订单表筛选
             ->whereHas('order', function (Builder $query) use ($params) {
-                $query->when(! empty($params['vip_type']), static function (Builder $query) use ($params) {
+                $query->when(!empty($params['vip_type']), static function (Builder $query) use ($params) {
                     // 会员类型筛选,1优享会员,2超级会员,3至尊会员
                     if ($params['vip_type'] === '2') {
                         $query->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
@@ -391,7 +392,7 @@ class StaService extends AbstractService
                 'status',
             ])
             ->orderBy('users_renew.created_at', 'DESC')
-            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
     }
 
@@ -419,8 +420,8 @@ class StaService extends AbstractService
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
         $page = $params['page'] ?? 1;
-        $params['start_time'] = ! empty($params['created_at'][0]) ? $params['created_at'][0] : Carbon::now()->startOfMonth()->toDateTimeString();
-        $params['end_time'] = ! empty($params['created_at'][1]) ? Carbon::parse($params['created_at'][1])->endOfDay() : Carbon::now()->endOfMonth()->toDateTimeString();
+        $params['start_time'] = !empty($params['created_at'][0]) ? $params['created_at'][0] : Carbon::now()->startOfMonth()->toDateTimeString();
+        $params['end_time'] = !empty($params['created_at'][1]) ? Carbon::parse($params['created_at'][1])->endOfDay() : Carbon::now()->endOfMonth()->toDateTimeString();
         $paginate = OrderTransaction::query()
             ->with([
                 'users:id,user_name,mobile,platform,remark',
@@ -437,16 +438,16 @@ class StaService extends AbstractService
                 if ($params['money'] === '0') {
                     $query->where('money', 0);
                 }
-                if (! empty($params['money']) && $params['money'] === '1') {
+                if (!empty($params['money']) && $params['money'] === '1') {
                     $query->where('money', '!=', 0);
                 }
             })
             // 用户表筛选
             ->whereHas('users', function (Builder $query) use ($params) {
-                $query->when(! empty($params['mobile']), function (Builder $query) use ($params) {
+                $query->when(!empty($params['mobile']), function (Builder $query) use ($params) {
                     $query->where('mobile', $params['mobile']);
                 })
-                    ->when(! empty($params['platform']), function (Builder $query) use ($params) {
+                    ->when(!empty($params['platform']), function (Builder $query) use ($params) {
                         $query->where('platform', $params['platform']);
                     })
                     ->where('user_type', User::USER_TYPE)
@@ -454,7 +455,7 @@ class StaService extends AbstractService
             })
             // 订单表筛选
             ->whereHas('order', function (Builder $query) use ($params) {
-                $query->when(! empty($params['vip_type']), static function (Builder $query) use ($params) {
+                $query->when(!empty($params['vip_type']), static function (Builder $query) use ($params) {
                     // 会员类型筛选,1优享会员,2超级会员,3至尊会员
                     if ($params['vip_type'] === '2') {
                         $query->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
@@ -465,7 +466,7 @@ class StaService extends AbstractService
                         if ($params['actual_price'] === '0') {
                             $query->where('order.actual_price', 0);
                         }
-                        if (! empty($params['actual_price']) && $params['actual_price'] === '1') {
+                        if (!empty($params['actual_price']) && $params['actual_price'] === '1') {
                             $query->where('order.actual_price', '!=', 0);
                         }
                     })
@@ -474,7 +475,7 @@ class StaService extends AbstractService
                     ->where('deleted_at', 0);
             })
             ->orderBy('create_at', 'DESC')
-            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
     }
 
@@ -516,7 +517,7 @@ class StaService extends AbstractService
             ->selectRaw('count(*) as count')
             ->groupBy('created_id')
             ->with('adminUser:id,username,nickname')
-            ->paginate((int) $perPage, ['*'], 'page', (int) $page);
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
     }
 
@@ -533,6 +534,71 @@ class StaService extends AbstractService
         $cb = function ($item) {
             $item['created_name'] = $item['adminUser']['nickname'];
             return $item->toArray();
+        };
+        return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
+    }
+
+    /**
+     * 做题数统计
+     * @param array $params
+     * @return array
+     */
+    public function getQuesCount(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $params['start_time'] = !empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
+        $params['end_time'] = !empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
+        $paginate = QuestionHistory::query()
+            ->leftJoin('users', 'users.id', '=', 'question_history.user_id')
+            ->leftJoin('attribute_detail as ad', 'ad.id', '=', 'users.grade_id')
+            ->where('question_history.created_at', '>=', $params['start_time'])
+            ->where('question_history.created_at', '<=', $params['end_time'])
+            // 用户表筛选
+            ->whereHas('users', function (Builder $query) use ($params) {
+                $query->when(!empty($params['mobile']), function (Builder $query) use ($params) {
+                    $query->where('mobile', $params['mobile']);
+                })
+                    ->when(!empty($params['platform']), function (Builder $query) use ($params) {
+                        $query->where('platform', $params['platform']);
+                    })
+                    ->where('user_type', User::USER_TYPE)
+                    ->platformDataScope();
+            })
+            ->select([
+                'users.id',
+                'users.user_name',
+                'users.mobile',
+                'users.platform',
+                'users.grade_id',
+                'ad.detail_name as grade_name',
+                DB::raw('COUNT(users.id) as ques_count'),
+            ])
+            ->groupBy(['users.id'])
+            ->orderBy('ques_count', 'desc')
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
+        return $this->mapper->setPaginate($paginate);
+    }
+
+    /**
+     * 做题数统计导出
+     * @param array $params
+     * @param string $dto
+     * @param string $filename
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    public function getQuesCountExport(array $params, string $dto, string $filename): ResponseInterface
+    {
+        $params['pageSize'] = 100000;
+        $data = $this->getQuesCount($params);
+        $cb = function ($item) {
+            $item['has_record'] = !empty($item['has_record']) ? '是' : '否';
+            $item['has_login'] = !empty($item['has_login']) ? '是' : '否';
+            $item['watch_time_sum'] = round($item['watch_time_sum'] / 60);
+            return $item;
         };
         return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
     }

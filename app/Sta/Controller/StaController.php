@@ -12,6 +12,7 @@ use App\Sta\Dto\OrderRefundDto;
 use App\Sta\Dto\OrderRenewDto;
 use App\Sta\Dto\orderSummarySumDto;
 use App\Sta\Dto\PeriodHitsDto;
+use App\Sta\Dto\quesCountDto;
 use App\Sta\Service\StaService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -232,5 +233,31 @@ class StaController extends MineController
     {
         $params = $this->request->all();
         return $this->service->getOrderSummarySumExport($params, orderSummarySumDto::class, '核单数量统计导出');
+    }
+
+    /**
+     * 做题数统计
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('quesCount'), Permission('sta:quesCount')]
+    public function quesCount(): ResponseInterface
+    {
+        return $this->success($this->service->getQuesCount($this->request->all()));
+    }
+
+    /**
+     * 做题数统计导出.
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('quesCount/export'), Permission('sta:quesCount')]
+    public function quesCountExport(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->service->getQuesCountExport($params, quesCountDto::class, '做题数统计导出');
     }
 }
