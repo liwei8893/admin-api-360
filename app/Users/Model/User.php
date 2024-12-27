@@ -215,15 +215,15 @@ class User extends MineModel
 
     public function vipType()
     {
-        return $this->hasOne(Order::class, 'user_id', 'id')->select(['user_id', 'id'])->selectRaw('CASE
-           WHEN shop_id = ? THEN 1
-           WHEN shop_id = ? THEN 2
-           WHEN shop_id = ? THEN 3
-           ELSE 0 END AS vipType', [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME])->selectRaw('CASE
-           WHEN shop_id = ? THEN "优享会员"
-           WHEN shop_id = ? THEN "超级会员"
-           WHEN shop_id = ? THEN "至尊会员"
-           ELSE 0 END AS vipName', [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME])->selectRaw("DATE_ADD(FROM_UNIXTIME(created_at, '%Y-%m-%d'), INTERVAL indate DAY) AS endDate")->whereIn('shop_id', [self::VIP_TYPE_ENJOY, self::VIP_TYPE_SUPER, self::VIP_TYPE_SUPREME])->NormalOrder()->IsNotExpire()->orderBy('vipType', 'desc');
+        return $this->hasOne(Order::class, 'user_id', 'id')->select(['user_id', 'id'])
+            ->whereHas('course', function ($query) {
+                $query->where('course_title', 64);
+            })
+            ->selectRaw('2 AS vipType')
+            ->selectRaw('"超级会员" AS vipName')
+            ->selectRaw("DATE_ADD(FROM_UNIXTIME(created_at, '%Y-%m-%d'), INTERVAL indate DAY) AS endDate")
+            ->NormalOrder()->IsNotExpire()
+            ->orderBy('vipType', 'desc');
     }
 
     public function haveSubject()
