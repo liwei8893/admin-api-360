@@ -633,6 +633,9 @@ class StaService extends AbstractService
             ->where('order.deleted_at', 0)
             ->whereNotNull('u.id')
             ->where('u.user_type', 1)
+            ->when(!empty($params['indate']) && is_array($params['indate']), function (Builder $query) use ($params) {
+                $query->whereBetween('order.indate', [$params['indate'][0], $params['indate'][1]]);
+            })
             ->when(!empty($params['mobile']), function (Builder $query) use ($params) {
                 $query->where('u.mobile', $params['mobile']);
             })
