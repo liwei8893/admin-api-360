@@ -608,4 +608,78 @@ class StaService extends AbstractService
         };
         return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
     }
+
+    /**
+     * 续费预警
+     * @param array $params
+     * @return array
+     */
+    public function renewEarlyWarning(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+        $paginate = Order::query()
+            ->leftJoin('users as u', 'u.id', '=', 'order.user_id')
+            ->leftJoin('attribute_detail as ad', 'ad.id', '=', 'u.grade_id')
+            ->leftJoin('course_basis as cb', 'cb.id', '=', 'order.shop_id')
+            ->leftJoinSub('select users_id as id, count(*) as count
+                    from users_log
+                    group by users_id', 'll', 'll.id', '=', 'u.id')
+            ->leftJoinSub('select user_id as id, count(*) as count, sum(watch_time) sum_time
+                    from user_course_record
+                    group by user_id', 't', 't.id', '=', 'u.id')
+            ->where('cb.course_title', 64)
+            ->where('order.pay_states', 7)
+            ->where('order.deleted_at', 0)
+            ->whereNotNull('u.id')
+            ->where('u.user_type', 1)
+            ->when(!empty($params['mobile']), function (Builder $query) use ($params) {
+                $query->where('u.mobile', $params['mobile']);
+            })
+            ->when(!empty($params['platform']), function (Builder $query) use ($params) {
+                $query->where('u.platform', $params['platform']);
+            })
+            ->when(!empty($params['order_end_day_search']) && is_array($params['order_end_day_search']), function (Builder $query) use ($params) {
+                $query->whereRaw('DATEDIFF(date_add(FROM_UNIXTIME(order.created_at), INTERVAL order.indate day), CURRENT_DATE()) between ? and ?', [$params['order_end_day_search'][0], $params['order_end_day_search'][1]]);
+            })
+            ->select([
+                'order.id as order_id',
+                'u.id as user_id',
+                'u.user_name as user_name',
+                'u.mobile as mobile',
+                'u.platform as platform',
+                't.count as course_record_count',
+                't.sum_time as course_record_sum_time',
+                DB::raw('ROUND(t.sum_time / 60 / 60, 2) as course_record_sum_time_hour'),
+                'll.count as login_count',
+                'order.indate as order_indate',
+                'ad.detail_name as grade_name',
+                DB::raw('FROM_UNIXTIME(u.created_at) as order_created_at'),
+                DB::raw('date_add(FROM_UNIXTIME(order.created_at), INTERVAL order.indate day) as order_end_date'),
+                DB::raw('DATEDIFF(date_add(FROM_UNIXTIME(order.created_at), INTERVAL order.indate day), CURRENT_DATE()) as order_end_day'),
+            ])
+            ->orderBy('order_end_day')
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
+        return $this->mapper->setPaginate($paginate);
+    }
+
+    /**
+     * 续费预警导出
+     * @param array $params
+     * @param string $dto
+     * @param string $filename
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    public function renewEarlyWarningExport(array $params, string $dto, string $filename): ResponseInterface
+    {
+        $params['pageSize'] = 100000;
+        $data = $this->renewEarlyWarning($params);
+        $cb = function ($item) {
+            return $item;
+        };
+        return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
+    }
 }

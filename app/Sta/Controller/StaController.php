@@ -13,6 +13,7 @@ use App\Sta\Dto\OrderRenewDto;
 use App\Sta\Dto\orderSummarySumDto;
 use App\Sta\Dto\PeriodHitsDto;
 use App\Sta\Dto\quesCountDto;
+use App\Sta\Dto\renewEarlyWarningDto;
 use App\Sta\Service\StaService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -259,5 +260,31 @@ class StaController extends MineController
     {
         $params = $this->request->all();
         return $this->service->getQuesCountExport($params, quesCountDto::class, '做题数统计导出');
+    }
+
+    /**
+     * 续费预警
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('renewEarlyWarning'), Permission('sta:renewEarlyWarning')]
+    public function renewEarlyWarning(): ResponseInterface
+    {
+        return $this->success($this->service->renewEarlyWarning($this->request->all()));
+    }
+
+    /**
+     * 续费预警导出.
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws Exception
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('renewEarlyWarning/export'), Permission('sta:renewEarlyWarning')]
+    public function renewEarlyWarningExport(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->service->renewEarlyWarningExport($params, renewEarlyWarningDto::class, '续费预警导出');
     }
 }
