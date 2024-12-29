@@ -27,11 +27,11 @@ use Mine\MineModel;
  * @property string $remark 
  * @property string $cause_text 
  * @property int $renew_experience 续费时属性
- * @property int $real_year 续费真实年数
- * @property-read Order $order 
- * @property-read CourseBasis $course 
+ * @property string $real_year 续费真实年数
+ * @property-read Order|null $order 
+ * @property-read CourseBasis|null $course 
  * @property-read int $renew_day 
- * @property-read User $users 
+ * @property-read User|null $users 
  */
 class UsersRenew extends MineModel
 {
@@ -76,7 +76,7 @@ class UsersRenew extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'order_id' => 'integer', 'indate_start' => 'datetime', 'indate_end' => 'datetime', 'created_at' => 'datetime', 'created_id' => 'integer', 'status' => 'integer', 'money' => 'decimal:2', 'shop_id' => 'integer', 'user_id' => 'integer', 'audit_status' => 'integer', 'renew_experience' => 'integer', 'real_year' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'order_id' => 'integer', 'indate_start' => 'datetime', 'indate_end' => 'datetime', 'created_at' => 'datetime', 'created_id' => 'integer', 'status' => 'integer', 'money' => 'decimal:2', 'shop_id' => 'integer', 'user_id' => 'integer', 'audit_status' => 'integer', 'renew_experience' => 'integer', 'real_year' => 'decimal:2'];
 
     protected array $dates = ['indate_start', 'indate_end', 'created_at'];
 
