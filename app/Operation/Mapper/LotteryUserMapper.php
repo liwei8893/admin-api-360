@@ -6,7 +6,6 @@ namespace App\Operation\Mapper;
 
 use App\Operation\Model\LotteryUser;
 use App\Order\Model\Order;
-use App\Users\Model\User;
 use Exception;
 use Hyperf\Database\Model\Builder;
 use Hyperf\DbConnection\Db;
@@ -31,6 +30,7 @@ class LotteryUserMapper extends AbstractMapper
     /**
      * 判断是否在活动时间内购买课程.
      * @param $params array
+     * @return bool
      */
     public function hasUserOrder(array $params): bool
     {
@@ -38,7 +38,7 @@ class LotteryUserMapper extends AbstractMapper
             ->where('user_id', $params['userId'])
             ->normalOrder()
             ->isNotExpire()
-            ->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+            ->vipOrder()
             ->where('created_at', '>=', $params['startTime'])
             ->where('created_at', '<=', $params['endTime'])
             ->exists();

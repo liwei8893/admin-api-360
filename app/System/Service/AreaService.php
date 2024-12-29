@@ -19,6 +19,7 @@ use Mine\Exception\NormalStatusException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Throwable;
+use function Hyperf\Config\config;
 
 /**
  * 区域字典服务类.
@@ -45,7 +46,7 @@ class AreaService extends AbstractService
             // 获取api数据
             $clientFactory = container()->get(ClientFactory::class);
             $client = $clientFactory->create();
-            $appCode = \Hyperf\Config\config('hxt-app.mobileArea.AppCode');
+            $appCode = config('hxt-app.mobileArea.AppCode');
             $response = $client->get('http://plocn.market.alicloudapi.com/plocn', [
                 'headers' => [
                     'Authorization' => 'APPCODE ' . $appCode,
@@ -78,7 +79,7 @@ class AreaService extends AbstractService
     {
         $mobiles = User::query()->whereHas('orders', function (Builder $query) {
             $query->where('status', '!=', 2)->where('pay_states', 7)
-                ->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+                ->vipOrder()
                 ->where('deleted_at', 0);
         })->where('user_type', 1)
             ->where(static function ($query) {

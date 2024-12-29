@@ -223,4 +223,16 @@ class Order extends MineModel
     {
         return $query->whereRaw('((created_at + (indate * 86400)) > unix_timestamp(now()) or app=2)');
     }
+
+    public function scopeVipOrder(Builder $query): Builder
+    {
+        $subQuery = CourseBasis::query()->select('id')->where('course_title', 64);
+        return $query->whereIn('shop_id', $subQuery);
+    }
+
+    public function scopeNotVipOrder(Builder $query): Builder
+    {
+        $subQuery = CourseBasis::query()->select('id')->where('course_title', 64);
+        return $query->whereNotIn('shop_id', $subQuery);
+    }
 }

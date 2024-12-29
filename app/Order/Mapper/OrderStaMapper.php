@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Mapper;
 
+use App\Course\Model\CourseBasis;
 use App\Order\Model\Order;
 use App\Order\Model\OrderTransaction;
 use App\Order\Model\UsersRenew;
@@ -32,12 +33,13 @@ class OrderStaMapper extends AbstractMapper
      */
     public function getNewVipSta(array $params): Collection|array
     {
-        $params['dateMonth'] = ! empty($params['dateMonth']) ? $params['dateMonth'] : date('Y-m');
+        $params['dateMonth'] = !empty($params['dateMonth']) ? $params['dateMonth'] : date('Y-m');
         $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
         $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
+        $subQueryShopId = CourseBasis::query()->select('id')->where('course_title', 64);
 
         $query = User::query()->leftJoin('order', 'users.id', 'order.user_id')
-            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+            ->whereIn('order.shop_id', $subQueryShopId)
             ->where('users.user_type', User::USER_TYPE)
             ->where('order.pay_states', 7)
             ->where('order.deleted_at', 0)
@@ -64,6 +66,7 @@ class OrderStaMapper extends AbstractMapper
         $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
         $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
         $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
+        $subQueryShopId = CourseBasis::query()->select('id')->where('course_title', 64);
 
         $query = UsersRenew::query()
             ->leftJoin('order', 'users_renew.order_id', 'order.id')
@@ -81,7 +84,7 @@ class OrderStaMapper extends AbstractMapper
                 'users_renew.created_at',
                 [strtotime($firstDay . ' 00:00:00'), strtotime($lastDay . ' 23:59:59')]
             )
-            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+            ->whereIn('order.shop_id', $subQueryShopId)
             ->where('order.pay_states', 7)
             ->where('order.deleted_at', 0)
             ->where('order.status', '!=', 2)
@@ -98,6 +101,7 @@ class OrderStaMapper extends AbstractMapper
         $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
         $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
         $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
+        $subQueryShopId = CourseBasis::query()->select('id')->where('course_title', 64);
 
         $query = OrderTransaction::query()
             ->leftJoin('order', 'order_transaction.order_id', 'order.id')
@@ -114,7 +118,7 @@ class OrderStaMapper extends AbstractMapper
                 'order_transaction.create_at',
                 [$firstDay . ' 00:00:00', $lastDay . ' 23:59:59']
             )
-            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+            ->whereIn('order.shop_id', $subQueryShopId)
             ->where('order.pay_states', 7)
             ->where('order.deleted_at', 0)
             ->select(['order_transaction.*', 'users.platform', 'users.mobile', 'order.shop_id', 'order.shop_name', 'order.indate', 'order.real_year'])

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Sta\Service;
 
+use App\Course\Model\CourseBasis;
 use App\Course\Model\CoursePeriod;
 use App\Order\Model\Order;
 use App\Order\Model\OrderSummary;
@@ -44,7 +45,7 @@ class StaService extends AbstractService
                 ->when(isset($params['start_time'], $params['end_time']), function (Builder $query) use ($params) {
                     $query->whereBetween('created_at', [$params['start_time'], $params['end_time']]);
                 })
-                ->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
+                ->vipOrder();
         })->count();
         return ['count' => $count];
     }
@@ -130,12 +131,15 @@ class StaService extends AbstractService
         $page = $params['page'] ?? 1;
         $params['start_time'] = !empty($params['created_at'][0]) ? strtotime($params['created_at'][0]) : Carbon::now()->startOfDay()->subDays(7)->timestamp;
         $params['end_time'] = !empty($params['created_at'][1]) ? strtotime($params['created_at'][1]) + 86400 : Carbon::now()->endOfDay()->timestamp;
+
+        $subQueryShopId = CourseBasis::query()->select('id')->where('course_title', 64);
+
         $paginate = UserCourseRecord::with([
             'courseBasis:course_basis.id,course_basis.id as course_basis_id,course_basis.title',
             'coursePeriod:id,course_basis_id,title',
             'users:id,user_name,mobile,users.platform'])
             ->leftJoin('order', 'order.user_id', 'user_course_record.user_id')
-            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+            ->whereIn('order.shop_id', $subQueryShopId)
             ->where('order.status', '!=', Order::STATUS_REFUND)
             ->where('order.pay_states', Order::PAY_SUCCESS)
             ->where('order.deleted_at', 0)
@@ -193,7 +197,7 @@ class StaService extends AbstractService
             ->leftJoin('user_course_record as ucr', 'ucr.user_id', '=', 'u.id')
             ->leftJoin('attribute_detail as ad', 'ad.id', '=', 'u.grade_id')
             ->leftJoin(DB::raw('(SELECT users_id FROM users_log GROUP BY users_id) AS ul'), 'ul.users_id', '=', 'u.id')
-            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+            ->vipOrder()
             ->where('order.status', '!=', Order::STATUS_REFUND)
             ->where('order.pay_states', Order::PAY_SUCCESS)
             ->where('order.deleted_at', 0)
@@ -273,7 +277,7 @@ class StaService extends AbstractService
             ->when(!empty($params['vip_type']), static function (Builder $query) use ($params) {
                 // 会员类型筛选,1优享会员,2超级会员,3至尊会员
                 if ($params['vip_type'] === '2') {
-                    $query->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
+                    $query->vipOrder();
                 }
             })
             // 用户表筛选
@@ -372,7 +376,7 @@ class StaService extends AbstractService
                 $query->when(!empty($params['vip_type']), static function (Builder $query) use ($params) {
                     // 会员类型筛选,1优享会员,2超级会员,3至尊会员
                     if ($params['vip_type'] === '2') {
-                        $query->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
+                        $query->vipOrder();
                     }
                 })
                     ->where('pay_states', Order::PAY_SUCCESS)
@@ -457,7 +461,7 @@ class StaService extends AbstractService
                 $query->when(!empty($params['vip_type']), static function (Builder $query) use ($params) {
                     // 会员类型筛选,1优享会员,2超级会员,3至尊会员
                     if ($params['vip_type'] === '2') {
-                        $query->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH]);
+                        $query->vipOrder();
                     }
                 })
                     ->when(isset($params['actual_price']), static function (Builder $query) use ($params) {
@@ -552,7 +556,7 @@ class StaService extends AbstractService
             ->leftJoin('users as u', 'u.id', '=', 'order.user_id')
             ->leftJoin('question_history as qh', 'qh.user_id', '=', 'u.id')
             ->leftJoin('attribute_detail as ad', 'ad.id', '=', 'u.grade_id')
-            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+            ->vipOrder()
             ->where('order.status', '!=', Order::STATUS_REFUND)
             ->where('order.pay_states', Order::PAY_SUCCESS)
             ->where('order.deleted_at', 0)

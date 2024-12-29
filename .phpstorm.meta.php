@@ -16,8 +16,33 @@ namespace Hyperf\Database\Model {
         /**
          * @return Builder
          */
-        public function userDataScope(?int $userid = null) {}
+        public function userDataScope(?int $userid = null)
+        {
+        }
 
-        public function platformDataScope(?string $platformField = 'platform'): Builder {}
+        public function platformDataScope(?string $platformField = 'platform'): Builder
+        {
+        }
+
+        public function vipOrder(): Builder
+        {
+        }
+
+        public function notVipOrder(): Builder
+        {
+
+        }
+
+        public function isNotExpire(): Builder
+        {
+        }
+
+        public function noDeleteOrder(): Builder
+        {
+        }
+
+        public function normalOrder(): Builder
+        {
+        }
     }
 }

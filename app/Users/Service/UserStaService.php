@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Users\Service;
 
+use App\Course\Model\CourseBasis;
 use App\Users\Model\User;
 use Mine\Abstracts\AbstractService;
 
@@ -22,11 +23,14 @@ class UserStaService extends AbstractService
     {
         // 初始化父级区域ID
         $parent_id = $params['parent_id'] ?? null;
+
+        $subQueryShopId = CourseBasis::query()->select('id')->where('course_title', 64);
+
         // 构建初始的查询模型，设置查询范围和条件
         $modelData = User::query()
             ->leftJoin('order', 'users.id', 'order.user_id')
             ->platformDataScope('users.platform')
-            ->whereIn('order.shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+            ->whereIn('order.shop_id', $subQueryShopId)
             ->where('order.pay_states', 7)
             ->where('order.status', '!=', 2)
             ->where('order.deleted_at', 0)

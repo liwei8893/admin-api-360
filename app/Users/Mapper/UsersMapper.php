@@ -164,7 +164,7 @@ class UsersMapper extends AbstractMapper
             if ($params['vipType'] === '0') {
                 $query->whereHas(
                     'orders',
-                    fn(Builder $query) => $query->normalOrder()->whereNotIn('shop_id', [...User::VIP_TYPE_NONE, ...User::VIP_TYPE_HIGH])
+                    fn(Builder $query) => $query->normalOrder()->notVipOrder()
                 );
             }
             if ($params['vipType'] === '1') {
@@ -176,7 +176,7 @@ class UsersMapper extends AbstractMapper
             if ($params['vipType'] === '2') {
                 $query->whereHas(
                     'orders',
-                    fn(Builder $query) => $query->normalOrder()->whereIn('shop_id', [User::VIP_TYPE_SUPER, ...User::VIP_TYPE_HIGH])
+                    fn(Builder $query) => $query->normalOrder()->vipOrder()
                 );
             }
             if ($params['vipType'] === '3') {
