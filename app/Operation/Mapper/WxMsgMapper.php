@@ -46,7 +46,6 @@ class WxMsgMapper extends AbstractMapper
     public function getSendUsers(array $params = []): array|Collection
     {
         return User::query()
-            ->orderCourse()
             ->select(['id', 'user_name', 'mobile', 'wxgzh_openid'])
             ->where('wxgzh_openid', '!=', '')
             // 测试，查内部人
@@ -58,6 +57,7 @@ class WxMsgMapper extends AbstractMapper
             ->when(isset($params['grade_id']) && is_array($params['grade_id']), function (Builder $query) use ($params) {
                 $query->whereIn('grade_id', $params['grade_id']);
             })
+            ->whereHas('orderCourse')
             ->get();
     }
 
