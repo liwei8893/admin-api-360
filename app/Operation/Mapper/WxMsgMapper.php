@@ -49,7 +49,7 @@ class WxMsgMapper extends AbstractMapper
             ->select(['id', 'user_name', 'mobile', 'wxgzh_openid'])
             ->where('wxgzh_openid', '!=', '')
             // 测试，查内部人
-//            ->where('user_type', 0)
+            ->where('user_type', 0)
 //            ->whereIn('id', [83775])
             ->when(isset($params['id']) && is_array($params['id']), function (Builder $query) use ($params) {
                 $query->whereIn('id', $params['id']);
@@ -57,10 +57,7 @@ class WxMsgMapper extends AbstractMapper
             ->when(isset($params['grade_id']) && is_array($params['grade_id']), function (Builder $query) use ($params) {
                 $query->whereIn('grade_id', $params['grade_id']);
             })
-            ->whereHas('orders', function (Builder $query) {
-                $query->where('shop_id', User::VIP_TYPE_SUPER)
-                    ->NormalOrder()->IsNotExpire();
-            })
+            ->orderCourse()
             ->get();
     }
 
