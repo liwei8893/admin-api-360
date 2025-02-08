@@ -8,6 +8,7 @@ use App\Order\Model\Order;
 use App\Score\Model\Avatar;
 use App\System\Model\SystemDictData;
 use Carbon\Carbon;
+use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasMany;
@@ -213,7 +214,7 @@ class User extends MineModel
         return $this->hasOne(SystemDictData::class, 'value', 'user_type')->where('code', 'userType')->where('status', MineModel::ENABLE);
     }
 
-    public function vipType()
+    public function vipType(): Builder
     {
         return $this->hasOne(Order::class, 'user_id', 'id')->select(['user_id', 'id'])
             ->whereHas('course', function ($query) {
@@ -226,12 +227,12 @@ class User extends MineModel
             ->orderBy('vipType', 'desc');
     }
 
-    public function haveSubject()
+    public function haveSubject(): Builder
     {
         return $this->hasMany(Order::class, 'user_id', 'id')->whereIn('shop_id', self::VIP_TYPE_HIGH)->NormalOrder()->IsNotExpire();
     }
 
-    public function orderCourse()
+    public function orderCourse(): Builder
     {
         return $this->hasMany(Order::class, 'user_id', 'id')
             ->whereHas('course', function ($query) {
