@@ -17,8 +17,8 @@ use Hyperf\Coroutine\Parallel;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
-
 use function Hyperf\Config\config;
+use function Hyperf\Support\make;
 
 /**
  * 微信消息服务类.
@@ -66,13 +66,15 @@ class WxMsgService extends AbstractService
     {
         // 查询未发送的一条消息
         $dataMsg = $this->mapper->getFirstUnsentMsg();
-        if (! $dataMsg) {
+        if (!$dataMsg) {
             throw new NormalStatusException('暂无消息发送！');
         }
         $userData = $this->mapper->getSendUsers();
         if ($userData->isEmpty()) {
             throw new NormalStatusException('未查询到发送人员！');
         }
+        $dataMsg->status = WxMsg::SENT;
+        $dataMsg->save();
         // 循环推送到队列
         $setData = [];
         /* @var User $user */
@@ -93,8 +95,6 @@ class WxMsgService extends AbstractService
             //            $message = new SendWxMsgProducer($data);
             //            $this->producer->produce($message);
         }
-        $dataMsg->status = WxMsg::SENT;
-        $dataMsg->save();
         return $this->sendWxMsg($setData);
     }
 
@@ -130,7 +130,7 @@ class WxMsgService extends AbstractService
         $app = new Application($config);
         $accessToken = $app->getAccessToken()->getToken();
         // 创建带连接池的客户端
-        $client = \Hyperf\Support\make(Client::class);
+        $client = make(Client::class);
         // 控制并发数
         $parallel = new Parallel(30);
         foreach ($setData as $data) {
@@ -163,10 +163,10 @@ class WxMsgService extends AbstractService
         if (empty($data['tmp_id'])) {
             $data['tmp_id'] = 'kkK3xAv-Zk3PhcRa6JwlDsITGOF0zLmHs80mM6awdc0';
         }
-        if (! empty($data['keyword2'])) {
+        if (!empty($data['keyword2'])) {
             $data['keyword2'] = Carbon::parse($data['keyword2'])->format('Y-m-d H:i');
         }
-        if (! empty($data['send_time'])) {
+        if (!empty($data['send_time'])) {
             $data['send_time'] = Carbon::parse($data['send_time'])->format('Y-m-d H:i');
         }
     }
