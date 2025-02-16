@@ -76,7 +76,7 @@ class LoginController extends MineController
      * @throws NotFoundExceptionInterface
      * @throws InvalidArgumentException
      */
-    #[PostMapping('refresh')]
+    #[PostMapping('refresh'), Auth]
     public function refresh(LoginUser $user): ResponseInterface
     {
         return $this->success(['token' => $user->refresh()]);
