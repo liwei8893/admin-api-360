@@ -331,6 +331,11 @@ class StaService extends AbstractService
         return (new MineCollection())->export($dto, $filename, $data['items'], $cb);
     }
 
+    /**
+     * 续费统计
+     * @param array $params
+     * @return array
+     */
     public function getOrderRenew(array $params): array
     {
         $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
