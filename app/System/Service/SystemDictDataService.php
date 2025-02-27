@@ -8,7 +8,11 @@ use App\System\Mapper\SystemDictDataMapper;
 use Hyperf\Config\Annotation\Value;
 use Hyperf\Redis\Redis;
 use Mine\Abstracts\AbstractService;
+use Mine\MineModel;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use RedisException;
 
 /**
  * 字典类型业务
@@ -35,8 +39,8 @@ class SystemDictDataService extends AbstractService
     protected ?string $prefix = null;
 
     /**
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function __construct(SystemDictDataMapper $mapper, ContainerInterface $container)
     {
@@ -47,12 +51,30 @@ class SystemDictDataService extends AbstractService
 
     /**
      * 查询多个字典.
-     * @throws \RedisException
+     * @throws RedisException
      */
     public function getLists(?array $params = null): array
     {
-        if (! isset($params['codes'])) {
+        if (!isset($params['codes'])) {
             return [];
+        }
+        // 如果codes=[*] 查询所有字典
+        if (isset($params['codes'][0]) && $params['codes'][0] === '*') {
+            $args = [
+                'select' => ['id', 'label as title', 'value as key', 'code', 'value_type'],
+                'status' => MineModel::ENABLE,
+                'orderBy' => 'sort',
+                'orderType' => 'desc',
+            ];
+            $data = $this->mapper->getListCollect($args, false);
+
+            return $data->groupBy('code')->each(function ($item) {
+                $item->each(function ($i) {
+                    if ($i->value_type === 'int') {
+                        $i->key = (int)$i->key;
+                    }
+                });
+            })->toArray();
         }
 
         $codes = explode(',', $params['codes']);
@@ -67,11 +89,11 @@ class SystemDictDataService extends AbstractService
 
     /**
      * 查询一个字典.
-     * @throws \RedisException
+     * @throws RedisException
      */
     public function getList(?array $params = null, bool $isScope = false): array
     {
-        if (! isset($params['code'])) {
+        if (!isset($params['code'])) {
             return [];
         }
 
@@ -83,7 +105,7 @@ class SystemDictDataService extends AbstractService
 
         $args = [
             'select' => ['id', 'label as title', 'value as key'],
-            'status' => \Mine\MineModel::ENABLE,
+            'status' => MineModel::ENABLE,
             'orderBy' => 'sort',
             'orderType' => 'desc',
         ];
@@ -96,7 +118,7 @@ class SystemDictDataService extends AbstractService
 
     /**
      * 清除缓存.
-     * @throws \RedisException
+     * @throws RedisException
      */
     public function clearCache(): bool
     {

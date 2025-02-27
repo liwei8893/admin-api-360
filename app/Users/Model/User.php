@@ -91,16 +91,19 @@ use function Hyperf\Config\config;
  * @property string $remark_case 首月情况备注
  * @property int $is_student_type 1小学 2初中
  * @property string $mp_openid 小程序openid
- * @property string $app 所属应用
+ * @property string $app 所属应用:1优课,,2番茄,3密课
+ * @property int $created_by 创建人
  * @property-read SystemDictData|null $status 状态 1启用 0禁用
  * @property-read SystemDictData|null $userType
  * @property-read Order|null $vipType
  * @property-read Collection|Order[]|null $haveSubject
+ * @property-read Collection|Order[]|null $orderCourse
  * @property-read Collection|Order[]|null $orders
  * @property-read SystemDictData|null $grades
  * @property-write mixed $user_pass 密码
  * @property-read Collection|Avatar[]|null $avatarTable
  * @property-read string $avatar 用户头像
+ * @property-read UsersDetail|null $userDetail
  */
 class User extends MineModel
 {
@@ -168,12 +171,12 @@ class User extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'user_name', 'real_name', 'user_nickname', 'user_pass', 'user_email', 'id_card', 'remember_token', 'mobile', 'status', 'sex', 'last_login_ip', 'last_login_time', 'birthday', 'signature', 'avatar', 'avatar_frame', 'created_at', 'updated_at', 'is_buy', 'wx_openid', 'qq_openid', 'integral', 'grade_id', 'province_id', 'city_id', 'area_id', 'user_type', 'dis_id', 'identity_card', 'bank_user_name', 'user_from', 'extension_from_user_id', 'qq', 'is_teacher', 'is_assistant', 'is_student', 'attribute_grade_id', 'edit_username', 't_type', 'sale_platform', 'headmaster', 'is_headmaster', 'parent_name', 'parent_wx', 'teacher_wx', 'address', 'remark', 'yw', 'sx', 'yy', 'wl', 'hx', 'ls', 'dl', 'sw', 'zz', 'platform', 'is_show', 'wxgzh_openid', 'old_platform', 'is_adviser', 'order_updated_at', 'experience', 'created_name', 'created_id', 'is_playback_type', 'contact_time', 'user_property', 'days', 'score', 'is_remind', 'first_month', 'tag', 'market_id', 'remark_case', 'is_student_type', 'mp_openid', 'app'];
+    protected array $fillable = ['id', 'user_name', 'real_name', 'user_nickname', 'user_pass', 'user_email', 'id_card', 'remember_token', 'mobile', 'status', 'sex', 'last_login_ip', 'last_login_time', 'birthday', 'signature', 'avatar', 'avatar_frame', 'created_at', 'updated_at', 'is_buy', 'wx_openid', 'qq_openid', 'integral', 'grade_id', 'province_id', 'city_id', 'area_id', 'user_type', 'dis_id', 'identity_card', 'bank_user_name', 'user_from', 'extension_from_user_id', 'qq', 'is_teacher', 'is_assistant', 'is_student', 'attribute_grade_id', 'edit_username', 't_type', 'sale_platform', 'headmaster', 'is_headmaster', 'parent_name', 'parent_wx', 'teacher_wx', 'address', 'remark', 'yw', 'sx', 'yy', 'wl', 'hx', 'ls', 'dl', 'sw', 'zz', 'platform', 'is_show', 'wxgzh_openid', 'old_platform', 'is_adviser', 'order_updated_at', 'experience', 'created_name', 'created_id', 'is_playback_type', 'contact_time', 'user_property', 'days', 'score', 'is_remind', 'first_month', 'tag', 'market_id', 'remark_case', 'is_student_type', 'mp_openid', 'app', 'created_by'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'status' => 'integer', 'sex' => 'integer', 'last_login_time' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_buy' => 'integer', 'integral' => 'integer', 'grade_id' => 'integer', 'province_id' => 'integer', 'city_id' => 'integer', 'area_id' => 'integer', 'user_type' => 'integer', 'dis_id' => 'integer', 'user_from' => 'integer', 'extension_from_user_id' => 'integer', 'qq' => 'integer', 'is_teacher' => 'integer', 'is_assistant' => 'integer', 'is_student' => 'integer', 'attribute_grade_id' => 'integer', 'edit_username' => 'integer', 't_type' => 'integer', 'headmaster' => 'integer', 'is_headmaster' => 'integer', 'yw' => 'integer', 'sx' => 'integer', 'yy' => 'integer', 'wl' => 'integer', 'hx' => 'integer', 'ls' => 'integer', 'dl' => 'integer', 'sw' => 'integer', 'zz' => 'integer', 'is_show' => 'integer', 'is_adviser' => 'integer', 'experience' => 'integer', 'created_id' => 'integer', 'is_playback_type' => 'integer', 'contact_time' => 'integer', 'days' => 'integer', 'score' => 'integer', 'is_remind' => 'integer', 'first_month' => 'integer', 'market_id' => 'integer', 'is_student_type' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'status' => 'integer', 'sex' => 'integer', 'last_login_time' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'is_buy' => 'integer', 'integral' => 'integer', 'grade_id' => 'integer', 'province_id' => 'integer', 'city_id' => 'integer', 'area_id' => 'integer', 'user_type' => 'integer', 'dis_id' => 'integer', 'user_from' => 'integer', 'extension_from_user_id' => 'integer', 'qq' => 'integer', 'is_teacher' => 'integer', 'is_assistant' => 'integer', 'is_student' => 'integer', 'attribute_grade_id' => 'integer', 'edit_username' => 'integer', 't_type' => 'integer', 'headmaster' => 'integer', 'is_headmaster' => 'integer', 'yw' => 'integer', 'sx' => 'integer', 'yy' => 'integer', 'wl' => 'integer', 'hx' => 'integer', 'ls' => 'integer', 'dl' => 'integer', 'sw' => 'integer', 'zz' => 'integer', 'is_show' => 'integer', 'is_adviser' => 'integer', 'experience' => 'integer', 'created_id' => 'integer', 'is_playback_type' => 'integer', 'contact_time' => 'integer', 'days' => 'integer', 'score' => 'integer', 'is_remind' => 'integer', 'first_month' => 'integer', 'market_id' => 'integer', 'is_student_type' => 'integer', 'created_by' => 'integer'];
 
     protected ?string $dateFormat = 'U';
 
@@ -263,5 +266,14 @@ class User extends MineModel
     public function getAvatarAttribute(string $value): string
     {
         return !str_contains($value, 'https') ? config('file.storage.qiniu.domain') . '/' . $value : $value;
+    }
+
+    /**
+     * 关联用户详情表
+     * @return HasOne
+     */
+    public function userDetail(): HasOne
+    {
+        return $this->hasOne(UsersDetail::class, 'user_id', 'id');
     }
 }

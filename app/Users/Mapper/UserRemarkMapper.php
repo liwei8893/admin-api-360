@@ -48,8 +48,8 @@ class UserRemarkMapper extends AbstractMapper
         }
 
         // 创建人ID
-        if (isset($params['created_id']) && $params['created_id'] !== '') {
-            $query->where('created_id', '=', $params['created_id']);
+        if (isset($params['created_by']) && $params['created_by'] !== '') {
+            $query->where('created_by', '=', $params['created_by']);
         }
 
         if (isset($params['has_completed']) && $params['has_completed'] !== '') {
@@ -59,15 +59,15 @@ class UserRemarkMapper extends AbstractMapper
         if (isset($params['created_at'][0], $params['created_at'][1])) {
             $query->whereBetween(
                 'created_at',
-                [strtotime($params['created_at'][0] . ' 00:00:00'), strtotime($params['created_at'][1] . ' 23:59:59')]
+                [$params['created_at'][0] . ' 00:00:00', $params['created_at'][1] . ' 23:59:59']
             );
         }
 
-        if (! empty($params['withUser'])) {
+        if (!empty($params['withUser'])) {
             $query->with('user');
         }
-        if (! empty($params['withAdminUser'])) {
-            $query->with('adminUser');
+        if (!empty($params['withAdminUser'])) {
+            $query->with('adminUser:id,username,nickname,phone');
         }
         if (isset($params['created_name'])) {
             $query->whereHas('adminUser', function (Builder $query) use ($params) {

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Mine\Traits;
 
 use Closure;
+use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\LengthAwarePaginatorInterface;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
 use Hyperf\ModelCache\Manager;
+use Hyperf\Tappable\HigherOrderTapProxy;
 use Mine\Annotation\Transaction;
 use Mine\MineCollection;
 use Mine\MineModel;
@@ -40,10 +42,10 @@ trait MapperTrait
         $page = $params[$pageName] ?? 1;
         $pageSize = $params['pageSize'] ?? $this->model::PAGE_SIZE;
         $paginate = $this->listQuerySetting($params, $isScope)->paginate(
-            (int) $pageSize,
+            (int)$pageSize,
             ['*'],
             $pageName,
-            (int) $page
+            (int)$page
         );
         return $this->setPaginate($paginate);
     }
@@ -68,11 +70,12 @@ trait MapperTrait
      */
     public function getTreeList(
         ?array $params = null,
-        bool $isScope = true,
+        bool   $isScope = true,
         string $id = 'id',
         string $parentField = 'parent_id',
         string $children = 'children'
-    ): array {
+    ): array
+    {
         $params['_mineadmin_tree'] = true;
         $params['_mineadmin_tree_pid'] = $parentField;
         $data = $this->listQuerySetting($params, $isScope)->get();
@@ -92,7 +95,6 @@ trait MapperTrait
 
         $query = $this->handleOrder($query, $params);
 
-        $isScope && $query->userDataScope();
         $isScope && $this->model === 'App\Users\Model\User' && $query->platformDataScope();
 
         return $this->handleSearch($query, $params);
@@ -167,7 +169,7 @@ trait MapperTrait
 
     /**
      * 获取单个值
-     * @return null|\Hyperf\Tappable\HigherOrderTapProxy|mixed|void
+     * @return null|HigherOrderTapProxy|mixed|void
      */
     public function value(array $condition, string $columns = 'id')
     {
@@ -198,7 +200,7 @@ trait MapperTrait
     {
         $this->model::destroy($ids);
 
-        $manager = \Hyperf\Context\ApplicationContext::getContainer()->get(Manager::class);
+        $manager = ApplicationContext::getContainer()->get(Manager::class);
         $manager->destroy($ids, $this->model);
 
         return true;
@@ -352,7 +354,7 @@ trait MapperTrait
         $model = new $modelClass();
         $attrs = $model->getFillable();
         foreach ($data as $name => $val) {
-            if (! in_array($name, $attrs, true)) {
+            if (!in_array($name, $attrs, true)) {
                 unset($data[$name]);
             }
         }
@@ -408,7 +410,7 @@ trait MapperTrait
         $model = new $this->model();
         $attrs = $model->getFillable();
         foreach ($fields as $key => $field) {
-            if (! in_array(trim($field), $attrs) && mb_strpos(str_replace('AS', 'as', $field), 'as') === false) {
+            if (!in_array(trim($field), $attrs) && mb_strpos(str_replace('AS', 'as', $field), 'as') === false) {
                 unset($fields[$key]);
             } else {
                 $fields[$key] = trim($field);
@@ -429,7 +431,7 @@ trait MapperTrait
         $model = new $this->model();
         $attrs = $model->getFillable();
         foreach ($data as $name => $val) {
-            if (! in_array($name, $attrs)) {
+            if (!in_array($name, $attrs)) {
                 unset($data[$name]);
             }
         }
