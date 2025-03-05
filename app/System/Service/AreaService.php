@@ -39,7 +39,7 @@ class AreaService extends AbstractService
     protected Producer $producer;
 
     #[AsyncQueueMessage]
-    public function setUserAreaByMobile(string $mobile): bool
+    public function setUserAreaByMobile(string $mobile): void
     {
         try {
             /** @var User $userModel */
@@ -65,9 +65,8 @@ class AreaService extends AbstractService
             $userModel->province_id = $province;
             $userModel->city_id = $city;
             $userModel->area_id = 0;
-            return $userModel->save();
         } catch (NormalStatusException|GuzzleException|JsonException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
-            return false;
+            console()->error($e->getMessage());
         }
     }
 
