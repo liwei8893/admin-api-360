@@ -10,6 +10,7 @@ use Hyperf\Database\Model\Builder;
 use Hyperf\DbConnection\Db;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
+use function Hyperf\Support\env;
 
 /**
  * 信息管理Mapper类.
@@ -52,7 +53,7 @@ class SystemQueueMessageMapper extends AbstractMapper
             $query->with(['sendUser' => function ($query) {
                 $query->select(['id', 'username', 'nickname', 'avatar']);
             }]);
-            $prefix = \Hyperf\Support\env('DB_PREFIX');
+            $prefix = env('DB_PREFIX');
             $readStatus = $params['read_status'] ?? 'all';
             $sql = <<<sql
                 id IN ( 
@@ -76,7 +77,7 @@ class SystemQueueMessageMapper extends AbstractMapper
      */
     public function getReceiveUserList(int $id): array
     {
-        $prefix = \Hyperf\Support\env('DB_PREFIX');
+        $prefix = env('DB_PREFIX');
         $paginate = Db::table('system_user as u')
             ->select(Db::raw("{$prefix}u.username, {$prefix}u.nickname, if ({$prefix}r.read_status = 2, '已读', '未读') as read_status "))
             ->join('system_queue_message_receive as r', 'u.id', '=', 'r.user_id')

@@ -9,11 +9,15 @@ use App\System\Model\SystemUser;
 use App\System\Queue\Producer\MessageProducer;
 use App\System\Vo\AmqpQueueVo;
 use App\System\Vo\QueueMessageVo;
-use Hyperf\Di\Annotation\AnnotationCollector;
+use Hyperf\AsyncQueue\Driver\DriverFactory;
+use Hyperf\AsyncQueue\Driver\DriverInterface;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Amqp\DelayProducer;
 use Mine\Exception\NormalStatusException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Throwable;
 
 /**
  * 队列管理服务类.
@@ -31,12 +35,15 @@ class SystemQueueLogService extends AbstractService
     #[Inject]
     protected DelayProducer $producer;
 
+    protected DriverInterface $driver;
+
     /**
      * SystemQueueLogService constructor.
      */
-    public function __construct(SystemQueueLogMapper $mapper)
+    public function __construct(SystemQueueLogMapper $mapper, DriverFactory $driverFactory)
     {
         $this->mapper = $mapper;
+        $this->driver = $driverFactory->get('default');
     }
 
     /**
@@ -50,42 +57,23 @@ class SystemQueueLogService extends AbstractService
 
     /**
      * 添加任务到队列.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function addQueue(AmqpQueueVo $amqpQueueVo): bool
     {
-        $producer = AnnotationCollector::get($amqpQueueVo->getProducer());
-
         $class = $amqpQueueVo->getProducer();
 
-        if (! isset($producer['_c']['Hyperf\Amqp\Annotation\Producer'])) {
-            throw new NormalStatusException(t('system.queue_annotation_not_open'), 500);
-        }
-
-        return $this->producer->produce(
-            new $class($amqpQueueVo->getData()),
-            $amqpQueueVo->getIsConfirm(),
-            $amqpQueueVo->getTimeout(),
-            $amqpQueueVo->getDelayTime()
-        );
+        return $this->driver->push(new $class($amqpQueueVo->getData()));
     }
 
     /**
      * 推送消息到队列.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     * @throws \Throwable
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws Throwable
      */
     public function pushMessage(QueueMessageVo $message, array $receiveUsers = []): bool
     {
-        $producer = AnnotationCollector::get(\App\System\Queue\Producer\MessageProducer::class);
-        $consumer = AnnotationCollector::get(\App\System\Queue\Consumer\MessageConsumer::class);
-
-        if (! isset($producer['_c']['Hyperf\Amqp\Annotation\Producer']) || ! isset($consumer['_c']['Hyperf\Amqp\Annotation\Consumer'])) {
-            throw new NormalStatusException(t('system.queue_annotation_not_open'), 500);
-        }
 
         if (empty($message->getTitle())) {
             throw new NormalStatusException(t('system.queue_missing_message_title'), 500);
@@ -110,12 +98,6 @@ class SystemQueueLogService extends AbstractService
             'send_by' => $message->getSendBy() ?: user()->getId(),
             'receive_users' => $receiveUsers,
         ];
-
-        return $this->producer->produce(
-            new MessageProducer($data),
-            $message->getIsConfirm(),
-            $message->getTimeout(),
-            $message->getDelayTime()
-        );
+        return $this->driver->push(new MessageProducer($data));
     }
 }

@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace App\System\Queue\Producer;
 
-use Hyperf\Amqp\Annotation\Producer;
-use Hyperf\Amqp\Message\ProducerMessage;
+use App\System\Mapper\SystemQueueMessageMapper;
+use App\System\Model\SystemQueueLog;
+use Hyperf\AsyncQueue\Job;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * 后台内部消息队列生产处理.
  */
-#[Producer(exchange: 'mineadmin', routingKey: 'message.routing')]
-class MessageProducer extends ProducerMessage
+class MessageProducer extends Job
 {
+
+    public mixed $payload;
+
     /**
      * @param mixed $data
      * @throws ContainerExceptionInterface
@@ -31,5 +34,33 @@ class MessageProducer extends ProducerMessage
         );
 
         $this->payload = $data;
+    }
+
+    public function handle(): void
+    {
+        $logMod = SystemQueueLog::query()->create([
+            'exchange_name' => 'redis',
+            'routing_key_name' => 'message',
+            'queue_name' => 'message',
+            'queue_content' => json_encode($this->payload, JSON_THROW_ON_ERROR),
+            'delay_time' => 0,
+            'produce_status' => SystemQueueLog::PRODUCE_STATUS_SUCCESS,
+            'consume_status' => SystemQueueLog::CONSUME_STATUS_DOING,
+        ]);
+        $payload = $this->payload;
+
+        if (!isset($this->payload['queue_id'])) {
+            $this->payload = ['queue_id' => $logMod->id, 'data' => $payload];
+            $logMod->queue_content = json_encode($this->payload, JSON_THROW_ON_ERROR);
+            $logMod->save();
+        }
+        // 根据参数处理具体逻辑
+        // 通过具体参数获取模型等
+        // 这里的逻辑会在 ConsumerProcess 进程中执行
+        $data = $this->payload['data'];
+        $data['content_id'] = $logMod->id;
+        (new SystemQueueMessageMapper())->save($data);
+        $logMod->consume_status = SystemQueueLog::CONSUME_STATUS_SUCCESS;
+        $logMod->save();
     }
 }
