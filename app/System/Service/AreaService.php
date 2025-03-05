@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\System\Service;
 
 use App\System\Mapper\AreaMapper;
-use App\System\Queue\Producer\SetUserAreaProducer;
 use App\Users\Model\User;
 use App\Users\Service\UsersService;
 use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Amqp\Producer;
+use Hyperf\AsyncQueue\Annotation\AsyncQueueMessage;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Guzzle\ClientFactory;
@@ -38,6 +38,7 @@ class AreaService extends AbstractService
     #[Inject]
     protected Producer $producer;
 
+    #[AsyncQueueMessage]
     public function setUserAreaByMobile(string $mobile): bool
     {
         try {
@@ -88,8 +89,7 @@ class AreaService extends AbstractService
             })
             ->pluck('mobile');
         foreach ($mobiles as $mobile) {
-            $message = new SetUserAreaProducer($mobile);
-            $this->producer->produce($message);
+            $this->setUserAreaByMobile($mobile);
         }
     }
 }
