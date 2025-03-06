@@ -1,0 +1,9 @@
+{
+  "name": "CRM",
+  "label": "CRM",
+  "description": "CRM 大单管理",
+  "installed": true,
+  "enabled": true,
+  "version": "1.0.0",
+  "order": 0
+}

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Cms\Controller;
+namespace App\Crm\Controller;
 
-use App\Cms\Request\CmsUserRequest;
-use App\Cms\Service\CmsUserService;
+use App\Crm\Request\CrmUserRequest;
+use App\Crm\Service\CrmUserService;
 use App\System\Service\SystemUserService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -16,11 +16,11 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
-#[Controller(prefix: "cms/user"), Auth]
-class CmsUserController extends MineController
+#[Controller(prefix: "crm/user"), Auth]
+class CrmUserController extends MineController
 {
     #[Inject]
-    protected CmsUserService $service;
+    protected CrmUserService $service;
 
     #[Inject]
     protected SystemUserService $systemUserService;
@@ -30,7 +30,7 @@ class CmsUserController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('index'), Permission('cms:user:index')]
+    #[GetMapping('index'), Permission('crm:user:index')]
     public function index(): ResponseInterface
     {
         return $this->success($this->service->getPageList($this->request->all()));
@@ -42,7 +42,7 @@ class CmsUserController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('systemUserIndex'), Permission('cms:user:batchDistro')]
+    #[GetMapping('systemUserIndex'), Permission('crm:user:batchDistro')]
     public function systemUserIndex(): ResponseInterface
     {
         return $this->success($this->service->systemUserIndex($this->request->all()));
@@ -53,8 +53,8 @@ class CmsUserController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PostMapping('batchDistro'), Permission('cms:user:batchDistro')]
-    public function batchDistro(CmsUserRequest $request): ResponseInterface
+    #[PostMapping('batchDistro'), Permission('crm:user:batchDistro')]
+    public function batchDistro(CrmUserRequest $request): ResponseInterface
     {
         return $this->service->batchDistro($request->all()) ? $this->success() : $this->error();
     }
@@ -66,7 +66,7 @@ class CmsUserController extends MineController
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('detail/{id}'), Permission('cms:user:detail')]
+    #[GetMapping('detail/{id}'), Permission('crm:user:detail')]
     public function detail(int $id): ResponseInterface
     {
         return $this->success($this->service->detail($id));
@@ -74,13 +74,13 @@ class CmsUserController extends MineController
 
     /**
      * 保存用户信息.
-     * @param CmsUserRequest $request
+     * @param CrmUserRequest $request
      * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
     #[PostMapping('saveDetail')]
-    public function saveDetail(CmsUserRequest $request): ResponseInterface
+    public function saveDetail(CrmUserRequest $request): ResponseInterface
     {
         return $this->success($this->service->saveDetail($request->all()));
     }

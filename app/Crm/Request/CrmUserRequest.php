@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Cms\Request;
+namespace App\Crm\Request;
 
 use Mine\MineFormRequest;
 
 /**
  * 用户表验证数据类.
  */
-class CmsUserRequest extends MineFormRequest
+class CrmUserRequest extends MineFormRequest
 {
     /**
      * 公共规则.

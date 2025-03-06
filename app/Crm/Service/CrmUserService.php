@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Cms\Service;
+namespace App\Crm\Service;
 
-use App\Cms\Mapper\CmsUserMapper;
+use App\Crm\Mapper\CrmUserMapper;
 use App\System\Model\SystemUser;
 use App\Users\Model\User;
 use App\Users\Model\UsersDetail;
@@ -10,11 +10,11 @@ use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 
-class CmsUserService extends AbstractService
+class CrmUserService extends AbstractService
 {
 
     /**
-     * @var CmsUserMapper
+     * @var CrmUserMapper
      */
     #[Inject]
     public $mapper;

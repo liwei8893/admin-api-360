@@ -1,9 +1,0 @@
-{
-    "name": "Cms",
-    "label": "CMS",
-    "description": "CMS 大单管理",
-    "installed": true,
-    "enabled": true,
-    "version": "1.0.0",
-    "order": 0
-}

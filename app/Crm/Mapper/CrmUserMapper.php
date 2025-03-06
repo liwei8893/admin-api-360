@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Cms\Mapper;
+namespace App\Crm\Mapper;
 
 use App\System\Model\SystemUser;
 use App\Users\Model\User;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
-class CmsUserMapper extends AbstractMapper
+class CrmUserMapper extends AbstractMapper
 {
 
     public function assignModel(): void
