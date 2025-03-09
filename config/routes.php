@@ -1,6 +1,9 @@
 <?php
 
 declare(strict_types=1);
+
+use App\System\Controller\ServerController;
+use App\System\Middleware\WsAuthMiddleware;
 use Hyperf\HttpServer\Router\Router;
 
 Router::get('/', function () {
@@ -13,7 +16,7 @@ Router::get('/favicon.ico', function () {
 
 // 消息ws服务器
 Router::addServer('message', function () {
-    Router::get('/message.io', 'App\System\Controller\ServerController', [
-        'middleware' => [\App\System\Middleware\WsAuthMiddleware::class],
+    Router::get('/message.io', ServerController::class, [
+        'middleware' => [WsAuthMiddleware::class],
     ]);
 });
