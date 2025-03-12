@@ -9,6 +9,7 @@ use App\Order\Model\Order;
 use App\Order\Model\OrderTransaction;
 use App\Order\Model\UsersRenew;
 use App\Users\Model\User;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Mine\Abstracts\AbstractMapper;
@@ -34,8 +35,8 @@ class OrderStaMapper extends AbstractMapper
     public function getNewVipSta(array $params): Collection|array
     {
         $params['dateMonth'] = !empty($params['dateMonth']) ? $params['dateMonth'] : date('Y-m');
-        $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
-        $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
+        $firstDay = Carbon::now()->startOfMonth()->timestamp;
+        $lastDay = Carbon::now()->endOfMonth()->timestamp;
         $subQueryShopId = CourseBasis::query()->select('id')->where('course_title', 64);
 
         $query = User::query()->leftJoin('order', 'users.id', 'order.user_id')
@@ -44,10 +45,7 @@ class OrderStaMapper extends AbstractMapper
             ->where('order.pay_states', 7)
             ->where('order.deleted_at', 0)
             ->where('order.status', '!=', 2)
-            ->whereBetween(
-                'order.created_at',
-                [strtotime($firstDay . ' 00:00:00'), strtotime($lastDay . ' 23:59:59')]
-            )
+            ->whereBetween('order.created_at', [$firstDay, $lastDay])
             ->select(['users.id', 'users.platform', 'users.mobile', 'order.created_at', 'order.shop_id', 'order.shop_name', 'order.indate', 'order.real_year'])
             ->orderBy('order.created_at')
             ->platformDataScope('users.platform')
