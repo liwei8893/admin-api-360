@@ -86,10 +86,25 @@ class OrderStaService extends AbstractService
             } elseif ((int)$item[$dayField] >= 5) {
                 $item['tag'] = 'd5';
             }
-            if (!isset($carry[$item['date']][$item['platform']][$item['tag']])) {
-                $carry[$item['date']][$item['platform']][$item['tag']] = 1;
+            // 处理 1.5 和 2.5 的情况
+            if ((float)$item[$dayField] === 1.5) {
+                $tags = ['d1', 'd05'];
+            } elseif ((float)$item[$dayField] === 2.5) {
+                $tags = ['d2', 'd05'];
+            } elseif ((float)$item[$dayField] === 3.5) {
+                $tags = ['d3', 'd05'];
+            } elseif ((float)$item[$dayField] === 4.5) {
+                $tags = ['d4', 'd05'];
             } else {
-                ++$carry[$item['date']][$item['platform']][$item['tag']];
+                $tags = [$item['tag']];
+            }
+
+            foreach ($tags as $tag) {
+                if (!isset($carry[$item['date']][$item['platform']][$tag])) {
+                    $carry[$item['date']][$item['platform']][$tag] = 1;
+                } else {
+                    ++$carry[$item['date']][$item['platform']][$tag];
+                }
             }
             return $carry;
         }, []);
