@@ -62,8 +62,8 @@ class OrderStaMapper extends AbstractMapper
     public function getRenewalSta(array $params): Collection|array
     {
         $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
-        $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
-        $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
+        $firstDay = Carbon::parse($params['dateMonth'])->startOfMonth()->timestamp;
+        $lastDay = Carbon::parse($params['dateMonth'])->endOfMonth()->timestamp;
         $subQueryShopId = CourseBasis::query()->select('id')->where('course_title', 64);
 
         $query = UsersRenew::query()
@@ -78,10 +78,7 @@ class OrderStaMapper extends AbstractMapper
             })
             ->where('users_renew.audit_status', UsersRenew::AUDIT_SUCCESS)
             ->where('users_renew.status', UsersRenew::STATUS_RENEW)
-            ->whereBetween(
-                'users_renew.created_at',
-                [strtotime($firstDay . ' 00:00:00'), strtotime($lastDay . ' 23:59:59')]
-            )
+            ->whereBetween('users_renew.created_at', [$firstDay, $lastDay])
             ->whereIn('order.shop_id', $subQueryShopId)
             ->where('order.pay_states', 7)
             ->where('order.deleted_at', 0)
@@ -97,8 +94,8 @@ class OrderStaMapper extends AbstractMapper
     public function getRefundSta(array $params): Collection|array
     {
         $params['dateMonth'] = $params['dateMonth'] ?? date('Y-m');
-        $firstDay = date('Y-m-01', strtotime($params['dateMonth']));
-        $lastDay = date('Y-m-d', strtotime("{$firstDay} +1 month -1 day"));
+        $firstDay = Carbon::parse($params['dateMonth'])->startOfMonth()->toDateTimeString();
+        $lastDay = Carbon::parse($params['dateMonth'])->endOfMonth()->toDateTimeString();
         $subQueryShopId = CourseBasis::query()->select('id')->where('course_title', 64);
 
         $query = OrderTransaction::query()
@@ -112,10 +109,7 @@ class OrderStaMapper extends AbstractMapper
                     });
             })
             ->where('order_transaction.type_id', OrderTransaction::TYPE_REFUND)
-            ->whereBetween(
-                'order_transaction.create_at',
-                [$firstDay . ' 00:00:00', $lastDay . ' 23:59:59']
-            )
+            ->whereBetween('order_transaction.create_at', [$firstDay, $lastDay])
             ->whereIn('order.shop_id', $subQueryShopId)
             ->where('order.pay_states', 7)
             ->where('order.deleted_at', 0)
