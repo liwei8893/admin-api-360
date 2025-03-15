@@ -35,8 +35,8 @@ class OrderStaMapper extends AbstractMapper
     public function getNewVipSta(array $params): Collection|array
     {
         $params['dateMonth'] = !empty($params['dateMonth']) ? $params['dateMonth'] : date('Y-m');
-        $firstDay = Carbon::now()->startOfMonth()->timestamp;
-        $lastDay = Carbon::now()->endOfMonth()->timestamp;
+        $firstDay = Carbon::parse($params['dateMonth'])->startOfMonth()->timestamp;
+        $lastDay = Carbon::parse($params['dateMonth'])->endOfMonth()->timestamp;
         $subQueryShopId = CourseBasis::query()->select('id')->where('course_title', 64);
 
         $query = User::query()->leftJoin('order', 'users.id', 'order.user_id')
