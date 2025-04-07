@@ -8,7 +8,6 @@ use App\Order\Model\Order;
 use App\Score\Model\ScoreShop;
 use App\System\Model\SystemDictData;
 use Carbon\Carbon;
-use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsToMany;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
@@ -23,6 +22,7 @@ use Mine\MineModel;
  * @property int $course_sub_type 课程为公开课的时候选择子分类 1最强大脑，2思维导图，3作文
  * @property int $course_classify_id 课程分类
  * @property int $sort
+ * @property int $price 课程价格
  * @property int $origin_price 原价
  * @property int $vip_price vip_price
  * @property string $course_cover 封面图片
@@ -68,13 +68,7 @@ use Mine\MineModel;
  * @property int $vip_type 1:优享会员,2:超级会员,3:至尊会员
  * @property int $is_give 1:表示是活动赠送的课程,如果学员购买了这个课添加到素养课里面
  * @property int $class_type 0:小学中学高中都能查,1小学,2中学,3高中
- * @property mixed $price 课程价格
- * @property-read CourseBasisType|null $basisType
- * @property-read Collection|SystemDictData[]|null $basisGrade
- * @property-read Collection|CourseChapter[]|null $chapter
- * @property-read Collection|CoursePeriod[]|null $period
- * @property-read ScoreShop|null $scoreShop
- * @property-read Collection|Order[]|null $order
+ * @property string $detail 课程详情
  */
 class CourseBasis extends MineModel
 {
@@ -87,18 +81,19 @@ class CourseBasis extends MineModel
      */
     protected ?string $table = 'course_basis';
 
-    protected ?string $dateFormat = 'U';
 
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'title', 'subtitle', 'course_type', 'course_sub_type', 'course_classify_id', 'sort', 'price', 'origin_price', 'vip_price', 'course_cover', 'cover_video', 'advance_time', 'is_free', 'is_playback', 'is_generated_class', 'is_vip_class', 'watch_num', 'validity_date', 'start_play_date', 'end_play_date', 'start_play_year', 'sales_num', 'sales_base', 'browse_base', 'states', 'browse_num', 'created_at', 'updated_at', 'indate', 'need_address', 'is_del', 'is_top', 'is_hot', 'material_name', 'note', 'class_id', 'is_group', 'grade_id', 'subject_id', 'is_deal', 'is_signup', 'course_title', 'course_second_title', 'course_sub_title', 'other_img', 'is_playback_type', 'is_show_pic', 'season', 'is_show_sub_title', 'vip_type', 'is_give', 'class_type'];
+    protected array $fillable = ['id', 'title', 'subtitle', 'course_type', 'course_sub_type', 'course_classify_id', 'sort', 'price', 'origin_price', 'vip_price', 'course_cover', 'cover_video', 'advance_time', 'is_free', 'is_playback', 'is_generated_class', 'is_vip_class', 'watch_num', 'validity_date', 'start_play_date', 'end_play_date', 'start_play_year', 'sales_num', 'sales_base', 'browse_base', 'states', 'browse_num', 'created_at', 'updated_at', 'indate', 'need_address', 'is_del', 'is_top', 'is_hot', 'material_name', 'note', 'class_id', 'is_group', 'grade_id', 'subject_id', 'is_deal', 'is_signup', 'course_title', 'course_second_title', 'course_sub_title', 'other_img', 'is_playback_type', 'is_show_pic', 'season', 'is_show_sub_title', 'vip_type', 'is_give', 'class_type', 'detail'];
 
     /**
      * The attributes that should be cast to native types.
      */
     protected array $casts = ['id' => 'integer', 'course_type' => 'integer', 'course_sub_type' => 'integer', 'course_classify_id' => 'integer', 'sort' => 'integer', 'price' => 'integer', 'origin_price' => 'integer', 'vip_price' => 'integer', 'advance_time' => 'integer', 'is_free' => 'integer', 'is_playback' => 'integer', 'is_generated_class' => 'integer', 'is_vip_class' => 'integer', 'watch_num' => 'integer', 'validity_date' => 'integer', 'start_play_date' => 'integer', 'end_play_date' => 'integer', 'start_play_year' => 'integer', 'sales_num' => 'integer', 'sales_base' => 'integer', 'browse_base' => 'integer', 'states' => 'integer', 'browse_num' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'indate' => 'integer', 'need_address' => 'integer', 'is_del' => 'integer', 'is_top' => 'integer', 'is_hot' => 'integer', 'class_id' => 'integer', 'is_group' => 'integer', 'grade_id' => 'integer', 'subject_id' => 'integer', 'is_deal' => 'integer', 'is_signup' => 'integer', 'course_title' => 'integer', 'course_second_title' => 'integer', 'is_playback_type' => 'integer', 'is_show_pic' => 'integer', 'season' => 'integer', 'is_show_sub_title' => 'integer', 'vip_type' => 'integer', 'is_give' => 'integer', 'class_type' => 'integer'];
 
+    protected ?string $dateFormat = 'U';
+    
 
     public function getPriceAttribute(): float|int
     {

@@ -6,11 +6,14 @@ namespace App\Course\Mapper;
 
 use App\Course\Model\CourseChapter;
 use App\Course\Model\CoursePeriod;
+use App\System\Model\SystemUploadfile;
 use Exception;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\HasOne;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
+use Mine\Exception\NormalStatusException;
 
 /**
  * 课程大纲Mapper类.
@@ -68,6 +71,30 @@ class CourseChapterMapper extends AbstractMapper
         $periodModel->tags()->sync($data['tag']);
         $periodModel->questionPeriod()->sync($data['question_period']);
         return $chapterModel->id;
+    }
+
+    public function savePeriodsFile(array $params): int
+    {
+        $periodsMod = CoursePeriod::query()->where('id', $params['id'])->first();
+        if (!$periodsMod) {
+            throw new NormalStatusException('章节不存在!');
+        }
+        $periodsMod->files()->sync($params['fileIds']);
+        return $periodsMod->id;
+    }
+
+    /**
+     * 获取章节文件.
+     * @param array $params
+     * @return SystemUploadfile[]|Collection|null
+     */
+    public function getPeriodsFile(array $params): Collection|array|null
+    {
+        $periodsMod = CoursePeriod::query()->where('id', $params['id'])->first();
+        if (!$periodsMod) {
+            throw new NormalStatusException('章节不存在!');
+        }
+        return $periodsMod->files;
     }
 
     /**

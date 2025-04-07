@@ -68,6 +68,32 @@ class CourseChapterController extends MineController
     }
 
     /**
+     * 保存章节文件.
+     * @param CourseChapterRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('savePeriodsFile'), Permission('course:chapter:save'), OperationLog]
+    public function savePeriodsFile(CourseChapterRequest $request): ResponseInterface
+    {
+        return $this->success(['id' => $this->service->savePeriodsFile($request->all())]);
+    }
+
+    /**
+     * 获取章节文件.
+     * @param CourseChapterRequest $request
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getPeriodsFile')]
+    public function getPeriodsFile(CourseChapterRequest $request): ResponseInterface
+    {
+        return $this->success($this->service->getPeriodsFile($request->all()));
+    }
+
+    /**
      * 更新.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -97,6 +123,6 @@ class CourseChapterController extends MineController
     #[DeleteMapping('delete'), Permission('course:chapter:delete'), OperationLog]
     public function delete(): ResponseInterface
     {
-        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 }

@@ -6,6 +6,7 @@ namespace App\Course\Service;
 
 use App\Course\Mapper\CourseChapterMapper;
 use GuzzleHttp\Exception\GuzzleException;
+use Hyperf\Database\Model\Collection;
 use Hyperf\Guzzle\ClientFactory;
 use JsonException;
 use Mine\Abstracts\AbstractService;
@@ -120,6 +121,21 @@ class CourseChapterService extends AbstractService
     }
 
     /**
+     * 保存章节文件.
+     * @param array $params
+     * @return int
+     */
+    public function savePeriodsFile(array $params): int
+    {
+        return $this->mapper->savePeriodsFile($params);
+    }
+
+    public function getPeriodsFile(array $params): Collection
+    {
+        return $this->mapper->getPeriodsFile($params);
+    }
+
+    /**
      * 处理节数据.
      */
     protected function handlePeriodData(array $data): array
@@ -137,7 +153,7 @@ class CourseChapterService extends AbstractService
             'qurstion_str' => $data['qurstion_str'] ?? '',
         ];
         // 处理视频时长
-        if (! empty($data['course_period']['qiniu_url'])) {
+        if (!empty($data['course_period']['qiniu_url'])) {
             $initPeriodData['duration'] = $this->getVideoDuration($data['course_period']['qiniu_url']);
         }
         $data['course_period'] = array_merge($data['course_period'], $initPeriodData);
@@ -153,7 +169,7 @@ class CourseChapterService extends AbstractService
      */
     protected function getVideoDuration(string $url): int
     {
-        if (! str_contains($url, 'http')) {
+        if (!str_contains($url, 'http')) {
             return 0;
         }
         try {
@@ -169,7 +185,7 @@ class CourseChapterService extends AbstractService
             $response = $client->get($url);
             $apiData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $duration = explode('.', $apiData['streams'][0]['duration'])[0];
-            return (int) $duration;
+            return (int)$duration;
         } catch (GuzzleException|JsonException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             return 0;
         }

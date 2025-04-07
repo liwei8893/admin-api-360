@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Course\Model;
 
 use App\Question\Model\Question;
+use App\System\Model\SystemUploadfile;
 use App\System\Model\Tag;
 use App\Users\Model\User;
 use App\Users\Model\UserCourseRecord;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\Relations\BelongsToMany;
@@ -35,8 +37,8 @@ use Mine\MineModel;
  * @property string $admin_code 管理员进入房间的参加码
  * @property string $teacher_code 老师进入房间的参加码
  * @property string $student_code 学生公共参加码
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property int $is_push 是否推送,0否1是
  * @property int $is_getroominfo 0未拉取直播教室学员观看记录;1已成功拉取到数据；2已拉取未成功或未拉取到数据;
  * @property int $cloud_type 云平台，0 = 百家云，1 = 腾讯云
@@ -56,13 +58,14 @@ use Mine\MineModel;
  * @property int $duration 视频时长
  * @property int $hits 点击量
  * @property int $real_hits 真实点击量
- * @property null|User $teacher
- * @property null|Collection|Talk[] $talk
- * @property null|Collection|Sun[] $sun
- * @property null|Collection|Question[] $questionPeriod
- * @property null|CourseBasis $courseBasis
- * @property null|UserCourseRecord $courseRecord
- * @property null|Collection|Tag[] $tags
+ * @property-read null|User $teacher
+ * @property-read null|Collection|Talk[] $talk
+ * @property-read null|Collection|Sun[] $sun
+ * @property-read null|Collection|Question[] $questionPeriod
+ * @property-read null|CourseBasis $courseBasis
+ * @property-read null|UserCourseRecord $courseRecord
+ * @property-read null|Collection|SystemUploadfile[] $files
+ * @property-read null|Collection|Tag[] $tags
  */
 class CoursePeriod extends MineModel
 {
@@ -122,5 +125,10 @@ class CoursePeriod extends MineModel
     public function tags(): MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    public function files(): BelongsToMany
+    {
+        return $this->belongsToMany(SystemUploadfile::class, 'course_periods_file', 'periods_id', 'file_id');
     }
 }
