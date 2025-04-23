@@ -8,15 +8,18 @@ use App\Question\Mapper\QuestionHistoryMapper;
 use App\Question\Model\Question;
 use App\Question\Model\QuestionHistory;
 use App\Score\Event\ScoreAddEvent;
+use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Cache\Annotation\Cacheable;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
+use Hyperf\Guzzle\ClientFactory;
 use JsonException;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use function Hyperf\Collection\collect;
+use function Hyperf\Support\env;
 
 /**
  * 错题表服务类.
@@ -206,6 +209,80 @@ class QuestionHistoryService extends AbstractService
         // TODO 添加积分事件做题
         event(new ScoreAddEvent('question', $userId, $historyModel->id));
         return $historyModel->toArray();
+    }
+
+    /**
+     * 调用ai判断填空题目是否正确
+     * @param string $ques
+     * @param array $answer
+     * @param array $userAnswer
+     * @return array
+     * @throws ContainerExceptionInterface
+     * @throws GuzzleException
+     * @throws JsonException
+     * @throws NotFoundExceptionInterface
+     */
+    public function aiQuesAnswer6(string $ques, array $answer, array $userAnswer): array
+    {
+        $referenceAnswer = json_encode($answer, JSON_THROW_ON_ERROR);
+        $userAnswerText = json_encode($userAnswer, JSON_THROW_ON_ERROR);
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => "###
+假如你是一位专业的语文老师，你将根据学生提交的题目答案，来判断学生的答案是否正确。1表示正确，0表示错误,根据以下规则一步步执行：
+1. 答案不要求与参考答案完全一致，只要意思正确即可。
+2. 返回格式为[1,0,1,0]
+要求：
+1. 按照上述指定的格式返回判断结果。
+题目:
+{$ques}
+参考答案:
+{$referenceAnswer}
+###"
+            ],
+            [
+                'role' => 'user',
+                'content' => $userAnswerText
+            ]
+        ];
+        return $this->sendAIMessage($messages);
+    }
+
+    /**
+     * 调用ai判断题目是否正确
+     * @param array $messages
+     * @return mixed
+     * @throws ContainerExceptionInterface
+     * @throws GuzzleException
+     * @throws JsonException
+     * @throws NotFoundExceptionInterface
+     */
+    public function sendAIMessage(array $messages): array
+    {
+        $apiKey = env('ARK_API_KEY');
+        if (!$apiKey) {
+            throw new NormalStatusException('请配置ark api key');
+        }
+        $url = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
+        $model = 'doubao-1-5-pro-32k-250115';
+        $clientFactory = container()->get(ClientFactory::class);
+        $client = $clientFactory->create();
+        $response = $client->post($url, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $apiKey,
+            ],
+            'json' => [
+                'model' => $model,
+                'messages' => $messages,
+            ],
+        ]);
+        $apiData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        $message = $apiData['choices'][0]['message']['content'] ?? null;
+        if ($message) {
+            return json_decode($message, true, 512, JSON_THROW_ON_ERROR);
+        }
+        throw new NormalStatusException('返回数据错误');
     }
 
     /**
