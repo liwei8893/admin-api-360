@@ -4,11 +4,14 @@ namespace App\Crm\Service;
 
 use App\Crm\Mapper\CrmUserMapper;
 use App\System\Model\SystemUser;
+use App\System\Service\SystemQueueMessageService;
 use App\Users\Model\User;
 use App\Users\Model\UsersDetail;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
+use Psr\Container\NotFoundExceptionInterface;
+use Throwable;
 
 class CrmUserService extends AbstractService
 {
@@ -18,6 +21,9 @@ class CrmUserService extends AbstractService
      */
     #[Inject]
     public $mapper;
+
+    #[Inject]
+    protected SystemQueueMessageService $queueMessageService;
 
     public function getPageList(?array $params = null, bool $isScope = true): array
     {
@@ -44,6 +50,7 @@ class CrmUserService extends AbstractService
      * 批量分配用户给老师.
      * @param array $params
      * @return bool
+     * @throws Throwable
      */
     public function batchDistro(array $params): bool
     {
@@ -63,7 +70,14 @@ class CrmUserService extends AbstractService
             'created_by' => $teacherInfo->id,
             'created_name' => $teacherInfo->nickname,
         ];
-        return User::query()->whereIn('id', $userIds)->update($updateData);
+        // TODO 发送站内消息
+        try {
+            $userCount = count($userIds);
+            $this->queueMessageService->sendMessage(['title' => '客户分配消息提醒', 'content' => "新进<b class='text-red'>{$userCount}</b>个客户，请及时跟进<span class='text-13px text-red'>点击查看</span>", 'users' => [$teacherInfo->id, 1]]);
+            return User::query()->whereIn('id', $userIds)->update($updateData);
+        } catch (NotFoundExceptionInterface|Throwable $e) {
+            throw new NormalStatusException($e->getMessage());
+        }
     }
 
     /**
