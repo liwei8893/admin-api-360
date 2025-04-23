@@ -21,6 +21,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use RedisException;
+use function Hyperf\Collection\collect;
+use function Hyperf\Config\config;
 
 /**
  * 用户表服务类.
@@ -53,38 +55,38 @@ class UsersService extends AbstractService
     {
         /* @var User $userModel */
         $userModel = $this->mapper->read($params['userId']);
-        if (! $userModel) {
+        if (!$userModel) {
             throw new NormalStatusException('用户不存在!');
         }
         $oldMobile = $userModel->mobile;
         $newMobile = $params['mobile'];
         /* @var User $newUserModel */
-        $newUserModel = $this->mapper->readByMobile((string) $newMobile);
+        $newUserModel = $this->mapper->readByMobile((string)$newMobile);
         // 新手机号不为空，交换手机号
         if ($newUserModel) {
             // 新手机号先设置为空
             $newUserModel->mobile = '';
-            if (! $newUserModel->save()) {
+            if (!$newUserModel->save()) {
                 throw new NormalStatusException('删除新手机号时失败!');
             }
             // 老手机号设置为新手机号
             $userModel->mobile = $newMobile;
-            $userModel->user_pass = $this->mapper->getInitPassword((string) $newMobile);
-            if (! $userModel->save()) {
+            $userModel->user_pass = $this->mapper->getInitPassword((string)$newMobile);
+            if (!$userModel->save()) {
                 throw new NormalStatusException('修改手机号时失败!');
             }
             // 新手机号设置为老手机号
             $newUserModel->mobile = $oldMobile;
-            $newUserModel->user_pass = $this->mapper->getInitPassword((string) $oldMobile);
-            if (! $newUserModel->save()) {
+            $newUserModel->user_pass = $this->mapper->getInitPassword((string)$oldMobile);
+            if (!$newUserModel->save()) {
                 throw new NormalStatusException('修改手机号时失败!');
             }
             return true;
         }
         // 新手机号为空，更换手机号
         $userModel->mobile = $newMobile;
-        $userModel->user_pass = $this->mapper->getInitPassword((string) $newMobile);
-        if (! $userModel->save()) {
+        $userModel->user_pass = $this->mapper->getInitPassword((string)$newMobile);
+        if (!$userModel->save()) {
             throw new NormalStatusException('修改手机号时失败!');
         }
         return true;
@@ -97,7 +99,7 @@ class UsersService extends AbstractService
     public function readByMobile(string $mobile): Model|Builder
     {
         $model = $this->mapper->readByMobile($mobile);
-        if (! $model) {
+        if (!$model) {
             throw new NormalStatusException('此手机号用户不存在!');
         }
         return $model;
@@ -108,7 +110,7 @@ class UsersService extends AbstractService
      */
     public function save(array $data): int
     {
-        if ($this->existsByMobile((string) $data['mobile'])) {
+        if ($this->existsByMobile((string)$data['mobile'])) {
             throw new NormalStatusException('手机号已存在');
         }
         $data = $this->handleSaveData($data);
@@ -134,16 +136,16 @@ class UsersService extends AbstractService
         // 合并初始化参数
         return array_merge([
             'mobile' => $data['mobile'],
-            'user_name' => $this->getInitUserName((string) $data['mobile']),
-            'user_nickname' => $this->getInitUserName((string) $data['mobile']),
-            'real_name' => $this->getInitUserName((string) $data['mobile']),
-            'user_pass' => $this->getInitPassword((string) $data['mobile']),
-            'avatar' => \Hyperf\Config\config('hxt-app.defaultAvatar'),
+            'user_name' => $this->getInitUserName((string)$data['mobile']),
+            'user_nickname' => $this->getInitUserName((string)$data['mobile']),
+            'real_name' => $this->getInitUserName((string)$data['mobile']),
+            'user_pass' => $this->getInitPassword((string)$data['mobile']),
+            'avatar' => config('hxt-app.defaultAvatar'),
             'user_type' => 1,
             'status' => 1,
             'sex' => 3,
             'created_id' => $this->loginUser->getId(),
-            'created_name' => $this->loginUser->getUsername(),
+            'created_name' => $this->loginUser->getNickname(),
         ], $data);
     }
 
@@ -173,19 +175,19 @@ class UsersService extends AbstractService
         foreach ($mobilesArr as $mobile) {
             // 查询用户
             /* @var User $userModel */
-            $userModel = $this->mapper->readByMobile((string) $mobile);
-            if (! $userModel) {
+            $userModel = $this->mapper->readByMobile((string)$mobile);
+            if (!$userModel) {
                 $logInfo[] = ['mobile' => $mobile, 'info' => '未查询到用户'];
                 continue;
             }
             // 查询平台是否一致
-            if (! empty($userModel['platform']) && Str::upper($params['platform']) === Str::upper($userModel['platform'])) {
+            if (!empty($userModel['platform']) && Str::upper($params['platform']) === Str::upper($userModel['platform'])) {
                 $logInfo[] = ['mobile' => $mobile, 'info' => '平台一致不需要变更'];
                 continue;
             }
             // 更换平台编号
             $status = $this->changePlatformByModel($userModel, $params['platform']);
-            if (! $status) {
+            if (!$status) {
                 $logInfo[] = ['mobile' => $mobile, 'info' => '失败'];
             }
             $logInfo[] = ['mobile' => $mobile, 'info' => '成功'];
@@ -198,7 +200,7 @@ class UsersService extends AbstractService
      */
     public function changePlatformByModel(User $userModel, string $platform): bool
     {
-        if (! empty($userModel->platform) && Str::upper($userModel->platform) === Str::upper($platform)) {
+        if (!empty($userModel->platform) && Str::upper($userModel->platform) === Str::upper($platform)) {
             return true;
         }
         $platformData = $this->userSalePlatformService->getPlatformNum($platform);
@@ -213,12 +215,12 @@ class UsersService extends AbstractService
      */
     public function update(int $id, array $data): bool
     {
-        if (! empty($data['mobile'])) {
+        if (!empty($data['mobile'])) {
             unset($data['mobile']);
         }
         /* @var User $userModel */
         $userModel = $this->mapper->read($id);
-        if (! $userModel) {
+        if (!$userModel) {
             throw new NormalStatusException('用户不存在!');
         }
         // 更换平台
@@ -256,9 +258,9 @@ class UsersService extends AbstractService
         $grade = $this->systemDictDataService->getList(['code' => 'grade']);
         $platform = $this->systemDeptService->getPlatformSelect();
         $closure = $closure ?? function (User $model, $data) use ($grade, $platform) {
-            $data = \Hyperf\Collection\collect($data);
-            $platform = \Hyperf\Collection\collect($platform);
-            $grade = \Hyperf\Collection\collect($grade);
+            $data = collect($data);
+            $platform = collect($platform);
+            $grade = collect($grade);
             $errMessage = [];
             // 数据验证
             foreach ($data as $key => $value) {
@@ -266,17 +268,17 @@ class UsersService extends AbstractService
                 if (empty($value['user_name'])) {
                     $errMessage[] = "第{$row}行用户名不能为空";
                 }
-                if (empty($value['mobile']) || ! preg_match('/^1[3456789]\\d{9}$/', $value['mobile'])) {
+                if (empty($value['mobile']) || !preg_match('/^1[3456789]\\d{9}$/', $value['mobile'])) {
                     $errMessage[] = "第{$row}行手机号错误";
                 }
-                if (empty($value['platform']) || ! $platform->contains('key', $value['platform'])) {
+                if (empty($value['platform']) || !$platform->contains('key', $value['platform'])) {
                     $errMessage[] = "第{$row}行平台错误";
                 }
-                if (empty($value['grade']) || ! $grade->contains('title', $value['grade'])) {
+                if (empty($value['grade']) || !$grade->contains('title', $value['grade'])) {
                     $errMessage[] = "第{$row}行年级错误";
                 }
             }
-            if (! empty($errMessage)) {
+            if (!empty($errMessage)) {
                 throw new NormalStatusException(implode(';', $errMessage));
             }
             // 所有要报名的手机号
@@ -287,7 +289,7 @@ class UsersService extends AbstractService
             foreach ($userModel as $user) {
                 // 已存在的用户修改平台
                 $userData = $data->where('mobile', $user->mobile)->first();
-                if ($userData && ! $user->platform) {
+                if ($userData && !$user->platform) {
                     $this->changePlatformByModel($user, $userData['platform']);
                 }
                 // 修改年级
@@ -317,7 +319,7 @@ class UsersService extends AbstractService
 
     public function getPlatformUser(array $params): array
     {
-        if (! empty($params['mobile']) || ! empty($params['user_name']) || ! empty($params['old_platform'])) {
+        if (!empty($params['mobile']) || !empty($params['user_name']) || !empty($params['old_platform'])) {
             $params['mobileEq'] = $params['mobile'] ?? '';
             $params['userNameEq'] = $params['user_name'] ?? '';
             $params['oldPlatformEq'] = $params['old_platform'] ?? '';
@@ -338,10 +340,10 @@ class UsersService extends AbstractService
      */
     protected function handleData(array $params): array
     {
-        if (! isset($params['orderBy'])) {
+        if (!isset($params['orderBy'])) {
             $params['orderBy'] = ['id'];
         }
-        if (! isset($params['orderType'])) {
+        if (!isset($params['orderType'])) {
             $params['orderType'] = ['desc'];
         }
         return $params;
@@ -352,8 +354,8 @@ class UsersService extends AbstractService
      */
     protected function handleExportData(array &$data): void
     {
-        if (! empty($data['created_at'])) {
-            $data['created_at'] = date('Y-m-d H:i:s', (int) $data['created_at']);
+        if (!empty($data['created_at'])) {
+            $data['created_at'] = date('Y-m-d H:i:s', (int)$data['created_at']);
         }
     }
 }

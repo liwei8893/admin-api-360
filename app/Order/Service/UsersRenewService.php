@@ -48,7 +48,7 @@ class UsersRenewService extends AbstractService
             'user_id' => $data['user_id'],
             'created_at' => time(),
             'created_id' => $this->loginUser->getId(),
-            'created_name' => $this->loginUser->getUsername(),
+            'created_name' => $this->loginUser->getNickname(),
             'money' => $data['money'] ?? 0,
             'audit_status' => $this->loginUser->isNoAuditRole() ? UsersRenew::AUDIT_SUCCESS : UsersRenew::AUDIT_PENDING,
             'remark' => $data['remark'] ?? '',
