@@ -18,6 +18,9 @@ use Mine\MineModel;
  * @property string $record_url 录音地址，记录到CRM系统的通话记录，点击可以播放。呼叫失败则为空
  * @property int $create_time 执行呼叫的时间戳
  * @property int $api_date 时间戳
+ * @property int $followup_type 跟进类型
+ * @property string $followup_content 跟进内容
+ * @property string $next_followup_date 下次跟进日期
  */
 class CrmCallRecord extends MineModel
 {
@@ -30,10 +33,10 @@ class CrmCallRecord extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'caller', 'callee', 'task_id', 'status', 'status_info', 'duration', 'return_uuid', 'record_url', 'create_time', 'api_date'];
+    protected array $fillable = ['id', 'caller', 'callee', 'task_id', 'status', 'status_info', 'duration', 'return_uuid', 'record_url', 'create_time', 'api_date', 'followup_type', 'followup_content', 'next_followup_date'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'status' => 'integer', 'duration' => 'integer', 'create_time' => 'integer', 'api_date' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'status' => 'integer', 'duration' => 'integer', 'create_time' => 'integer', 'api_date' => 'integer', 'followup_type' => 'integer'];
 }

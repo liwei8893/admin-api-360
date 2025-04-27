@@ -42,17 +42,6 @@ class CrmCallRecordRequest extends MineFormRequest
     public function saveRules(): array
     {
         return [
-            //坐席号码，仅API自动外呼有此参数 验证
-            'caller' => 'required',
-            //被叫号码 验证
-            'callee' => 'required',
-            //状态码，1为呼叫成功，0为呼叫失败,2为呼叫中 验证
-            'status' => 'required',
-            //通话时长，大于等于0的整数，单位为秒 验证
-            'duration' => 'required',
-            //通话唯一标识。 验证
-            'return_uuid' => 'required',
-
         ];
     }
 
@@ -63,17 +52,6 @@ class CrmCallRecordRequest extends MineFormRequest
     public function updateRules(): array
     {
         return [
-            //坐席号码，仅API自动外呼有此参数 验证
-            'caller' => 'required',
-            //被叫号码 验证
-            'callee' => 'required',
-            //状态码，1为呼叫成功，0为呼叫失败,2为呼叫中 验证
-            'status' => 'required',
-            //通话时长，大于等于0的整数，单位为秒 验证
-            'duration' => 'required',
-            //通话唯一标识。 验证
-            'return_uuid' => 'required',
-
         ];
     }
 
