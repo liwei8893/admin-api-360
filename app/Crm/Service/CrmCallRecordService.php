@@ -54,7 +54,7 @@ class CrmCallRecordService extends AbstractService
     {
         // 获取呼叫中心配置
         $config = SettingConfig::query()->where('group_id', 3)->get();
-        $CID = $config->where('key', 'cid')->first()?->value;
+        $CID = $config->where('key', 'CID')->first()?->value;
         $APIKey = $config->where('key', 'APIKey')->first()?->value;
         $ReturnURL = $config->where('key', 'ReturnURL')->first()?->value;
         if (!$CID || !$APIKey || !$ReturnURL) {

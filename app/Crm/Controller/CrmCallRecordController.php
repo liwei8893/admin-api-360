@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Controller;
 
-use App\CRM\Request\CrmCallRecordRequest;
-use App\CRM\Service\CrmCallRecordService;
+use App\Crm\Request\CrmCallRecordRequest;
+use App\Crm\Service\CrmCallRecordService;
 use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
