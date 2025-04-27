@@ -1,9 +1,10 @@
 <?php
-namespace App\CRM\Dto;
 
-use Mine\Interfaces\MineModelExcel;
+namespace App\Crm\Dto;
+
 use Mine\Annotation\ExcelData;
 use Mine\Annotation\ExcelProperty;
+use Mine\Interfaces\MineModelExcel;
 
 /**
  * 话单记录Dto （导入导出）

@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace App\Crm\Service;
 
-use App\CRM\Mapper\CrmCallRecordMapper;
+use App\Crm\Mapper\CrmCallRecordMapper;
 use App\Crm\Model\CrmCallRecord;
 use App\Setting\Model\SettingConfig;
 use App\System\Model\SystemUser;
