@@ -1,7 +1,7 @@
 {
-  "name": "CRM",
-  "label": "CRM",
-  "description": "CRM 大单管理",
+  "name": "Crm",
+  "label": "Crm",
+  "description": "Crm 大单管理",
   "installed": true,
   "enabled": true,
   "version": "1.0.0",

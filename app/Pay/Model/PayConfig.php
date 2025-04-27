@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Pay\Model;
 
+use Carbon\Carbon;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
 
 /**
- * @property int $id 
+ * @property int $id
  * @property string $remark 备注
  * @property string $app_id APP APPID
  * @property string $mp_app_id 公众号 APPID
@@ -18,9 +19,9 @@ use Mine\MineModel;
  * @property string $mch_secret_cert 商户私钥API证书 PRIVATE KEY
  * @property string $mch_public_cert_path 商户公钥证书路径API证书 CERTIFICATE
  * @property string $key v2商户秘钥
- * @property \Carbon\Carbon $created_at 创建时间
- * @property \Carbon\Carbon $updated_at 更新时间
- * @property int $deleted_at 删除时间
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
+ * @property string $deleted_at 删除时间
  */
 class PayConfig extends MineModel
 {
@@ -39,7 +40,5 @@ class PayConfig extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
-
-    protected ?string $dateFormat = 'U';
+    protected array $casts = ['id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }

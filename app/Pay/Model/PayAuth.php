@@ -15,11 +15,12 @@ use Mine\MineModel;
  * @property string $app_secret 公众号秘钥
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
- * @property int $deleted_at 删除时间
+ * @property string $deleted_at 删除时间
  */
 class PayAuth extends MineModel
 {
     use SoftDeletes;
+
     /**
      * The table associated with the model.
      */
@@ -33,7 +34,5 @@ class PayAuth extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'integer'];
-
-    protected ?string $dateFormat = 'U';
+    protected array $casts = ['id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }

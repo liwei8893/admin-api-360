@@ -1,0 +1,98 @@
+<?php
+declare(strict_types=1);
+/**
+ * MineAdmin is committed to providing solutions for quickly building web applications
+ * Please view the LICENSE file that was distributed with this source code,
+ * For the full copyright and license information.
+ * Thank you very much for using MineAdmin.
+ *
+ * @Author X.Mo<root@imoi.cn>
+ * @Link   https://gitee.com/xmo/MineAdmin
+ */
+
+namespace App\Crm\Request;
+
+use Mine\MineFormRequest;
+
+/**
+ * 话单记录验证数据类
+ */
+class CrmCallRecordRequest extends MineFormRequest
+{
+    /**
+     * 公共规则
+     */
+    public function commonRules(): array
+    {
+        return [];
+    }
+
+    public function callRules(): array
+    {
+        return [
+            'callee' => 'required',
+        ];
+    }
+
+
+    /**
+     * 新增数据验证规则
+     * return array
+     */
+    public function saveRules(): array
+    {
+        return [
+            //坐席号码，仅API自动外呼有此参数 验证
+            'caller' => 'required',
+            //被叫号码 验证
+            'callee' => 'required',
+            //状态码，1为呼叫成功，0为呼叫失败,2为呼叫中 验证
+            'status' => 'required',
+            //通话时长，大于等于0的整数，单位为秒 验证
+            'duration' => 'required',
+            //通话唯一标识。 验证
+            'return_uuid' => 'required',
+
+        ];
+    }
+
+    /**
+     * 更新数据验证规则
+     * return array
+     */
+    public function updateRules(): array
+    {
+        return [
+            //坐席号码，仅API自动外呼有此参数 验证
+            'caller' => 'required',
+            //被叫号码 验证
+            'callee' => 'required',
+            //状态码，1为呼叫成功，0为呼叫失败,2为呼叫中 验证
+            'status' => 'required',
+            //通话时长，大于等于0的整数，单位为秒 验证
+            'duration' => 'required',
+            //通话唯一标识。 验证
+            'return_uuid' => 'required',
+
+        ];
+    }
+
+
+    /**
+     * 字段映射名称
+     * return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'id' => 'ID',
+            'caller' => '坐席号码，仅API自动外呼有此参数',
+            'callee' => '被叫号码',
+            'status' => '状态码，1为呼叫成功，0为呼叫失败,2为呼叫中',
+            'duration' => '通话时长，大于等于0的整数，单位为秒',
+            'return_uuid' => '通话唯一标识。',
+
+        ];
+    }
+
+}
