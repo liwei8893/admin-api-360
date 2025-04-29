@@ -80,7 +80,7 @@ class CrmCallRecordService extends AbstractService
         ]);
         $apiData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         if ($apiData['Status'] !== 1) {
-            throw new NormalStatusException("呼叫中心调用失败");
+            throw new NormalStatusException("呼叫中心调用失败" . $apiData['StatusInfo']);
         }
         // 保存记录
         $mod = new CrmCallRecord();
@@ -101,6 +101,7 @@ class CrmCallRecordService extends AbstractService
      */
     public function notify(array $params): bool
     {
+        logger('call_center')->info('回调参数', $params);
         if (!$params['ReturnUUID']) {
             logger('call_center')->error('回调参数错误', $params);
             return false;
@@ -110,7 +111,7 @@ class CrmCallRecordService extends AbstractService
             logger('call_center')->error('回调UUID未查询到记录', $params['ReturnUUID']);
             return false;
         }
-        $mod->task_id = $params['TaskID'];
+        $mod->task_id = $params?['TaskID'];
         $mod->status = $params['Status'];
         $mod->status_info = $params['StatusInfo'];
         $mod->duration = $params['Duration'];
