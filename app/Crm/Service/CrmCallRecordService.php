@@ -101,7 +101,7 @@ class CrmCallRecordService extends AbstractService
      */
     public function notify(array $params): bool
     {
-        logger('call_center')->info('回调参数', $params);
+        logger('call_center')->error('回调参数', $params);
         if (!$params['ReturnUUID']) {
             logger('call_center')->error('回调参数错误', $params);
             return false;
@@ -111,7 +111,7 @@ class CrmCallRecordService extends AbstractService
             logger('call_center')->error('回调UUID未查询到记录', $params['ReturnUUID']);
             return false;
         }
-        $mod->task_id = $params?['TaskID'];
+        $mod->task_id = $params['TaskID'];
         $mod->status = $params['Status'];
         $mod->status_info = $params['StatusInfo'];
         $mod->duration = $params['Duration'];
