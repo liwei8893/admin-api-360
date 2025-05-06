@@ -25,6 +25,9 @@ class CrmUserService extends AbstractService
     #[Inject]
     protected SystemQueueMessageService $queueMessageService;
 
+    #[Inject]
+    protected CrmUserTimelineService $userTimelineService;
+
     public function getPageList(?array $params = null, bool $isScope = true): array
     {
         $params = $this->handleData($params);
@@ -54,6 +57,8 @@ class CrmUserService extends AbstractService
      */
     public function batchDistro(array $params): bool
     {
+        $createdAdminId = user()->getId();
+        $createdAdminName = user()->getNickname();
         $userIds = (array)$params['userIds'];
         $adminId = (int)$params['adminId'];
         // 如果 adminId 是0,表示取消分配
@@ -70,11 +75,17 @@ class CrmUserService extends AbstractService
             'created_by' => $teacherInfo->id,
             'created_name' => $teacherInfo->nickname,
         ];
-        // TODO 发送站内消息
         try {
+            // 发送站内消息
             $userCount = count($userIds);
             $this->queueMessageService->sendMessage(['title' => '客户分配消息提醒', 'content' => "新进<b class='text-red'>{$userCount}</b>个客户，请及时跟进<span class='text-13px text-red'>点击查看</span>", 'users' => [$teacherInfo->id, 1]]);
-            return User::query()->whereIn('id', $userIds)->update($updateData);
+            // 更新用户信息
+            $state = User::query()->whereIn('id', $userIds)->update($updateData);
+            // 写入用户时间线
+            foreach ($userIds as $userId) {
+                $this->userTimelineService->saveDistroUserEvent($userId, $createdAdminId, "[{$createdAdminName}]分配学员给[{$teacherInfo->nickname}]");
+            }
+            return $state;
         } catch (NotFoundExceptionInterface|Throwable $e) {
             throw new NormalStatusException($e->getMessage());
         }

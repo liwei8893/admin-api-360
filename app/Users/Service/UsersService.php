@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Users\Service;
 
+use App\Crm\Service\CrmUserTimelineService;
 use App\System\Service\SystemDeptService;
 use App\System\Service\SystemDictDataService;
 use App\Users\Mapper\UsersMapper;
@@ -14,6 +15,7 @@ use Hyperf\Database\Model\Model;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Stringable\Str;
 use Mine\Abstracts\AbstractService;
+use Mine\Annotation\Resubmit;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\LoginUser;
@@ -46,6 +48,9 @@ class UsersService extends AbstractService
 
     #[Inject]
     protected UserSalePlatformService $userSalePlatformService;
+
+    #[Inject]
+    protected CrmUserTimelineService $crmUserTimelineService;
 
     /**
      * 更换手机号.
@@ -114,7 +119,12 @@ class UsersService extends AbstractService
             throw new NormalStatusException('手机号已存在');
         }
         $data = $this->handleSaveData($data);
-        return $this->mapper->save($data);
+        $userId = $this->mapper->save($data);
+        // 保存crm用户时间线
+        if ($userId) {
+            $this->crmUserTimelineService->saveCreatedUserEvent($userId, $this->loginUser->getId(), "管理员[{$this->loginUser->getNickname()}]注册账号");
+        }
+        return $userId;
     }
 
     /**
@@ -252,7 +262,7 @@ class UsersService extends AbstractService
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface|RedisException
      */
-    #[Transaction]
+    #[Transaction, Resubmit(60)]
     public function import(string $dto, ?Closure $closure = null): bool
     {
         $grade = $this->systemDictDataService->getList(['code' => 'grade']);
@@ -310,7 +320,11 @@ class UsersService extends AbstractService
                 $gradeId = $grade->where('title', $item['grade'])->first()['key'];
                 $item['grade_id'] = $gradeId;
                 $insertData = $this->handleSaveData($item);
-                $model->create($insertData);
+                $userMod = $model->create($insertData);
+                // 保存crm用户时间线
+                if ($userMod) {
+                    $this->crmUserTimelineService->saveCreatedUserEvent($userMod->id, $this->loginUser->getId(), "管理员[{$this->loginUser->getNickname()}]批量导入账号");
+                }
             }
             return true;
         };

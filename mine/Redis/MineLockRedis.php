@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Mine\Redis;
 
 use Closure;
+use Hyperf\Coroutine\Coroutine;
 use Mine\Abstracts\AbstractRedis;
 use Mine\Exception\NormalStatusException;
 use Mine\Interfaces\MineRedisInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Throwable;
 
 class MineLockRedis extends AbstractRedis implements MineRedisInterface
 {
+    
     /**
      * 设置 key 类型名.
      */
@@ -34,12 +38,12 @@ class MineLockRedis extends AbstractRedis implements MineRedisInterface
      */
     public function run(Closure $closure, string $key, int $expired, int $timeout = 0, float $sleep = 0.1): bool
     {
-        if (! $this->lock($key, $expired, $timeout, $sleep)) {
+        if (!$this->lock($key, $expired, $timeout, $sleep)) {
             return false;
         }
 
         try {
-            call_user_func($closure);
+            $closure();
         } catch (Throwable $e) {
             logger('Redis Lock')->error(t('mineadmin.redis_lock_error'));
             throw new NormalStatusException(t('mineadmin.redis_lock_error'), 500);
@@ -52,8 +56,8 @@ class MineLockRedis extends AbstractRedis implements MineRedisInterface
 
     /**
      * 检查锁
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function check(string $key): bool
     {
@@ -62,32 +66,34 @@ class MineLockRedis extends AbstractRedis implements MineRedisInterface
 
     /**
      * 添加锁
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function lock(string $key, int $expired, int $timeout = 0, float $sleep = 0.1): bool
     {
         $retry = $timeout > 0 ? intdiv($timeout * 100, 10) : 1;
 
         $name = $this->getKey($key);
+        // 初始化 $lock 变量
+        $lock = false;
 
         while ($retry > 0) {
             $lock = redis()->set($name, 1, ['nx', 'ex' => $expired]);
             if ($lock || $timeout === 0) {
                 break;
             }
-            \Hyperf\Coroutine\Coroutine::id() ? \Hyperf\Coroutine\Coroutine::sleep($sleep) : usleep(9999999);
+            Coroutine::id() ? Coroutine::sleep($sleep) : usleep(9999999);
 
             --$retry;
         }
 
-        return true;
+        return $lock;
     }
 
     /**
      * 释放锁
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function freed(string $key): bool
     {
