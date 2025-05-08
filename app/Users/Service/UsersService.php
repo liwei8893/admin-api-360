@@ -19,6 +19,7 @@ use Mine\Annotation\Resubmit;
 use Mine\Annotation\Transaction;
 use Mine\Exception\NormalStatusException;
 use Mine\Helper\LoginUser;
+use Mine\Redis\MineLockRedis;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -112,19 +113,31 @@ class UsersService extends AbstractService
 
     /**
      * 创建用户.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function save(array $data): int
     {
-        if ($this->existsByMobile((string)$data['mobile'])) {
-            throw new NormalStatusException('手机号已存在');
+        $lockRedis = new MineLockRedis();
+        $lockRedis->setTypeName('user:save:lock');
+        $lockKey = $data['mobile'];
+        try {
+            $lockRedis->lock($lockKey, 2);
+            if ($this->existsByMobile((string)$data['mobile'])) {
+                throw new NormalStatusException('手机号已存在');
+            }
+            $data = $this->handleSaveData($data);
+            $userId = $this->mapper->save($data);
+            // 保存crm用户时间线
+            if ($userId) {
+                $this->crmUserTimelineService->saveCreatedUserEvent($userId, $this->loginUser->getId(), "管理员[{$this->loginUser->getNickname()}]注册账号");
+            }
+            return $userId;
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            throw new NormalStatusException($e->getMessage(), 500);
+        } finally {
+            $lockRedis->freed($lockKey);
         }
-        $data = $this->handleSaveData($data);
-        $userId = $this->mapper->save($data);
-        // 保存crm用户时间线
-        if ($userId) {
-            $this->crmUserTimelineService->saveCreatedUserEvent($userId, $this->loginUser->getId(), "管理员[{$this->loginUser->getNickname()}]注册账号");
-        }
-        return $userId;
     }
 
     /**
@@ -300,7 +313,7 @@ class UsersService extends AbstractService
                 // 已存在的用户修改平台
                 $userData = $data->where('mobile', $user->mobile)->first();
                 if ($userData && !$user->platform) {
-                    $this->changePlatformByModel($user, $userData['platform']);
+                    $this->changePlatformByModel($user, (string)$userData['platform']);
                 }
                 // 修改年级
                 $gradeId = $grade->where('title', $userData['grade'])->first()['key'];

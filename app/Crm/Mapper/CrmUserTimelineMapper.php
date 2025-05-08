@@ -39,7 +39,7 @@ class CrmUserTimelineMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-        
+
         // 用户ID
         if (isset($params['user_id']) && $params['user_id'] !== '') {
             $query->where('user_id', '=', $params['user_id']);
@@ -52,20 +52,24 @@ class CrmUserTimelineMapper extends AbstractMapper
 
         // 事件
         if (isset($params['event']) && $params['event'] !== '') {
-            $query->where('event', 'like', '%'.$params['event'].'%');
+            $query->where('event', 'like', '%' . $params['event'] . '%');
         }
 
         // 事件详情
         if (isset($params['event_detail']) && $params['event_detail'] !== '') {
-            $query->where('event_detail', 'like', '%'.$params['event_detail'].'%');
+            $query->where('event_detail', 'like', '%' . $params['event_detail'] . '%');
         }
 
         // 创建时间
         if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
             $query->whereBetween(
                 'created_at',
-                [ $params['created_at'][0], $params['created_at'][1] ]
+                [$params['created_at'][0], $params['created_at'][1]]
             );
+        }
+
+        if (!empty($params['withAdmin'])) {
+            $query->with(['admin:id,nickname']);
         }
 
         return $query;

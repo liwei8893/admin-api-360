@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Order\Service;
 
+use App\Course\Model\CourseBasis;
+use App\Crm\Service\CrmUserTimelineService;
 use App\Order\Mapper\OrderMapper;
 use App\Order\Model\Order;
 use App\Order\Model\UsersRenew;
@@ -43,6 +45,9 @@ class OrderService extends AbstractService
 
     #[Inject]
     protected SystemQueueMessageService $queueMessageService;
+
+    #[Inject]
+    protected CrmUserTimelineService $crmUserTimelineService;
 
     /**
      * 批量修改有效期
@@ -332,6 +337,8 @@ class OrderService extends AbstractService
     #[Transaction]
     public function auditOrder(array $params): bool
     {
+        // 获取订单课程id,后续判断是否是订单课程
+        $orderCourseIds = CourseBasis::query()->select('id')->where('course_title', 64)->pluck('id');
         foreach ($params['ids'] as $id) {
             /* @var Order $model */
             $model = $this->mapper->read($id);
@@ -353,8 +360,12 @@ class OrderService extends AbstractService
             $model->cause_text = $params['cause_text'] ?? '';
             $model->save();
             // TODO 增加积分 init 新增会员审核完毕时
-            if ($model->shop_id === User::VIP_TYPE_SUPER && $model->pay_states === Order::PAY_SUCCESS) {
+            if ($model->pay_states === Order::PAY_SUCCESS && $orderCourseIds->contains($model->shop_id)) {
                 event(new ScoreAddEvent('init', $model->user_id, $model->id));
+                // 保存crm用户时间线
+                $adminId = user()->getId();
+                $adminName = user()->getNickname();
+                $this->crmUserTimelineService->saveRegisterCourseEvent($model->user_id, $adminId, "管理员[{$adminName}]报名[{$model->shop_name}]课程");
             }
         }
         return true;

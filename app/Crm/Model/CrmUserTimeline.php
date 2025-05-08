@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Model;
 
+use App\System\Model\SystemUser;
 use Carbon\Carbon;
+use Hyperf\Database\Model\Relations\BelongsTo;
 use Mine\MineModel;
 
 /**
@@ -32,4 +34,9 @@ class CrmUserTimeline extends MineModel
      * The attributes that should be cast to native types.
      */
     protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'created_by' => 'integer', 'created_at' => 'datetime'];
+
+    public function admin(): BelongsTo
+    {
+        return $this->belongsTo(SystemUser::class, 'created_by', 'id');
+    }
 }

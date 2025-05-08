@@ -68,4 +68,24 @@ class CrmUserTimelineService extends AbstractService
         ];
         return CrmUserTimeline::query()->insert($data);
     }
+
+
+    /**
+     * 保存用户注册课程事件
+     * @param int $userId
+     * @param int $createdBy
+     * @param string $detail
+     * @return bool
+     */
+    public function saveRegisterCourseEvent(int $userId, int $createdBy, string $detail): bool
+    {
+        $data = [
+            'user_id' => $userId,
+            'created_by' => $createdBy,
+            'event' => '注册课程',
+            'event_detail' => $detail,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        return CrmUserTimeline::query()->insert($data);
+    }
 }

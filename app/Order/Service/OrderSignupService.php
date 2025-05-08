@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Order\Service;
 
+use App\Course\Model\CourseBasis;
 use App\Course\Service\CourseService;
+use App\Crm\Service\CrmUserTimelineService;
 use App\Order\Mapper\OrderSignupMapper;
 use App\Order\Model\Order;
 use App\Score\Event\ScoreAddEvent;
@@ -34,6 +36,9 @@ class OrderSignupService extends AbstractService
 
     #[Inject]
     protected CourseService $courseService;
+
+    #[Inject]
+    protected CrmUserTimelineService $crmUserTimelineService;
 
     /**
      * @throws ContainerExceptionInterface
@@ -67,6 +72,8 @@ class OrderSignupService extends AbstractService
     #[Transaction]
     public function adminSave(array $collects): bool
     {
+        // 获取订单课程id,后续判断是否是订单课程
+        $orderCourseIds = CourseBasis::query()->select('id')->where('course_title', 64)->pluck('id');
         foreach ($collects as $collect) {
             // 查报名的课程 是否已经报过
             $courseModels = $this->courseService->getCourseInfoByIds($collect['course_signup'], ['id', 'title', 'price']);
@@ -93,8 +100,10 @@ class OrderSignupService extends AbstractService
                 !empty($collect['subject']) && $orderModel->orderSubject()->sync($collect['subject']);
                 !empty($collect['grade']) && $orderModel->orderGrade()->sync($collect['grade']);
                 // TODO 新增会员时增加积分,只有报超级会员时才加积分,$insertData['pay_states]===7时增加,===8时在审核时增加
-                if ($insertData['pay_states'] === Order::PAY_SUCCESS && $course['id'] === User::VIP_TYPE_SUPER) {
+                if ($insertData['pay_states'] === Order::PAY_SUCCESS && $orderCourseIds->contains($course['id'])) {
                     event(new ScoreAddEvent('init', (int)$collect['userId'], $orderModel->id));
+                    // 保存crm用户时间线
+                    $this->crmUserTimelineService->saveRegisterCourseEvent((int)$collect['userId'], $this->loginUser->getId(), "管理员[{$this->loginUser->getNickname()}]报名[{$course['title']}]课程");
                 }
             }
         }
