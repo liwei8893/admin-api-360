@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Mine\Helper;
 
+use Exception;
+
 class Id
 {
     public const TWEPOCH = 1620750646000; // 时间起始标记点，作为基准，一般取系统的最近时间（一旦确定不能变动）
@@ -37,11 +39,11 @@ class Id
     public function __construct($workerId = 1, $datacenterId = 1, $sequence = 0)
     {
         if ($workerId > $this->maxWorkerId || $workerId < 0) {
-            throw new \Exception("worker Id can't be greater than {$this->maxWorkerId} or less than 0");
+            throw new Exception("worker Id can't be greater than {$this->maxWorkerId} or less than 0");
         }
 
         if ($datacenterId > $this->maxDatacenterId || $datacenterId < 0) {
-            throw new \Exception("datacenter Id can't be greater than {$this->maxDatacenterId} or less than 0");
+            throw new Exception("datacenter Id can't be greater than {$this->maxDatacenterId} or less than 0");
         }
 
         $this->workerId = $workerId;
@@ -50,20 +52,21 @@ class Id
     }
 
     /**
+     * @param int|null $workerId
      * @return int
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getId(?int $workerId = null)
+    public function getId(?int $workerId = null): int
     {
         $timestamp = $this->timeGen();
 
-        if (! is_null($workerId)) {
+        if (!is_null($workerId)) {
             $this->workerId = $workerId;
         }
 
         if ($timestamp < $this->lastTimestamp) {
             $diffTimestamp = $this->lastTimestamp - $timestamp;
-            throw new \Exception("Clock moved backwards.  Refusing to generate id for {$diffTimestamp} milliseconds");
+            throw new Exception("Clock moved backwards.  Refusing to generate id for {$diffTimestamp} milliseconds");
         }
 
         if ($this->lastTimestamp == $timestamp) {

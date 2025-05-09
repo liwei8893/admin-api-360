@@ -88,4 +88,23 @@ class CrmUserTimelineService extends AbstractService
         ];
         return CrmUserTimeline::query()->insert($data);
     }
+
+    /**
+     * 保存购买商品事件
+     * @param int $userId
+     * @param int $createdBy
+     * @param string $detail
+     * @return bool
+     */
+    public function saveBuyShopEvent(int $userId, int $createdBy, string $detail): bool
+    {
+        $data = [
+            'user_id' => $userId,
+            'created_by' => $createdBy,
+            'event' => '购买商品',
+            'event_detail' => $detail,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        return CrmUserTimeline::query()->insert($data);
+    }
 }

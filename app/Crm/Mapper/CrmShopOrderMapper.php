@@ -39,6 +39,22 @@ class CrmShopOrderMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
+        $query->whereHas('user', function ($query) use ($params) {
+            $query->platformDataScope();
+        });
+
+        if (!empty($params['withShop'])) {
+            $query->with('shop');
+        }
+        if (!empty($params['withUser'])) {
+            $query->with('user:id,user_name,mobile');
+        }
+        if (!empty($params['withAddress'])) {
+            $query->with('address');
+        }
+        if (!empty($params['withAdmin'])) {
+            $query->with('admin:id,nickname');
+        }
 
         if (isset($params['user_id']) && $params['user_id'] !== '') {
             $query->where('user_id', '=', $params['user_id']);
@@ -90,8 +106,8 @@ class CrmShopOrderMapper extends AbstractMapper
         }
 
         // 创建人
-        if (isset($params['created_id']) && $params['created_id'] !== '') {
-            $query->where('created_id', '=', $params['created_id']);
+        if (isset($params['created_by']) && $params['created_by'] !== '') {
+            $query->where('created_by', '=', $params['created_by']);
         }
 
         return $query;

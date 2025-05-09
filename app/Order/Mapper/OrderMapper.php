@@ -69,14 +69,14 @@ class OrderMapper extends AbstractMapper
             $query->where('user_id', $params['user_id']);
         }
 
-        if (isset($params['status']) && ! is_array($params['status'])) {
+        if (isset($params['status']) && !is_array($params['status'])) {
             $query->where('status', $params['status']);
         }
         if (isset($params['status']) && is_array($params['status'])) {
             $query->whereIn('status', $params['status']);
         }
 
-        if (isset($params['pay_states']) && ! is_array($params['pay_states'])) {
+        if (isset($params['pay_states']) && !is_array($params['pay_states'])) {
             $query->where('pay_states', $params['pay_states']);
         }
 
@@ -84,7 +84,7 @@ class OrderMapper extends AbstractMapper
             $query->whereIn('pay_states', $params['pay_states']);
         }
 
-        if (isset($params['audit_status']) && ! is_array($params['audit_status'])) {
+        if (isset($params['audit_status']) && !is_array($params['audit_status'])) {
             $query->where('audit_status', $params['audit_status']);
         }
 
@@ -98,7 +98,7 @@ class OrderMapper extends AbstractMapper
         if (isset($params['shop_id']) && is_array($params['shop_id'])) {
             $query->whereIn('shop_id', $params['shop_id']);
         }
-        if (isset($params['shop_id']) && ! is_array($params['shop_id'])) {
+        if (isset($params['shop_id']) && !is_array($params['shop_id'])) {
             $query->where('shop_id', $params['shop_id']);
         }
         if (isset($params['pay_type'])) {
@@ -114,26 +114,26 @@ class OrderMapper extends AbstractMapper
         }
 
         // 关联续费表
-        if (! empty($params['withRenew'])) {
+        if (!empty($params['withRenew'])) {
             $query->with('usersRenew');
         }
 
         // 关联订单年级
-        if (! empty($params['withOrderGrade'])) {
+        if (!empty($params['withOrderGrade'])) {
             $query->with('orderGrade');
         }
 
         // 关联订单科目
-        if (! empty($params['withOrderSubject'])) {
+        if (!empty($params['withOrderSubject'])) {
             $query->with('orderSubject');
         }
 
-        if (! empty($params['withCourse'])) {
+        if (!empty($params['withCourse'])) {
             $query->with('course:id,title,price,indate,created_at,subject_id,course_title,is_give');
         }
 
         // 关联付款表
-        if (! empty($params['withPayment'])) {
+        if (!empty($params['withPayment'])) {
             $query->with('payment');
         }
         if (isset($params['payment_number'])) {
@@ -145,7 +145,7 @@ class OrderMapper extends AbstractMapper
         }
 
         // 关联用户表
-        if (! empty($params['withUsers'])) {
+        if (!empty($params['withUsers'])) {
             $query->with('users:id,user_name,mobile,platform,old_platform,user_type,status,grade_id');
         }
         $query->whereHas('users', function ($query) use ($params) {
@@ -187,7 +187,7 @@ class OrderMapper extends AbstractMapper
     protected function handleOrderSummarySearch(Builder $query, array $params): Builder
     {
         // 核单数量统计,已完成核单数量统计
-        if (! empty($params['withSummaryCount'])) {
+        if (!empty($params['withSummaryCount'])) {
             $query->withCount(['summary',
                 'summary as summary_status_count' => function (Builder $query) {
                     $query->where('status', 1);
@@ -195,7 +195,7 @@ class OrderMapper extends AbstractMapper
             ]);
         }
         // 核单次数筛选
-        if (! empty($params['summary_count'])) {
+        if (!empty($params['summary_count'])) {
             $query->has('summary', '=', $params['summary_count']);
         }
         // 核单状态筛选
