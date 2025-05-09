@@ -39,7 +39,10 @@ class CrmUserAddressMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-
+        // 用户
+        if (isset($params['user_id']) && $params['user_id'] !== '') {
+            $query->where('user_id', '=', $params['user_id']);
+        }
         // 收货人姓名
         if (isset($params['consignee']) && $params['consignee'] !== '') {
             $query->where('consignee', 'like', '%' . $params['consignee'] . '%');
