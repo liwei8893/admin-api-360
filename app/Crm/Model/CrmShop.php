@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Model;
 
+use Carbon\Carbon;
+use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\SoftDeletes;
 use Mine\MineModel;
 
@@ -17,10 +19,12 @@ use Mine\MineModel;
  * @property \Carbon\Carbon $created_at 商品创建时间
  * @property \Carbon\Carbon $updated_at 商品信息更新时间
  * @property string $deleted_at 商品删除时间
+ * @property-read null|\Hyperf\Database\Model\Collection|CrmShopCourse[] $course 课程表
  */
 class CrmShop extends MineModel
 {
     use SoftDeletes;
+
     /**
      * The table associated with the model.
      */
@@ -29,10 +33,16 @@ class CrmShop extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'shop_name', 'category_id', 'price', 'description', 'status', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'shop_name', 'category_id', 'price', 'description', 'course', 'status', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'category_id' => 'integer', 'price' => 'decimal:2', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'category_id' => 'integer', 'price' => 'decimal:2', 'course' => 'array', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+
+    //  关联商品课程表
+    public function course(): HasMany
+    {
+        return $this->hasMany(CrmShopCourse::class, 'shop_id', 'id');
+    }
 }
