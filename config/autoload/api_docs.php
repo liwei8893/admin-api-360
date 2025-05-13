@@ -2,14 +2,28 @@
 
 declare(strict_types=1);
 
+use Mine\GlobalResponse;
+use function Hyperf\Support\env;
+
 return [
     // enable false 将不会启动 swagger 服务
-    'enable' => \Hyperf\Support\env('APP_ENV') !== 'prod',
+    'enable' => env('APP_ENV') !== 'prod',
     'format' => 'json',
     'output_dir' => BASE_PATH . '/runtime/swagger',
-    'prefix_url' => \Hyperf\Support\env('API_DOCS_PREFIX_URL', '/swagger'),
+    'prefix_url' => env('API_DOCS_PREFIX_URL', '/swagger'),
     // 替换验证属性
     'validation_custom_attributes' => true,
+    /*
+|--------------------------------------------------------------------------
+| 设置全局返回的代理类
+|--------------------------------------------------------------------------
+|
+| 全局返回 如:[code=>200,data=>null] 格式,设置会后会全局生成对应文档
+| 配合ApiVariable注解使用,示例参考GlobalResponse类
+| 返回数据格式可以利用AOP统一返回
+|
+*/
+    'global_return_responses_class' => GlobalResponse::class,
     // 全局responses
     'responses' => [
         ['response' => 401, 'description' => 'Unauthorized'],

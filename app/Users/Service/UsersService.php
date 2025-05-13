@@ -247,7 +247,7 @@ class UsersService extends AbstractService
             throw new NormalStatusException('用户不存在!');
         }
         // 更换平台
-        if ($data['platform'] !== $userModel->platform) {
+        if (isset($data['platform']) && $data['platform'] !== $userModel->platform) {
             $data = $this->userSalePlatformService->withPlatformNum($data);
         }
         return $this->mapper->update($id, $data);

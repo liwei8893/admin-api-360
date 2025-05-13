@@ -50,7 +50,7 @@
     "phpoffice/phpspreadsheet": "^1.29.0",
     "symfony/property-access": "^6.3.0",
     "symfony/serializer": "^6.4.0",
-    "tangwei/apidocs": "^2.2.0",
+    "tangwei/apidocs": "^v3.0.7",
     "w7corp/easywechat": "^6.17.0",
     "xmo/jwt-auth": "0.6.0",
     "yansongda/hyperf-pay": "^1.7.0",

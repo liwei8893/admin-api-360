@@ -71,9 +71,9 @@ class CrmShopOrderMapper extends AbstractMapper
             $query->where('order_status', '=', $params['order_status']);
         }
 
-        // 订单类型
-        if (isset($params['order_type']) && $params['order_type'] !== '') {
-            $query->where('order_type', '=', $params['order_type']);
+        // 任务类型
+        if (isset($params['task_type']) && $params['task_type'] !== '') {
+            $query->where('task_type', '=', $params['task_type']);
         }
 
         // 地址信息
@@ -99,6 +99,14 @@ class CrmShopOrderMapper extends AbstractMapper
         // 创建人
         if (isset($params['created_by']) && $params['created_by'] !== '') {
             $query->where('created_by', '=', $params['created_by']);
+        }
+
+        // 创建时间
+        if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) === 2) {
+            $query->whereBetween(
+                'created_at',
+                [$params['created_at'][0], $params['created_at'][1]]
+            );
         }
 
         return $query;

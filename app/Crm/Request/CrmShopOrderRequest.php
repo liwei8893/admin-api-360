@@ -39,10 +39,6 @@ class CrmShopOrderRequest extends MineFormRequest
             'shop_id' => 'required',
             //订单金额 验证
             'amount' => 'required',
-            //订单状态，0 - 待付款，1 - 已付款，2 - 已发货，3 - 已完成，4 - 已取消 验证
-            'order_status' => 'required',
-            //订单类型 验证
-            'order_type' => 'required',
         ];
     }
 
@@ -57,10 +53,6 @@ class CrmShopOrderRequest extends MineFormRequest
             'shop_id' => 'required',
             //订单金额 验证
             'amount' => 'required',
-            //订单状态，0 - 待付款，1 - 已付款，2 - 已发货，3 - 已完成，4 - 已取消 验证
-            'order_status' => 'required',
-            //订单类型 验证
-            'order_type' => 'required',
         ];
     }
 
@@ -82,7 +74,6 @@ class CrmShopOrderRequest extends MineFormRequest
             'logistics_company' => '物流公司',
             'tracking_number' => '物流单号',
             'created_id' => '创建人',
-
         ];
     }
 

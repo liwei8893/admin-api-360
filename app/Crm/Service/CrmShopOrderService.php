@@ -49,11 +49,14 @@ class CrmShopOrderService extends AbstractService
      */
     public function save(array $data): int
     {
-        $data = $this->handleData($data);
         $shopMod = CrmShop::query()->where('id', $data['shop_id'])->first();
         if (!$shopMod) {
             throw new NormalStatusException('商品不存在');
         }
+        $data['order_number'] = snowflake_id();
+        $data['created_by'] = user()->getId();
+        $data['order_status'] = 8;
+        // 写入用户时间线
         $createdAdminId = user()->getId();
         $createdAdminName = user()->getNickname();
         $this->userTimelineService->saveBuyShopEvent($data['user_id'], $createdAdminId, "[{$createdAdminName}]出单[{$shopMod->shop_name}]");
@@ -65,33 +68,13 @@ class CrmShopOrderService extends AbstractService
      * @param int $id
      * @param array $data
      * @return bool
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      * @throws Throwable
      */
     public function update(int $id, array $data): bool
     {
-        $data = $this->handleData($data);
+        if (isset($data['order_status'])) {
+            unset($data['order_status']);
+        }
         return parent::update($id, $data);
-    }
-
-
-    /**
-     * @param array $data
-     * @return array
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     * @throws Throwable
-     */
-    protected function handleData(array $data): array
-    {
-        if (empty($data['created_by'])) {
-            $data['created_by'] = user()->getId();
-        }
-        // 如果没有订单id，则生成订单id
-        if (empty($data['order_number'])) {
-            $data['order_number'] = snowflake_id();
-        }
-        return $data;
     }
 }

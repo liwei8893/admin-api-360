@@ -22,6 +22,7 @@ use Mine\MineModel;
  * @property string $name 姓名
  * @property array $excellent_subject 优学科
  * @property array $poor_subject 差学科
+ * @property array $tags 标签
  * @property string $birthday 生日
  * @property int $gender 性别
  * @property int $learning_attitude 学习态度
@@ -33,8 +34,8 @@ use Mine\MineModel;
  * @property int $personality 性格
  * @property int $is_living_on_campus 是否住校
  * @property int $no_call 禁止外呼
- * @property Carbon $created_at 创建时间
- * @property Carbon $updated_at 更新时间
+ * @property \Carbon\Carbon $created_at 创建时间
+ * @property \Carbon\Carbon $updated_at 更新时间
  */
 class UsersDetail extends MineModel
 {
@@ -46,10 +47,10 @@ class UsersDetail extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'user_id', 'customer_name', 'customer_identity', 'customer_source', 'customer_level', 'phone1', 'phone2', 'media', 'media_product', 'address', 'name', 'excellent_subject', 'poor_subject', 'birthday', 'gender', 'learning_attitude', 'age', 'grade', 'is_serious', 'tutoring_class', 'private_tutor', 'personality', 'is_living_on_campus', 'no_call', 'created_at', 'updated_at'];
+    protected array $fillable = ['id', 'user_id', 'customer_name', 'customer_identity', 'customer_source', 'customer_level', 'phone1', 'phone2', 'media', 'media_product', 'address', 'name', 'excellent_subject', 'poor_subject', 'tags', 'birthday', 'gender', 'learning_attitude', 'age', 'grade', 'is_serious', 'tutoring_class', 'private_tutor', 'personality', 'is_living_on_campus', 'no_call', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'customer_identity' => 'integer', 'customer_source' => 'integer', 'customer_level' => 'integer', 'media' => 'integer', 'media_product' => 'integer', 'excellent_subject' => 'array', 'poor_subject' => 'array', 'gender' => 'integer', 'learning_attitude' => 'integer', 'age' => 'integer', 'grade' => 'integer', 'is_serious' => 'integer', 'tutoring_class' => 'integer', 'private_tutor' => 'integer', 'personality' => 'integer', 'is_living_on_campus' => 'integer', 'no_call' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'customer_identity' => 'integer', 'customer_source' => 'integer', 'customer_level' => 'integer', 'media' => 'integer', 'media_product' => 'integer', 'excellent_subject' => 'array', 'poor_subject' => 'array', 'tags' => 'array', 'gender' => 'integer', 'learning_attitude' => 'integer', 'age' => 'integer', 'grade' => 'integer', 'is_serious' => 'integer', 'tutoring_class' => 'integer', 'private_tutor' => 'integer', 'personality' => 'integer', 'is_living_on_campus' => 'integer', 'no_call' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }
