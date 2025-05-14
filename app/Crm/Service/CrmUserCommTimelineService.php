@@ -29,10 +29,10 @@ class CrmUserCommTimelineService extends AbstractService
         $nowDate = Carbon::now();
         // comm_time时间每周递增
         $insetData = [
-            ['user_id' => $userId, 'comm_time' => $nowDate->toDateString(), 'content' => '第一次沟通'],
-            ['user_id' => $userId, 'comm_time' => $nowDate->addWeek()->toDateString(), 'content' => '第二次沟通'],
-            ['user_id' => $userId, 'comm_time' => $nowDate->addWeeks(2)->toDateString(), 'content' => '第三次沟通'],
-            ['user_id' => $userId, 'comm_time' => $nowDate->addWeeks(3)->toDateString(), 'content' => '第四次沟通'],
+            ['user_id' => $userId, 'comm_time' => $nowDate->toDateTimeString(), 'content' => '第一次沟通'],
+            ['user_id' => $userId, 'comm_time' => $nowDate->addWeek()->toDateTimeString(), 'content' => '第二次沟通'],
+            ['user_id' => $userId, 'comm_time' => $nowDate->addWeeks(2)->toDateTimeString(), 'content' => '第三次沟通'],
+            ['user_id' => $userId, 'comm_time' => $nowDate->addWeeks(3)->toDateTimeString(), 'content' => '第四次沟通'],
         ];
         return $this->batchSave($insetData);
     }
