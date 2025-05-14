@@ -49,10 +49,6 @@ class CrmShopOrderRequest extends MineFormRequest
     public function updateRules(): array
     {
         return [
-            //商品 ID，关联商品表 验证
-            'shop_id' => 'required',
-            //订单金额 验证
-            'amount' => 'required',
         ];
     }
 

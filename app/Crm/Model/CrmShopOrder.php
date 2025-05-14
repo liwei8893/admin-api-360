@@ -23,6 +23,7 @@ use Mine\MineModel;
  * @property string $logistics_company 物流公司
  * @property string $tracking_number 物流单号
  * @property string $order_note 订单备注
+ * @property string $audit_comment 审批意见
  * @property array $course 课程表
  * @property int $created_by 创建人 ID，关联用户表
  * @property \Carbon\Carbon $created_at 订单创建时间
@@ -45,7 +46,7 @@ class CrmShopOrder extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'user_id', 'shop_id', 'order_number', 'amount', 'order_status', 'task_type', 'address_id', 'logistics_company', 'tracking_number', 'order_note', 'course', 'created_by', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'user_id', 'shop_id', 'order_number', 'amount', 'order_status', 'task_type', 'address_id', 'logistics_company', 'tracking_number', 'order_note', 'audit_comment', 'course', 'created_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.

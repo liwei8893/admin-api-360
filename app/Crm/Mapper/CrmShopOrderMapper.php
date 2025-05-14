@@ -38,7 +38,7 @@ class CrmShopOrderMapper extends AbstractMapper
             $query->with('shop');
         }
         if (!empty($params['withUser'])) {
-            $query->with('user:id,user_name,mobile');
+            $query->with('user:id,user_name,mobile,platform');
         }
         if (!empty($params['withAddress'])) {
             $query->with('address');

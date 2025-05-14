@@ -14,6 +14,7 @@ namespace App\Crm\Service;
 
 use App\Crm\Mapper\CrmShopOrderMapper;
 use App\Crm\Model\CrmShop;
+use App\Crm\Model\CrmShopOrder;
 use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
@@ -33,6 +34,9 @@ class CrmShopOrderService extends AbstractService
 
     #[Inject]
     protected CrmUserTimelineService $userTimelineService;
+
+    #[Inject]
+    protected CrmUserCommTimelineService $userCommTimelineService;
 
     public function __construct(CrmShopOrderMapper $mapper)
     {
@@ -72,9 +76,49 @@ class CrmShopOrderService extends AbstractService
      */
     public function update(int $id, array $data): bool
     {
-        if (isset($data['order_status'])) {
-            unset($data['order_status']);
-        }
         return parent::update($id, $data);
+    }
+
+    /**
+     * 订单审核.
+     * @param int $orderId
+     * @param int $status
+     * @param string $comment
+     * @return bool
+     */
+    public function auditOrder(int $orderId, int $status, string $comment = ''): bool
+    {
+        // 验证状态合法性
+        if (!in_array($status, [7, 9])) {
+            throw new NormalStatusException('审核状态必须为7(通过)或9(不通过)');
+        }
+
+        // 审核不通过时必须提供审批意见
+        if ($status === 9 && empty($comment)) {
+            throw new NormalStatusException('审核不通过时必须填写审批意见');
+        }
+
+        // 查询订单
+        /** @var CrmShopOrder $order */
+        $order = $this->mapper->read($orderId);
+        if (!$order) {
+            throw new NormalStatusException('订单不存在');
+        }
+        // 审核通过的订单如果有course课程表字段,添加课程表到crm_user_comm_timeline用户沟通时间表,规则为课程表的时间+1天
+        if ($status === 7 && !empty($order->course)) {
+            // 构建时间,课程表时间course_time加上1天
+            $timelineData = [];
+            foreach ($order->course as $item) {
+                $timelineData[] = [
+                    'user_id' => $order->user_id,
+                    'comm_time' => date('Y-m-d H:i:s', strtotime($item['course_time']) + 86400),
+                    'content' => "课程[{$item['course_name']}]回访",
+                ];
+            }
+            $this->userCommTimelineService->batchSave($timelineData);
+        }
+
+        // 更新订单状态和审批意见
+        return $this->mapper->update($orderId, ['order_status' => $status, 'audit_comment' => $comment]);
     }
 }

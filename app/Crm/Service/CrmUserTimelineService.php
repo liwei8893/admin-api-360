@@ -1,19 +1,11 @@
 <?php
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 namespace App\Crm\Service;
 
 use App\Crm\Mapper\CrmUserTimelineMapper;
 use App\Crm\Model\CrmUserTimeline;
+use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 
 /**
@@ -25,6 +17,9 @@ class CrmUserTimelineService extends AbstractService
      * @var CrmUserTimelineMapper
      */
     public $mapper;
+
+    #[Inject]
+    protected CrmUserCommTimelineService $crmUserCommTimelineService;
 
     public function __construct(CrmUserTimelineMapper $mapper)
     {
@@ -47,6 +42,8 @@ class CrmUserTimelineService extends AbstractService
             'event_detail' => $detail,
             'created_at' => date('Y-m-d H:i:s')
         ];
+        // 同步添加沟通时间
+        $this->crmUserCommTimelineService->initCommTimeline($userId);
         return CrmUserTimeline::query()->insert($data);
     }
 
