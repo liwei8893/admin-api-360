@@ -1,5 +1,4 @@
-import { request } from '@/libs/request'
-import type { BasicFetchResult, BasicPageParams } from '@/types/request'
+import type { BasicFetchResult } from '@/types/request.ts'
 
 /**
  * {COMMENT}

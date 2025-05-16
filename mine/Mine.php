@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -115,10 +107,10 @@ class Mine
      */
     protected function saveModuleConfig(string $mod): void
     {
-        if (! empty($mod)) {
+        if (!empty($mod)) {
             $fs = container()->get(\Hyperf\Support\Filesystem\Filesystem::class);
             $modJson = $this->getAppPath() . $mod . DIRECTORY_SEPARATOR . 'config.json';
-            if (! $fs->isWritable($modJson)) {
+            if (!$fs->isWritable($modJson)) {
                 $fs->chmod($modJson, 666);
             }
             $fs->put($modJson, \json_encode($this->getModuleInfo($mod), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));

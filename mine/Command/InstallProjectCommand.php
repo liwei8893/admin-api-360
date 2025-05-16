@@ -1,14 +1,5 @@
 <?php
 
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
 declare(strict_types=1);
 
@@ -169,12 +160,12 @@ class InstallProjectCommand extends MineCommand
 
             $this->database = [
                 'charset' => $dbchar,
-                'dbname'  => $dbname,
-                'dbhost'  => $dbhost,
-                'dbport'  => $dbport,
-                'prefix'  => $prefix === 'Null' ? '' : $prefix,
-                'dbuser'  => $dbuser,
-                'dbpass'  => $dbpass ?: '',
+                'dbname' => $dbname,
+                'dbhost' => $dbhost,
+                'dbport' => $dbport,
+                'prefix' => $prefix === 'Null' ? '' : $prefix,
+                'dbuser' => $dbuser,
+                'dbpass' => $dbpass ?: '',
             ];
         }
 
@@ -185,13 +176,13 @@ class InstallProjectCommand extends MineCommand
             $redisHost = $this->ask('please input redis host, default:', '127.0.0.1');
             $redisPort = $this->ask('please input redis host port, default:', '6379');
             $redisPass = $this->ask('please input redis password, default:', 'Null');
-            $redisDb   = $this->ask('please input redis db, default:', '0');
+            $redisDb = $this->ask('please input redis db, default:', '0');
 
             $this->redis = [
                 'host' => $redisHost,
                 'port' => $redisPort,
                 'auth' => $redisPass === 'Null' ? '(NULL)' : $redisPass,
-                'db'   => $redisDb,
+                'db' => $redisDb,
             ];
         }
 
@@ -219,7 +210,7 @@ class InstallProjectCommand extends MineCommand
             $env['REDIS_HOST'] = $this->redis['host'];
             $env['REDIS_AUTH'] = $this->redis['auth'];
             $env['REDIS_PORT'] = $this->redis['port'];
-            $env['REDIS_DB'] = (string) $this->redis['db'];
+            $env['REDIS_DB'] = (string)$this->redis['db'];
             $env['AMQP_HOST'] = '127.0.0.7';
             $env['AMQP_PORT'] = '5672';
             $env['AMQP_USER'] = 'guest';
@@ -285,7 +276,7 @@ class InstallProjectCommand extends MineCommand
             if ($name === 'System') {
                 $this->initUserData();
             }
-            $this->call('mine:seeder-run',  ['name' => $name, '--force' => 'true']);
+            $this->call('mine:seeder-run', ['name' => $name, '--force' => 'true']);
             $this->line($this->getGreenText(sprintf('"%s" module install successfully', $name)));
         }
     }

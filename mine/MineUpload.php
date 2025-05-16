@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -81,7 +73,7 @@ class MineUpload
             $content = '';
             for ($i = 1; $i <= $data['total']; ++$i) {
                 $chunkFile = "{$path}{$data['hash']}_{$data['total']}_{$i}.chunk";
-                if (! $fs->isFile($chunkFile)) {
+                if (!$fs->isFile($chunkFile)) {
                     return ['chunk' => $data['index'], 'code' => 500, 'status' => 'fail'];
                 }
                 $content .= $fs->get($chunkFile);
@@ -89,7 +81,7 @@ class MineUpload
             }
             $fileName = $this->getNewName() . '.' . Str::lower($data['ext']);
             $storagePath = $this->getPath(null, $this->getStorageMode() != 1);
-            if (! $this->filesystem->write($storagePath . '/' . $fileName, $content)) {
+            if (!$this->filesystem->write($storagePath . '/' . $fileName, $content)) {
                 throw new NormalStatusException('分块上传失败', 500);
             }
             $fileInfo = [
@@ -101,7 +93,7 @@ class MineUpload
                 'hash' => $data['hash'],
                 'suffix' => $data['ext'],
                 'size_byte' => $data['size'],
-                'size_info' => format_size((int) $data['size'] * 1024),
+                'size_info' => format_size((int)$data['size'] * 1024),
                 'url' => $this->assembleUrl(null, $fileName),
             ];
 
@@ -148,7 +140,7 @@ class MineUpload
             $hash = md5_file($realPath);
             $fs->delete($realPath);
 
-            if (! $hash) {
+            if (!$hash) {
                 throw new \Exception(t('network_image_save_fail'));
             }
 
@@ -156,7 +148,7 @@ class MineUpload
                 return $model->toArray();
             }
 
-            if (! $this->filesystem->write($path . '/' . $filename, $content)) {
+            if (!$this->filesystem->write($path . '/' . $filename, $content)) {
                 throw new \Exception(t('network_image_save_fail'));
             }
         } catch (\Throwable $e) {
@@ -165,7 +157,7 @@ class MineUpload
 
         $fileInfo = [
             'storage_mode' => $this->getStorageMode(),
-            'origin_name' => md5((string) time()) . '.jpg',
+            'origin_name' => md5((string)time()) . '.jpg',
             'object_name' => $filename,
             'mime_type' => 'image/jpg',
             'storage_path' => $path,
@@ -237,7 +229,7 @@ class MineUpload
      */
     public function getNewName(): string
     {
-        return (string) container()->get(\Hyperf\Snowflake\IdGeneratorInterface::class)->generate();
+        return (string)container()->get(\Hyperf\Snowflake\IdGeneratorInterface::class)->generate();
     }
 
     /**
@@ -253,8 +245,8 @@ class MineUpload
         $path = $this->getPath($config['path'] ?? null, $this->getStorageMode() != 1);
         $filename = $this->getNewName() . '.' . Str::lower($uploadedFile->getExtension());
 
-        if (! $this->filesystem->writeStream($path . '/' . $filename, $uploadedFile->getStream()->detach())) {
-            throw new NormalStatusException((string) $uploadedFile->getError(), 500);
+        if (!$this->filesystem->writeStream($path . '/' . $filename, $uploadedFile->getStream()->detach())) {
+            throw new NormalStatusException((string)$uploadedFile->getError(), 500);
         }
 
         $fileInfo = [

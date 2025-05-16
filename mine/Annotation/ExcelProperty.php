@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -39,16 +31,18 @@ class ExcelProperty extends AbstractAnnotation
      */
     public function __construct(
         public ?string $value = null,
-        public ?int $index = null,
+        public ?int    $index = null,
         public ?string $customField = null,
-        public ?int $width = null,
+        public ?int    $width = null,
         public ?string $align = null,
         public ?string $headColor = null,
         public ?string $headBgColor = null,
         public ?string $color = null,
         public ?string $bgColor = null,
-        public ?array $dictData = null,
+        public ?array  $dictData = null,
         public ?string $dictName = null,
         public ?string $path = null
-    ) {}
+    )
+    {
+    }
 }

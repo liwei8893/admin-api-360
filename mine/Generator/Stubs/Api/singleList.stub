@@ -1,9 +1,7 @@
 
 /**
  * 获取{BUSINESS_NAME}分页列表
- * @returns
  */
-export const getList = (params = {}) => request.get({
-  url: '{REQUEST_ROUTE}/index',
-  params,
-})
+export function getList(params?: Recordable) {
+  return useHttp.Get<ResOptions<BasicFetchResult<Recordable>>>('{REQUEST_ROUTE}/index', { params })
+}

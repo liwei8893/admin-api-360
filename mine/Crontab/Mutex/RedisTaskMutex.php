@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -33,7 +25,7 @@ class RedisTaskMutex implements TaskMutex
      */
     public function create(MineCrontab $crontab): bool
     {
-        return (bool) $this->redisFactory->get($crontab->getMutexPool())->set(
+        return (bool)$this->redisFactory->get($crontab->getMutexPool())->set(
             $this->getMutexName($crontab),
             $crontab->getName(),
             ['NX', 'EX' => $crontab->getMutexExpires()]
@@ -45,7 +37,7 @@ class RedisTaskMutex implements TaskMutex
      */
     public function exists(MineCrontab $crontab): bool
     {
-        return (bool) $this->redisFactory->get($crontab->getMutexPool())->exists(
+        return (bool)$this->redisFactory->get($crontab->getMutexPool())->exists(
             $this->getMutexName($crontab)
         );
     }

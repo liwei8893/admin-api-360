@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -66,7 +58,7 @@ class CreateModel extends MineCommand
             $tableList = [];
             foreach ($tables as $k) {
                 $tmp = $k->{$key};
-                if (! empty($prefix) && preg_match(sprintf('/%s_%s[_a-zA-Z0-9]+/i', $prefix, $module), $tmp)) {
+                if (!empty($prefix) && preg_match(sprintf('/%s_%s[_a-zA-Z0-9]+/i', $prefix, $module), $tmp)) {
                     $tableList[] = $tmp;
                 }
                 if (preg_match(sprintf('/%s[_a-zA-Z0-9]+/i', $module), $tmp)) {
@@ -74,8 +66,8 @@ class CreateModel extends MineCommand
                 }
             }
 
-            if (! empty($table)) {
-                if (! in_array($table, $tableList)) {
+            if (!empty($table)) {
+                if (!in_array($table, $tableList)) {
                     $this->confirm("Table \"{$table}\" does not exist or not belong to the \"{$module}\" module. Are you sure to generate the model?", false)
                     && $this->call('gen:model', ['table' => $table, '--path' => $path]);
                 } else {

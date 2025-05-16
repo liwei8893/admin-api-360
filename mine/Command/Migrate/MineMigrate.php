@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -71,7 +63,7 @@ class MineMigrate extends BaseCommand
         // If no table was given as an option but a create option is given then we
         // will use the "create" option as the table name. This allows the devs
         // to pass a table name into this option as a short-cut for creating.
-        if (! $table && is_string($create)) {
+        if (!$table && is_string($create)) {
             $table = $create;
 
             $create = true;
@@ -80,7 +72,7 @@ class MineMigrate extends BaseCommand
         // Next, we will attempt to guess the table name if this the migration has
         // "create" in the name. This will allow us to provide a convenient way
         // of creating migrations that create new tables for the application.
-        if (! $table) {
+        if (!$table) {
             [$table, $create] = TableGuesser::guess($name);
         }
 

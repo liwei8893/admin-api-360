@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -63,7 +55,7 @@ class MineMigrateRun extends BaseCommand
      */
     public function handle()
     {
-        if (! $this->confirmToProceed()) {
+        if (!$this->confirmToProceed()) {
             return;
         }
 
@@ -83,7 +75,7 @@ class MineMigrateRun extends BaseCommand
         // Finally, if the "seed" option has been given, we will re-run the database
         // seed task to re-populate the database, which is convenient when adding
         // a migration and a seed at the same time, as it is only this command.
-        if ($this->input->getOption('seed') && ! $this->input->getOption('pretend')) {
+        if ($this->input->getOption('seed') && !$this->input->getOption('pretend')) {
             $this->call('db:seed', ['--force' => true]);
         }
     }
@@ -108,7 +100,7 @@ class MineMigrateRun extends BaseCommand
     {
         $this->migrator->setConnection($this->input->getOption('database') ?? 'default');
 
-        if (! $this->migrator->repositoryExists()) {
+        if (!$this->migrator->repositoryExists()) {
             $this->call('migrate:install', array_filter([
                 '--database' => $this->input->getOption('database'),
             ]));

@@ -1,14 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 namespace App\Ai\Mapper;
 
@@ -39,7 +31,7 @@ class AiAssessQuesDetailMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-        
+
         // 评测报告表ID
         if (isset($params['assess_report_id']) && $params['assess_report_id'] !== '') {
             $query->where('assess_report_id', '=', $params['assess_report_id']);
@@ -57,7 +49,7 @@ class AiAssessQuesDetailMapper extends AbstractMapper
 
         // 1级知识点名称
         if (isset($params['knows_level1_name']) && $params['knows_level1_name'] !== '') {
-            $query->where('knows_level1_name', 'like', '%'.$params['knows_level1_name'].'%');
+            $query->where('knows_level1_name', 'like', '%' . $params['knows_level1_name'] . '%');
         }
 
         // 2级知识点ID
@@ -67,7 +59,7 @@ class AiAssessQuesDetailMapper extends AbstractMapper
 
         // 2级知识点名称
         if (isset($params['knows_level2_name']) && $params['knows_level2_name'] !== '') {
-            $query->where('knows_level2_name', 'like', '%'.$params['knows_level2_name'].'%');
+            $query->where('knows_level2_name', 'like', '%' . $params['knows_level2_name'] . '%');
         }
 
         // 知识点难度

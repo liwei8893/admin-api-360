@@ -1,15 +1,8 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
+
 namespace Mine\Aspect;
 
 use App\System\Service\SystemUserService;
@@ -56,8 +49,8 @@ class RoleAspect extends AbstractAspect
      */
     public function __construct(
         SystemUserService $service,
-        MineRequest $request,
-        LoginUser $loginUser
+        MineRequest       $request,
+        LoginUser         $loginUser
     )
     {
         $this->service = $service;
@@ -120,7 +113,7 @@ class RoleAspect extends AbstractAspect
         if ($where === 'AND') {
             foreach (explode(',', $codeString) as $code) {
                 $code = trim($code);
-                if (! in_array($code, $roles)) {
+                if (!in_array($code, $roles)) {
                     $service = container()->get(\App\System\Service\SystemRoleService::class);
                     throw new NoPermissionException(
                         t('system.no_role') . ' -> [ ' . $service->findNameByCode($code) . ' ]'

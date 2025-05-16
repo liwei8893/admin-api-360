@@ -15,7 +15,7 @@ use Throwable;
 
 class MineLockRedis extends AbstractRedis implements MineRedisInterface
 {
-    
+
     /**
      * 设置 key 类型名.
      */
@@ -59,7 +59,7 @@ class MineLockRedis extends AbstractRedis implements MineRedisInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function check(string $key): bool
+    public function check(string $key): int
     {
         return redis()->exists($this->getKey($key));
     }

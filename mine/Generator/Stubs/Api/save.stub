@@ -1,9 +1,8 @@
 
 /**
  * 添加{BUSINESS_NAME}
- * @returns
  */
-export const save = (data = {}) => request.post({
-  url: '{REQUEST_ROUTE}/save',
-  data,
-})
+export function save(data: Recordable) {
+  return useHttp.Post('{REQUEST_ROUTE}/save', data)
+}
+

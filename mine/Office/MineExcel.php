@@ -12,6 +12,7 @@ use Mine\Interfaces\MineModelExcel;
 use Mine\MineResponse;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Psr\Http\Message\ResponseInterface;
 use RedisException;
 
 abstract class MineExcel
@@ -26,7 +27,7 @@ abstract class MineExcel
 
     public function __construct(string $dto)
     {
-        if (! (new $dto()) instanceof MineModelExcel) {
+        if (!(new $dto()) instanceof MineModelExcel) {
             throw new MineException('dto does not implement an interface of the MineModelExcel', 500);
         }
         $dtoObject = new $dto();
@@ -54,7 +55,7 @@ abstract class MineExcel
      */
     protected function parseProperty(): void
     {
-        if (empty($this->annotationMate) || ! isset($this->annotationMate['_c'])) {
+        if (empty($this->annotationMate) || !isset($this->annotationMate['_c'])) {
             throw new MineException('dto annotation info is empty', 500);
         }
 
@@ -79,10 +80,10 @@ abstract class MineExcel
 
     /**
      * 下载excel.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
-    protected function downloadExcel(string $filename, string $content): \Psr\Http\Message\ResponseInterface
+    protected function downloadExcel(string $filename, string $content): ResponseInterface
     {
         return container()->get(MineResponse::class)->getResponse()
             ->withHeader('Server', 'MineAdmin')

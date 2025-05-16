@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -70,7 +62,7 @@ class MineSeeder extends BaseCommand
 
     protected function ensureSeederDirectoryAlreadyExist(string $path): string
     {
-        if (! file_exists($path)) {
+        if (!file_exists($path)) {
             mkdir($path, 0755, true);
         }
 
@@ -95,8 +87,8 @@ class MineSeeder extends BaseCommand
 
     protected function getSeederPath(): string
     {
-        if (! is_null($targetPath = $this->input->getOption('path'))) {
-            return ! $this->usingRealPath()
+        if (!is_null($targetPath = $this->input->getOption('path'))) {
+            return !$this->usingRealPath()
                 ? BASE_PATH . '/' . $targetPath
                 : $targetPath;
         }

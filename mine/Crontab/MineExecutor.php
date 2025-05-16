@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -63,11 +55,11 @@ class MineExecutor
      */
     public function execute(MineCrontab $crontab, bool $run = false): ?bool
     {
-        if ((! $crontab instanceof MineCrontab || ! $crontab->getExecuteTime()) && ! $run) {
+        if ((!$crontab instanceof MineCrontab || !$crontab->getExecuteTime()) && !$run) {
             return null;
         }
         $diff = 0;
-        ! $run && $diff = $crontab->getExecuteTime()->diffInRealSeconds(new Carbon());
+        !$run && $diff = $crontab->getExecuteTime()->diffInRealSeconds(new Carbon());
         $callback = null;
         switch ($crontab->getType()) {
             case SettingCrontab::CLASS_CRONTAB:
@@ -81,7 +73,7 @@ class MineExecutor
                                 $result = true;
                                 $res = null;
                                 $instance = \Hyperf\Support\make($class);
-                                if (! empty($parameters)) {
+                                if (!empty($parameters)) {
                                     $res = $instance->{$method}($parameters);
                                 } else {
                                     $res = $instance->{$method}();
@@ -126,7 +118,7 @@ class MineExecutor
                         $this->logResult(
                             $crontab,
                             $result,
-                            (! $result && isset($response)) ? $response->getBody() : ''
+                            (!$result && isset($response)) ? $response->getBody() : ''
                         );
                     };
                     $this->decorateRunnable($crontab, $runnable)();
@@ -157,7 +149,7 @@ class MineExecutor
         return function () use ($crontab, $runnable) {
             $taskMutex = $this->getTaskMutex();
 
-            if ($taskMutex->exists($crontab) || ! $taskMutex->create($crontab)) {
+            if ($taskMutex->exists($crontab) || !$taskMutex->create($crontab)) {
                 $this->logger->info(sprintf('Crontab task [%s] skipped execution at %s.', $crontab->getName(), date('Y-m-d H:i:s')));
                 return;
             }
@@ -172,7 +164,7 @@ class MineExecutor
 
     protected function getTaskMutex(): TaskMutex
     {
-        if (! $this->taskMutex) {
+        if (!$this->taskMutex) {
             $this->taskMutex = $this->container->has(TaskMutex::class)
                 ? $this->container->get(TaskMutex::class)
                 : $this->container->get(RedisTaskMutex::class);
@@ -185,7 +177,7 @@ class MineExecutor
         return function () use ($crontab, $runnable) {
             $taskMutex = $this->getServerMutex();
 
-            if (! $taskMutex->attempt($crontab)) {
+            if (!$taskMutex->attempt($crontab)) {
                 $this->logger->info(sprintf('Crontab task [%s] skipped execution at %s.', $crontab->getName(), date('Y-m-d H:i:s')));
                 return;
             }
@@ -196,7 +188,7 @@ class MineExecutor
 
     protected function getServerMutex(): ServerMutex
     {
-        if (! $this->serverMutex) {
+        if (!$this->serverMutex) {
             $this->serverMutex = $this->container->has(ServerMutex::class)
                 ? $this->container->get(ServerMutex::class)
                 : $this->container->get(RedisServerMutex::class);

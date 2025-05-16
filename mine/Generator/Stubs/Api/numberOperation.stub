@@ -1,9 +1,7 @@
 
 /**
  * 修改{BUSINESS_NAME}数值数据，自增自减
- * @returns
  */
-export const numberOperation = (data = {}) => request.put({
-  url: '{REQUEST_ROUTE}/numberOperation',
-  data,
-})
+export function numberOperation(data?: ResOptions) {
+  return useHttp.Put<ResOptions>('{REQUEST_ROUTE}/numberOperation', data)
+}

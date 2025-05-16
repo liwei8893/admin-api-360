@@ -1,14 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 namespace App\Ai\Mapper;
 
@@ -39,7 +31,7 @@ class AiQuesDetailStatMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-        
+
         // 总做题人数
         if (isset($params['total_user_count']) && $params['total_user_count'] !== '') {
             $query->where('total_user_count', '=', $params['total_user_count']);

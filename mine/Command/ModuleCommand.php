@@ -1,15 +1,8 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
 
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
 namespace Mine\Command;
 
 use App\Setting\Service\ModuleService;
@@ -29,6 +22,7 @@ use Symfony\Component\Console\Input\InputOption;
 class ModuleCommand extends MineCommand
 {
     use \Hyperf\Command\Concerns\Confirmable;
+
     /**
      * 安装命令
      * @var string|null
@@ -101,7 +95,7 @@ class ModuleCommand extends MineCommand
 
             if ($option === 'install') {
                 $this->call('mine:migrate-run', ['name' => $name, '--force' => 'true']);
-                $this->call('mine:seeder-run',  ['name' => $name, '--force' => 'true']);
+                $this->call('mine:seeder-run', ['name' => $name, '--force' => 'true']);
                 $this->line(
                     sprintf(" \"%s\" module install complete, Please run it again \"%s\" command! ",
                         $this->getGreenText($name),
@@ -118,7 +112,7 @@ class ModuleCommand extends MineCommand
                     exit;
                 }
 
-                if (! $this->confirmToProceed()) {
+                if (!$this->confirmToProceed()) {
                     $this->line('A delete is already being performed');
                     exit;
                 }
@@ -127,13 +121,13 @@ class ModuleCommand extends MineCommand
                 if ($this->confirm("Whether to delete the data?", false)) {
                     $this->migrator->setOutput($this->output);
                     $path = $this->getUninstallPath($name);
-                    $this->migrator->rollback([ $path ]);
-                    is_dir($path . '/Update') && $this->migrator->rollback([ $path . '/Update']);
+                    $this->migrator->rollback([$path]);
+                    is_dir($path . '/Update') && $this->migrator->rollback([$path . '/Update']);
                 }
 
                 $service->deleteModule($name);
 
-                $this->line(sprintf("Uninstall complete, Please run it again \"%s\" command! ",$this->getGreenText('php bin/hyperf.php start')));
+                $this->line(sprintf("Uninstall complete, Please run it again \"%s\" command! ", $this->getGreenText('php bin/hyperf.php start')));
             }
         } else {
             $this->line($this->getRedText(sprintf('The "%s" module does not exist....', $name)));

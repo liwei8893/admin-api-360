@@ -1,18 +1,14 @@
 
 /**
  * {BUSINESS_NAME}导入
- * @returns
  */
-export const importExcel = (data = {}) => request.post({
-  url: '{REQUEST_ROUTE}/import',
-  data,
-})
+export function importExcel(data?: Recordable) {
+  return useHttp.Post('{REQUEST_ROUTE}/import', data)
+}
 
 /**
  * {BUSINESS_NAME}下载模板
- * @returns
  */
-export const downloadTemplate = () => request.post({
-  url: '{REQUEST_ROUTE}/downloadTemplate',
-  responseType: 'blob',
-})
+export function downloadTemplate() {
+  return useHttp.Post('{REQUEST_ROUTE}/downloadTemplate')
+}

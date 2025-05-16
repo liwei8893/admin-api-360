@@ -1,17 +1,14 @@
 
 /**
  * 获取{BUSINESS_NAME}列表
- * @returns
  */
-export const getList = (params = {}) => request.get({
-  url: '{REQUEST_ROUTE}/index',
-  params,
-})
+export function getList(params?: Recordable) {
+  return useHttp.Get<ResOptions<Recordable>>('{REQUEST_ROUTE}/index', { params })
+}
 
 /**
  * 获取{BUSINESS_NAME}选择树
- * @returns
  */
-export const tree = () => request.get({
-  url: '{REQUEST_ROUTE}/tree',
-})
+export function tree() {
+  return useHttp.Get('{REQUEST_ROUTE}/tree')
+}

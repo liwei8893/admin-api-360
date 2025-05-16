@@ -1,9 +1,7 @@
 
 /**
  * 更改{BUSINESS_NAME}数据
- * @returns
  */
-export const changeStatus = (data = {}) => request.put({
-  url: '{REQUEST_ROUTE}/changeStatus',
-  data,
-})
+export function changeStatus(data?: Recordable) {
+  return useHttp.Put<ResOptions>('{REQUEST_ROUTE}/changeStatus', data)
+}

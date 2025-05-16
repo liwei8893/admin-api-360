@@ -1,10 +1,7 @@
 
 /**
  * {BUSINESS_NAME}导出
- * @returns
  */
-export const exportExcel = (params = {}) => request.post({
-  url: '{REQUEST_ROUTE}/export',
-  responseType: 'blob',
-  params,
-})
+export function exportExcel(data?: Recordable) {
+  return useHttp.Post<ResOptions>('{REQUEST_ROUTE}/export', data)
+}

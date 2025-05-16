@@ -362,6 +362,11 @@ class UsersService extends AbstractService
         return parent::getPageList($params, $isScope);
     }
 
+    public function idListByMobiles(array $mobiles): array
+    {
+        return $this->mapper->getModel()->query()->whereIn('mobile', $mobiles)->select(['id', 'mobile'])->get()->toArray();
+    }
+
     /**
      * 处理提交数据.
      */

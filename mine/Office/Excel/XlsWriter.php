@@ -6,6 +6,7 @@ namespace Mine\Office\Excel;
 
 use Closure;
 use Exception;
+use Hyperf\Collection\Arr;
 use Mine\Exception\MineException;
 use Mine\MineModel;
 use Mine\MineRequest;
@@ -18,6 +19,7 @@ use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 use Vtiful\Kernel\Excel;
 use Vtiful\Kernel\Format;
+use function Hyperf\Collection\data_get;
 
 class XlsWriter extends MineExcel implements ExcelPropertyInterface
 {
@@ -27,7 +29,7 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
         $tempFileName = 'import_' . time() . '.' . $file->getExtension();
         $tempFilePath = BASE_PATH . '/runtime/' . $tempFileName;
         file_put_contents($tempFilePath, $file->getStream()->getContents());
-        $xlsxObject = new \Vtiful\Kernel\Excel(['path' => BASE_PATH . '/runtime/']);
+        $xlsxObject = new Excel(['path' => BASE_PATH . '/runtime/']);
         return $xlsxObject->openFile($tempFileName)->openSheet()->getSheetData();
     }
 
@@ -53,7 +55,9 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
             foreach ($data as $item) {
                 $tmp = [];
                 foreach ($item as $key => $value) {
-                    $tmp[$this->property[$key]['name']] = (string) $value;
+                    if (!empty($this->property[$key])) {
+                        $tmp[$this->property[$key]['name']] = (string)$value;
+                    }
                 }
                 $importData[] = $tmp;
             }
@@ -138,16 +142,16 @@ class XlsWriter extends MineExcel implements ExcelPropertyInterface
                 $item = $callbackData($item);
             }
             foreach ($this->property as $property) {
-                if (! empty($property['customField'])) {
-                    $value = \Hyperf\Collection\Arr::get($item, $property['customField']);
-                } elseif (! empty($property['path'])) {
-                    $value = \Hyperf\Collection\data_get($item, $property['path']);
+                if (!empty($property['customField'])) {
+                    $value = Arr::get($item, $property['customField']);
+                } elseif (!empty($property['path'])) {
+                    $value = data_get($item, $property['path']);
                 } else {
-                    $value = \Hyperf\Collection\Arr::get($item, $property['name']);
+                    $value = Arr::get($item, $property['name']);
                 }
-                if (! empty($property['dictName'])) {
+                if (!empty($property['dictName'])) {
                     $value = $property['dictName'][$value];
-                } elseif (! empty($property['dictData'])) {
+                } elseif (!empty($property['dictData'])) {
                     $value = $property['dictData'][$value];
                 }
                 $yield[] = $value;

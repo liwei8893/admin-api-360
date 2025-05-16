@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -26,7 +18,7 @@ class AppVerify
      */
     public function __construct(string $scene = 'api')
     {
-        /* @var JWT $this->jwt */
+        /* @var JWT $this ->jwt */
         $this->jwt = \Hyperf\Support\make(JWT::class)->setScene($scene);
     }
 
@@ -68,7 +60,7 @@ class AppVerify
      */
     public function getId(): string
     {
-        return (string) $this->jwt->getParserData()['id'];
+        return (string)$this->jwt->getParserData()['id'];
     }
 
     /**
@@ -76,7 +68,7 @@ class AppVerify
      */
     public function getAppId(): string
     {
-        return (string) $this->jwt->getParserData()['app_id'];
+        return (string)$this->jwt->getParserData()['app_id'];
     }
 
     /**

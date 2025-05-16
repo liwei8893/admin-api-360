@@ -1,14 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 namespace App\Ai\Controller;
 
@@ -40,7 +32,7 @@ class AiQuesDetailStatController extends MineController
     #[Inject]
     protected AiQuesDetailStatService $service;
 
-    
+
     /**
      * 列表
      * @return ResponseInterface
@@ -74,7 +66,7 @@ class AiQuesDetailStatController extends MineController
     #[DeleteMapping("realDelete"), Permission("ai:quesDetlStat:realDelete"), OperationLog]
     public function realDelete(): ResponseInterface
     {
-        return $this->service->realDelete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->realDelete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -86,7 +78,7 @@ class AiQuesDetailStatController extends MineController
     #[PutMapping("recovery"), Permission("ai:quesDetlStat:recovery"), OperationLog]
     public function recovery(): ResponseInterface
     {
-        return $this->service->recovery((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->recovery((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -138,7 +130,7 @@ class AiQuesDetailStatController extends MineController
     #[DeleteMapping("delete"), Permission("ai:quesDetlStat:delete"), OperationLog]
     public function delete(): ResponseInterface
     {
-        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**

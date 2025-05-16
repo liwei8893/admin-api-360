@@ -80,7 +80,7 @@ class UsersListController extends MineController
     #[DeleteMapping('realDelete'), Permission('users:list:realDelete'), OperationLog]
     public function realDelete(): ResponseInterface
     {
-        return $this->service->realDelete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->realDelete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -91,7 +91,7 @@ class UsersListController extends MineController
     #[PutMapping('recovery'), Permission('users:list:recovery'), OperationLog]
     public function recovery(): ResponseInterface
     {
-        return $this->service->recovery((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->recovery((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -155,6 +155,18 @@ class UsersListController extends MineController
     }
 
     /**
+     * 批量手机号查询用户Id
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('idListByMobiles')]
+    public function idListByMobiles(): ResponseInterface
+    {
+        return $this->success($this->service->idListByMobiles($this->request->input('mobiles', [])));
+    }
+
+    /**
      * 单个或批量删除数据到回收站.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
@@ -162,7 +174,7 @@ class UsersListController extends MineController
     #[DeleteMapping('delete'), Permission('users:list:delete'), OperationLog]
     public function delete(): ResponseInterface
     {
-        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
@@ -174,9 +186,9 @@ class UsersListController extends MineController
     public function changeStatus(): ResponseInterface
     {
         return $this->service->changeStatus(
-            (int) $this->request->input('user_name'),
-            (string) $this->request->input('statusValue'),
-            (string) $this->request->input('statusName')
+            (int)$this->request->input('user_name'),
+            (string)$this->request->input('statusValue'),
+            (string)$this->request->input('statusName')
         ) ? $this->success() : $this->error();
     }
 
@@ -189,9 +201,9 @@ class UsersListController extends MineController
     public function numberOperation(): ResponseInterface
     {
         return $this->service->numberOperation(
-            (int) $this->request->input('user_name'),
-            (string) $this->request->input('numberName'),
-            (int) $this->request->input('numberValue', 1),
+            (int)$this->request->input('user_name'),
+            (string)$this->request->input('numberName'),
+            (int)$this->request->input('numberValue', 1),
         ) ? $this->success() : $this->error();
     }
 

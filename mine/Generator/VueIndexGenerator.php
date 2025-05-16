@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -294,12 +286,12 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
                 ];
             }
             // 扩展项
-            if (! empty($column->options)) {
+            if (!empty($column->options)) {
                 $collection = $column->options['collection'];
                 // 合并
                 $tmp = array_merge($tmp, $column->options);
                 // 自定义数据
-                if (in_array($column->view_type, ['checkbox', 'radio', 'select', 'transfer']) && ! empty($collection)) {
+                if (in_array($column->view_type, ['checkbox', 'radio', 'select', 'transfer']) && !empty($collection)) {
                     $tmp['dict'] = ['data' => $collection, 'translation' => true];
                 }
                 // 对日期时间处理
@@ -313,7 +305,7 @@ class VueIndexGenerator extends MineGenerator implements CodeGenerator
                 unset($tmp['collection']);
             }
             // 字典
-            if (! empty($column->dict_type)) {
+            if (!empty($column->dict_type)) {
                 $tmp['dict'] = [
                     'name' => $column->dict_type,
                     'props' => ['label' => 'title', 'value' => 'key'],

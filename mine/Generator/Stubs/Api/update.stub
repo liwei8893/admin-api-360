@@ -1,9 +1,7 @@
 
 /**
  * 更新{BUSINESS_NAME}数据
- * @returns
  */
-export const update = (id, data = {}) => request.put({
-  url: `{REQUEST_ROUTE}/update/${id}`,
-  data,
-})
+export function update(id: number, data?: Recordable) {
+  return useHttp.Put<ResOptions>(`{REQUEST_ROUTE}/update/${id}`, data)
+}

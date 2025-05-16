@@ -1,13 +1,5 @@
 <?php
-/**
- * MineAdmin is committed to providing solutions for quickly building web applications
- * Please view the LICENSE file that was distributed with this source code,
- * For the full copyright and license information.
- * Thank you very much for using MineAdmin.
- *
- * @Author X.Mo<root@imoi.cn>
- * @Link   https://gitee.com/xmo/MineAdmin
- */
+
 
 declare(strict_types=1);
 
@@ -89,14 +81,14 @@ class MineCrontabManage
         foreach ($data as $item) {
             $crontab = new MineCrontab();
             $crontab->setCallback($item['target']);
-            $crontab->setType((string) $item['type']);
+            $crontab->setType((string)$item['type']);
             $crontab->setEnable(true);
             $crontab->setCrontabId($item['id']);
             $crontab->setName($item['name']);
             $crontab->setParameter($item['parameter'] ?: '');
             $crontab->setRule($item['rule']);
 
-            if (! $this->parser->isValid($crontab->getRule())) {
+            if (!$this->parser->isValid($crontab->getRule())) {
                 console()->info('Crontab task [' . $item['name'] . '] rule error, skipping execution');
                 continue;
             }
