@@ -20,7 +20,7 @@ class CrmStudyRecordRequest extends MineFormRequest
 
     public function listRules(): array
     {
-        return ['user_id' => 'required'];
+        return [];
     }
 
 
