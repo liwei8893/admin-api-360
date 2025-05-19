@@ -65,6 +65,7 @@ class AreaService extends AbstractService
             $userModel->province_id = $province;
             $userModel->city_id = $city;
             $userModel->area_id = 0;
+            $userModel->save();
         } catch (NormalStatusException|GuzzleException|JsonException|NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             console()->error($e->getMessage());
         }
@@ -86,8 +87,9 @@ class AreaService extends AbstractService
                 $query->orWhere('province_id', 0)
                     ->orWhereNull('province_id');
             })
+            ->where('mobile', '!=', '')
             ->pluck('mobile');
-        foreach ($mobiles as $mobile) {
+        foreach ($mobiles->toArray() as $mobile) {
             $this->setUserAreaByMobile($mobile);
         }
     }
