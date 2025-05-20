@@ -24,8 +24,6 @@ class CrmUserCommTimelineRequest extends MineFormRequest
     public function listRules(): array
     {
         return [
-            // 用户ID 验证
-            'user_id' => 'required',
         ];
     }
 

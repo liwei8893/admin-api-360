@@ -5,6 +5,7 @@ namespace App\Crm\Mapper;
 
 use App\Crm\Model\CrmUserCommTimeline;
 use Hyperf\Database\Model\Builder;
+use Hyperf\Database\Model\Relations\HasOne;
 use Mine\Abstracts\AbstractMapper;
 
 /**
@@ -30,6 +31,12 @@ class CrmUserCommTimelineMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
+        $query->whereHas('user', function ($query) {
+            $query->userDataScope()->platformDataScope();
+        });
+        $query->with(['user' => function (HasOne $query) {
+            $query->select(['id', 'user_name', 'mobile', 'created_by'])->with('admin:id,nickname');
+        }]);
 
         // 主键ID
         if (isset($params['id']) && $params['id'] !== '') {

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Users\Model;
 
+use App\Crm\Model\CrmCallRecord;
+use App\Crm\Model\CrmUserCommTimeline;
 use App\Order\Model\Order;
 use App\Score\Model\Avatar;
 use App\System\Model\SystemDictData;
+use App\System\Model\SystemUser;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Relations\BelongsToMany;
@@ -93,17 +96,18 @@ use function Hyperf\Config\config;
  * @property string $mp_openid 小程序openid
  * @property string $app 所属应用:1优课,,2番茄,3密课
  * @property int $created_by 创建人
- * @property-read SystemDictData|null $status 状态 1启用 0禁用
- * @property-read SystemDictData|null $userType
- * @property-read Order|null $vipType
- * @property-read Collection|Order[]|null $haveSubject
- * @property-read Collection|Order[]|null $orderCourse
- * @property-read Collection|Order[]|null $orders
- * @property-read SystemDictData|null $grades
+ * @property-read null|SystemDictData $status 状态 1启用 0禁用
+ * @property-read null|SystemDictData $userType
+ * @property-read null|Order $vipType
+ * @property-read null|Collection|Order[] $haveSubject
+ * @property-read null|Collection|Order[] $orderCourse
+ * @property-read null|Collection|CrmUserCommTimeline[] $userCommTimeline
+ * @property-read null|Collection|Order[] $orders
+ * @property-read null|SystemDictData $grades
  * @property-write mixed $user_pass 密码
- * @property-read Collection|Avatar[]|null $avatarTable
+ * @property-read null|Collection|Avatar[] $avatarTable
  * @property-read string $avatar 用户头像
- * @property-read UsersDetail|null $userDetail
+ * @property-read null|UsersDetail $userDetail
  */
 class User extends MineModel
 {
@@ -275,5 +279,20 @@ class User extends MineModel
     public function userDetail(): HasOne
     {
         return $this->hasOne(UsersDetail::class, 'user_id', 'id');
+    }
+
+    public function userCommTimeline(): HasMany
+    {
+        return $this->hasMany(CrmUserCommTimeline::class, 'user_id', 'id');
+    }
+
+    public function admin(): HasOne
+    {
+        return $this->hasOne(SystemUser::class, 'id', 'created_by');
+    }
+
+    public function crmCallRecord(): HasMany
+    {
+        return $this->hasMany(CrmCallRecord::class, 'callee', 'mobile');
     }
 }
