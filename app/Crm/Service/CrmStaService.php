@@ -2,15 +2,29 @@
 
 namespace App\Crm\Service;
 
+use App\Crm\Mapper\CrmStaMapper;
 use App\Crm\Model\CrmShopOrder;
 use App\Crm\Model\CrmUserCommTimeline;
+use App\System\Model\SystemUser;
 use App\Users\Model\User;
 use Carbon\Carbon;
+use Hyperf\DbConnection\Db;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
+use Mine\MineModel;
 
 class CrmStaService extends AbstractService
 {
+    /**
+     * @var CrmStaMapper
+     */
+    public $mapper;
+
+    public function __construct(CrmStaMapper $mapper)
+    {
+        $this->mapper = $mapper;
+    }
+
     // 获取简报看板
     public function getBriefingBoard(array $params): array
     {
@@ -58,5 +72,84 @@ class CrmStaService extends AbstractService
             ->orderBy('date', 'asc')
             ->get()
             ->toArray();
+    }
+
+    public function getConversionStaByPersonal(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+
+        // 构建子查询（原 pass_order_stats）
+        $posSubQuery = SystemUser::query()
+            ->leftJoin('users', 'users.created_by', '=', 'system_user.id')
+            ->leftJoin('crm_shop_order', function ($join) {
+                $join->on('crm_shop_order.user_id', '=', 'users.id')
+                    ->where('crm_shop_order.order_status', 7);
+            })
+            ->select([
+                'system_user.id as system_user_id',
+                'crm_shop_order.task_type',
+                'users.platform',
+                DB::raw('COUNT(DISTINCT crm_shop_order.id) as pass_count'),
+                DB::raw('SUM(crm_shop_order.amount) as pass_amount'),
+            ])
+            ->groupBy('system_user.id', 'crm_shop_order.task_type', 'users.platform');
+
+        $paginate = SystemUser::query()
+            ->whereHas('user', function ($query) {
+                $query->userDataScope()->platformDataScope();
+            })
+            ->leftJoin('users', 'users.created_by', '=', 'system_user.id')
+            ->leftJoin('crm_shop_order', 'crm_shop_order.user_id', '=', 'users.id')
+            ->leftJoin('crm_call_record', function ($join) {
+                $join->on('crm_call_record.user_id', '=', 'users.id')
+                    ->on('crm_call_record.created_by', '=', 'system_user.id');
+            })
+            ->leftJoinSub($posSubQuery, 'pos', function ($join) {
+                $join->on('system_user.id', '=', 'pos.system_user_id')
+                    ->on('crm_shop_order.task_type', '=', 'pos.task_type')
+                    ->on('users.platform', '=', 'pos.platform');
+            })
+            ->when(isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) === 2, function ($query) use ($params) {
+                $query->whereBetween('users.created_at', [$params['created_at'][0], $params['created_at'][1]]);
+            })
+            ->when(isset($params['order_status']), function ($query) use ($params) {
+                $query->where('crm_shop_order.order_status', $params['order_status']);
+            })
+            ->when(isset($params['task_type']), function ($query) use ($params) {
+                $query->where('crm_shop_order.task_type', $params['task_type']);
+            })
+            ->when(isset($params['shop_id']), function ($query) use ($params) {
+                $query->where('crm_shop_order.shop_id', $params['shop_id']);
+            })
+            ->when(isset($params['amount']) && is_array($params['amount']) && count($params['amount']) === 2, function ($query) use ($params) {
+                $query->whereBetween('crm_shop_order.amount', [$params['amount'][0], $params['amount'][1]]);
+            })
+            ->when(isset($params['platform']), function ($query) use ($params) {
+                $query->where('users.platform', $params['platform']);
+            })
+            ->when(isset($params['user_group']), function ($query) use ($params) {
+                $query->where('system_user.user_group', $params['user_group']);
+            })
+            ->select([
+                'system_user.id',
+                'system_user.username',
+                'system_user.nickname',
+                'system_user.user_group',
+                'users.platform',
+                'crm_shop_order.task_type',
+                DB::raw('COUNT(DISTINCT users.id) as user_count'),
+                DB::raw('COUNT(DISTINCT CASE WHEN crm_call_record.id IS NOT NULL THEN users.id END) as contacted_user_count'),
+                DB::raw('COALESCE(COUNT(DISTINCT users.id), 0) - COALESCE(COUNT(DISTINCT CASE WHEN crm_call_record.id IS NOT NULL THEN users.id END), 0) as uncontacted_user_count'),
+                DB::raw('COUNT(DISTINCT crm_shop_order.id) as order_count'),
+                DB::raw('COALESCE(SUM(crm_shop_order.amount), 0) as order_amount'),
+                DB::raw('COALESCE(pos.pass_count, 0) as pass_count'),
+                DB::raw('COALESCE(pos.pass_amount, 0) as pass_amount'),
+                DB::raw('COALESCE(ROUND(COALESCE(pos.pass_count, 0) * 1.0 / NULLIF(COUNT(DISTINCT crm_shop_order.id), 0), 2), 0) as pass_rate'),
+            ])
+            ->groupBy('system_user.id', 'crm_shop_order.task_type', 'users.platform')
+            ->orderBy('order_count', 'desc')
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
+        return $this->mapper->setPaginate($paginate);
     }
 }

@@ -44,6 +44,7 @@ class CrmCallRecordService extends AbstractService
     #[Transaction]
     public function call(array $params): array
     {
+        $userId = $params['user_id'];
         // 获取呼叫中心配置
         $config = SettingConfig::query()->where('group_id', 3)->get();
         $CID = $config->where('key', 'CID')->first()?->value;
@@ -80,6 +81,8 @@ class CrmCallRecordService extends AbstractService
         $mod->callee = $params['callee'];
         $mod->return_uuid = $apiData['ReturnUUID'];
         $mod->api_date = $apiData['APIDate'];
+        $mod->user_id = $userId;
+        $mod->created_by = $adminInfo->id;
         $mod->save();
         return $mod->refresh()->toArray();
     }

@@ -22,6 +22,7 @@ class CrmCallRecordRequest extends MineFormRequest
     public function callRules(): array
     {
         return [
+            'user_id' => 'required',
             'callee' => 'required',
         ];
     }

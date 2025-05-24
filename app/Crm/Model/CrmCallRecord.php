@@ -21,6 +21,8 @@ use Mine\MineModel;
  * @property int $followup_type 跟进类型
  * @property string $followup_content 跟进内容
  * @property string $next_followup_date 下次跟进日期
+ * @property int $user_id 关联用户ID
+ * @property int $created_by 创建人
  */
 class CrmCallRecord extends MineModel
 {
@@ -33,10 +35,10 @@ class CrmCallRecord extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'caller', 'callee', 'task_id', 'status', 'status_info', 'duration', 'return_uuid', 'record_url', 'create_time', 'api_date', 'followup_type', 'followup_content', 'next_followup_date'];
+    protected array $fillable = ['id', 'caller', 'callee', 'task_id', 'status', 'status_info', 'duration', 'return_uuid', 'record_url', 'create_time', 'api_date', 'followup_type', 'followup_content', 'next_followup_date', 'user_id', 'created_by'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'status' => 'integer', 'duration' => 'integer', 'create_time' => 'integer', 'api_date' => 'integer', 'followup_type' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'status' => 'integer', 'duration' => 'integer', 'create_time' => 'integer', 'api_date' => 'integer', 'followup_type' => 'integer', 'user_id' => 'integer', 'created_by' => 'integer'];
 }

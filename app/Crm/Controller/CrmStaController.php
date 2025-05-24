@@ -43,4 +43,14 @@ class CrmStaController extends MineController
         $params = $this->request->all();
         return $this->success($this->service->getFollowUpNumByDate($params));
     }
+
+    /**
+     * 转化统计个人维度
+     */
+    #[GetMapping('getConversionStaByPersonal')]
+    public function getConversionStaByPersonal(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->success($this->service->getConversionStaByPersonal($params));
+    }
 }
