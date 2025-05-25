@@ -4,6 +4,7 @@ namespace App\Crm\Mapper;
 
 use App\System\Model\SystemUser;
 use App\Users\Model\User;
+use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
 use Mine\Abstracts\AbstractMapper;
 
@@ -65,6 +66,35 @@ class CrmUserMapper extends AbstractMapper
 
     public function handleSearch(Builder $query, array $params): Builder
     {
+        // 今日新增数据
+        if (isset($params['search_type']) && $params['search_type'] === '1') {
+            $startDate = Carbon::now()->startOfDay()->timestamp;
+            $endDate = Carbon::now()->endOfDay()->timestamp;
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+        // 本周新数据
+        if (isset($params['search_type']) && $params['search_type'] === '2') {
+            $startDate = Carbon::now()->startOfWeek()->startOfDay()->timestamp;
+            $endDate = Carbon::now()->endOfWeek()->endOfDay()->timestamp;
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+        // 今日跟进
+        if (isset($params['search_type']) && $params['search_type'] === '3') {
+            $query->whereHas('userCommTimeline', function ($query) {
+                $startDate = Carbon::now()->startOfDay()->toDateTimeString();
+                $endDate = Carbon::now()->endOfDay()->toDateTimeString();
+                $query->whereBetween('comm_time', [$startDate, $endDate]);
+            });
+        }
+        // 本周跟进
+        if (isset($params['search_type']) && $params['search_type'] === '4') {
+            $query->whereHas('userCommTimeline', function ($query) {
+                $startDate = Carbon::now()->startOfWeek()->startOfDay()->toDateTimeString();
+                $endDate = Carbon::now()->endOfWeek()->endOfDay()->toDateTimeString();
+                $query->whereBetween('comm_time', [$startDate, $endDate]);
+            });
+        }
+
         // 查询大单客服
         if (isset($params['created_by'])) {
             $query->where('created_by', $params['created_by']);

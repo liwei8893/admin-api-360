@@ -281,6 +281,7 @@ class User extends MineModel
         return $this->hasOne(UsersDetail::class, 'user_id', 'id');
     }
 
+    //用户沟通时间表
     public function userCommTimeline(): HasMany
     {
         return $this->hasMany(CrmUserCommTimeline::class, 'user_id', 'id');
