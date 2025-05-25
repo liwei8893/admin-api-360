@@ -46,6 +46,9 @@ class CrmStaController extends MineController
 
     /**
      * 转化统计个人维度
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('getConversionStaByPersonal')]
     public function getConversionStaByPersonal(): ResponseInterface
@@ -53,4 +56,31 @@ class CrmStaController extends MineController
         $params = $this->request->all();
         return $this->success($this->service->getConversionStaByPersonal($params));
     }
+
+    /**
+     * 转化统计小组维度
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getConversionStaByGroup')]
+    public function getConversionStaByGroup(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->success($this->service->getConversionStaByGroup($params));
+    }
+
+    /**
+     * 转化统计平台维度
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getConversionStaByPlatform')]
+    public function getConversionStaByPlatform(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->success($this->service->getConversionStaByPlatform($params));
+    }
+
 }
