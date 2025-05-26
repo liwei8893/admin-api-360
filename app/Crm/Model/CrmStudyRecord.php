@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Model;
 
+use App\Users\Model\User;
+use Hyperf\Database\Model\Relations\HasOne;
 use Mine\MineModel;
 
 /**
@@ -41,4 +43,9 @@ class CrmStudyRecord extends MineModel
      * The attributes that should be cast to native types.
      */
     protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'interaction_count' => 'integer'];
+
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

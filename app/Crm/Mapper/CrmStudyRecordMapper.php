@@ -31,7 +31,9 @@ class CrmStudyRecordMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
-
+        $query->whereHas('user', function ($query) {
+            $query->userDataScope()->platformDataScope();
+        });
         // 自增主键
         if (isset($params['id']) && $params['id'] !== '') {
             $query->where('id', '=', $params['id']);
