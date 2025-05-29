@@ -65,6 +65,8 @@ class OrderMapper extends AbstractMapper
      */
     public function handleSearch(Builder $query, array $params): Builder
     {
+        $query->where('deleted_at', 0);
+
         if (isset($params['user_id'])) {
             $query->where('user_id', $params['user_id']);
         }
