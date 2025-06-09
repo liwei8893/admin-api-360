@@ -20,6 +20,7 @@ use Mine\MineModel;
  * @property string $url 解析URL
  * @property int $new_state 是否最新,最新置顶
  * @property int $difficulty 难度字段 0:全部,1一星,2二星,3三星,4四星,5五星
+ * @property int $download_count 下载次数
  * @property int $sort 排序
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
@@ -39,10 +40,10 @@ class DenseVolume extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'month', 'name', 'grade', 'subject', 'type', 'answer', 'is_vip', 'url', 'new_state', 'difficulty', 'sort', 'created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by'];
+    protected array $fillable = ['id', 'month', 'name', 'grade', 'subject', 'type', 'answer', 'is_vip', 'url', 'new_state', 'difficulty', 'download_count', 'sort', 'created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'month' => 'integer', 'grade' => 'integer', 'subject' => 'integer', 'type' => 'integer', 'answer' => 'integer', 'is_vip' => 'integer', 'new_state' => 'integer', 'difficulty' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer'];
+    protected array $casts = ['id' => 'integer', 'month' => 'integer', 'grade' => 'integer', 'subject' => 'integer', 'type' => 'integer', 'answer' => 'integer', 'is_vip' => 'integer', 'new_state' => 'integer', 'difficulty' => 'integer', 'download_count' => 'integer', 'sort' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer'];
 }

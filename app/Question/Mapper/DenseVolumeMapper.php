@@ -23,6 +23,12 @@ class DenseVolumeMapper extends AbstractMapper
         $this->model = DenseVolume::class;
     }
 
+    // 添加下载量记录
+    public function addDownloadCount(int $id): int
+    {
+        return DenseVolume::query()->where('id', $id)->increment('download_count');
+    }
+
     /**
      * 搜索处理器.
      */

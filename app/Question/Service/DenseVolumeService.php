@@ -24,6 +24,8 @@ class DenseVolumeService extends AbstractService
     #[SubjectAuth]
     public function getUrl(int $id): MineModel
     {
+        // 添加下载量记录
+        $this->mapper->addDownloadCount($id);
         return $this->mapper->first(['id' => $id], ['url', 'subject', 'grade']);
     }
 }
