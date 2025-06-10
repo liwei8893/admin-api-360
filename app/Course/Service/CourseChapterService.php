@@ -6,7 +6,6 @@ namespace App\Course\Service;
 
 use App\Course\Mapper\CourseChapterMapper;
 use GuzzleHttp\Exception\GuzzleException;
-use Hyperf\Database\Model\Collection;
 use Hyperf\Guzzle\ClientFactory;
 use JsonException;
 use Mine\Abstracts\AbstractService;
@@ -118,21 +117,6 @@ class CourseChapterService extends AbstractService
             }
         }
         return $data;
-    }
-
-    /**
-     * 保存章节文件.
-     * @param array $params
-     * @return int
-     */
-    public function savePeriodsFile(array $params): int
-    {
-        return $this->mapper->savePeriodsFile($params);
-    }
-
-    public function getPeriodsFile(array $params): Collection
-    {
-        return $this->mapper->getPeriodsFile($params);
     }
 
     /**

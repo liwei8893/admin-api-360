@@ -1,11 +1,11 @@
 <?php
-
 declare(strict_types=1);
 
-namespace App\Course\Controller\Chapter;
 
-use App\Course\Request\CourseChapterRequest;
-use App\Course\Service\CourseChapterService;
+namespace App\Course\Controller;
+
+use App\Course\Request\CoursePeriodsFileRequest;
+use App\Course\Service\CoursePeriodsFileService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\DeleteMapping;
@@ -14,89 +14,88 @@ use Hyperf\HttpServer\Annotation\PostMapping;
 use Hyperf\HttpServer\Annotation\PutMapping;
 use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
-use Mine\Annotation\Permission;
 use Mine\MineController;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * 课程大纲控制器
- * Class CourseChapterController.
+ * 章节文件控制器
+ * Class CoursePeriodsFileController
  */
-#[Controller(prefix: 'course/chapter'), Auth]
-class CourseChapterController extends MineController
+#[Controller(prefix: "course/periodsFile"), Auth]
+class CoursePeriodsFileController extends MineController
 {
     /**
      * 业务处理服务
-     * CourseChapterService.
+     * CoursePeriodsFileService
      */
     #[Inject]
-    protected CourseChapterService $service;
+    protected CoursePeriodsFileService $service;
+
 
     /**
-     * 获取列表树.
+     * 列表
+     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('index'), Permission('course:chapter, course:chapter:index')]
+    #[GetMapping("index")]
     public function index(): ResponseInterface
     {
-        return $this->success($this->service->getTreeList($this->request->all()));
+        return $this->success($this->service->getPageList($this->request->all()));
     }
 
     /**
-     * 前端选择树（不需要权限）.
+     * 新增
+     * @param CoursePeriodsFileRequest $request
+     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('tree')]
-    public function tree(): ResponseInterface
-    {
-        return $this->success($this->service->getSelectTree());
-    }
-
-    /**
-     * 新增.
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    #[PostMapping('save'), Permission('course:chapter:save'), OperationLog]
-    public function save(CourseChapterRequest $request): ResponseInterface
+    #[PostMapping("save")]
+    public function save(CoursePeriodsFileRequest $request): ResponseInterface
     {
         return $this->success(['id' => $this->service->save($request->all())]);
     }
 
     /**
-     * 更新.
+     * 更新
+     * @param int $id
+     * @param CoursePeriodsFileRequest $request
+     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[PutMapping('update/{id}'), Permission('course:chapter:update'), OperationLog]
-    public function update(int $id, CourseChapterRequest $request): ResponseInterface
+    #[PutMapping("update/{id}")]
+    public function update(int $id, CoursePeriodsFileRequest $request): ResponseInterface
     {
         return $this->service->update($id, $request->all()) ? $this->success() : $this->error();
     }
 
     /**
-     * 读取数据.
+     * 读取数据
+     * @param int $id
+     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[GetMapping('read/{id}'), Permission('course:chapter:read')]
+    #[GetMapping("read/{id}")]
     public function read(int $id): ResponseInterface
     {
         return $this->success($this->service->read($id));
     }
 
     /**
-     * 单个或批量删除数据到回收站.
+     * 单个或批量删除数据到回收站
+     * @return ResponseInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    #[DeleteMapping('delete'), Permission('course:chapter:delete'), OperationLog]
+    #[DeleteMapping("delete"), OperationLog]
     public function delete(): ResponseInterface
     {
         return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
+
 }
