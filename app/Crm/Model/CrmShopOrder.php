@@ -6,6 +6,7 @@ namespace App\Crm\Model;
 
 use App\System\Model\SystemUser;
 use App\Users\Model\User;
+use App\Users\Model\UsersDetail;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Database\Model\SoftDeletes;
@@ -26,13 +27,14 @@ use Mine\MineModel;
  * @property string $audit_comment 审批意见
  * @property array $course 课程表
  * @property int $created_by 创建人 ID，关联用户表
- * @property \Carbon\Carbon $created_at 订单创建时间
- * @property \Carbon\Carbon $updated_at 订单信息更新时间
+ * @property Carbon $created_at 订单创建时间
+ * @property Carbon $updated_at 订单信息更新时间
  * @property string $deleted_at 订单删除时间
- * @property-read null|CrmShop $shop 
- * @property-read null|CrmUserAddress $address 
- * @property-read null|User $user 
- * @property-read null|SystemUser $admin 
+ * @property-read null|CrmShop $shop
+ * @property-read null|CrmUserAddress $address
+ * @property-read null|User $user
+ * @property-read null|UsersDetail $userDetail
+ * @property-read null|SystemUser $admin
  */
 class CrmShopOrder extends MineModel
 {
@@ -66,6 +68,11 @@ class CrmShopOrder extends MineModel
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function userDetail(): BelongsTo
+    {
+        return $this->belongsTo(UsersDetail::class, 'user_id', 'user_id');
     }
 
     public function admin(): BelongsTo

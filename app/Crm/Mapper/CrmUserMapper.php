@@ -167,7 +167,6 @@ class CrmUserMapper extends AbstractMapper
                 fn($query) => $query->where('mobile', 'like', '%' . $params['keywords'] . '%')
                     ->orWhere('user_name', 'like', '%' . $params['keywords'] . '%')
                     ->orWhere('remark', 'like', '%' . $params['keywords'] . '%')
-                    ->orWhere('created_name', 'like', '%' . $params['created_name'] . '%')
             );
         }
 

@@ -47,6 +47,13 @@ class CrmShopOrderMapper extends AbstractMapper
             $query->with('admin:id,nickname');
         }
 
+        // 查询客户级别customer_level
+        if (isset($params['customer_level']) && $params['customer_level'] !== '') {
+            $query->whereHas('userDetail', function ($query) use ($params) {
+                $query->where('customer_level', '=', $params['customer_level']);
+            });
+        }
+
         if (isset($params['user_id']) && $params['user_id'] !== '') {
             $query->where('user_id', '=', $params['user_id']);
         }
