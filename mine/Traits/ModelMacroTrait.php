@@ -10,6 +10,9 @@ use App\System\Model\SystemUser;
 use Hyperf\Database\Model\Builder;
 use Hyperf\DbConnection\Db;
 use Mine\Exception\MineException;
+use function Hyperf\Collection\collect;
+use function Hyperf\Config\config;
+use function Hyperf\Support\env;
 
 trait ModelMacroTrait
 {
@@ -20,29 +23,31 @@ trait ModelMacroTrait
     {
         // 数据权限方法
         $model = $this;
-        Builder::macro('userDataScope', function (?int $userid = null) use ($model) {
-            if (! \Hyperf\Config\config('mineadmin.data_scope_enabled')) {
+        Builder::macro('userDataScope', function (?int $userid = null, string $field = 'created_by') use ($model) {
+            if (!config('mineadmin.data_scope_enabled')) {
                 return $this;
             }
 
-            $userid = is_null($userid) ? (int) user()->getId() : $userid;
+            $userid = is_null($userid) ? (int)user()->getId() : $userid;
 
             if (empty($userid)) {
                 throw new MineException('Data Scope missing user_id');
             }
 
             /* @var Builder $this */
-            if ($userid == \Hyperf\Support\env('SUPER_ADMIN')) {
+            if ($userid == env('SUPER_ADMIN')) {
                 return $this;
             }
 
-            if (! in_array('created_by', $model->getFillable())) {
+            if (!in_array('created_by', $model->getFillable())) {
                 return $this;
             }
 
-            $dataScope = new class($userid, $this) {
+            $dataScope = new class($userid, $field, $this) {
                 // 用户ID
                 protected int $userid;
+
+                protected string $field;
 
                 // 查询构造器
                 protected Builder $builder;
@@ -50,8 +55,9 @@ trait ModelMacroTrait
                 // 数据范围用户ID列表
                 protected array $userIds = [];
 
-                public function __construct(int $userid, Builder $builder)
+                public function __construct(int $userid, string $field, Builder $builder)
                 {
+                    $this->field = $field;
                     $this->userid = $userid;
                     $this->builder = $builder;
                 }
@@ -59,9 +65,10 @@ trait ModelMacroTrait
                 public function execute(): Builder
                 {
                     $this->getUserDataScope();
+                    console()->info('Data Scope userIds: ' . json_encode(array_unique($this->userIds)));
                     return empty($this->userIds)
                         ? $this->builder
-                        : $this->builder->whereIn('created_by', array_unique($this->userIds));
+                        : $this->builder->whereIn($this->field, array_unique($this->userIds));
                 }
 
                 protected function getUserDataScope(): void
@@ -132,7 +139,7 @@ trait ModelMacroTrait
         Builder::macro('platformDataScope', function ($platformField = 'platform') {
             $userid = user()->getId();
             /* @var Builder $this */
-            if ($userid === (int) \Hyperf\Support\env('SUPER_ADMIN')) {
+            if ($userid === (int)env('SUPER_ADMIN')) {
                 return $this;
             }
             $platformCodes = [];
@@ -162,7 +169,7 @@ trait ModelMacroTrait
                     case SystemRole::DEPT_BELOW_SCOPE:
                         // 本部门及子部门数据权限
                         $parentDepts = Db::table('system_user_dept')->where('user_id', $userModel->id)->pluck('dept_id')->toArray();
-                        $ids = \Hyperf\Collection\collect();
+                        $ids = collect();
                         foreach ($parentDepts as $deptId) {
                             $ids->push(SystemDept::query()
                                 ->where(function ($query) use ($deptId) {

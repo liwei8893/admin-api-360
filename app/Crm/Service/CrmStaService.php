@@ -295,4 +295,44 @@ class CrmStaService extends AbstractService
             ->paginate((int)$perPage, ['*'], 'page', (int)$page);
         return $this->mapper->setPaginate($paginate);
     }
+
+//  通话时长统计
+    public function getConversionStaByCallDuration(array $params): array
+    {
+        $perPage = $params['pageSize'] ?? MineModel::PAGE_SIZE;
+        $page = $params['page'] ?? 1;
+
+        $paginate = SystemUser::query()
+            ->userDataScope(null, 'system_user.id')
+            ->leftJoin('crm_call_record', 'crm_call_record.created_by', '=', 'system_user.id')
+            ->leftJoin('crm_shop_order', function ($join) {
+                $join->on('crm_shop_order.created_by', '=', 'system_user.id')
+                    ->whereNull('crm_shop_order.deleted_at');
+            })
+            ->when(isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) === 2, function ($query) use ($params) {
+                $query->whereBetween('crm_call_record.create_time', [strtotime($params['created_at'][0]), strtotime($params['created_at'][1])])
+                    ->whereBetween('crm_shop_order.created_at', [$params['created_at'][0], $params['created_at'][1]]);
+            })
+            ->when(isset($params['user_group']), function ($query) use ($params) {
+                $query->where('system_user.user_group', $params['user_group']);
+            })
+            ->select([
+                'system_user.id',
+                'system_user.username',
+                'system_user.nickname',
+                'system_user.user_group',
+                DB::raw('COUNT(DISTINCT crm_call_record.user_id)    as user_count'),
+                DB::raw('COALESCE(SUM(crm_call_record.duration), 0) as call_duration'),
+                DB::raw('COALESCE(COUNT(DISTINCT crm_shop_order.id), 0) as order_count'),
+                DB::raw('COALESCE(SUM(crm_shop_order.amount), 0) as order_amount'),
+                DB::raw('COALESCE(COUNT(DISTINCT CASE WHEN crm_shop_order.order_status = 7 THEN crm_shop_order.id END), 0) as pass_count'),
+                DB::raw('COALESCE(SUM(IF(crm_shop_order.order_status = 7, crm_shop_order.amount, 0)), 0) as pass_amount'),
+                DB::raw('COALESCE(ROUND(COALESCE(COUNT(DISTINCT CASE WHEN crm_shop_order.order_status = 7 THEN crm_shop_order.id END), 0) * 1.0 / NULLIF(COUNT(DISTINCT crm_shop_order.id), 0), 2), 0) as pass_rate'),
+            ])
+            ->groupBy('system_user.id')
+            ->orderBy('call_duration', 'desc')
+            ->orderBy('order_amount', 'desc')
+            ->paginate((int)$perPage, ['*'], 'page', (int)$page);
+        return $this->mapper->setPaginate($paginate);
+    }
 }

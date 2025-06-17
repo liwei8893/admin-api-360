@@ -83,4 +83,16 @@ class CrmStaController extends MineController
         return $this->success($this->service->getConversionStaByPlatform($params));
     }
 
+    /**
+     * 转化统计通话时长
+     * @return ResponseInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[GetMapping('getConversionStaByCallDuration')]
+    public function getConversionStaByCallDuration(): ResponseInterface
+    {
+        $params = $this->request->all();
+        return $this->success($this->service->getConversionStaByCallDuration($params));
+    }
 }

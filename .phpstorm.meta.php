@@ -16,7 +16,7 @@ namespace Hyperf\Database\Model {
         /**
          * @return Builder
          */
-        public function userDataScope(?int $userid = null)
+        public function userDataScope(?int $userid = null, string $field = 'created_by')
         {
         }
 
