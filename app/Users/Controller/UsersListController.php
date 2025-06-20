@@ -106,6 +106,17 @@ class UsersListController extends MineController
     }
 
     /**
+     * 新增.
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[PostMapping('batchSave'), Permission('users:list:save'), OperationLog]
+    public function batchSave(UsersRequest $request): ResponseInterface
+    {
+        return $this->service->batchSave($request->all()) ? $this->success() : $this->error();
+    }
+
+    /**
      * 更新.
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface

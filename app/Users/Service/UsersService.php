@@ -141,6 +141,21 @@ class UsersService extends AbstractService
     }
 
     /**
+     * @param array $collects
+     * @return bool
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[Transaction]
+    public function batchSave(array $collects): bool
+    {
+        foreach ($collects as $collect) {
+            $this->save($collect);
+        }
+        return true;
+    }
+
+    /**
      * 用手机号检测用户是否存在.
      */
     public function existsByMobile(string $mobile): bool
