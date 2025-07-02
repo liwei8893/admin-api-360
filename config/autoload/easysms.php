@@ -26,7 +26,7 @@ return [
         'aliyun' => [
             'access_key_id' => '',
             'access_key_secret' => '',
-            'sign_name' => '黄冈优课优题',
+            'sign_name' => '黄冈优课网络科技',
         ],
     ],
 ];
