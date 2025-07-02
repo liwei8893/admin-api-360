@@ -417,7 +417,7 @@ class OrderService extends AbstractService
         $data['tag_type'] = $tagTypeMap[$data['tag_type']] ?? '未知';
         $payTypeMap = [1 => '微信', 6 => '管理员赠送'];
         $data['pay_type'] = $payTypeMap[$data['pay_type']] ?? '未知';
-        $data['created_at'] = date('Y-m-d h:m:s', (int)$data['created_at']);
+        $data['created_at'] = date('Y-m-d H:i:s', (int)$data['created_at']);
         $data['payment_number'] = !empty($data['payment']) ? implode(',', array_column($data['payment'], 'payment_number')) : '';
         $data['order_grade'] = !empty($data['order_grade']) ? implode(',', array_column($data['order_grade'], 'title')) : '';
         $data['order_subject_count'] = count($data['order_subject']);
