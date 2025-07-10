@@ -29,6 +29,6 @@ class AuthMessage extends Message
      */
     public function getTemplate(GatewayInterface $gateway = null): string
     {
-        return 'SMS_465402038';
+        return 'SMS_179670045';
     }
 }

@@ -29,6 +29,6 @@ class ForgotPwdMessage extends Message
      */
     public function getTemplate(GatewayInterface $gateway = null): string
     {
-        return 'SMS_465322090';
+        return 'SMS_179670041';
     }
 }
