@@ -14,12 +14,14 @@ use Mine\MineModel;
  * @property int $id ID
  * @property int $card_id 卡号
  * @property int $course_id 课程ID
+ * @property string $platform 平台编号
+ * @property int $days 有效期天数
  * @property int $status 是否使用
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
  * @property string $deleted_at 删除时间
- * @property null|CourseBasis $course
- * @property null|CommerceCardUsage $usage
+ * @property-read null|CourseBasis $course
+ * @property-read null|CommerceCardUsage $usage
  */
 class CommerceCard extends MineModel
 {
@@ -33,12 +35,12 @@ class CommerceCard extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'card_id', 'course_id', 'status', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'card_id', 'course_id', 'platform', 'days', 'status', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'card_id' => 'integer', 'course_id' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'card_id' => 'integer', 'course_id' => 'integer', 'days' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function course(): HasOne
     {

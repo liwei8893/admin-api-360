@@ -47,6 +47,8 @@ class CommerceCardRequest extends MineFormRequest
             // 课程ID 验证
             'course_id' => 'required',
             'num' => 'required',
+            'platform' => 'required',
+            'days' => 'required',
         ];
     }
 

@@ -10,7 +10,6 @@ use App\Commerce\Model\CommerceCardUsage;
 use App\Course\Model\CourseBasis;
 use App\Order\Model\Order;
 use App\Order\Service\OrderSignupService;
-use App\Score\Event\ScoreAddEvent;
 use App\System\Service\SmsService;
 use App\Users\Model\User;
 use App\Users\Service\UsersAppLoginService;
@@ -72,7 +71,7 @@ class CommerceCardService extends AbstractService
         /** @var User $userModel */
         $userModel = $this->loginService->mapper->checkUserByMobile($params['mobile'], User::COMMON_FIELDS);
         if (!$userModel) {
-            $registerData = ['mobile' => $mobile, 'platform' => 'H', 'remark' => '电商卡片激活'];
+            $registerData = ['mobile' => $mobile, 'platform' => $cardModel->platform, 'remark' => '电商卡片激活'];
             $userModel = $this->loginService->register($registerData);
         }
         // 报名课程
@@ -80,21 +79,35 @@ class CommerceCardService extends AbstractService
         if (!$courseModel) {
             throw new NormalStatusException('当前卡片未关联课程,请联系官网客服!');
         }
+
+        $params['days'] = $cardModel->days;
+        $params['platform'] = $cardModel->platform;
+
         /* @var Order $orderModel */
         $orderModel = $userModel->orders()->where('deleted_at', 0)->where('shop_id', $courseModel->id)->first();
-        // 已购买课程直接返回
+        // 已购买课程续费
         if ($orderModel && $orderModel->pay_states === Order::PAY_SUCCESS) {
-            throw new NormalStatusException('当前账号已购买课程,如需续费请联系官网客服!');
+            try {
+                DB::beginTransaction();
+                $this->orderSignupService->handleRenewal($orderModel, $params);
+                DB::commit();
+                return true;
+            } catch (Exception $e) {
+                logger('ActivateCard')->error($e->getMessage());
+                // 报错就回滚
+                DB::rollBack();
+                throw new NormalStatusException('系统错误,请联系官网客服激活卡片!');
+            }
         }
-        // 卡片都是一年有效期,默认365
+        // 新增
         $insetInfo = [
-            'indate' => 365,
+            'indate' => $cardModel->days,
             'platform' => $userModel->platform,
             'remark' => '会员卡片激活',
-            'money' => 365,
-            'actual_price' => 365,
-            'order_price' => 365 * 100,
-            'real_year' => 1,
+            'money' => 0,
+            'actual_price' => 0,
+            'order_price' => 0,
+            'real_year' => 0,
             'user_id' => $userModel->id,
             'coupon_id' => $cardModel->id,
             'pay_type' => 9, // 电商卡
@@ -131,8 +144,6 @@ class CommerceCardService extends AbstractService
                     Order::create($insertData);
                 }
             }
-            // 增加积分
-            event(new ScoreAddEvent('init', $userModel->id, $orderModel->id));
             DB::commit();
         } catch (Exception $e) {
             // 报错就回滚
@@ -171,6 +182,8 @@ class CommerceCardService extends AbstractService
             $insertData[] = [
                 'card_id' => $cardId,
                 'course_id' => $params['course_id'],
+                'platform' => $params['platform'] ?? 'H',
+                'days' => $params['days'] ?? 365,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ];

@@ -7,10 +7,13 @@ namespace App\Order\Service;
 use App\Course\Model\CourseBasis;
 use App\Course\Service\CourseService;
 use App\Crm\Service\CrmUserTimelineService;
+use App\Order\Mapper\OrderMapper;
 use App\Order\Mapper\OrderSignupMapper;
 use App\Order\Model\Order;
+use App\Order\Model\UsersRenew;
 use App\Score\Event\ScoreAddEvent;
 use App\Users\Model\User;
+use Carbon\Carbon;
 use Exception;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Di\Annotation\Inject;
@@ -39,6 +42,9 @@ class OrderSignupService extends AbstractService
 
     #[Inject]
     protected CrmUserTimelineService $crmUserTimelineService;
+
+    #[Inject]
+    protected OrderMapper $orderMapper;
 
     /**
      * @throws ContainerExceptionInterface
@@ -159,6 +165,70 @@ class OrderSignupService extends AbstractService
             // 所属应用,1:优课,2番茄,3密课
             'app' => $data['app'] ?? 1,
         ];
+    }
+
+    /**
+     * 用户自行续费.
+     * @param Order $orderModel 需要续费的订单
+     * @param array $params
+     * @return void
+     */
+    public function handleRenewal(Order $orderModel, array $params): void
+    {
+        // 增加有效期,判断到期时间是否大于当前日期,如果已经过期从当前日期计算
+        $endDate = Carbon::parse($orderModel->course_end_time);
+        // 检查结束日期是否已过去
+        if ($endDate->isPast()) {
+            $params['date'] = Carbon::now()->addDays($params['days'])->toDateString();
+        } else {
+            $params['date'] = $endDate->addDays($params['days'])->toDateString();
+        }
+        // 插入续费记录
+        $this->insetUsersRenew($orderModel, $params);
+        // 修改订单有效期
+        $this->changeRenewalOrderDate($orderModel, $params['date'], ['is_renew' => 1, 'renew_time' => time()]);
+    }
+
+    /**
+     * 续费时修改订单有效期
+     * @param Order $orderModel
+     * @param string $endDate
+     * @param array $query
+     * @return bool
+     */
+    public function changeRenewalOrderDate(Order $orderModel, string $endDate, array $query = []): bool
+    {
+        $oldDt = Carbon::parse(Carbon::parse($orderModel->course_end_time)->toDateString());
+        $newDt = Carbon::parse($endDate);
+        // 计算相差多少天
+        $diffDay = $oldDt->diffInDays($newDt);
+        return (bool)$this->orderMapper->incrementInDate($orderModel->id, $diffDay, $query);
+    }
+
+    /**
+     * 插入续费记录
+     * @param Order $orderModel
+     * @param array $params
+     * @return int
+     */
+    public function insetUsersRenew(Order $orderModel, array $params): int
+    {
+        $data = [
+            'order_id' => $orderModel->id,
+            'indate_start' => $orderModel->course_end_time,
+            'indate_end' => $params['date'],
+            'created_at' => time(),
+            'created_id' => 0,
+            'status' => 1,
+            'money' => $params['money'] ?? 0,
+            'created_name' => 0,
+            'shop_id' => $orderModel->shop_id,
+            'user_id' => $orderModel->user_id,
+            'audit_status' => UsersRenew::AUDIT_SUCCESS,
+            'remark' => $params['remark'] ?? '',
+            'real_year' => $params['real_year'] ?? 0,
+        ];
+        return UsersRenew::query()->insertGetId($data);
     }
 
     /**
