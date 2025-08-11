@@ -99,11 +99,12 @@ class CommerceCardService extends AbstractService
             $orderModel = $userModel->orders()->where('deleted_at', 0)->where('shop_id', $courseModel->id)->first();
             // 已购买课程续费
             if ($orderModel && $orderModel->pay_states === Order::PAY_SUCCESS) {
+                $params['remark'] = '电商卡片续费';
                 $this->orderSignupService->handleRenewal($orderModel, $params);
                 DB::commit();
                 return true;
             }
-      
+
             // 新增
             $insetInfo = [
                 'indate' => $cardModel->days,
