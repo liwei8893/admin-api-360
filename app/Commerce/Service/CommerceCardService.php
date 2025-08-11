@@ -83,45 +83,41 @@ class CommerceCardService extends AbstractService
         $params['days'] = $cardModel->days;
         $params['platform'] = $cardModel->platform;
 
-        /* @var Order $orderModel */
-        $orderModel = $userModel->orders()->where('deleted_at', 0)->where('shop_id', $courseModel->id)->first();
-        // 已购买课程续费
-        if ($orderModel && $orderModel->pay_states === Order::PAY_SUCCESS) {
-            try {
-                DB::beginTransaction();
-                $this->orderSignupService->handleRenewal($orderModel, $params);
-                DB::commit();
-                return true;
-            } catch (Exception $e) {
-                logger('ActivateCard')->error($e->getMessage());
-                // 报错就回滚
-                DB::rollBack();
-                throw new NormalStatusException('系统错误,请联系官网客服激活卡片!');
-            }
-        }
-        // 新增
-        $insetInfo = [
-            'indate' => $cardModel->days,
-            'platform' => $userModel->platform,
-            'remark' => '会员卡片激活',
-            'money' => 0,
-            'actual_price' => 0,
-            'order_price' => 0,
-            'real_year' => 0,
-            'user_id' => $userModel->id,
-            'coupon_id' => $cardModel->id,
-            'pay_type' => 9, // 电商卡
-            'pay_states' => 7, // 直接设置为成功状态
-        ];
         // 有订单,没完成,更新订单,返回订单号继续支付
         try {
             DB::beginTransaction();
+
             // 卡片设置为已使用
             $cardModel->status = 1;
             $cardModel->save();
             // 添加使用记录
             $cardUsageModel = new CommerceCardUsage(['user_id' => $userModel->id]);
             $cardModel->usage()->save($cardUsageModel);
+
+
+            /* @var Order $orderModel */
+            $orderModel = $userModel->orders()->where('deleted_at', 0)->where('shop_id', $courseModel->id)->first();
+            // 已购买课程续费
+            if ($orderModel && $orderModel->pay_states === Order::PAY_SUCCESS) {
+                $this->orderSignupService->handleRenewal($orderModel, $params);
+                DB::commit();
+                return true;
+            }
+      
+            // 新增
+            $insetInfo = [
+                'indate' => $cardModel->days,
+                'platform' => $userModel->platform,
+                'remark' => '会员卡片激活',
+                'money' => 0,
+                'actual_price' => 0,
+                'order_price' => 0,
+                'real_year' => 0,
+                'user_id' => $userModel->id,
+                'coupon_id' => $cardModel->id,
+                'pay_type' => 9, // 电商卡
+                'pay_states' => 7, // 直接设置为成功状态
+            ];
             if ($orderModel && $orderModel->pay_states !== Order::PAY_SUCCESS) {
                 $orderModel->update($insetInfo);
             } elseif (!$orderModel) {
@@ -148,6 +144,7 @@ class CommerceCardService extends AbstractService
         } catch (Exception $e) {
             // 报错就回滚
             DB::rollBack();
+            logger('ActivateCard')->error($e->getMessage());
             throw new NormalStatusException('系统错误,请联系官网客服激活卡片!');
         }
         return true;
