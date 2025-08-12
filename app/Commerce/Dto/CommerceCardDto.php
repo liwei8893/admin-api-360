@@ -32,6 +32,6 @@ class CommerceCardDto implements MineModelExcel
     #[ExcelProperty(value: '更新时间', index: 5)]
     public string $updated_at;
 
-    #[ExcelProperty(value: '删除时间', index: 6)]
-    public string $deleted_at;
+    #[ExcelProperty(value: '激活链接', index: 6)]
+    public string $link;
 }

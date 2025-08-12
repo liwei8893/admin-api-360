@@ -214,5 +214,6 @@ class CommerceCardService extends AbstractService
     protected function handleExportData(array &$data): void
     {
         $data['status'] = $data['status'] === 0 ? '未使用' : '使用';
+        $data['link'] = "https://yk.hgykvip.com/login/card/activate?card_id=" . $data['card_id'];
     }
 }
