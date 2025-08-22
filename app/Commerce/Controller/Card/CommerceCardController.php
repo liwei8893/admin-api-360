@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Commerce\Controller\Card;
 
+use App\Commerce\Dto\CommerceCardDto;
 use App\Commerce\Request\CommerceCardRequest;
 use App\Commerce\Service\CommerceCardService;
 use Hyperf\Di\Annotation\Inject;
@@ -15,7 +16,11 @@ use Hyperf\HttpServer\Annotation\PutMapping;
 use Mine\Annotation\Auth;
 use Mine\Annotation\OperationLog;
 use Mine\Annotation\Permission;
+use Mine\MineCollection;
 use Mine\MineController;
+use PhpOffice\PhpSpreadsheet\Writer\Exception;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -34,8 +39,8 @@ class CommerceCardController extends MineController
 
     /**
      * 列表.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('index'), Permission('commerce:card, commerce:card:index')]
     public function index(): ResponseInterface
@@ -45,8 +50,8 @@ class CommerceCardController extends MineController
 
     /**
      * 回收站列表.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('recycle'), Permission('commerce:card:recycle')]
     public function recycle(): ResponseInterface
@@ -56,30 +61,30 @@ class CommerceCardController extends MineController
 
     /**
      * 单个或批量真实删除数据 （清空回收站）.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[DeleteMapping('realDelete'), Permission('commerce:card:realDelete'), OperationLog]
     public function realDelete(): ResponseInterface
     {
-        return $this->service->realDelete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->realDelete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
      * 单个或批量恢复在回收站的数据.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PutMapping('recovery'), Permission('commerce:card:recovery'), OperationLog]
     public function recovery(): ResponseInterface
     {
-        return $this->service->recovery((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->recovery((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 
     /**
      * 新增.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('save'), Permission('commerce:card:save'), OperationLog]
     public function save(CommerceCardRequest $request): ResponseInterface
@@ -90,13 +95,13 @@ class CommerceCardController extends MineController
     #[PostMapping('generateCard'), Permission('commerce:card:save')]
     public function generateCard(CommerceCardRequest $request): ResponseInterface
     {
-        return $this->success($this->service->generateCard($request->validated()));
+        return $this->success($this->service->generateCard($request->all()));
     }
 
     /**
      * 更新.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PutMapping('update/{id}'), Permission('commerce:card:update'), OperationLog]
     public function update(int $id, CommerceCardRequest $request): ResponseInterface
@@ -106,8 +111,8 @@ class CommerceCardController extends MineController
 
     /**
      * 读取数据.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[GetMapping('read/{id}'), Permission('commerce:card:read')]
     public function read(int $id): ResponseInterface
@@ -117,47 +122,47 @@ class CommerceCardController extends MineController
 
     /**
      * 数据导入.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('import'), Permission('commerce:card:import')]
     public function import(): ResponseInterface
     {
-        return $this->service->import(\App\Commerce\Dto\CommerceCardDto::class) ? $this->success() : $this->error();
+        return $this->service->import(CommerceCardDto::class) ? $this->success() : $this->error();
     }
 
     /**
      * 下载导入模板
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws Exception
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('downloadTemplate')]
     public function downloadTemplate(): ResponseInterface
     {
-        return (new \Mine\MineCollection())->export(\App\Commerce\Dto\CommerceCardDto::class, '模板下载', []);
+        return (new MineCollection())->export(CommerceCardDto::class, '模板下载', []);
     }
 
     /**
      * 数据导出.
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws Exception
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[PostMapping('export'), Permission('commerce:card:export'), OperationLog]
     public function export(): ResponseInterface
     {
-        return $this->service->export($this->request->all(), \App\Commerce\Dto\CommerceCardDto::class, '导出数据列表');
+        return $this->service->export($this->request->all(), CommerceCardDto::class, '导出数据列表');
     }
 
     /**
      * 单个或批量删除数据到回收站.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     #[DeleteMapping('delete'), Permission('commerce:card:delete'), OperationLog]
     public function delete(): ResponseInterface
     {
-        return $this->service->delete((array) $this->request->input('ids', [])) ? $this->success() : $this->error();
+        return $this->service->delete((array)$this->request->input('ids', [])) ? $this->success() : $this->error();
     }
 }

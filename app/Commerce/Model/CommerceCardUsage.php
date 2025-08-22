@@ -11,10 +11,11 @@ use Mine\MineModel;
 
 /**
  * @property int $id ID
- * @property int $card_id 卡号
+ * @property string $card_id 卡号
  * @property int $user_id 用户ID
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
+ * @property-read null|User $user
  */
 class CommerceCardUsage extends MineModel
 {
@@ -31,7 +32,7 @@ class CommerceCardUsage extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'card_id' => 'integer', 'user_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'user_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function user(): HasOne
     {

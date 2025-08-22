@@ -59,7 +59,7 @@ class CommerceCardService extends AbstractService
         $this->smsService->checkSmsCaptcha((string)$mobile, (string)$smsCode);
         // 判断是否使用
         /** @var CommerceCard $cardModel */
-        $cardModel = $this->mapper->findCardByCardId((int)$cardId);
+        $cardModel = $this->mapper->findCardByCardId($cardId);
         if (!$cardModel) {
             throw new NormalStatusException('卡号不正确,请核对后输入!');
         }
@@ -163,7 +163,10 @@ class CommerceCardService extends AbstractService
     public function save(array $data): int
     {
         // 生成card_id
-        $data['card_id'] = $this->generateCardId();
+        if (empty($data['card_id'])) {
+            $data['card_id'] = $this->generateCardId();
+        }
+        $data['created_by'] = user()->getId();
         return parent::save($data);
     }
 
@@ -188,6 +191,9 @@ class CommerceCardService extends AbstractService
                 'course_id' => $params['course_id'],
                 'platform' => $params['platform'] ?? 'H',
                 'days' => $params['days'] ?? 365,
+                'card_type' => $params['card_type'] ?? 0,
+                'is_renew' => $params['is_renew'] ?? 0,
+                'created_by' => user()->getId(),
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ];

@@ -24,7 +24,7 @@ class CommerceCardMapper extends AbstractMapper
         $this->model = CommerceCard::class;
     }
 
-    public function findCardByCardId(int $cardId): Model|CommerceCard|Builder|null
+    public function findCardByCardId(string $cardId): Model|CommerceCard|Builder|null
     {
         return CommerceCard::query()->where('card_id', $cardId)->first();
     }

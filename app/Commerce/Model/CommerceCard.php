@@ -12,7 +12,7 @@ use Mine\MineModel;
 
 /**
  * @property int $id ID
- * @property int $card_id 卡号
+ * @property string $card_id 卡号
  * @property int $course_id 课程ID
  * @property string $platform 平台编号
  * @property int $days 有效期天数
@@ -42,7 +42,7 @@ class CommerceCard extends MineModel
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'card_id' => 'integer', 'course_id' => 'integer', 'days' => 'integer', 'is_renew' => 'integer', 'card_type' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'course_id' => 'integer', 'days' => 'integer', 'is_renew' => 'integer', 'card_type' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function course(): HasOne
     {

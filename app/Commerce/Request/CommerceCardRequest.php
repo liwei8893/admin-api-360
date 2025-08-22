@@ -25,7 +25,7 @@ class CommerceCardRequest extends MineFormRequest
             // 课程ID 验证
             'mobile' => 'required|regex:/^1\d{10}$/',
             'sms_code' => 'required|digits:6',
-            'card_id' => 'required|digits:8',
+            'card_id' => 'required',
         ];
     }
 
@@ -49,6 +49,8 @@ class CommerceCardRequest extends MineFormRequest
             'num' => 'required',
             'platform' => 'required',
             'days' => 'required',
+            'is_renew' => 'required',
+            'card_type' => 'required'
         ];
     }
 
