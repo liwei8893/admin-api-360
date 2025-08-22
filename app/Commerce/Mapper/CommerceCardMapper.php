@@ -54,6 +54,16 @@ class CommerceCardMapper extends AbstractMapper
             $query->where('status', '=', $params['status']);
         }
 
+        // 是否永久卡片
+        if (isset($params['card_type']) && $params['card_type'] !== '') {
+            $query->where('card_type', '=', $params['card_type']);
+        }
+
+        // 是否可续费卡片
+        if (isset($params['is_renew']) && $params['is_renew'] !== '') {
+            $query->where('is_renew', '=', $params['is_renew']);
+        }
+
         // 创建时间
         if (isset($params['created_at']) && is_array($params['created_at']) && count($params['created_at']) == 2) {
             $query->whereBetween(
@@ -62,7 +72,7 @@ class CommerceCardMapper extends AbstractMapper
             );
         }
 
-        if (! empty($params['withCourse'])) {
+        if (!empty($params['withCourse'])) {
             $query->with('course:id,title');
         }
         return $query;

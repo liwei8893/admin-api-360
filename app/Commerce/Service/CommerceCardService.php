@@ -87,9 +87,11 @@ class CommerceCardService extends AbstractService
         try {
             DB::beginTransaction();
 
-            // 卡片设置为已使用
-            $cardModel->status = 1;
-            $cardModel->save();
+            // 卡片设置为已使用,卡片类型为永久时不设置为已使用
+            if ($cardModel->card_type === 0) {
+                $cardModel->status = 1;
+                $cardModel->save();
+            }
             // 添加使用记录
             $cardUsageModel = new CommerceCardUsage(['user_id' => $userModel->id]);
             $cardModel->usage()->save($cardUsageModel);
@@ -97,12 +99,16 @@ class CommerceCardService extends AbstractService
 
             /* @var Order $orderModel */
             $orderModel = $userModel->orders()->where('deleted_at', 0)->where('shop_id', $courseModel->id)->first();
-            // 已购买课程续费
+            // 已购买课程续费,is_renew为1时表示可以续费
             if ($orderModel && $orderModel->pay_states === Order::PAY_SUCCESS) {
-                $params['remark'] = '电商卡片续费';
-                $this->orderSignupService->handleRenewal($orderModel, $params);
-                DB::commit();
-                return true;
+                if ($cardModel->is_renew === 1) {
+                    $params['remark'] = '电商卡片续费';
+                    $this->orderSignupService->handleRenewal($orderModel, $params);
+                    DB::commit();
+                    return true;
+                }
+
+                throw new NormalStatusException('当前账号已购买课程,如需续费请联系官网客服!');
             }
 
             // 新增

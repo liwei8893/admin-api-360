@@ -16,6 +16,8 @@ use Mine\MineModel;
  * @property int $course_id 课程ID
  * @property string $platform 平台编号
  * @property int $days 有效期天数
+ * @property int $is_renew 是否可以续费
+ * @property int $card_type 卡片类型:0一次性,1永久
  * @property int $status 是否使用
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
@@ -35,12 +37,12 @@ class CommerceCard extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'card_id', 'course_id', 'platform', 'days', 'status', 'created_at', 'updated_at', 'deleted_at'];
+    protected array $fillable = ['id', 'card_id', 'course_id', 'platform', 'days', 'is_renew', 'card_type', 'status', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'card_id' => 'integer', 'course_id' => 'integer', 'days' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'card_id' => 'integer', 'course_id' => 'integer', 'days' => 'integer', 'is_renew' => 'integer', 'card_type' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function course(): HasOne
     {
