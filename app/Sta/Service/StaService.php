@@ -221,6 +221,7 @@ class StaService extends AbstractService
                 'u.platform',
                 DB::raw('COUNT(ucr.id) as has_record'),
                 DB::raw('COUNT(ul.users_id) as has_login'),
+                DB::raw('FROM_UNIXTIME(MAX(u.last_login_time)) as last_login_time'),
                 'order.created_at',
                 'order.indate',
                 'u.grade_id',
