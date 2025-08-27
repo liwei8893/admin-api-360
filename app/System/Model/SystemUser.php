@@ -31,13 +31,13 @@ use Mine\MineModel;
  * @property string $remark 备注
  * @property int $created_by 创建者
  * @property int $updated_by 更新者
- * @property \Carbon\Carbon $created_at 创建时间
- * @property \Carbon\Carbon $updated_at 更新时间
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
  * @property string $deleted_at 删除时间
- * @property-read null|Collection|User[] $user 
- * @property-read null|Collection|SystemRole[] $roles 
- * @property-read null|Collection|SystemPost[] $posts 
- * @property-read null|Collection|SystemDept[] $depts 
+ * @property-read null|Collection|User[] $user
+ * @property-read null|Collection|SystemRole[] $roles
+ * @property-read null|Collection|SystemPost[] $posts
+ * @property-read null|Collection|SystemDept[] $depts
  * @property-write mixed $password 密码
  */
 class SystemUser extends MineModel
@@ -46,7 +46,7 @@ class SystemUser extends MineModel
 
     public const USER_NORMAL = 1;
 
-    public const USER_BAN = 2;
+    public const USER_BAN = 0;
 
     /**
      * 系统用户.

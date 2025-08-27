@@ -23,6 +23,9 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
+use function Hyperf\Collection\collect;
+use function Hyperf\Config\config;
+use function Hyperf\Support\env;
 
 /**
  * 用户业务
@@ -49,10 +52,11 @@ class SystemUserService extends AbstractService
      */
     public function __construct(
         ContainerInterface $container,
-        SystemUserMapper $mapper,
-        SystemMenuService $systemMenuService,
-        SystemRoleService $systemRoleService
-    ) {
+        SystemUserMapper   $mapper,
+        SystemMenuService  $systemMenuService,
+        SystemRoleService  $systemRoleService
+    )
+    {
         $this->mapper = $mapper;
         $this->sysMenuService = $systemMenuService;
         $this->sysRoleService = $systemRoleService;
@@ -83,7 +87,7 @@ class SystemUserService extends AbstractService
     public function getInfo(): array
     {
         if ($uid = user()->getId()) {
-            return $this->getCacheInfo((int) $uid);
+            return $this->getCacheInfo((int)$uid);
         }
         throw new MineException(t('system.unable_get_userinfo'), 500);
     }
@@ -127,7 +131,7 @@ class SystemUserService extends AbstractService
     public function getOnlineUserPageList(array $params = []): array
     {
         $redis = redis();
-        $key = sprintf('%sToken:*', \Hyperf\Config\config('cache.default.prefix'));
+        $key = sprintf('%sToken:*', config('cache.default.prefix'));
 
         $userIds = [];
         $iterator = null;
@@ -155,8 +159,8 @@ class SystemUserService extends AbstractService
      */
     public function delete(array $ids): bool
     {
-        if (! empty($ids)) {
-            if (($key = array_search(\Hyperf\Support\env('SUPER_ADMIN'), $ids)) !== false) {
+        if (!empty($ids)) {
+            if (($key = array_search(env('SUPER_ADMIN'), $ids)) !== false) {
                 unset($ids[$key]);
             }
             $result = $this->mapper->delete($ids);
@@ -174,8 +178,8 @@ class SystemUserService extends AbstractService
      */
     public function realDelete(array $ids): bool
     {
-        if (! empty($ids)) {
-            if (($key = array_search(\Hyperf\Support\env('SUPER_ADMIN'), $ids)) !== false) {
+        if (!empty($ids)) {
+            if (($key = array_search(env('SUPER_ADMIN'), $ids)) !== false) {
                 unset($ids[$key]);
             }
             $result = $this->mapper->realDelete($ids);
@@ -195,7 +199,7 @@ class SystemUserService extends AbstractService
     public function kickUser(string $id): bool
     {
         $redis = redis();
-        $key = sprintf('%sToken:%s', \Hyperf\Config\config('cache.default.prefix'), $id);
+        $key = sprintf('%sToken:%s', config('cache.default.prefix'), $id);
         user()->getJwt()->logout($redis->get($key), 'default');
         $redis->del($key);
         return true;
@@ -217,7 +221,7 @@ class SystemUserService extends AbstractService
     public function clearCache(string $id): bool
     {
         $redis = redis();
-        $prefix = \Hyperf\Config\config('cache.default.prefix');
+        $prefix = config('cache.default.prefix');
 
         $iterator = null;
         while (false !== ($configKey = $redis->scan($iterator, $prefix . 'config:*', 100))) {
@@ -239,10 +243,10 @@ class SystemUserService extends AbstractService
     public function setHomePage(array $params): bool
     {
         $res = ($this->mapper->getModel())::query()
-            ->where('id', $params['id'])
-            ->update(['dashboard' => $params['dashboard']]) > 0;
+                ->where('id', $params['id'])
+                ->update(['dashboard' => $params['dashboard']]) > 0;
 
-        $this->clearCache((string) $params['id']);
+        $this->clearCache((string)$params['id']);
         return $res;
     }
 
@@ -253,7 +257,7 @@ class SystemUserService extends AbstractService
      */
     public function updateInfo(array $params): bool
     {
-        if (! isset($params['id'])) {
+        if (!isset($params['id'])) {
             return false;
         }
 
@@ -267,7 +271,7 @@ class SystemUserService extends AbstractService
             }
         }
 
-        $this->clearCache((string) $model['id']);
+        $this->clearCache((string)$model['id']);
         return $model->save();
     }
 
@@ -276,7 +280,7 @@ class SystemUserService extends AbstractService
      */
     public function modifyPassword(array $params): bool
     {
-        return $this->mapper->initUserPassword((int) user()->getId(), $params['newPassword']);
+        return $this->mapper->initUserPassword((int)user()->getId(), $params['newPassword']);
     }
 
     /**
@@ -293,13 +297,13 @@ class SystemUserService extends AbstractService
      */
     protected function handleData($data): array
     {
-        if (! is_array($data['role_ids'])) {
+        if (!is_array($data['role_ids'])) {
             $data['role_ids'] = explode(',', $data['role_ids']);
         }
-        if (($key = array_search(\Hyperf\Support\env('ADMIN_ROLE'), $data['role_ids'], true)) !== false) {
+        if (($key = array_search(env('ADMIN_ROLE'), $data['role_ids'], true)) !== false) {
             unset($data['role_ids'][$key]);
         }
-        if (! empty($data['post_ids']) && ! is_array($data['post_ids'])) {
+        if (!empty($data['post_ids']) && !is_array($data['post_ids'])) {
             $data['post_ids'] = explode(',', $data['post_ids']);
         }
         if (is_array($data['dept_id'])) {
@@ -319,7 +323,7 @@ class SystemUserService extends AbstractService
         $user = $this->mapper->getModel()->find($id);
         $user->addHidden('deleted_at', 'password');
         $data['user'] = $user->toArray();
-        if (! empty($data['user']['backend_setting'])) {
+        if (!empty($data['user']['backend_setting'])) {
             $data['user']['backend_setting'] = json_decode($data['user']['backend_setting'], false, 512, JSON_THROW_ON_ERROR);
         }
         if (user()->isSuperAdmin()) {
@@ -350,5 +354,13 @@ class SystemUserService extends AbstractService
         }
         unset($roleData);
         return array_unique($ids);
+    }
+
+    protected function handleExportData(array &$data): void
+    {
+        $roles = collect($data['roles']);
+        $depts = collect($data['depts']);
+        $data['role_name'] = $roles->pluck('name')->join(',');
+        $data['dept_name'] = $depts->pluck('name')->join(',');
     }
 }
