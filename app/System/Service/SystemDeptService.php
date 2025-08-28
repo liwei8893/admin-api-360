@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\System\Service;
 
+use App\Setting\Service\SettingCrontabService;
 use App\System\Mapper\SystemDeptMapper;
+use Hyperf\Di\Annotation\Inject;
 use Mine\Abstracts\AbstractService;
 use Mine\Exception\NormalStatusException;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class SystemDeptService extends AbstractService
 {
@@ -14,6 +18,9 @@ class SystemDeptService extends AbstractService
      * @var SystemDeptMapper
      */
     public $mapper;
+
+    #[Inject]
+    protected SettingCrontabService $crontabService;
 
     public function __construct(SystemDeptMapper $mapper)
     {
@@ -47,7 +54,7 @@ class SystemDeptService extends AbstractService
         foreach ($data['users'] as $item) {
             $users[] = array_merge(['created_at' => date('Y-m-d H:i:s')], $item);
         }
-        return $this->mapper->addLeader((int) $data['id'], $users);
+        return $this->mapper->addLeader((int)$data['id'], $users);
     }
 
     /**
@@ -59,9 +66,9 @@ class SystemDeptService extends AbstractService
     {
         $users = [];
         foreach ($data['ids'] as $id) {
-            $users[] = [ 'user_id' => $id ];
+            $users[] = ['user_id' => $id];
         }
-        return $this->mapper->delLeader((int) $data['id'], $users);
+        return $this->mapper->delLeader((int)$data['id'], $users);
     }
 
     /**
@@ -74,22 +81,28 @@ class SystemDeptService extends AbstractService
 
     /**
      * 新增部门.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function save(array $data): int
     {
-        return $this->mapper->save($this->handleData($data));
+        $state = $this->mapper->save($this->handleData($data));
+        // 添加部门之后立即执行一次填充平台编号的定时任务
+        $this->crontabService->run(3);
+        return $state;
     }
 
     /**
      * 更新部门.
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function update(int $id, array $data): bool
     {
-        return $this->mapper->update($id, $this->handleData($data));
+        $state = $this->mapper->update($id, $this->handleData($data));
+        // 更新部门之后立即执行一次填充平台编号的定时任务
+        $this->crontabService->run(3);
+        return $state;
     }
 
     /**
@@ -101,7 +114,7 @@ class SystemDeptService extends AbstractService
         $ctuIds = [];
         if (count($ids)) {
             foreach ($ids as $id) {
-                if (! $this->checkChildrenExists((int) $id)) {
+                if (!$this->checkChildrenExists((int)$id)) {
                     $this->mapper->realDelete([$id]);
                 } else {
                     $ctuIds[] = $id;
@@ -133,8 +146,8 @@ class SystemDeptService extends AbstractService
     /**
      * 处理数据.
      * @param mixed $data
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function handleData($data): array
     {
