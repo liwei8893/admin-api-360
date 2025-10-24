@@ -37,4 +37,7 @@ class HasCourseRecordDto implements MineModelExcel
 
     #[ExcelProperty(value: '最后登录时间', index: 8)]
     public string $last_login_time;
+
+    #[ExcelProperty(value: '最后登录时间', index: 9)]
+    public string $course_end_time;
 }
