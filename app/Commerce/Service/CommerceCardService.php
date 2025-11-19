@@ -63,8 +63,12 @@ class CommerceCardService extends AbstractService
         if (!$cardModel) {
             throw new NormalStatusException('卡号不正确,请核对后输入!');
         }
+        // 0未使用,1已使用,2已禁用
         if ($cardModel->status === 1) {
             throw new NormalStatusException('卡号已被使用,如有疑问请联系官网客服!');
+        }
+        if ($cardModel->status !== 0) {
+            throw new NormalStatusException('卡号异常,请联系官网客服!');
         }
         // 开启事务,cardModel状态变更为已使用,没有注册的注册,注册了直接报名.
         // 开始注册
