@@ -69,6 +69,10 @@ class SystemUploadFileMapper extends AbstractMapper
                 [$params['minDate'] . ' 00:00:00', $params['maxDate'] . ' 23:59:59']
             );
         }
+//        created_by
+        if (isset($params['created_by'])) {
+            $query->where('created_by', $params['created_by']);
+        }
         return $query;
     }
 
