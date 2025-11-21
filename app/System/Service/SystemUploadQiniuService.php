@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\System\Service;
 
 use App\System\Mapper\SystemUploadFileMapper;
+use App\System\Model\SystemUploadfile;
 use Hyperf\Di\Annotation\Inject;
 use JsonException;
 use Mine\Abstracts\AbstractService;
@@ -15,6 +16,7 @@ use Overtrue\Flysystem\Qiniu\QiniuAdapter;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use RedisException;
+use function Hyperf\Config\config;
 
 class SystemUploadQiniuService extends AbstractService
 {
@@ -33,7 +35,7 @@ class SystemUploadQiniuService extends AbstractService
      */
     public function getUploadToken(array $params): array
     {
-        if (! isset($params['fileExt'])) {
+        if (!isset($params['fileExt'])) {
             throw new NormalStatusException('fileExt is null');
         }
 
@@ -55,7 +57,7 @@ class SystemUploadQiniuService extends AbstractService
                 'storage_path' => '/' . $storagePath,
                 'suffix' => $fileExt,
                 'object_name' => $filename,
-                'url' => \Hyperf\Config\config('file.storage.qiniu.domain') . '/' . $key,
+                'url' => config('file.storage.qiniu.domain') . '/' . $key,
             ], JSON_THROW_ON_ERROR),
         ];
         /* @var QiniuAdapter $adapter */
@@ -81,8 +83,9 @@ class SystemUploadQiniuService extends AbstractService
 
         $params['storage_mode'] = 3;
         $data = $this->getUploadFileInfo($params);
-        if ($this->save($data)) {
-            return $data;
+        $model = SystemUploadfile::query()->create($data);
+        if ($model) {
+            return $model->toArray();
         }
         return [];
     }
