@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Question\Service;
 
+use App\Order\Model\Order;
 use App\Question\Mapper\ExamMapper;
 use App\Question\Model\Exam;
 use App\Question\Model\ExamClassify;
 use App\Users\Model\User;
 use App\Users\Service\UsersService;
+use Hyperf\Database\Model\Collection;
+use Hyperf\Database\Model\Relations\BelongsTo;
 use Hyperf\Di\Annotation\Inject;
 use JsonException;
 use Mine\Abstracts\AbstractService;
@@ -66,7 +69,71 @@ class ExamService extends AbstractService
         }
         // 拿到所有订单,题目永久有效期
         $orderModel = $userModel->orders()->normalOrder()->where('shop_id', $shopId)->first();
-        if (!$orderModel) {
+        if ($orderModel) {
+            return true;
+        }
+        $subjectId = $classifyModel->subject;
+        $gradeIdMap = [60 => [1, 2, 5, 7, 9, 11], 61 => [14, 13, 12]];
+        $gradeId = $gradeIdMap[$classifyModel->grade];
+        // 新逻辑,先验证分科订单
+        /* @var Collection | Order[] | null $userOrderModel */
+        $userOrderModel = $userModel->orderCourse()->with(['orderGrade', 'orderSubject', 'course' => function (BelongsTo $builder) {
+            $builder->with('basisGrade');
+        }])->get();
+
+        $flag = false;
+        // 如果有订单,需要验证
+        if ($userOrderModel->isNotEmpty()) {
+            // 循环订单,循环验证
+            foreach ($userOrderModel as $item) {
+                // 订单关联的课程
+                $orderCourse = $item->course;
+                // 订单关联课程的年级
+                $orderCourseGrade = $orderCourse->basisGrade;
+                // 订单年级
+                $orderGrade = $item->orderGrade;
+                // 订单科目
+                $orderSubject = $item->orderSubject;
+
+//                var_dump($orderCourse->title);
+                // 是否购买当前科目,不等于0表示需要验证
+                $hasSubject = $orderCourse->subject_id === 0 || $orderCourse->subject_id === (int)$subjectId;
+                if (!$hasSubject) {
+                    continue; //科目不通过
+                }
+//                var_dump('课程科目通过');
+//                var_dump($orderSubject->isNotEmpty());
+//                var_dump($orderSubject->whereIn('key', $subjectId)->isEmpty());
+//                var_dump($subjectId);
+//                var_dump($orderSubject->toArray());
+                // 课程科目通过之后还要检测订单科目是否限制
+                if ($orderSubject->isNotEmpty() && $orderSubject->whereIn('key', $subjectId)->isEmpty()) {
+                    continue; //科目不通过
+                }
+//                var_dump('订单科目通过');
+
+                // 是否购买当前年级,不等于空表示需要验证
+                $hasGrade = $orderCourseGrade->isEmpty() || $orderCourseGrade->whereIn('key', $gradeId)->isNotEmpty();
+                if (!$hasGrade) {
+                    continue; //年级不通过
+                }
+//                var_dump('课程年级通过');
+                // 课程年级通过之后还要检测订单年级是否限制
+                if ($orderGrade->isNotEmpty() && $orderGrade->whereIn('key', $gradeId)->isEmpty()) {
+                    continue; //年级不通过
+                }
+
+                // 开始验证课程
+                // 验证课程类型
+                $orderCourseType = explode(',', $orderCourse->course_sub_title);
+                $hasType = $orderCourse->course_sub_title === '' || in_array("69", $orderCourseType, true);
+                if (!$hasType) {
+                    continue; //类型不通过
+                }
+                $flag = true;
+            }
+        }
+        if (!$flag) {
             throw new NormalStatusException('未购买当前题目,请联系课程顾问购买!');
         }
         return true;
