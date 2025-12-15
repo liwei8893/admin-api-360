@@ -23,6 +23,13 @@ class CoursePeriodsFileMapper extends AbstractMapper
         $this->model = CoursePeriodsFile::class;
     }
 
+
+//    checkFilePeriods
+    public function checkFilePeriods(int $fileId, int $periodsId): bool
+    {
+        return $this->model::query()->where('periods_id', $periodsId)->where('file_id', $fileId)->exists();
+    }
+
     /**
      * 搜索处理器
      * @param Builder $query
