@@ -117,7 +117,8 @@ class CourseChapterMapper extends AbstractMapper
         if (!empty($params['withCoursePeriod'])) {
             $query->with(['coursePeriod' => function (HasOne $query) {
                 $query->with(['teacher', 'tags', 'questionPeriod'])
-                    ->select(array_merge(CoursePeriod::COMMON_FIELDS, ['qiniu_url']));
+                    ->select(array_merge(CoursePeriod::COMMON_FIELDS, ['qiniu_url']))
+                    ->withCount(['files']);
             }]);
         }
         if (!empty($params['withAppCoursePeriod'])) {
