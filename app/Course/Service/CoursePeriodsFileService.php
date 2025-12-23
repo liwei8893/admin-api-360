@@ -33,6 +33,7 @@ class CoursePeriodsFileService extends AbstractService
         if ($check) {
             throw new NormalStatusException('该文件已添加, 请勿重复添加');
         }
+        $data['created_id'] = user()->getId();
         return parent::save($data);
     }
 
