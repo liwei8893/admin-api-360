@@ -55,11 +55,11 @@ class SmsService extends AbstractService
     {
         $message = new ForgotPwdMessage();
         $easySms = new EasySmsService();
-        $this->handleSmsSendBefore($params['mobile']);
+        $this->handleSmsSendBefore($params['mobile'], true);
         try {
             $res = $easySms->send($params['mobile'], $message);
             return $this->handleSmsSendAfter($params['mobile'], $message, $res);
-        } catch (InvalidArgumentException|NoGatewayAvailableException $e) {
+        } catch (InvalidArgumentException | NoGatewayAvailableException $e) {
             throw new NormalStatusException('短信发送失败,请稍后重试!');
         }
     }
@@ -73,11 +73,11 @@ class SmsService extends AbstractService
     {
         $message = new LoginMessage();
         $easySms = new EasySmsService();
-        $this->handleSmsSendBefore($params['mobile']);
+        $this->handleSmsSendBefore($params['mobile'], true);
         try {
             $res = $easySms->send($params['mobile'], $message);
             return $this->handleSmsSendAfter($params['mobile'], $message, $res);
-        } catch (InvalidArgumentException|NoGatewayAvailableException $e) {
+        } catch (InvalidArgumentException | NoGatewayAvailableException $e) {
             throw new NormalStatusException('短信发送失败,请稍后重试!');
         }
     }
@@ -94,17 +94,25 @@ class SmsService extends AbstractService
         try {
             $res = $easySms->send($params['mobile'], $message);
             return $this->handleSmsSendAfter($params['mobile'], $message, $res);
-        } catch (InvalidArgumentException|NoGatewayAvailableException $e) {
+        } catch (InvalidArgumentException | NoGatewayAvailableException $e) {
             throw new NormalStatusException('短信发送失败,请稍后重试!');
         }
     }
 
     /**
+     * 发送短信前的校验处理
+     * @param string $mobile 手机号
+     * @param bool $checkRegistered 是否检查手机号注册状态(登录和忘记密码场景需要检查)
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    protected function handleSmsSendBefore(string $mobile): void
+    protected function handleSmsSendBefore(string $mobile, bool $checkRegistered = false): void
     {
+        // 登录和忘记密码场景：检查手机号是否已注册
+        if ($checkRegistered && !$this->mapper->checkMobileExists($mobile)) {
+            throw new NormalStatusException('该手机号尚未注册,请先注册!');
+        }
+
         // 每个手机号每天允许发10条
         $mobileData = $this->mapper->getTheDayByMobile($mobile);
         $mobileCount = $mobileData->count();

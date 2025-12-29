@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\System\Mapper;
 
 use App\System\Model\SmsLog;
+use App\Users\Model\User;
 use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Collection;
 use Hyperf\Database\Model\Model;
@@ -40,7 +41,7 @@ class SmsMapper extends AbstractMapper
      */
     public function getTheDayByMobile($mobile): Collection|array
     {
-        return Smslog::where('mobile', $mobile)
+        return Smslog::query()->where('mobile', $mobile)
             ->whereBetween('created_at', [strtotime(date('Y-m-d') . ' 00:00:00'), strtotime(date('Y-m-d') . ' 23:59:59')])
             ->get();
     }
@@ -52,8 +53,18 @@ class SmsMapper extends AbstractMapper
      */
     public function getTheDayByIp($ip): Collection|array
     {
-        return Smslog::where('sms_ip', $ip)
+        return Smslog::query()->where('sms_ip', $ip)
             ->whereBetween('created_at', [strtotime(date('Y-m-d') . ' 00:00:00'), strtotime(date('Y-m-d') . ' 23:59:59')])
             ->get();
+    }
+
+    /**
+     * 检测手机号是否已注册
+     * @param string $mobile 手机号
+     * @return bool true-已注册,false-未注册
+     */
+    public function checkMobileExists(string $mobile): bool
+    {
+        return User::query()->where('mobile', $mobile)->exists();
     }
 }
