@@ -11,6 +11,7 @@ use Hyperf\Database\Model\Builder;
 use Hyperf\Database\Model\Relations\HasOne;
 use Mine\Abstracts\AbstractMapper;
 use Mine\Annotation\Transaction;
+use Mine\Exception\NormalStatusException;
 
 /**
  * 课程大纲Mapper类.
@@ -63,6 +64,16 @@ class CourseChapterMapper extends AbstractMapper
     #[Transaction]
     public function saveChapter(array $data): int
     {
+        // 检查同一parent_id下是否已存在相同的title
+        $existingChapter = $this->model::query()
+            ->where('parent_id', $data['parent_id'] ?? 0)
+            ->where('title', $data['title'])
+            ->first();
+
+        if ($existingChapter) {
+            throw new NormalStatusException('同一目录下章节标题不能重复');
+        }
+
         $chapterModel = $this->model::create($data);
         $periodModel = $chapterModel->coursePeriod()->create($data['course_period']);
         $periodModel->tags()->sync($data['tag']);

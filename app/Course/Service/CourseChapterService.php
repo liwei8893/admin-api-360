@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Course\Service;
 
 use App\Course\Mapper\CourseChapterMapper;
+use App\Course\Model\CourseChapter;
 use GuzzleHttp\Exception\GuzzleException;
 use Hyperf\Guzzle\ClientFactory;
 use JsonException;
 use Mine\Abstracts\AbstractService;
+use Mine\MineModel;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -117,6 +119,14 @@ class CourseChapterService extends AbstractService
             }
         }
         return $data;
+    }
+
+    public function read(int $id): ?MineModel
+    {
+        /** @var CourseChapter $chapter */
+        $chapter = parent::read($id);
+        $chapter->load('coursePeriod');
+        return $chapter;
     }
 
     /**
