@@ -145,9 +145,14 @@ class OrderService extends AbstractService
      */
     public function handleRenewData(array $item, array $params): int
     {
+        $courseEndDt = Carbon::parse($item['course_end_time']);
+        // 如果课程结束日期已过去，使用当前时间
+        if ($courseEndDt->isPast()) {
+            $courseEndDt = Carbon::now();
+        }
         $data = [
             'status' => $params['renew'] ? 1 : 0,
-            'startDate' => $item['course_end_time'],
+            'startDate' => $courseEndDt->toDateTimeString(),
             'endDate' => $params['date'],
             'real_year' => $params['real_year'],
         ];
