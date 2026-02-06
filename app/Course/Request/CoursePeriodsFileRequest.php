@@ -18,7 +18,7 @@ class CoursePeriodsFileRequest extends MineFormRequest
         return [];
     }
 
-    
+
     /**
      * 新增数据验证规则
      * return array
@@ -34,9 +34,9 @@ class CoursePeriodsFileRequest extends MineFormRequest
             'file_name' => 'required',
             //排序 验证
             'sort' => 'required',
-
         ];
     }
+
     /**
      * 更新数据验证规则
      * return array
@@ -50,11 +50,10 @@ class CoursePeriodsFileRequest extends MineFormRequest
             'file_name' => 'required',
             //排序 验证
             'sort' => 'required',
-
         ];
     }
 
-    
+
     /**
      * 字段映射名称
      * return array

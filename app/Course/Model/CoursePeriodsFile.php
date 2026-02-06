@@ -11,6 +11,7 @@ use Mine\MineModel;
 
 /**
  * @property int $id ID
+ * @property int $course_basis_id 课程ID
  * @property int $periods_id 章节ID
  * @property int $file_id 文件ID
  * @property string $file_name 文件名称
@@ -30,12 +31,12 @@ class CoursePeriodsFile extends MineModel
     /**
      * The attributes that are mass assignable.
      */
-    protected array $fillable = ['id', 'periods_id', 'file_id', 'file_name', 'sort', 'created_id', 'created_at', 'updated_at'];
+    protected array $fillable = ['id', 'course_basis_id', 'periods_id', 'file_id', 'file_name', 'sort', 'created_id', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be cast to native types.
      */
-    protected array $casts = ['id' => 'integer', 'periods_id' => 'integer', 'file_id' => 'integer', 'sort' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected array $casts = ['id' => 'integer', 'course_basis_id' => 'integer', 'periods_id' => 'integer', 'file_id' => 'integer', 'sort' => 'integer', 'created_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     public function file(): HasOne
     {
