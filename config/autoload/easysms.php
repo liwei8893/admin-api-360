@@ -24,13 +24,9 @@ return [
             'file' => '/tmp/easy-sms.log',
         ],
         'aliyun' => [
-//            彭智账号
-//            'access_key_id' => '',
-//            'access_key_secret' => '',
-//          慧学堂账号
-            'access_key_id' => '',
-            'access_key_secret' => '',
-            'sign_name' => '黄冈优课网络科技',
+            'access_key_id' => (string) \Hyperf\Support\env('ALIYUN_SMS_ACCESS_KEY_ID', ''),
+            'access_key_secret' => (string) \Hyperf\Support\env('ALIYUN_SMS_ACCESS_KEY_SECRET', ''),
+            'sign_name' => (string) \Hyperf\Support\env('ALIYUN_SMS_SIGN_NAME', ''),
         ],
     ],
 ];
